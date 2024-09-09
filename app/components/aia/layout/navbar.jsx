@@ -6,8 +6,8 @@ import { IoMdSettings } from "react-icons/io";
 export default function navbar() {
   return (
    
-    // <div className="navbar bg-base-100 sticky top-1 shadow-md w-full">
-    <div className="navbar bg-base-100 sticky flex justify-between items-center top-1 shadow-md">
+     <div className="navbar">
+     {/* <div className="navbar bg-base-100 sticky flex justify-between items-center top-1 shadow-md"> */}
       <div className="flex-1">
         <h1
           className="font-black text-accent text-5xl px-3 kanit"

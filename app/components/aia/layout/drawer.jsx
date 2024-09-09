@@ -44,15 +44,14 @@ export default function Drawer() {
   ];
 
   return (
-    <div className="sticky">
-      <div className="flex">
-        <div
-          className={`bg-primary h-screen p-5 pt-8 ${
-            open ? "w-[220px]" : "w-20"
-          } duration-300 relative`}
-        >
-          <div className="flex justify-center">
-            {/* <Image
+    <div className="">
+      <div
+        className={`bg-primary h-screen  p-5 pt-8 ${
+          open ? "w-[220px]" : "w-20"
+        } duration-300 relative`}
+      >
+        <div className="flex justify-center">
+          {/* <Image
               className={`bg-neutral text-4xl rounded cursor-pointer block float-center mr-2 duration-500 ${
                 open && "rotate-[360deg]"
               }`}
@@ -62,54 +61,53 @@ export default function Drawer() {
               height={37}
               priority
             /> */}
-            <img
+         <img
               className={`text-4xl rounded cursor-pointer block float-center mr-2 duration-500 ${
                 open && "rotate-[360deg]"
               }`}
               src="/hch-logo.png"
-            />
-            <BsArrowLeftShort
-              className={`bg-7u-300 text-black-200 text-3xl rounded-full absolute -right-3 top-9 border  bg-neutral  cursor-pointer ${
-                !open && "rotate-180"
-              }`}
-              onClick={() => setOpen(!open)}
-            />
-          </div>
+            /> 
+          <BsArrowLeftShort
+            className={`bg-7u-300 text-black-200 text-3xl rounded-full absolute -right-3 top-9 border  bg-neutral  cursor-pointer ${
+              !open && "rotate-180"
+            }`}
+            onClick={() => setOpen(!open)}
+          />
+        </div>
 
-          <div className="">
-            <div
-              className={`divider divider-warning origin-left font-medium text-2xl duration-300 ${
-                !open && "scale-0"
-              } `}
-            ></div>
+        <div className="">
+          <div
+            className={`divider divider-warning origin-left font-medium text-2xl duration-300 ${
+              !open && "scale-0"
+            } `}
+          ></div>
 
-            <ul>
-              {menuItems.map((menuitem) => (
-                <li key={menuitem.id}>
-                  {/* shot */}
-                  <Link
-                    href={menuitem.href}
-                    className={`text-accent text-3xl  flex justify-center gap-x-1  hover:bg-neutral hover:text-base-100 rounded-md mt-4 ${
-                      open && "hidden"
-                    }`}
-                  >
-                    {menuitem.icon ? menuitem.icon : <AiFillHome />}
-                  </Link>
+          <ul>
+            {menuItems.map((menuitem) => (
+              <li key={menuitem.id}>
+                {/* shot */}
+                <Link
+                  href={menuitem.href}
+                  className={`text-accent text-3xl  flex justify-center gap-x-1  hover:bg-neutral hover:text-base-100 rounded-md mt-4 ${
+                    open && "hidden"
+                  }`}
+                >
+                  {menuitem.icon ? menuitem.icon : <AiFillHome />}
+                </Link>
 
-                  {/* full */}
-                  <Link
-                    href={menuitem.href}
-                    className={`text-accent text-2xl  flex gap-x-1 cursor-point p-4 px-5 hover:bg-neutral hover:text-base-100  rounded-md mt-4" ${
-                      !open && "hidden"
-                    }`}
-                  >
-                    {menuitem.icon ? menuitem.icon : <AiFillHome />}
-                    {menuitem.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+                {/* full */}
+                <Link
+                  href={menuitem.href}
+                  className={`text-accent text-2xl  flex gap-x-1 cursor-point p-4 px-5 hover:bg-neutral hover:text-base-100  rounded-md mt-4" ${
+                    !open && "hidden"
+                  }`}
+                >
+                  {menuitem.icon ? menuitem.icon : <AiFillHome />}
+                  {menuitem.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </div>
