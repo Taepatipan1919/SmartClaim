@@ -10,10 +10,17 @@ import { MdOutlineContactPhone } from "react-icons/md";
 import { TbUserSearch } from "react-icons/tb";
 import { RiContactsLine } from "react-icons/ri";
 import { GoBrowser } from "react-icons/go";
+import { IoArrowForwardCircleSharp } from "react-icons/io5";
+import { MdKeyboardArrowDown , MdKeyboardArrowUp } from "react-icons/md";
+
 
 export default function Drawer() {
   const [open, setOpen] = useState(true);
+  const [openMenu, setOpenMenu] = useState(null);
 
+  const toggleMenu = (id) => {
+    setOpenMenu(openMenu === id ? null : id);
+  };
   // interface MenuItem {
   //     id: string;
   //     icon?: React.ReactNode;
@@ -27,11 +34,17 @@ export default function Drawer() {
     {
       id: "1",
       label: " OPD",
-      //label: " Link Web",
       // icon: <TbUserSearch />,
-      href: "/aia/opd",
+      // href: "/aia/opd",
+      href: "",
       spacing: false,
-      submenu: false,
+      submenu: [
+        { id: "1-1", label: "ข้อมูลผู้ป่วย", href: "/aia/opd/chackpatient" },
+        { id: "1-2", label: "ตรวจสอบสิทธิ์", href: "/aia/opd/checkeilgible" },
+        { id: "1-3", label: "ส่งยอดเคลม", href: "/aia/opd/eilgible" },
+        { id: "1-4", label: "วางบิล", href: "/aia/opd/submitBilling" },
+        { id: "1-5", label: "สถานะการเคลม", href: "/aia/opd/checkClaimStatus" },
+      ],
     },
     {
       id: "2",
@@ -39,15 +52,15 @@ export default function Drawer() {
       // icon: <GoBrowser />,
       href: "/aia/ipd",
       spacing: false,
-      submenu: false,
+      submenu: "",
     },
   ];
 
   return (
     <div className="">
       <div
-        className={`bg-primary h-screen  p-5 pt-8 ${
-          open ? "w-[220px]" : "w-20"
+        className={`bg-primary h-screen  p-5 ${
+          open ? "w-[190px]" : "w-20"
         } duration-300 relative`}
       >
         <div className="flex justify-center">
@@ -62,19 +75,27 @@ export default function Drawer() {
               priority
             /> */}
          <img
-              className={`text-4xl rounded cursor-pointer block float-center mr-2 duration-500 ${
+              className={`text-4xl rounded cursor-pointer block float-center self-center duration-500 ${
                 open && "rotate-[360deg]"
               }`}
               src="/hch-logo.png"
             /> 
           <BsArrowLeftShort
-            className={`bg-7u-300 text-black-200 text-3xl rounded-full absolute -right-3 top-9 border  bg-neutral  cursor-pointer ${
+            className={`bg-7u-300 mt-6 text-black-200 text-3xl rounded-full absolute -right-3 top-9 border  bg-neutral  cursor-pointer ${
               !open && "rotate-180"
             }`}
             onClick={() => setOpen(!open)}
           />
-        </div>
 
+        </div>
+        {open &&
+        <h1
+          className="font-black text-accent text-1xl text-center kanit bg-primary"
+          data-theme="mytheme"
+        >
+          Smart Claim
+        </h1>
+      }
         <div className="">
           <div
             className={`divider divider-warning origin-left font-medium text-2xl duration-300 ${
@@ -82,32 +103,69 @@ export default function Drawer() {
             } `}
           ></div>
 
-          <ul>
-            {menuItems.map((menuitem) => (
+         <ul>
+         {/* {menuItems.map((item) => (
+        <li key={item.id}>
+          <button
+            onClick={() => toggleMenu(item.id)}
+            className="w-full text-left px-4 py-2 hover:bg-gray-300"
+          >
+            {item.label}
+          </button>
+          {openMenu === item.id && item.submenu && (
+            <ul className="pl-4 space-y-1">
+              {item.submenu.map((subItem) => (
+                <li key={subItem.id}>
+                  <Link href={subItem.href}>
+                    <h1 className="block px-4 py-2 hover:bg-gray-300">
+                      {subItem.label}
+                    </h1>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </li>
+      ))} */}
+         {menuItems.map((menuitem) => (
               <li key={menuitem.id}>
-                {/* shot */}
-                <Link
-                  href={menuitem.href}
-                  className={`text-accent text-3xl  flex justify-center gap-x-1  hover:bg-neutral hover:text-base-100 rounded-md mt-4 ${
+               
+                <button
+                  onClick={() => toggleMenu(menuitem.id)}
+                  className={`text-accent text-3xl  flex gap-x-1 self-center  hover:bg-info hover:text-base-100 rounded-md mt-4 ${
                     open && "hidden"
                   }`}
                 >
                   {menuitem.icon ? menuitem.icon : <AiFillHome />}
-                </Link>
+                </button>
 
-                {/* full */}
-                <Link
-                  href={menuitem.href}
-                  className={`text-accent text-2xl  flex gap-x-1 cursor-point p-4 px-5 hover:bg-neutral hover:text-base-100  rounded-md mt-4" ${
+     
+                <button
+                  onClick={() => toggleMenu(menuitem.id)}
+                  className={`text-accent text-xl  flex gap-x-1 cursor-point p-4 px-5 hover:bg-info hover:text-base-100 w-full  rounded-md mt-4" ${
                     !open && "hidden"
                   }`}
                 >
                   {menuitem.icon ? menuitem.icon : <AiFillHome />}
-                  {menuitem.label}
-                </Link>
+                  {menuitem.label} <div className="text-right">{menuitem.submenu ? (openMenu ? <MdKeyboardArrowUp /> : <MdKeyboardArrowDown />) : ""}</div>
+                  
+                </button>
+                {open && openMenu === menuitem.id && menuitem.submenu && (
+            <ul className="bg-base-100 rounded-lg">
+              {menuitem.submenu.map((subItem) => (
+                <li key={subItem.id}>
+                  <Link href={subItem.href}>
+                    <h1 className="block text-base rounded-lg text-accent my-1 px-3 hover:text-base-100 hover:bg-neutral">
+                    <div className="flex items-center "><IoArrowForwardCircleSharp />&nbsp;{subItem.label}</div>
+                    </h1>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
               </li>
-            ))}
-          </ul>
+            ))} 
+          </ul> 
         </div>
       </div>
     </div>

@@ -13,7 +13,7 @@ export default function navbar() {
           className="font-black text-accent text-5xl px-3 kanit"
           data-theme="mytheme"
         >
-          Smart <span className="text-neutral kanit">Claim</span>
+          Smart Claim
         </h1>
         <Link
           href={`/aia/opd/chackpatient`}
