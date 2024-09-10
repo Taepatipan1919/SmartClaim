@@ -15,7 +15,7 @@ export default function SelectPatient() {
   const [create, setCreate] = useState("");
   const [showFormCreate, setShowFormCreate] = useState("");
   const [inputValue, setInputValue] = useState("");
-
+  const [ patientFindforUpdate , setPatientFindforUpdate ]= useState("");
   useEffect(() => {
     const getClaimStatus = async () => {
       const response = await fetch(
@@ -145,12 +145,73 @@ export default function SelectPatient() {
     //console.log(dataCreate);
   }
 
+  function Verify() {
+    axios
+      .post(
+        process.env.NEXT_PUBLIC_URL + "v1/aia-patient-info/PatientFindforUpdate",
+        {
+          PatientInfo: {
+            "Insurerid": 13, 
+            "RefID":"O61-028993-ppp-ooo-o1",
+            "TransactionNo":"XXXXX",
+            "PID": "1160100078831",
+            "HN": "61-022781",
+            "PassportNumber":"ABC12345",
+            "IdType":"PASSPORT_NO",
+            "VN":"O61-028993",
+            "StatusClaimCode": "01", 
+            "VisitDatefrom": "2024-08-15",
+             "VisitDateto":  "2024-08-06"
+          },
+        }
+      )
+      .then(function (response) {
+        console.log(response.data);
+        setPatientFindforUpdate(response.data)
+         document.getElementById("my_modal_1").showModal()
+      })
+      .catch(function (error) {
+        console.log(error.response.request.status);
+      });
+  }
+  function saveUpdate() {
+    axios
+      .patch(
+        process.env.NEXT_PUBLIC_URL + "v1/aia-patient-info/PatientUpdate",
+        {
+          "PatientInfo": {
+            "InsurerCode": 13, // ควรเป็น integer ไม่ใช่ string
+            "PatientID": "183090", // ควรเป็น integer ไม่ใช่ string
+            "PID": "7161710129213",
+            "PassportNumber": "ABC12345",
+            "HN": "61-028993",
+            "TitleTH": "นาย",
+            "GivenNameTH": "กฤษณ์",
+            "SurnameTH": "จันทรวงศ์",
+            "TitleEN": "MR.",
+            "GivenNameEN": "KRIT",
+            "SurnameEN": "CHANTARAWONG",
+            "DateOfBirth": "1985-07-15",
+            "Gender": "ชาย",
+            "MobilePhone": "0989923557"
+          }
+        }
+      )
+      .then(function (response) {
+        console.log(response.data);
+      })
+      .catch(function (error) {
+        console.log(error.response.request.status);
+      });
+
+    //console.log(dataCreate);
+  }
   const handleSubmit = (event) => {
     event.preventDefault();
 
     axios
       .post(
-        process.env.NEXT_PUBLIC_URL_PD + "v1/aia-patient-info/PatientSearch",
+        process.env.NEXT_PUBLIC_URL + "v1/aia-patient-info/PatientSearch",
         {
           PatientInfo: {
             InsurerCode: InsuranceCode,
@@ -168,7 +229,7 @@ export default function SelectPatient() {
         setPost(response.data);
       })
       .catch(function (error) {
-        console.log(error);
+        console.log(error.data);
       });
   };
 
@@ -260,13 +321,13 @@ export default function SelectPatient() {
             </select>
           </div>
           <div className="rounded-md pt-6">
-            <div className="grid gap-1 sm:grid-cols-2 w-full">
+            <div className="w-full">
               <div className="rounded-md">
                 <button className="btn btn-neutral text-base-100 text-lg rounded-full px-3 py-2">
-                  <FaSearch />
+                  <FaSearch /> Search
                 </button>
                 <button
-                  className="btn btn-success text-base-100 text-lg rounded-full px-3 py-2"
+                  className="btn btn-success text-base-100 text-lg rounded-full px-3 py-2 ml-2"
                   onClick={() =>
                     document.getElementById("my_modal_3").showModal()
                   }
@@ -300,9 +361,9 @@ export default function SelectPatient() {
                   ? post.Result.PatientInfo.map((patientinfo, index) => (
                       <>
                         <tr className="hover" key={index}>
-                          <th className="text-center">{index + 1}</th>
+                          <td className="text-center">{index + 1}</td>
                           <td>{patientinfo.PID}</td>
-                          <td>{patientinfo.PID}</td>
+                          <td>{patientinfo.PassportNumber}</td>
                           <td className="text-center">{patientinfo.HN}</td>
                           <td>
                             {patientinfo.TitleTH}
@@ -320,11 +381,9 @@ export default function SelectPatient() {
                               </Link>
                               <button
                                 className="btn bg-white text-accent w-full hover:text-base-100 hover:bg-neutral"
-                                onClick={() =>
-                                  document
-                                    .getElementById("my_modal_1")
-                                    .showModal()
-                                }
+                                onClick={Verify}
+                                 
+                                
                               >
                                 Verify
                               </button>
@@ -501,25 +560,25 @@ export default function SelectPatient() {
                   <p className="text-left">PID</p>
                 </div>
                 <div className="rounded-md">
-                  {create ? create.Result.PatientInfo.PID : "xxxxxx"}
+                  {create ? create.Result.PatientInfo.PID : ""}
                 </div>
                 <div className="rounded-md ">
                   <p className="text-left">HN</p>
                 </div>
                 <div className="rounded-md ">
-                  {create ? create.Result.PatientInfo.HN : "xxxxxx"}
+                  {create ? create.Result.PatientInfo.HN : ""}
                 </div>
                 <div className="rounded-md ">
                   <p className="text-left">Passport Number</p>
                 </div>
                 <div className="rounded-md">
-                  {create ? create.Result.PatientInfo.PassportNumber : "xxxxxx"}
+                  {create ? create.Result.PatientInfo.PassportNumber : ""}
                 </div>
                 <div className="rounded-md ">
                   <p className="text-left">Date Of Birth</p>
                 </div>
                 <div className="rounded-md">
-                  {create ? create.Result.PatientInfo.DateOfBirth : "xxxxxx"}
+                  {create ? create.Result.PatientInfo.DateOfBirth : ""}
                 </div>
                 <div className="rounded-md ">
                   <p className="text-left">Fullname (TH)</p>
@@ -532,7 +591,7 @@ export default function SelectPatient() {
                       {create.Result.PatientInfo.SurnameTH}
                     </>
                   ) : (
-                    "xxxxxx"
+                    ""
                   )}
                 </div>
                 <div className="rounded-md ">
@@ -546,14 +605,14 @@ export default function SelectPatient() {
                       {create.Result.PatientInfo.SurnameEN}
                     </>
                   ) : (
-                    "xxxxxx"
+                    ""
                   )}
                 </div>
                 <div className="rounded-md ">
                   <p className="text-left">Mobile Phone</p>
                 </div>
                 <div className="rounded-md ">
-                  {create ? create.Result.PatientInfo.MobilePhone : "xxxxxx"}
+                  {create ? create.Result.PatientInfo.MobilePhone : ""}
                 </div>
                 <div className="rounded-md "></div>
                 <div className="rounded-md ">
@@ -575,24 +634,6 @@ export default function SelectPatient() {
                     ""
                   )}
                 </div>
-                {/* <div>{error ? (
-                  <>
-                  <div role="alert" className="alert alert-error">
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    className="h-6 w-6 shrink-0 stroke-current"
-    fill="none"
-    viewBox="0 0 24 24">
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth="2"
-      d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-  </svg>
-  <span>Error! Task failed successfully.</span>
-</div>
-                  </>
-                ) : ""}</div> */}
               </div>
             </form>
           </div>
@@ -617,44 +658,45 @@ export default function SelectPatient() {
               <div className="rounded-md ">
                 <p className="text-left">Personal ID</p>
               </div>
-              <div className="rounded-md text-center">XXXXXX</div>
-              <div className="rounded-md text-center">YYYYYY</div>
+              <div className="rounded-md text-center">{patientFindforUpdate ? patientFindforUpdate.Result.PatientInfo.PatientDatabase.PID : ""}</div>
+              <div className="rounded-md text-center">{patientFindforUpdate ? patientFindforUpdate.Result.PatientInfo.PatientTrakcare.PID : ""}</div>
               <div className="rounded-md ">
                 <p className="text-left">Passport</p>
               </div>
-              <div className="rounded-md text-center">XXXXXX</div>
-              <div className="rounded-md text-center">YYYYYY</div>
+              <div className="rounded-md text-center">{patientFindforUpdate ? patientFindforUpdate.Result.PatientInfo.PatientDatabase.PassportNumber : ""}</div>
+              <div className="rounded-md text-center">{patientFindforUpdate ? patientFindforUpdate.Result.PatientInfo.PatientTrakcare.PassportNumber : ""}</div>
               <div className="rounded-md ">
                 <p className="text-left">Date of Birth</p>
               </div>
-              <div className="rounded-md text-center">XXXXXX</div>
-              <div className="rounded-md text-center">YYYYYY</div>
+              <div className="rounded-md text-center">{patientFindforUpdate ? patientFindforUpdate.Result.PatientInfo.PatientDatabase.DateOfBirth : ""}</div>
+              <div className="rounded-md text-center">{patientFindforUpdate ? patientFindforUpdate.Result.PatientInfo.PatientTrakcare.DateOfBirth : ""}</div>
               <div className="rounded-md ">
                 <p className="text-left">HN</p>
               </div>
-              <div className="rounded-md text-center">XXXXXX</div>
-              <div className="rounded-md text-center">YYYYYY</div>
+              <div className="rounded-md text-center">{patientFindforUpdate ? patientFindforUpdate.Result.PatientInfo.PatientDatabase.HN : ""}</div>
+              <div className="rounded-md text-center">{patientFindforUpdate ? patientFindforUpdate.Result.PatientInfo.PatientTrakcare.HN : ""}</div>
               <div className="rounded-md ">
                 <p className="text-left">Fullname (TH)</p>
               </div>
-              <div className="rounded-md text-center">XXXXXX</div>
-              <div className="rounded-md text-center">YYYYYY</div>
+              <div className="rounded-md text-center">{patientFindforUpdate ? patientFindforUpdate.Result.PatientInfo.PatientDatabase.TitleTH : ""} {patientFindforUpdate ? patientFindforUpdate.Result.PatientInfo.PatientDatabase.GivenNameTH : ""} {patientFindforUpdate ? patientFindforUpdate.Result.PatientInfo.PatientDatabase.SurnameTH : ""}</div>
+              <div className="rounded-md text-center">{patientFindforUpdate ? patientFindforUpdate.Result.PatientInfo.PatientTrakcare.TitleTH : ""} {patientFindforUpdate ? patientFindforUpdate.Result.PatientInfo.PatientTrakcare.GivenNameTH : ""} {patientFindforUpdate ? patientFindforUpdate.Result.PatientInfo.PatientTrakcare.SurnameTH : ""}</div>
               <div className="rounded-md ">
                 <p className="text-left">Fullname (EN)</p>
               </div>
-              <div className="rounded-md text-center">XXXXXX</div>
-              <div className="rounded-md text-center">YYYYYY</div>
+              <div className="rounded-md text-center">{patientFindforUpdate ? patientFindforUpdate.Result.PatientInfo.PatientDatabase.TitleEN : ""} {patientFindforUpdate ? patientFindforUpdate.Result.PatientInfo.PatientDatabase.GivenNameEN : ""} {patientFindforUpdate ? patientFindforUpdate.Result.PatientInfo.PatientDatabase.SurnameEN : ""}</div>
+              <div className="rounded-md text-center">{patientFindforUpdate ? patientFindforUpdate.Result.PatientInfo.PatientTrakcare.TitleEN : ""} {patientFindforUpdate ? patientFindforUpdate.Result.PatientInfo.PatientTrakcare.GivenNameEN : ""} {patientFindforUpdate ? patientFindforUpdate.Result.PatientInfo.PatientTrakcare.SurnameEN : ""}</div>
               <div className="rounded-md ">
                 <p className="text-left">Mobile Phone</p>
               </div>
-              <div className="rounded-md text-center">XXXXXX</div>
-              <div className="rounded-md text-center">YYYYYY</div>
+              <div className="rounded-md text-center">{patientFindforUpdate ? patientFindforUpdate.Result.PatientInfo.PatientDatabase.MobilePhone : ""}</div>
+              <div className="rounded-md text-center">{patientFindforUpdate ? patientFindforUpdate.Result.PatientInfo.PatientTrakcare.MobilePhone : ""}</div>
               <div className="rounded-md "></div>
               <div className="rounded-md "></div>
               <div className="rounded-md ">
                 <button
                   type="submit"
                   className="btn btn-accent text-base-100 text-lg w-full rounded-full px-3 py-2"
+                  onClick={saveUpdate}
                 >
                   <RiSave3Fill /> Update
                 </button>
