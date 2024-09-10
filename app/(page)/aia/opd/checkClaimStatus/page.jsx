@@ -18,7 +18,7 @@ export default function Home() {
       RefId : {DataTran.Data.RefId}
       <br />
       TransactionNo : {DataTran.Data.TransactionNo}
-      <br />
+      <br />dassa
     </>
   );
 }
