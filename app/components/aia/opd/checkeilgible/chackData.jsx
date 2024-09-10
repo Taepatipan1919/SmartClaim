@@ -3,9 +3,10 @@ import React from "react";
 import axios from "axios";
 import { useState, useEffect, createContext } from "react";
 import Link from "next/link";
-// import { useDispatch } from "react-redux";
-// import { save } from "../../../../store/counterSlice";
-// import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { save } from "../../../../store/counterSlice";
+import { useSelector } from "react-redux";
+// import { useRouter } from "next/router";
 
 export default function chackData() {
   const InsuranceCode = 13;
@@ -16,11 +17,14 @@ export default function chackData() {
   const [illnessSurgery, setIllnessSurgery] = useState();
   const [showForm, setShowForm] = useState(false);
   const [result, setResult] = useState();
+  const [detailVN, setDetailVN] = useState();
 
   useEffect(() => {
     const getIllnessSurgery = async () => {
       const response = await fetch(
-        process.env.NEXT_PUBLIC_URL_IllnessSurgery + InsuranceCode
+        process.env.NEXT_PUBLIC_URL +
+          "/v1/utils/IllnessSurgery/" +
+          InsuranceCode
       );
       const data = await response.json();
       setIllnessSurgery(data);
@@ -31,7 +35,7 @@ export default function chackData() {
   useEffect(() => {
     const getIllnessType = async () => {
       const response = await fetch(
-        process.env.NEXT_PUBLIC_URL_IllnessType + InsuranceCode
+        process.env.NEXT_PUBLIC_URL + "/v1/utils/IllnessType/" + InsuranceCode
       );
       const data = await response.json();
       setIllnessType(data);
@@ -41,7 +45,7 @@ export default function chackData() {
   useEffect(() => {
     const getPolicyType = async () => {
       const response = await fetch(
-        process.env.NEXT_PUBLIC_URL_policyType + InsuranceCode
+        process.env.NEXT_PUBLIC_URL + "/v1/utils/policyType/" + InsuranceCode
       );
       const data = await response.json();
       setPolicyType(data);
@@ -50,7 +54,9 @@ export default function chackData() {
   }, []);
   useEffect(() => {
     const getServiceSetting = async () => {
-      const response = await fetch(process.env.NEXT_PUBLIC_URL_serviceSetting);
+      const response = await fetch(
+        process.env.NEXT_PUBLIC_URL + "/v1/utils/serviceSetting/"
+      );
       const data = await response.json();
       setServiceSetting(data);
     };
@@ -59,13 +65,13 @@ export default function chackData() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    const search = {
-      //   id: event.target.id.value,
-      date: event.target.date.value,
-      type: event.target.type.value,
-    };
+    // const search = {
+    //   //   id: event.target.id.value,
+    //   date: event.target.date.value,
+    //   type: event.target.type.value,
+    // };
     axios
-      .get(process.env.NEXT_PUBLIC_URL_chackpatient)
+      .get(process.env.NEXT_PUBLIC_URL + "/v1/utils/chackpatient/")
       .then((response) => {
         setPost(response.data);
       })
@@ -74,62 +80,59 @@ export default function chackData() {
 
   const check = (event) => {
     event.preventDefault();
-    const data = {
-      DataJson: {
-        IdType: post.PatientInfo.IdType,
-        PID: post.PatientInfo.PID,
-        PolicyType: event.target.selecttype.value,
-        ServiceSetting: "",
-        IllnessType: event.target.selectillnesstype.value,
-        SurgeryType: event.target.selectisurgerytype.value,
-        Patient: {
-          FirstName: post.PatientInfo.FirstName,
-          LastName: post.PatientInfo.LastName,
-          Dob: post.PatientInfo.DOB,
+    console.log(result);
+    setDetailVN(event.target.selectVN.value);
+    axios
+      .post(process.env.NEXT_PUBLIC_URL + "/v1/utils/eligible/episodelist/", {
+        DataJson: {
+          IdType: post.PatientInfo.IdType,
+          PID: post.PatientInfo.PID,
+          PolicyType: event.target.selecttype.value,
+          ServiceSetting: "",
+          IllnessType: event.target.selectillnesstype.value,
+          SurgeryType: event.target.selectisurgerytype.value,
+          Patient: {
+            FirstName: post.PatientInfo.FirstName,
+            LastName: post.PatientInfo.LastName,
+            Dob: post.PatientInfo.DOB,
+          },
+          Visit: {
+            VN: event.target.selectVN.value,
+          },
         },
-        Visit: {
-          VN: event.target.selectVN.value,
-        },
-      },
-    };
-    fetch(process.env.NEXT_PUBLIC_URL_eligible, {
-      method: "POST",
-      headers: {
-        "Context-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    })
-      .then((res) => res.json())
-      .then((result) => {
-        setResult(result);
-        //  if (result.Result.Code === "S") {
-        // setShowForm(!showForm);
-        //console.log(result);
-        //  }
+      })
+      .then(function (response) {
+        //console.log(response);
+        setResult(response.data);
+      })
+      .catch(function (error) {
+        console.log(error);
       });
+    // setShowForm(!showForm);
+
     document.getElementById("my_modal_3").showModal();
   };
-  // console.log(result);
+  const { DataTran } = useSelector((state) => ({ ...state }));
+  const dispatch = useDispatch();
 
-  // const { DataTran } = useSelector((state) => ({ ...state }));
+  // const router = useRouter();
+  const confirmButton = () => {
+    dispatch(
+      save({
+        value: "มีข้อมูล",
+        Data: {
+          RefId: result.Data.RefId,
+          TransactionNo: result.Data.TransactionNo,
+          VN: detailVN,
+          InsuranceCode: InsuranceCode,
+        },
+      })
+    );
 
-  // const dispatch = useDispatch();
-
-  // const initialState = {
-  //   value: "มีข้อมูล",
-  //   Data: {
-  //     RefId: "oljhnklefhbilubsEFJKLb651",
-  //     TransactionNo: "1fcd0cbd-ea1f-4e39-8c42-d5681f1ef531",
-  //     VN: "O1234-66",
-  //     InsuranceCode: "13",
-  //   },
-  // };
-
-  //   const handlebutton = () => {
-  //     dispatch(save(initialState));
-  //     //console.log("sad")
-  //   };
-  // };
+    // setTimeout(() => {
+    //   router.push("/aia"); // เปลี่ยน '/new-page' เป็นหน้าที่คุณต้องการเปลี่ยนไป
+    // }, 5000); // 5000 มิลลิวินาที = 5 วินาที
+  };
 
   return (
     <>
@@ -389,121 +392,85 @@ export default function chackData() {
                   <div key={index}>
                     <ul>
                       <li>
-                        {e.Status === true ? <>Insurer : {result.Data.Insurer}</> : ""}
-                        <li>{e.Status === true ? <>TypeTh : {e.TypeTh}</> : ""} </li>
-                        <li>
-                          {e.Status === true ? (
-                            <>
-                              {e.MessageList.map((ee, index) => (
-                                <div key={index}>- {ee.PlanName}</div>
-                              ))}
-                            </>
-                          ) : (
-                            ""
-                          )}
-                          <hr />
-                        </li>
+                        {e.Status === true ? (
+                          <>Insurer : {result.Data.Insurer}</>
+                        ) : (
+                          ""
+                        )}
+                        <ul>
+                          <li>
+                            {e.Status === true ? <>TypeTh : {e.TypeTh}</> : ""}{" "}
+                          </li>
+                          <li>
+                            {e.Status === true ? (
+                              <>
+                                {e.MessageList.map((ee, index) => (
+                                  <div key={index}>- {ee.PlanName}</div>
+                                ))}
+                              </>
+                            ) : (
+                              ""
+                            )}
+                            <hr />
+                          </li>
+                        </ul>
                       </li>
                     </ul>
                   </div>
                 ))
               : ""}
             <div className="modal-action">
-              {/* <Link href={`./ipd/eligible/${post.PatientInfo.HN}`}> */}
-              <button className="btn btn-neutral text-base-100">
+              <button
+                className="btn btn-neutral text-base-100"
+                onClick={() =>
+                  document.getElementById("my_modal_2").showModal()
+                }
+              >
                 ยืนยันการเคลม
               </button>
-              {/* </Link> */}
             </div>
           </form>
         </div>
       </dialog>
 
-      {/* // <div className="justify-center p-3 w-4/5 m-auto border-solid border-4 rounded-lg ">
-        //   <h1 className="text-neutral text-3xl ">รายการสิทธิ์ประกัน</h1>
-        //   <table className="table">
-        //     <thead>
-        //       <tr>
-        //         <th>ชื่อบริษัทประกัน</th>
-        //         <th>ประเภทการรักษา</th>
-        //         <th></th>
-        //       </tr>
-        //     </thead>
-        //     <tbody>
-        //       {result.Data.CoverageList.map((e, index) => ( 
-        //         <tr key={index}>
-        //           <td>{e.Status === true ? <>{result.Data.Insurer}</> : ""}</td>
-        //           <td>{e.Status === true ? <>{e.TypeTh}</> : ""}</td>
+      <dialog id="my_modal_2" className="modal text-xl">
+        <div className="modal-box">
+          <form method="dialog">
+            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
+              ✕
+            </button>
 
-        //           <td>
-        //             {e.Status === true ? (
-        //               <>
-        //                 <div>
-        //                   <button
-        //                     className="btn"
-        //                     onClick={() =>
-        //                       document.getElementById("my_modal_3").showModal()
-        //                     }
-        //                   >
-        //                     เลือก
-        //                   </button>
-        //                   <dialog id="my_modal_3" className="modal text-xl	">
-        //                     <div className="modal-box">
-        //                       <form method="dialog">
-        //                         <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
-        //                           ✕
-        //                         </button>
+            <h3 className="font-bold text-lg">ข้อมูลการส่งเคลม</h3>
+            <hr />
+            <div className="flex pt-3 text-xl">
+              <input type="radio" name="exampleRadios" defaultChecked />
+              <p className="text-left">&nbsp;เข้ารักษาครั้งแรก</p>
+            </div>
+            <div className="flex text-xl">
+              <input type="radio" name="exampleRadios" />
+              <p className="text-left">&nbsp;เข้ารักษาแบบต่อเนื่อง</p>
+            </div>
+            <div className="flex text-xl">
+              <select className="select select-bordered w-64 max-w-xs">
+                <option></option>
+              </select>
+            </div>
 
-        //                         <h3 className="font-bold text-lg">
-        //                           ข้อมูลการส่งเคลม
-        //                         </h3>
-        //                         <hr />
-        //                         <div className="flex pt-3 text-xl">
-        //                           <input
-        //                             type="radio"
-        //                             name="exampleRadios"
-        //                             defaultChecked
-        //                           />
-        //                           <p className="text-left">
-        //                             &nbsp;เข้ารักษาครั้งแรก
-        //                           </p>
-        //                         </div>
-        //                         <div className="flex text-xl">
-        //                           <input type="radio" name="exampleRadios" />
-        //                           <p className="text-left">
-        //                             &nbsp;เข้ารักษาแบบต่อเนื่อง
-        //                           </p>
-        //                         </div>
-        //                         <div className="flex text-xl">
-        //                           <select className="select select-bordered w-64 max-w-xs">
-        //                             <option></option>
-        //                           </select>
-        //                         </div>
-
-        //                         <div className="modal-action">
-        //                           <Link
-        //                             href={`./ipd/eligible/${post.PatientInfo.HN}`}
-        //                           >
-        //                             <button className="btn btn-neutral text-base-100">
-        //                               ยืนยัน
-        //                             </button>
-        //                           </Link>
-        //                         </div>
-        //                       </form>
-        //                     </div>
-        //                   </dialog>
-        //                 </div>
-        //               </>
-        //             ) : (
-        //               ""
-        //             )}
-        //           </td>
-        //         </tr>
-        //       ))}
-        //     </tbody>
-        //   </table>
-        // </div>
-      // */}
+            <div className="modal-action">
+              {/* <Link
+                                    href={`/aia/opd/opdDischarge`}
+                                  >  */}
+              <button
+                className="btn btn-neutral text-base-100"
+                onClick={confirmButton}
+              >
+                ยืนยัน
+              </button>
+              {/* </Link>  */}
+            </div>
+          </form>
+        </div>
+      </dialog>
     </>
   );
 }

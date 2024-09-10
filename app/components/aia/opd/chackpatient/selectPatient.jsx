@@ -7,13 +7,14 @@ import { RiFileUserFill } from "react-icons/ri";
 import { MdEditDocument } from "react-icons/md";
 import Link from "next/link";
 import axios from "axios";
-// import { DataContext } from '@/app/page'
 
 export default function SelectPatient() {
   const InsuranceCode = 13;
   const [claimStatus, setClaimStatus] = useState();
   const [post, setPost] = useState("");
   const [create, setCreate] = useState("");
+  const [showFormCreate, setShowFormCreate] = useState("");
+  const [inputValue, setInputValue] = useState("");
 
   useEffect(() => {
     const getClaimStatus = async () => {
@@ -29,55 +30,116 @@ export default function SelectPatient() {
 
   const createPatientInfo = (event) => {
     event.preventDefault();
-    const search = {
-      IdType: event.target.exampleRadios.value,
-      PID: event.target.PID.value,
-    };
-    console.log(search);
-    if (search.IdType === "PIDType") {
-      //console.log("PID");
 
+    if (event.target.exampleRadios.value === "NATIONAL_ID") {
+      const PatientInfo = {
+        InsurerCode: InsuranceCode,
+        IdType: event.target.exampleRadios.value,
+        PID: event.target.PID.value,
+        HN: "",
+        PassportNumber: "",
+      };
       axios
-        .get(
-          process.env.NEXT_PUBLIC_URL_PD +
-            "v1/aia-patient-info/PatientInfo2/" +
-            InsuranceCode +
-            "/" +
-            search.PID
+        .post(
+          process.env.NEXT_PUBLIC_URL_PD + "v1/aia-patient-info/FindPatient/",
+          {
+            PatientInfo,
+          }
         )
-        .then((response) => {
+        .then(function (response) {
           setCreate(response.data);
+          setShowFormCreate("");
+          //console.log(response.data);
         })
-        .catch((err) => console.error("Error", err));
-    } else {
-      console.log("Passport");
+        .catch(function (error) {
+          console.log(error);
+          setShowFormCreate("Err");
+        });
+    } else if (event.target.exampleRadios.value === "HOSPITAL_ID") {
+      const PatientInfo = {
+        InsurerCode: InsuranceCode,
+        IdType: event.target.exampleRadios.value,
+        PID: "",
+        HN: event.target.PID.value,
+        PassportNumber: "",
+      };
+      axios
+        .post(
+          process.env.NEXT_PUBLIC_URL_PD + "v1/aia-patient-info/FindPatient/",
+          {
+            PatientInfo,
+          }
+        )
+        .then(function (response) {
+          setCreate(response.data);
+          setShowFormCreate("");
+          //console.log(response.data);
+        })
+        .catch(function (error) {
+          //console.log(error);
+          setShowFormCreate("Err");
+        });
+    } else if (event.target.exampleRadios.value === "PASSPORT_NO") {
+      //console.log("PASSPORT_NO");
+      const PatientInfo = {
+        InsurerCode: InsuranceCode,
+        IdType: event.target.exampleRadios.value,
+        PID: "",
+        HN: "",
+        PassportNumber: event.target.PID.value,
+      };
+      axios
+        .post(
+          process.env.NEXT_PUBLIC_URL_PD + "v1/aia-patient-info/FindPatient/",
+          {
+            PatientInfo,
+          }
+        )
+        .then(function (response) {
+          setCreate(response.data);
+          setShowFormCreate("");
+          //console.log(response.data);
+        })
+        .catch(function (error) {
+          //console.log(error);
+          setShowFormCreate("Err");
+        });
     }
   };
   function saveCreate() {
     axios
-      .post(process.env.NEXT_PUBLIC_URL_PD + "v1/aia-patient-info", {
-        PatientInfo: {
-          Insurerid: InsuranceCode, // ควรเป็น integer ไม่ใช่ string
-          PatientID: create.Result.PatientInfo.PatientID, // ควรเป็น integer ไม่ใช่ string
-          PID: create.Result.PatientInfo.PID,
-          PassportNumber: create.Result.PatientInfo.PassportNumber,
-          HN: create.Result.PatientInfo.HN,
-          TitleTH: create.Result.PatientInfo.TitleTH,
-          GivenNameTH: create.Result.PatientInfo.GivenNameTH,
-          SurnameTH: create.Result.PatientInfo.SurnameTH,
-          TitleEN: create.Result.PatientInfo.TitleEN,
-          GivenNameEN: create.Result.PatientInfo.GivenNameEN,
-          SurnameEN: create.Result.PatientInfo.SurnameEN,
-          DateOfBirth: create.Result.PatientInfo.DateOfBirth,
-          Gender: create.Result.PatientInfo.Gender,
-          MobilePhone: create.Result.PatientInfo.MobilePhone,
-        },
-      })
+      .post(
+        process.env.NEXT_PUBLIC_URL_PD + "v1/aia-patient-info/CreatePatient",
+        {
+          PatientInfo: {
+            InsurerCode: InsuranceCode, // ควรเป็น integer ไม่ใช่ string
+            PatientID: create.Result.PatientInfo.PatientID, // ควรเป็น integer ไม่ใช่ string
+            PID: create.Result.PatientInfo.PID,
+            PassportNumber: create.Result.PatientInfo.PassportNumber,
+            HN: create.Result.PatientInfo.HN,
+            TitleTH: create.Result.PatientInfo.TitleTH,
+            GivenNameTH: create.Result.PatientInfo.GivenNameTH,
+            SurnameTH: create.Result.PatientInfo.SurnameTH,
+            TitleEN: create.Result.PatientInfo.TitleEN,
+            GivenNameEN: create.Result.PatientInfo.GivenNameEN,
+            SurnameEN: create.Result.PatientInfo.SurnameEN,
+            DateOfBirth: create.Result.PatientInfo.DateOfBirth,
+            Gender: create.Result.PatientInfo.Gender,
+            MobilePhone: create.Result.PatientInfo.MobilePhone,
+          },
+        }
+      )
       .then(function (response) {
-        console.log(response);
+        console.log(response.data);
+        setShowFormCreate("Succ");
       })
       .catch(function (error) {
-        console.log(error);
+        console.log(error.response.request.status);
+        if (error.response.request.status === 500) {
+          setShowFormCreate("Again");
+        } else {
+          setShowFormCreate("Err");
+        }
       });
 
     //console.log(dataCreate);
@@ -91,6 +153,7 @@ export default function SelectPatient() {
         process.env.NEXT_PUBLIC_URL_PD + "v1/aia-patient-info/PatientSearch",
         {
           PatientInfo: {
+            InsurerCode: InsuranceCode,
             datefrom: event.target.DateFrom.value,
             dateto: event.target.DateTo.value,
             IdType: event.target.exampleRadios.value,
@@ -101,23 +164,25 @@ export default function SelectPatient() {
         }
       )
       .then(function (response) {
-        // console.log(response);
-        setPost(response);
+        console.log(response.data);
+        setPost(response.data);
       })
       .catch(function (error) {
         console.log(error);
       });
   };
-  // console.log(post.data)
+
+  const handleChange = (e) => {
+    const value = e.target.value;
+    // ตรวจสอบว่าค่าที่ใส่เป็นตัวเลขหรือตัวอักษรภาษาอังกฤษเท่านั้น
+    if (/^[a-zA-Z0-9]*$/.test(value)) {
+      setInputValue(value);
+    }
+  };
   return (
     <>
       {/* <div className="justify-center border-solid w-screen m-auto border-4 rounded-lg p-4"> */}
-      <button
-        className="btn btn-success text-base-100 text-lg rounded-full px-3 py-2"
-        onClick={() => document.getElementById("my_modal_3").showModal()}
-      >
-        <FaUserPlus /> Create Patient
-      </button>
+
       <form onSubmit={handleSubmit}>
         <div className="grid gap-1 sm:grid-cols-3 w-full">
           <div className="px-2 rounded-md">
@@ -200,6 +265,14 @@ export default function SelectPatient() {
                 <button className="btn btn-neutral text-base-100 text-lg rounded-full px-3 py-2">
                   <FaSearch />
                 </button>
+                <button
+                  className="btn btn-success text-base-100 text-lg rounded-full px-3 py-2"
+                  onClick={() =>
+                    document.getElementById("my_modal_3").showModal()
+                  }
+                >
+                  <FaUserPlus /> Create Patient
+                </button>
               </div>
               <div className="rounded-md"></div>
             </div>
@@ -222,14 +295,12 @@ export default function SelectPatient() {
               </tr>
             </thead>
             <tbody>
-              <tr className="hover">
-                {post
-                  ? post.data.HTTPStatus.statusCode === 200
-                    ? post.data.Result.PatientInfo.map((patientinfo, index) => (
-                        <>
-                          <th className="text-center" key={index}>
-                            {index + 1}
-                          </th>
+              {post
+                ? post.HTTPStatus.statusCode < 400
+                  ? post.Result.PatientInfo.map((patientinfo, index) => (
+                      <>
+                        <tr className="hover" key={index}>
+                          <th className="text-center">{index + 1}</th>
                           <td>{patientinfo.PID}</td>
                           <td>{patientinfo.PID}</td>
                           <td className="text-center">{patientinfo.HN}</td>
@@ -259,11 +330,11 @@ export default function SelectPatient() {
                               </button>
                             </div>
                           </td>
-                        </>
-                      ))
-                    : ""
-                  : ""}
-              </tr>
+                        </tr>
+                      </>
+                    ))
+                  : ""
+                : ""}
             </tbody>
           </table>
         </div>
@@ -280,15 +351,99 @@ export default function SelectPatient() {
 
           <div className="justify-center border-solid ">
             <h1 className="font-black text-accent text-3xl ">Create Patient</h1>
+            {showFormCreate === "Succ" ? (
+              <div role="alert" className="alert alert-success">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6 shrink-0 stroke-current"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                <span>Created Successfully</span>
+              </div>
+            ) : (
+              ""
+            )}
+            {showFormCreate === "Err" ? (
+              <div role="alert" className="alert alert-error">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6 shrink-0 stroke-current"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                <span>Error!!</span>
+              </div>
+            ) : (
+              ""
+            )}
+            {showFormCreate === "Again" ? (
+              <div role="alert" className="alert alert-warning">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6 shrink-0 stroke-current"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                  />
+                </svg>
+                <span>รายชื่อนี้มีอยู่แล้ว!</span>
+              </div>
+            ) : (
+              ""
+            )}
+            {create ? (
+              create.HTTPStatus.statusCode === 404 ? (
+                <div role="alert" className="alert alert-error text-base-100">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-6 w-6 shrink-0 stroke-current"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                  <span>ไม่พบข้อมูล!!</span>
+                </div>
+              ) : (
+                ""
+              )
+            ) : (
+              ""
+            )}
             <form onSubmit={createPatientInfo}>
-              <div className="grid gap-2 sm:grid-cols-2 w-full">
+              <div className="grid gap-2 sm:grid-cols-2 w-full mt-2">
                 <div className="rounded-md ">
                   <div className="flex items-center">
                     <input
                       type="radio"
                       name="exampleRadios"
-                      id="PIDType"
-                      value="PIDType"
+                      id="NATIONAL_ID"
+                      value="NATIONAL_ID"
                       defaultChecked
                     />
                     <p className="text-left">&nbsp;Personal ID</p>
@@ -297,10 +452,19 @@ export default function SelectPatient() {
                     <input
                       type="radio"
                       name="exampleRadios"
-                      id="PassportType"
-                      value="PassportType"
+                      id="HOSPITAL_ID"
+                      value="HOSPITAL_ID"
                     />
-                    <p className="text-left">&nbsp;Passport</p>
+                    <p className="text-left">&nbsp;HN</p>
+                  </div>
+                  <div className="flex items-center">
+                    <input
+                      type="radio"
+                      name="exampleRadios"
+                      id="PASSPORT_NO"
+                      value="PASSPORT_NO"
+                    />
+                    <p className="text-left">&nbsp;Passport Number</p>
                   </div>
                 </div>
                 <div className="rounded-md ">
@@ -316,6 +480,9 @@ export default function SelectPatient() {
                       type="text"
                       name="PID"
                       className="input input-bordered w-full pr-16"
+                      onChange={handleChange}
+                      value={inputValue}
+                      required
                     />
                     <button className="btn btn-primary absolute top-0 right-0 rounded-l-none">
                       <FaSearch />
@@ -331,10 +498,10 @@ export default function SelectPatient() {
                 </button>
               </div> */}
                 <div className="rounded-md ">
-                  <p className="text-left">Date Of Birth</p>
+                  <p className="text-left">PID</p>
                 </div>
                 <div className="rounded-md">
-                  {create ? create.Result.PatientInfo.DateOfBirth : "xxxxxx"}
+                  {create ? create.Result.PatientInfo.PID : "xxxxxx"}
                 </div>
                 <div className="rounded-md ">
                   <p className="text-left">HN</p>
@@ -343,7 +510,19 @@ export default function SelectPatient() {
                   {create ? create.Result.PatientInfo.HN : "xxxxxx"}
                 </div>
                 <div className="rounded-md ">
-                  <p className="text-left">GivenName - Surname (TH)</p>
+                  <p className="text-left">Passport Number</p>
+                </div>
+                <div className="rounded-md">
+                  {create ? create.Result.PatientInfo.PassportNumber : "xxxxxx"}
+                </div>
+                <div className="rounded-md ">
+                  <p className="text-left">Date Of Birth</p>
+                </div>
+                <div className="rounded-md">
+                  {create ? create.Result.PatientInfo.DateOfBirth : "xxxxxx"}
+                </div>
+                <div className="rounded-md ">
+                  <p className="text-left">Fullname (TH)</p>
                 </div>
                 <div className="rounded-md ">
                   {create ? (
@@ -357,7 +536,7 @@ export default function SelectPatient() {
                   )}
                 </div>
                 <div className="rounded-md ">
-                  <p className="text-left">GivenName - Surname (EN)</p>
+                  <p className="text-left">Fullname (EN)</p>
                 </div>
                 <div className="rounded-md ">
                   {create ? (
@@ -379,15 +558,19 @@ export default function SelectPatient() {
                 <div className="rounded-md "></div>
                 <div className="rounded-md ">
                   {create ? (
-                    <>
-                      <button
-                        type="submit"
-                        className="btn btn-accent text-base-100 text-lg rounded-full px-3 py-2 center"
-                        onClick={saveCreate}
-                      >
-                        <RiSave3Fill /> Save
-                      </button>
-                    </>
+                    create.HTTPStatus.statusCode === 200 ? (
+                      <>
+                        <button
+                          type="submit"
+                          className="btn btn-accent text-base-100 text-lg rounded-full px-3 py-2 center"
+                          onClick={saveCreate}
+                        >
+                          <RiSave3Fill /> Save
+                        </button>
+                      </>
+                    ) : (
+                      ""
+                    )
                   ) : (
                     ""
                   )}
@@ -452,12 +635,12 @@ export default function SelectPatient() {
               <div className="rounded-md text-center">XXXXXX</div>
               <div className="rounded-md text-center">YYYYYY</div>
               <div className="rounded-md ">
-                <p className="text-left">GivenName - Surname (TH)</p>
+                <p className="text-left">Fullname (TH)</p>
               </div>
               <div className="rounded-md text-center">XXXXXX</div>
               <div className="rounded-md text-center">YYYYYY</div>
               <div className="rounded-md ">
-                <p className="text-left">GivenName - Surname (EN)</p>
+                <p className="text-left">Fullname (EN)</p>
               </div>
               <div className="rounded-md text-center">XXXXXX</div>
               <div className="rounded-md text-center">YYYYYY</div>
