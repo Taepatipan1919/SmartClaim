@@ -71,7 +71,7 @@ export default function chackData() {
     //   type: event.target.type.value,
     // };
     axios
-      .get(process.env.NEXT_PUBLIC_URL + "/v1/utils/chackpatient/")
+      .get(process.env.NEXT_PUBLIC_URL + "/v1/utils/checkeilgible/")
       .then((response) => {
         setPost(response.data);
       })

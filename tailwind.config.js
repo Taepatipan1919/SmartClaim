@@ -13,15 +13,15 @@ module.exports = {
     themes: [
       {
         mytheme: {
-          primary: "#98E4FF", //ฟ้าอ่อนๆ
-          accent: "#687EFF", //ฟ้าเข้ม
-          neutral: "#25c1ff", //ฟ้าอ่อน
+          primary: "#a2d2ff", //ฟ้าอ่อนๆ  //side
+          accent: "#6C5D4E", //ฟ้าเข้ม
+          neutral: "#A2D2FF", //ฟ้าอ่อน
           secondary: "#FF0000", //แดง
           "base-100": "#ffffff",
-          info: "#0184ff", //ฟ้าเข็ม
-          "info-content": "#f1fdfd",
-          success: "#1ad1a5",
-          warning: "#ff9900",
+          info: "#BDE0FE", //ฟ้าเข็ม
+          "info-content": "#FFAFCC",
+          success: "#3dccc7", /** BDE0FE*/
+          warning: "#ffc8dd",
           error: "#ff003f",
         },
       },

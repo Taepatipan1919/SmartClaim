@@ -7,6 +7,17 @@ import { RiFileUserFill } from "react-icons/ri";
 import { MdEditDocument } from "react-icons/md";
 import Link from "next/link";
 import axios from "axios";
+import TextField from '@mui/material/TextField';
+
+
+import dayjs from 'dayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+
+
+
+
 
 export default function SelectPatient() {
   const InsuranceCode = 13;
@@ -14,8 +25,9 @@ export default function SelectPatient() {
   const [post, setPost] = useState("");
   const [create, setCreate] = useState("");
   const [showFormCreate, setShowFormCreate] = useState("");
-  const [inputValue, setInputValue] = useState("");
+  const [input, setInput] = useState("");
   const [ patientFindforUpdate , setPatientFindforUpdate ]= useState("");
+
   useEffect(() => {
     const getClaimStatus = async () => {
       const response = await fetch(
@@ -49,7 +61,6 @@ export default function SelectPatient() {
         .then(function (response) {
           setCreate(response.data);
           setShowFormCreate("");
-          //console.log(response.data);
         })
         .catch(function (error) {
           console.log(error);
@@ -206,22 +217,50 @@ export default function SelectPatient() {
 
     //console.log(dataCreate);
   }
-  const handleSubmit = (event) => {
-    event.preventDefault();
 
-    axios
+
+  const [selectedOption, setSelectedOption] = useState("NATIONAL_ID");
+  const [pidValue, setPidValue] = useState("");
+  const [fromValue, setFromValue] = useState(null);
+  const [toValue, setToValue] = useState(null);
+  const [statusValue, setStatusValue] = useState("");
+
+  const handleOptionChange = (e) => {
+    setSelectedOption(e.target.value);
+  };
+
+  // const handleInputChange = (e) => {
+  //   setInputValue(e.target.value);
+  // };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    //console.log('ค้นหาด้วย:', selectedOption, 'ค่า:', pidValue);
+    
+    // if (!fromValue){
+    //   console.log("!")
+    // }else{
+    //   setFromValue(fromValue.format('YYYY/MM/DD'))
+    // }
+    // const result = strValue.substring(11, 0)
+// console.log(event.target.exampleRadios.value)
+//     if (event.target.exampleRadios.value === "NATIONAL_ID") {
+// console.log("PID")
+      const PatientInfo = {
+        InsurerCode: InsuranceCode,
+        IdType: selectedOption,
+        PID: "",
+        HN: pidValue,
+        PassportNumber: "",
+        datefrom: "",
+        dateto: toValue,
+        ClaimStatusCode: statusValue,
+      };
+      axios
       .post(
-        process.env.NEXT_PUBLIC_URL + "v1/aia-patient-info/PatientSearch",
+        process.env.NEXT_PUBLIC_URL_PD + "v1/aia-patient-info/PatientSearch",
         {
-          PatientInfo: {
-            InsurerCode: InsuranceCode,
-            datefrom: event.target.DateFrom.value,
-            dateto: event.target.DateTo.value,
-            IdType: event.target.exampleRadios.value,
-            PID: event.target.PID.value,
-            HN: event.target.HN.value,
-            ClaimStatusCode: event.target.ClaimStatusCode.value,
-          },
+          PatientInfo,
         }
       )
       .then(function (response) {
@@ -231,86 +270,242 @@ export default function SelectPatient() {
       .catch(function (error) {
         console.log(error.data);
       });
-  };
+//     } else if (event.target.exampleRadios.value === "HOSPITAL_ID") {
+//       console.log("HN")
+//       const PatientInfo = {
+//         InsurerCode: InsuranceCode,
+//         IdType: event.target.exampleRadios.value,
+//         PID: "",
+//         HN: event.target.PID.value,
+//         PassportNumber: "",
+//         datefrom: event.target.DateFrom.value,
+//         dateto: event.target.DateTo.value,
+//         ClaimStatusCode: event.target.ClaimStatusCode.value,
+//       };
+//       axios
+//       .post(
+//         process.env.NEXT_PUBLIC_URL_PD + "v1/aia-patient-info/PatientSearch",
+//         {
+//           PatientInfo,
+//         }
+//       )
+//       .then(function (response) {
+//         console.log(response.data);
+//         setPost(response.data);
+//       })
+//       .catch(function (error) {
+//         console.log(error.data);
+//       });
+//     } else if (event.target.exampleRadios.value === "PASSPORT_NO") {
+//       console.log("PASSPORT_NO");
+//       const PatientInfo = {
+//         InsurerCode: InsuranceCode,
+//         IdType: event.target.exampleRadios.value,
+//         PID: "",
+//         HN: "",
+//         PassportNumber: event.target.PID.value,
+//         datefrom: event.target.DateFrom.value,
+//         dateto: event.target.DateTo.value,
+//         ClaimStatusCode: event.target.ClaimStatusCode.value,
+//       };
+//       axios
+//       .post(
+//         process.env.NEXT_PUBLIC_URL_PD + "v1/aia-patient-info/PatientSearch",
+//         {
+//           PatientInfo,
+//         }
+//       )
+//       .then(function (response) {
+//         console.log(response.data);
+//         setPost(response.data);
+//       })
+//       .catch(function (error) {
+//         console.log(error.data);
+//       });
+//   };
+};
 
   const handleChange = (e) => {
     const value = e.target.value;
     // ตรวจสอบว่าค่าที่ใส่เป็นตัวเลขหรือตัวอักษรภาษาอังกฤษเท่านั้น
     if (/^[a-zA-Z0-9]*$/.test(value)) {
-      setInputValue(value);
+      setInput(value);
     }
   };
+  const createpatient = (e) => {
+    e.preventDefault();
+      document.getElementById("my_modal_3").showModal()
+}
+
   return (
     <>
       {/* <div className="justify-center border-solid w-screen m-auto border-4 rounded-lg p-4"> */}
 
-      <form onSubmit={handleSubmit}>
-        <div className="grid gap-1 sm:grid-cols-3 w-full">
-          <div className="px-2 rounded-md">
-            <p className="text-left">DateFrom</p>
-            <input
-              type="date"
-              name="DateFrom"
-              id="DateFrom"
-              // value={post ? post.PatientInfo.HN : ""}
-              className="input input-accent w-full rounded-full px-3 py-2"
-              // required
-            />
-          </div>
-          <div className="px-2 rounded-md">
-            <p className="text-left">DateTo</p>
-            <input
-              type="date"
-              name="DateTo"
-              id="DateTo"
-              // value={post ? post.PatientInfo.HN : ""}
-              className="input input-accent w-full rounded-full px-3 py-2"
-              // required
-            />
-          </div>
-          <div className="px-2 rounded-md">
+    <form onSubmit={handleSubmit}>
+      <div className="grid gap-1 sm:grid-cols-3 w-full">
+        <div className="px-2 rounded-md">
             <div className="flex items-center ">
               <input
-                type="radio"
-                name="exampleRadios"
-                id="PIDType"
-                value="PIDType"
-                defaultChecked
+                        type="radio"
+                        id="NATIONAL_ID"
+                        name="identity_type"
+                        value="NATIONAL_ID"
+                        defaultChecked
+                        onChange={handleOptionChange}
+                // type="radio"
+                // name="exampleRadios"
+                // id="NATIONAL_ID"
+                // value="NATIONAL_ID"
+                //defaultChecked
               />
               <p className="text-left">&nbsp;Personal ID &nbsp;</p>
               <input
-                type="radio"
-                name="exampleRadios"
-                id="PassportType"
-                value="PassportType"
+                        type="radio"
+                        id="PASSPORT_NO"
+                        name="identity_type"
+                        value="PASSPORT_NO"
+                        checked={selectedOption === 'PASSPORT_NO'}
+                        onChange={handleOptionChange}
+                // type="radio"
+                // name="exampleRadios"
+                // id="PASSPORT_NO"
+                // value="PASSPORT_NO"
+                
               />
               <p className="text-left">&nbsp;Passport &nbsp;</p>
+              <input
+                        type="radio"
+                        id="HOSPITAL_ID"
+                        name="identity_type"
+                        value="HOSPITAL_ID"
+                        checked={selectedOption === 'HOSPITAL_ID'}
+                        onChange={handleOptionChange}
+                // type="radio"
+                // name="exampleRadios"
+                // id="HOSPITAL_ID"
+                // value="HOSPITAL_ID"
+              />
+              <p className="text-left">&nbsp;HN &nbsp;</p>
             </div>
-            <input
-              type="text"
-              name="PID"
-              // value={post ? post.PatientInfo.HN : ""}
-              className="input input-accent w-full rounded-full px-3 py-2"
-              // required
-            />
+            {/* <input
+                      type="text"
+                      value={pidValue}
+                      onChange={(e) => setPidValue(e.target.value)}
+              // type="text"
+               name="PID"
+              // id="PID"
+             className="input input-accent w-full rounded-full px-3 py-2"
+             
+            /> */}
+                    <TextField
+          id="standard-multiline-flexible"
+          label="Personal ID / Passport / HN"
+          multiline
+          maxRows={4}
+          variant="standard"
+          className="w-full"
+          name="PID"
+          type="text"
+                      value={pidValue}
+                      onChange={(e) => setPidValue(e.target.value)}
+        />
+        </div>
+        <div className="rounded-md pt-6">
+            <div className="w-full">
+              <div className="rounded-md">
+                <button className="btn btn-neutral text-base-100 text-lg rounded-full px-3 py-2"
+
+                type="submit"
+                >
+                  <FaSearch /> Search
+                </button>
+                <button
+                  className="btn btn-success text-base-100 text-lg rounded-full px-3 py-2 ml-2"
+                  onClick={createpatient}
+
+                  
+                >
+                  <FaUserPlus /> Create Patient
+                </button>
+                {/* <button
+                className="btn btn-success text-base-100 text-lg rounded-full px-3 py-2 ml-2"
+                onClick={showsearch}
+         
+                ><FaSearch /> เพิ่มเติม</button> */}
+              </div>
+              <div className="rounded-md"></div>
+            </div>
           </div>
+          <div className="px-2 rounded-md"></div>
+        </div>
+        <details className="collapse -mt-3">
+          <summary className="collapse-title font-medium">เพิ่มเติม</summary>
+          <div className="collapse-content"> 
+
+          <div className="grid gap-1 sm:grid-cols-3 w-full">
+
+          <div className="rounded-md">
+        <div className="grid gap-1 sm:grid-cols-2 w-full">
           <div className="px-2 rounded-md">
-            <p className="text-left">HN</p>
-            <input
-              type="text"
-              name="HN"
-              // value={post ? post.PatientInfo.HN : ""}
+            {/* <input
+               type="date"
+              // name="DateFrom"
+              // id="DateFrom"
+               className="input input-accent w-full rounded-full px-3 py-2"
+
+              value={fromValue}
+              onChange={(e) => setFromValue(e.target.value)}
+            /> */}
+
+<LocalizationProvider dateAdapter={AdapterDayjs}>
+
+<DatePicker
+            label="Date From"
+            value={fromValue}
+            onChange={(newDate) => setFromValue(newDate)}
+           
+          />
+      
+    </LocalizationProvider>
+
+            </div>
+            <div className="px-2 rounded-md">
+            {/* <input
+              type="date"
+              name="DateTo"
+              id="DateTo"
               className="input input-accent w-full rounded-full px-3 py-2"
-              // required
-            />
+
+              value={toValue}
+              onChange={(e) => setToValue(e.target.value)}
+       
+            /> */}
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+
+<DatePicker
+            label="Date To"
+            value={toValue}
+            onChange={(newDate) => setToValue(newDate)}
+           
+          />
+      
+    </LocalizationProvider>
+             </div>
+            </div>
+
+
+            
           </div>
+          <div className="grid gap-1 sm:grid-cols-2 w-full">
           <div className="px-2 rounded-md">
-            <p className="text-left">Claim Status</p>
+          <p className="text-left">Claim Status</p>
             <select
               className="select input-accent w-full rounded-full px-3 py-2"
               name="ClaimStatusCode"
               id="ClaimStatusCode"
-              //required
+              
+              value={statusValue}
+              onChange={(e) => setStatusValue(e.target.value)}
             >
               <option></option>
               {claimStatus
@@ -320,26 +515,27 @@ export default function SelectPatient() {
                 : ""}
             </select>
           </div>
-          <div className="rounded-md pt-6">
-            <div className="w-full">
-              <div className="rounded-md">
-                <button className="btn btn-neutral text-base-100 text-lg rounded-full px-3 py-2">
-                  <FaSearch /> Search
-                </button>
-                <button
-                  className="btn btn-success text-base-100 text-lg rounded-full px-3 py-2 ml-2"
-                  onClick={() =>
-                    document.getElementById("my_modal_3").showModal()
-                  }
-                >
-                  <FaUserPlus /> Create Patient
-                </button>
-              </div>
-              <div className="rounded-md"></div>
-            </div>
+          <div className="px-2 rounded-md">
           </div>
         </div>
-      </form>
+          </div>
+
+
+          </div>
+        </details>
+       
+        {/* <div className="grid gap-1 sm:grid-cols-3 w-full"> */}
+
+          <div className="px-2 rounded-md">
+
+            
+      {/* </div> */}
+
+
+       
+
+      </div>
+    </form>
       {/* </div> */}
       <div className="justify-center border-solid w-full m-auto border-4 rounded-lg p-4 mt-6">
         <div className="overflow-x-auto">
@@ -358,10 +554,10 @@ export default function SelectPatient() {
             <tbody>
               {post
                 ? post.HTTPStatus.statusCode < 400
-                  ? post.Result.PatientInfo.map((patientinfo, index) => (
+                  ? (post.Result.PatientInfo.map((patientinfo, index) => (
                       <>
                         <tr className="hover" key={index}>
-                          <td className="text-center">{index + 1}</td>
+                          <td className="text-center">{index+1}</td>
                           <td>{patientinfo.PID}</td>
                           <td>{patientinfo.PassportNumber}</td>
                           <td className="text-center">{patientinfo.HN}</td>
@@ -391,9 +587,21 @@ export default function SelectPatient() {
                           </td>
                         </tr>
                       </>
-                    ))
-                  : ""
-                : ""}
+                    )
+                ))
+                : (
+                  <>
+                  <tr>
+                    <td></td>
+                  </tr>
+                  </>
+                ): (
+                  <>
+                  <tr>
+                    <td></td>
+                  </tr>
+                  </>
+                )}
             </tbody>
           </table>
         </div>
@@ -540,7 +748,7 @@ export default function SelectPatient() {
                       name="PID"
                       className="input input-bordered w-full pr-16"
                       onChange={handleChange}
-                      value={inputValue}
+                      value={input}
                       required
                     />
                     <button className="btn btn-primary absolute top-0 right-0 rounded-l-none">
