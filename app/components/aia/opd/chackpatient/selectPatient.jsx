@@ -14,7 +14,10 @@ import dayjs from 'dayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
 
 
 
@@ -225,27 +228,50 @@ export default function SelectPatient() {
   const [toValue, setToValue] = useState(null);
   const [statusValue, setStatusValue] = useState("");
 
+
   const handleOptionChange = (e) => {
     setSelectedOption(e.target.value);
   };
 
-  // const handleInputChange = (e) => {
-  //   setInputValue(e.target.value);
-  // };
+  const Status = (event) => {
+    setStatusValue(event.target.value);
+  }
 
   const handleSubmit = (e) => {
     e.preventDefault();
     //console.log('ค้นหาด้วย:', selectedOption, 'ค่า:', pidValue);
-    
-    // if (!fromValue){
-    //   console.log("!")
-    // }else{
-    //   setFromValue(fromValue.format('YYYY/MM/DD'))
-    // }
-    // const result = strValue.substring(11, 0)
-// console.log(event.target.exampleRadios.value)
-//     if (event.target.exampleRadios.value === "NATIONAL_ID") {
+
+
+
+    if (selectedOption === "NATIONAL_ID") {
 // console.log("PID")
+      const PatientInfo = {
+        InsurerCode: InsuranceCode,
+        IdType: selectedOption,
+        PID: pidValue,
+        HN: "",
+        PassportNumber: "",
+        datefrom: "",
+        dateto: "",
+        ClaimStatusCode: statusValue,
+      };
+
+      axios
+      .post(
+        process.env.NEXT_PUBLIC_URL_PD + "v1/aia-patient-info/PatientSearch",
+        {
+          PatientInfo,
+        }
+      )
+      .then(function (response) {
+        console.log(response.data);
+        setPost(response.data);
+      })
+      .catch(function (error) {
+        console.log(error.data);
+      });
+    } else if (selectedOption === "HOSPITAL_ID") {
+      //console.log("HN")
       const PatientInfo = {
         InsurerCode: InsuranceCode,
         IdType: selectedOption,
@@ -253,7 +279,7 @@ export default function SelectPatient() {
         HN: pidValue,
         PassportNumber: "",
         datefrom: "",
-        dateto: toValue,
+        dateto: "",
         ClaimStatusCode: statusValue,
       };
       axios
@@ -270,64 +296,37 @@ export default function SelectPatient() {
       .catch(function (error) {
         console.log(error.data);
       });
-//     } else if (event.target.exampleRadios.value === "HOSPITAL_ID") {
-//       console.log("HN")
-//       const PatientInfo = {
-//         InsurerCode: InsuranceCode,
-//         IdType: event.target.exampleRadios.value,
-//         PID: "",
-//         HN: event.target.PID.value,
-//         PassportNumber: "",
-//         datefrom: event.target.DateFrom.value,
-//         dateto: event.target.DateTo.value,
-//         ClaimStatusCode: event.target.ClaimStatusCode.value,
-//       };
-//       axios
-//       .post(
-//         process.env.NEXT_PUBLIC_URL_PD + "v1/aia-patient-info/PatientSearch",
-//         {
-//           PatientInfo,
-//         }
-//       )
-//       .then(function (response) {
-//         console.log(response.data);
-//         setPost(response.data);
-//       })
-//       .catch(function (error) {
-//         console.log(error.data);
-//       });
-//     } else if (event.target.exampleRadios.value === "PASSPORT_NO") {
-//       console.log("PASSPORT_NO");
-//       const PatientInfo = {
-//         InsurerCode: InsuranceCode,
-//         IdType: event.target.exampleRadios.value,
-//         PID: "",
-//         HN: "",
-//         PassportNumber: event.target.PID.value,
-//         datefrom: event.target.DateFrom.value,
-//         dateto: event.target.DateTo.value,
-//         ClaimStatusCode: event.target.ClaimStatusCode.value,
-//       };
-//       axios
-//       .post(
-//         process.env.NEXT_PUBLIC_URL_PD + "v1/aia-patient-info/PatientSearch",
-//         {
-//           PatientInfo,
-//         }
-//       )
-//       .then(function (response) {
-//         console.log(response.data);
-//         setPost(response.data);
-//       })
-//       .catch(function (error) {
-//         console.log(error.data);
-//       });
-//   };
+    } else if (selectedOption === "PASSPORT_NO") {
+      //console.log("PASSPORT_NO");
+      const PatientInfo = {
+        InsurerCode: InsuranceCode,
+        IdType: selectedOption,
+        PID: "",
+        HN: "",
+        PassportNumber: pidValue,
+        datefrom: "",
+        dateto: "",
+        ClaimStatusCode: statusValue,
+      };
+      axios
+      .post(
+        process.env.NEXT_PUBLIC_URL_PD + "v1/aia-patient-info/PatientSearch",
+        {
+          PatientInfo,
+        }
+      )
+      .then(function (response) {
+        console.log(response.data);
+        setPost(response.data);
+      })
+      .catch(function (error) {
+        console.log(error.data);
+      });
+  };
 };
 
   const handleChange = (e) => {
     const value = e.target.value;
-    // ตรวจสอบว่าค่าที่ใส่เป็นตัวเลขหรือตัวอักษรภาษาอังกฤษเท่านั้น
     if (/^[a-zA-Z0-9]*$/.test(value)) {
       setInput(value);
     }
@@ -480,7 +479,7 @@ export default function SelectPatient() {
               onChange={(e) => setToValue(e.target.value)}
        
             /> */}
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
+           <LocalizationProvider dateAdapter={AdapterDayjs}>
 
 <DatePicker
             label="Date To"
@@ -489,7 +488,7 @@ export default function SelectPatient() {
            
           />
       
-    </LocalizationProvider>
+    </LocalizationProvider> 
              </div>
             </div>
 
@@ -498,8 +497,7 @@ export default function SelectPatient() {
           </div>
           <div className="grid gap-1 sm:grid-cols-2 w-full">
           <div className="px-2 rounded-md">
-          <p className="text-left">Claim Status</p>
-            <select
+            {/* <select
               className="select input-accent w-full rounded-full px-3 py-2"
               name="ClaimStatusCode"
               id="ClaimStatusCode"
@@ -513,7 +511,24 @@ export default function SelectPatient() {
                     <option key={index}>{status.StatusDescTH}</option>
                   ))
                 : ""}
-            </select>
+            </select> */}
+     <FormControl fullWidth>
+        <InputLabel id="demo-simple-select-label">Claim Status</InputLabel>
+        <Select
+          labelId="demo-simple-select-label"
+          id="demo-simple-select"
+          value={statusValue}
+          label="Age"
+          onChange={Status}
+        >
+          {claimStatus
+                ? claimStatus.map((status, index) => (
+                    <MenuItem key={index} value={status.StatusDescTH}>{status.StatusDescTH}</MenuItem>
+                  ))
+                : ""}
+
+        </Select>
+      </FormControl>
           </div>
           <div className="px-2 rounded-md">
           </div>

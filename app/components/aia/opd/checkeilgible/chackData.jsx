@@ -19,6 +19,32 @@ export default function chackData() {
   const [result, setResult] = useState();
   const [detailVN, setDetailVN] = useState();
 
+
+
+  const { DataTran } = useSelector((state) => ({ ...state }));
+  const dispatch = useDispatch();
+
+  // const router = useRouter();
+  const confirmButton = () => {
+    dispatch(
+      save({
+        value: "มีข้อมูล",
+        Data: {
+          RefId: result.Data.RefId,
+          TransactionNo: result.Data.TransactionNo,
+          VN: detailVN,
+          InsuranceCode: InsuranceCode,
+        },
+      })
+    );
+
+    // setTimeout(() => {
+    //   router.push("/aia"); // เปลี่ยน '/new-page' เป็นหน้าที่คุณต้องการเปลี่ยนไป
+    // }, 5000); // 5000 มิลลิวินาที = 5 วินาที
+  };
+
+
+
   useEffect(() => {
     const getIllnessSurgery = async () => {
       const response = await fetch(
@@ -112,27 +138,7 @@ export default function chackData() {
 
     document.getElementById("my_modal_3").showModal();
   };
-  const { DataTran } = useSelector((state) => ({ ...state }));
-  const dispatch = useDispatch();
 
-  // const router = useRouter();
-  const confirmButton = () => {
-    dispatch(
-      save({
-        value: "มีข้อมูล",
-        Data: {
-          RefId: result.Data.RefId,
-          TransactionNo: result.Data.TransactionNo,
-          VN: detailVN,
-          InsuranceCode: InsuranceCode,
-        },
-      })
-    );
-
-    // setTimeout(() => {
-    //   router.push("/aia"); // เปลี่ยน '/new-page' เป็นหน้าที่คุณต้องการเปลี่ยนไป
-    // }, 5000); // 5000 มิลลิวินาที = 5 วินาที
-  };
 
   return (
     <>
@@ -188,10 +194,7 @@ export default function chackData() {
         </div>
       </form>
 
-      {post ? (
-        <>
-          {post.Result.Code === "S" ? (
-            <>
+
               <form onSubmit={check}>
                 {/* <form> */}
                 <div className="justify-center border-solid w-5/5 m-auto border-4 rounded-lg p-4">
@@ -221,6 +224,10 @@ export default function chackData() {
                   <h1 className="font-black text-accent text-3xl ">
                     Visit Details
                   </h1>
+                  {post ? (
+        <>
+          {post.Result.Code === "S" ? (
+            <>
                   <div className="overflow-x-auto">
                     <table className="table">
                       <thead>

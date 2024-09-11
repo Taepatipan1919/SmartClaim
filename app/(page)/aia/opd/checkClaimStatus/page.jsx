@@ -1,24 +1,36 @@
 "use client";
 import { useState, createContext } from "react";
 import { useSelector } from "react-redux";
-export default function Home() {
-  const { DataTran } = useSelector((state) => ({ ...state }));
+import ChackData from "../../../../components/aia/opd/checkeilgible/chackData";
+import SelectPatient from "../../../../components/aia/opd/chackpatient/selectPatient";
 
-  const handlebutton = () => {
-    dispatch(save(initialState));
-    //console.log("sad")
-  };
+export default function Home() {
+  const DataTran  = useSelector((state) => ({ ...state }));
+console.log(DataTran)
+
 
   return (
     <>
-      value : {DataTran.value}
+    {DataTran.Patient.value === "มีรายชื่อ" ? (
+    <>
+    <ChackData />
+    value : {DataTran.DataTran.value}
       <hr />
-      VN : {DataTran.Data.VN}
+      VN : {DataTran.DataTran.Data.VN}
       <br />
-      RefId : {DataTran.Data.RefId}
+      RefId : {DataTran.DataTran.Data.RefId}
       <br />
-      TransactionNo : {DataTran.Data.TransactionNo}
+      TransactionNo : {DataTran.DataTran.Data.TransactionNo}
       <br />
+    </>) : 
+    (
+    <>
+    <SelectPatient />
+    </>)
+    }
+
+    
+
     </>
   );
 }
