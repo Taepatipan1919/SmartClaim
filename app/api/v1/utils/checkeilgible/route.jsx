@@ -1,8 +1,9 @@
-export async function GET(request, { params }) {
-  // if (params.id === "1103900068701" && params.date === "2024-08-24") {
-  // if (params.id === "66021995") {
-  console.log("ดึงข้อมูลเช็คสำเร็จ");
-  return Response.json({
+import { NextRequest, NextResponse } from "next/server";
+
+export async function POST(request) {
+    const date = await request.json();
+    console.log("ดึงข้อมูลเช็คสำเร็จ");
+    return NextResponse.json({
     "HTTPStatus": {
         "statusCode": 200,
         "message": "success",
@@ -60,14 +61,4 @@ export async function GET(request, { params }) {
         ]
     }
 });
-  // } else {
-  //   console.log("ดึงข้อมูลเช็คไม่สำเร็จ");
-  //   return Response.json({
-  //     Result: {
-  //       Code: "E",
-  //       Message: "Error",
-  //       MessageTh: "ทำรายการไม่สำเร็จ",
-  //     },
-  //   });
-  // }
 }

@@ -29,7 +29,7 @@ import { useSelector } from "react-redux";
 
 
 export default function SelectPatient() {
-  const InsuranceCode = 13;
+  const InsurerCode = 13;
   const [claimStatus, setClaimStatus] = useState();
   const [post, setPost] = useState("");
   const [create, setCreate] = useState("");
@@ -37,7 +37,12 @@ export default function SelectPatient() {
   const [input, setInput] = useState("");
   const [ patientFindforUpdate , setPatientFindforUpdate ]= useState("");
   const router = useRouter();
-
+  const [selectedOption, setSelectedOption] = useState("NATIONAL_ID");
+  const [pidValue, setPidValue] = useState("");
+  const [fromValue, setFromValue] = useState(null);
+  const [toValue, setToValue] = useState(null);
+  const [statusValue, setStatusValue] = useState("");
+  const [massError, setMassError] = useState("");
 ////////////////Create Redux Patient /////////////////////////
 const { Patient } = useSelector((state) => ({ ...state }));
 // console.log(Patient)
@@ -47,7 +52,8 @@ const PatientB = (patient) => {
     value: "มีรายชื่อ",
     Data: 
   {
-    "InsurerCode": InsuranceCode,
+    "IdType": selectedOption,
+    "InsurerCode": InsurerCode,
     "DateOfBirth": patient.DateOfBirth,
     "Gender": patient.Gender,
     "GivenNameEN": patient.GivenNameEN,
@@ -55,6 +61,7 @@ const PatientB = (patient) => {
     "HN": patient.HN,
     "MobilePhone": patient.MobilePhone,
     "PID": patient.PID,
+    "PassportNumber": patient.PassportNumber,
     "SurnameEN": patient.SurnameEN,
     "SurnameTH": patient.SurnameTH,
     "TitleEN": patient.TitleEN,
@@ -85,7 +92,7 @@ router.push('/aia/opd/checkeilgible');
 
     if (event.target.exampleRadios.value === "NATIONAL_ID") {
       const PatientInfo = {
-        InsurerCode: InsuranceCode,
+        InsurerCode: InsurerCode,
         IdType: event.target.exampleRadios.value,
         PID: event.target.PID.value,
         HN: "",
@@ -108,7 +115,7 @@ router.push('/aia/opd/checkeilgible');
         });
     } else if (event.target.exampleRadios.value === "HOSPITAL_ID") {
       const PatientInfo = {
-        InsurerCode: InsuranceCode,
+        InsurerCode: InsurerCode,
         IdType: event.target.exampleRadios.value,
         PID: "",
         HN: event.target.PID.value,
@@ -133,7 +140,7 @@ router.push('/aia/opd/checkeilgible');
     } else if (event.target.exampleRadios.value === "PASSPORT_NO") {
       //console.log("PASSPORT_NO");
       const PatientInfo = {
-        InsurerCode: InsuranceCode,
+        InsurerCode: InsurerCode,
         IdType: event.target.exampleRadios.value,
         PID: "",
         HN: "",
@@ -163,7 +170,7 @@ router.push('/aia/opd/checkeilgible');
         process.env.NEXT_PUBLIC_URL_PD + "v1/aia-patient-info/CreatePatient",
         {
           PatientInfo: {
-            InsurerCode: InsuranceCode, // ควรเป็น integer ไม่ใช่ string
+            InsurerCode: InsurerCode, // ควรเป็น integer ไม่ใช่ string
             PatientID: create.Result.PatientInfo.PatientID, // ควรเป็น integer ไม่ใช่ string
             PID: create.Result.PatientInfo.PID,
             PassportNumber: create.Result.PatientInfo.PassportNumber,
@@ -259,12 +266,7 @@ router.push('/aia/opd/checkeilgible');
   }
 
 
-  const [selectedOption, setSelectedOption] = useState("NATIONAL_ID");
-  const [pidValue, setPidValue] = useState("");
-  const [fromValue, setFromValue] = useState(null);
-  const [toValue, setToValue] = useState(null);
-  const [statusValue, setStatusValue] = useState("");
-  const [massError, setMassError] = useState("");
+
 
   const handleOptionChange = (e) => {
     setSelectedOption(e.target.value);
@@ -286,7 +288,7 @@ router.push('/aia/opd/checkeilgible');
     //   if (selectedOption === "NATIONAL_ID") {
     //     // console.log("PID")
     //           const PatientInfo = {
-    //             InsurerCode: InsuranceCode,
+    //             InsurerCode: InsurerCode,
     //             IdType: selectedOption,
     //             PID: pidValue,
     //             HN: "",
@@ -313,7 +315,7 @@ router.push('/aia/opd/checkeilgible');
     //         } else if (selectedOption === "HOSPITAL_ID") {
     //           //console.log("HN")
     //           const PatientInfo = {
-    //             InsurerCode: InsuranceCode,
+    //             InsurerCode: InsurerCode,
     //             IdType: selectedOption,
     //             PID: "",
     //             HN: pidValue,
@@ -339,7 +341,7 @@ router.push('/aia/opd/checkeilgible');
     //         } else if (selectedOption === "PASSPORT_NO") {
     //           //console.log("PASSPORT_NO");
     //           const PatientInfo = {
-    //             InsurerCode: InsuranceCode,
+    //             InsurerCode: InsurerCode,
     //             IdType: selectedOption,
     //             PID: "",
     //             HN: "",
@@ -369,7 +371,7 @@ router.push('/aia/opd/checkeilgible');
       if (selectedOption === "NATIONAL_ID") {
         // console.log("PID")
               const PatientInfo = {
-                InsurerCode: InsuranceCode,
+                InsurerCode: InsurerCode,
                 IdType: selectedOption,
                 PID: pidValue,
                 HN: "",
@@ -396,7 +398,7 @@ router.push('/aia/opd/checkeilgible');
             } else if (selectedOption === "HOSPITAL_ID") {
               //console.log("HN")
               const PatientInfo = {
-                InsurerCode: InsuranceCode,
+                InsurerCode: InsurerCode,
                 IdType: selectedOption,
                 PID: "",
                 HN: pidValue,
@@ -422,7 +424,7 @@ router.push('/aia/opd/checkeilgible');
             } else if (selectedOption === "PASSPORT_NO") {
               //console.log("PASSPORT_NO");
               const PatientInfo = {
-                InsurerCode: InsuranceCode,
+                InsurerCode: InsurerCode,
                 IdType: selectedOption,
                 PID: "",
                 HN: "",
@@ -463,7 +465,7 @@ router.push('/aia/opd/checkeilgible');
     e.preventDefault();
       document.getElementById("my_modal_3").showModal()
 }
-//console.log(post)
+console.log(post)
   return (
     <>
       {/* <div className="justify-center border-solid w-screen m-auto border-4 rounded-lg p-4"> */}
