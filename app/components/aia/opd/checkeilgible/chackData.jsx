@@ -1,13 +1,20 @@
 "use client";
-import React from "react";
 import axios from "axios";
-import { useState, useEffect, createContext } from "react";
+import { React, useState, useEffect, createContext } from "react";
 import Link from "next/link";
 import { useDispatch } from "react-redux";
-import { save } from "../../../../store/counterSlice";
 import { useSelector } from "react-redux";
-// import { useRouter } from "next/router";
+import { save } from "../../../../store/counterSlice";
+import { FaSearch } from "react-icons/fa";
 
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
 export default function chackData() {
   const InsuranceCode = 13;
   const [post, setPost] = useState("");
@@ -18,12 +25,12 @@ export default function chackData() {
   const [showForm, setShowForm] = useState(false);
   const [result, setResult] = useState();
   const [detailVN, setDetailVN] = useState();
+  const [fromValue, setFromValue] = useState(null);
+  const [statusValue, setStatusValue] = useState("");
 
-
-
-  const { DataTran } = useSelector((state) => ({ ...state }));
+  const { Patient } = useSelector((state) => ({ ...state }));
   const dispatch = useDispatch();
-
+  //console.log(Patient)
   // const router = useRouter();
   const confirmButton = () => {
     dispatch(
@@ -42,7 +49,9 @@ export default function chackData() {
     //   router.push("/aia"); // เปลี่ยน '/new-page' เป็นหน้าที่คุณต้องการเปลี่ยนไป
     // }, 5000); // 5000 มิลลิวินาที = 5 วินาที
   };
-
+  const Status = (event) => {
+    setStatusValue(event.target.value);
+  }
 
 
   useEffect(() => {
@@ -142,12 +151,41 @@ export default function chackData() {
 
   return (
     <>
-      <form onSubmit={handleSubmit}>
+
+                {/* <form> */}
+          <div className="justify-center border-solid w-5/5 m-auto border-4 rounded-lg p-4">
+                  <h1 className="font-black text-accent text-3xl ">
+                    Patient Details
+                  </h1>
+                  <div className="flex">
+                    <div className="w-1/2">ชื่อ - นามสกุล</div>
+                    <div className="w-1/2">
+                      {" "}
+                      {Patient.Data.TitleTH} {Patient.Data.GivenNameTH}{" "}
+                      {Patient.Data.SurnameTH}
+                    </div>
+                  </div>
+                  <div className="flex">
+                    <div className="w-1/2">วัน / เดือน / ปี เกิด(ค.ศ.)</div>
+                    <div className="w-1/2">{Patient.Data.DateOfBirth}</div>
+                  </div>
+                  <div className="flex">
+                    <div className="w-1/2">เพศ</div>
+                    <div className="w-1/2">{Patient.Data.Gender}</div>
+                  </div>
+                  <div className="flex">
+                    <div className="w-1/2">รหัสผู้ป่วย</div>
+                    <div className="w-1/2">{Patient.Data.HN}</div>
+                  </div>
+                  <h1 className="font-black text-accent text-3xl ">
+                    Visit Details
+                  </h1>
+                  <form onSubmit={handleSubmit}>
         <div className="flex flex-row justify-center w-1/2 m-auto ">
           <div className="px-2">
             {" "}
             <div className="">
-              <p className="text-left">
+              {/* <p className="text-left">
                 วันที่เข้ารับการรักษา&nbsp;
                 <span className="text-secondary">*</span>&nbsp;
               </p>
@@ -157,13 +195,24 @@ export default function chackData() {
                 id="date"
                 className="input input-bordered input-info"
                 required
-              />
+              /> */}
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+
+<DatePicker
+            label="วันที่เข้ารับการรักษา"
+            value={fromValue}
+            onChange={(newDate) => setFromValue(newDate)}
+            format="YYYY-MM-DD"
+            className="input-info"
+            required
+          />
+      
+    </LocalizationProvider>
             </div>
           </div>
           <div className="px-2">
-            {" "}
             <div className="">
-              <p className="text-left">
+              {/* <p className="text-left">
                 ประเภทการเข้ารักษา&nbsp;
                 <span className="text-secondary">*</span>&nbsp;
               </p>
@@ -181,56 +230,44 @@ export default function chackData() {
                       </option>
                     ))
                   : ""}
-              </select>
+              </select> */}
+                   <FormControl fullWidth>
+        <InputLabel id="demo-simple-select-label">ประเภทการเข้ารักษา</InputLabel>
+        <Select
+          labelId="demo-simple-select-label"
+          id="demo-simple-select"
+          value={statusValue}
+          label="Type"
+          onChange={Status}
+          className="w-52 max-w-xs"
+        >
+          {serviceSetting
+                ? serviceSetting.Data.map((Service, index) => (
+                    <MenuItem key={index} value={Service.Code}>{Service.Code} - {Service.Desc}</MenuItem>
+                  ))
+                : ""}
+
+        </Select>
+      </FormControl>
             </div>
           </div>
           <div className="">
             <div className="p-6">
-              <button type="submit" className="btn btn-neutral text-base-100">
-                <div className="text-xl">Search</div>
-              </button>
+            <button className="btn btn-primary text-base-100 text-lg rounded-full px-3 py-2"
+type="submit"
+>
+  <FaSearch /> Search
+</button>
             </div>
           </div>
         </div>
       </form>
-
-
-              <form onSubmit={check}>
-                {/* <form> */}
-                <div className="justify-center border-solid w-5/5 m-auto border-4 rounded-lg p-4">
-                  <h1 className="font-black text-accent text-3xl ">
-                    Patient Details
-                  </h1>
-                  <div className="flex">
-                    <div className="w-1/2">ชื่อ - นามสกุล</div>
-                    <div className="w-1/2">
-                      {" "}
-                      {post.PatientInfo.Title} {post.PatientInfo.FirstName}{" "}
-                      {post.PatientInfo.LastName}
-                    </div>
-                  </div>
-                  <div className="flex">
-                    <div className="w-1/2">วัน / เดือน / ปี เกิด(ค.ศ.)</div>
-                    <div className="w-1/2">{post.PatientInfo.DOB}</div>
-                  </div>
-                  <div className="flex">
-                    <div className="w-1/2">เพศ</div>
-                    <div className="w-1/2">{post.PatientInfo.Gender}</div>
-                  </div>
-                  <div className="flex">
-                    <div className="w-1/2">รหัสผู้ป่วย</div>
-                    <div className="w-1/2">{post.PatientInfo.HN}</div>
-                  </div>
-                  <h1 className="font-black text-accent text-3xl ">
-                    Visit Details
-                  </h1>
-                  {post ? (
-        <>
-          {post.Result.Code === "S" ? (
+                  {post ? post.Result.Code === "S" ? (  
             <>
+              <form onSubmit={check}>
                   <div className="overflow-x-auto">
                     <table className="table">
-                      <thead>
+                      <thead className="bg-info text-base-100 text-center text-lg">
                         <tr>
                           <th></th>
                           <th>VN</th>
@@ -344,7 +381,7 @@ export default function chackData() {
                   </div>
 
                   <button
-                    className="btn btn-accent w-full hover:text-white text-xl"
+                    className="btn btn-accent hover:text-white text-xl"
                     type="submit"
                     // onClick={() =>
 
@@ -353,9 +390,9 @@ export default function chackData() {
                   >
                     Check Eligible
                   </button>
-                </div>
-              </form>
-            </>
+                
+                </form>
+                </>
           ) : (
             <>
               <div
@@ -364,7 +401,7 @@ export default function chackData() {
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6 shrink-0 stroke-current"
+                  className="h-6 w-6 shrink-0 stroke-current text-base-100"
                   fill="none"
                   viewBox="0 0 24 24"
                 >
@@ -375,14 +412,16 @@ export default function chackData() {
                     d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
                   />
                 </svg>
-                <span>ไม่พบข้อมูล กรุณาลองใหม่อีกครั้ง</span>
-              </div>
+                <span className="text-base-100">ไม่พบข้อมูล กรุณาลองใหม่อีกครั้ง</span>
+        </div>
             </>
-          )}
-        </>
+          ) : ""}
+          </div>
+
+       {/* </>
       ) : (
         <></>
-      )}
+      )}  */}
 
       {/* {showForm && ( */}
       <dialog id="my_modal_3" className="modal text-xl	">
@@ -392,7 +431,7 @@ export default function chackData() {
               ✕
             </button>
 
-            <h1 className="text-neutral text-3xl ">รายการสิทธิ์ประกัน</h1>
+            <h1 className="text-accent text-3xl ">รายการสิทธิ์ประกัน</h1>
             <hr />
             {result
               ? result.Data.CoverageList.map((e, index) => (
@@ -468,7 +507,7 @@ export default function chackData() {
                                     href={`/aia/opd/opdDischarge`}
                                   >  */}
               <button
-                className="btn btn-neutral text-base-100"
+                className="btn btn-success text-base-100"
                 onClick={confirmButton}
               >
                 ยืนยัน

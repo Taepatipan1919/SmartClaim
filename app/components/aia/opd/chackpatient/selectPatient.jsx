@@ -8,18 +8,24 @@ import { MdEditDocument } from "react-icons/md";
 import Link from "next/link";
 import axios from "axios";
 import TextField from '@mui/material/TextField';
+import { useRouter } from 'next/navigation';
+
+
 
 
 import dayjs from 'dayjs';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 
-
+import { useDispatch } from "react-redux";
+import { save2 } from "../../../../store/patientSlice";
+import { useSelector } from "react-redux";
 
 
 export default function SelectPatient() {
@@ -30,6 +36,37 @@ export default function SelectPatient() {
   const [showFormCreate, setShowFormCreate] = useState("");
   const [input, setInput] = useState("");
   const [ patientFindforUpdate , setPatientFindforUpdate ]= useState("");
+  const router = useRouter();
+
+////////////////Create Redux Patient /////////////////////////
+const { Patient } = useSelector((state) => ({ ...state }));
+// console.log(Patient)
+const dispatch = useDispatch();
+const PatientB = (patient) => {
+  dispatch(save2({
+    value: "มีรายชื่อ",
+    Data: 
+  {
+    "InsurerCode": InsuranceCode,
+    "DateOfBirth": patient.DateOfBirth,
+    "Gender": patient.Gender,
+    "GivenNameEN": patient.GivenNameEN,
+    "GivenNameTH": patient.GivenNameTH,
+    "HN": patient.HN,
+    "MobilePhone": patient.MobilePhone,
+    "PID": patient.PID,
+    "SurnameEN": patient.SurnameEN,
+    "SurnameTH": patient.SurnameTH,
+    "TitleEN": patient.TitleEN,
+    "TitleTH": patient.TitleTH,
+  },
+}));
+
+router.push('/aia/opd/checkeilgible');
+};
+/////////////////////////////////////////
+
+
 
   useEffect(() => {
     const getClaimStatus = async () => {
@@ -227,7 +264,7 @@ export default function SelectPatient() {
   const [fromValue, setFromValue] = useState(null);
   const [toValue, setToValue] = useState(null);
   const [statusValue, setStatusValue] = useState("");
-
+  const [massError, setMassError] = useState("");
 
   const handleOptionChange = (e) => {
     setSelectedOption(e.target.value);
@@ -241,88 +278,179 @@ export default function SelectPatient() {
     e.preventDefault();
     //console.log('ค้นหาด้วย:', selectedOption, 'ค่า:', pidValue);
 
+    // if(fromValue && toValue){
+    //   const DatefromValue = dayjs(fromValue.$d).format('YYYY-MM-DD');
+    //   //console.log(DatefromValue);
+    //   const DatetoValue = dayjs(toValue.$d).format('YYYY-MM-DD');
+    //   //console.log(DatetoValue);
+    //   if (selectedOption === "NATIONAL_ID") {
+    //     // console.log("PID")
+    //           const PatientInfo = {
+    //             InsurerCode: InsuranceCode,
+    //             IdType: selectedOption,
+    //             PID: pidValue,
+    //             HN: "",
+    //             PassportNumber: "",
+    //             datefrom: DatefromValue,
+    //             dateto: DatetoValue,
+    //             ClaimStatusCode: statusValue,
+    //           };
+        
+    //           axios
+    //           .post(
+    //             process.env.NEXT_PUBLIC_URL_PD + "v1/aia-patient-info/PatientSearch",
+    //             {
+    //               PatientInfo,
+    //             }
+    //           )
+    //           .then(function (response) {
+    //             //console.log(response.data);
+    //             setPost(response.data);
+    //           })
+    //           .catch(function (error) {
+    //             console.log(error.data);
+    //           });
+    //         } else if (selectedOption === "HOSPITAL_ID") {
+    //           //console.log("HN")
+    //           const PatientInfo = {
+    //             InsurerCode: InsuranceCode,
+    //             IdType: selectedOption,
+    //             PID: "",
+    //             HN: pidValue,
+    //             PassportNumber: "",
+    //             datefrom: DatefromValue,
+    //             dateto: DatetoValue,
+    //             ClaimStatusCode: statusValue,
+    //           };
+    //           axios
+    //           .post(
+    //             process.env.NEXT_PUBLIC_URL_PD + "v1/aia-patient-info/PatientSearch",
+    //             {
+    //               PatientInfo,
+    //             }
+    //           )
+    //           .then(function (response) {
+    //             console.log(response.data);
+    //             setPost(response.data);
+    //           })
+    //           .catch(function (error) {
+    //             console.log(error.data);
+    //           });
+    //         } else if (selectedOption === "PASSPORT_NO") {
+    //           //console.log("PASSPORT_NO");
+    //           const PatientInfo = {
+    //             InsurerCode: InsuranceCode,
+    //             IdType: selectedOption,
+    //             PID: "",
+    //             HN: "",
+    //             PassportNumber: pidValue,
+    //             datefrom: DatefromValue,
+    //             dateto: DatetoValue,
+    //             ClaimStatusCode: statusValue,
+    //           };
+    //           axios
+    //           .post(
+    //             process.env.NEXT_PUBLIC_URL_PD + "v1/aia-patient-info/PatientSearch",
+    //             {
+    //               PatientInfo,
+    //             }
+    //           )
+    //           .then(function (response) {
+    //             console.log(response.data);
+    //             setPost(response.data);
+    //           })
+    //           .catch(function (error) {
+    //             console.log(error.data);
+    //           });
+    //       };
+    // } 
+    // else if(!fromValue && !toValue){
 
+      if (selectedOption === "NATIONAL_ID") {
+        // console.log("PID")
+              const PatientInfo = {
+                InsurerCode: InsuranceCode,
+                IdType: selectedOption,
+                PID: pidValue,
+                HN: "",
+                PassportNumber: "",
+                datefrom: "",
+                dateto: "",
+                ClaimStatusCode: statusValue,
+              };
+        
+              axios
+              .post(
+                process.env.NEXT_PUBLIC_URL_PD + "v1/aia-patient-info/PatientSearch",
+                {
+                  PatientInfo,
+                }
+              )
+              .then(function (response) {
+                //console.log(response.data);
+                setPost(response.data);
+              })
+              .catch(function (error) {
+                console.log(error.data);
+              });
+            } else if (selectedOption === "HOSPITAL_ID") {
+              //console.log("HN")
+              const PatientInfo = {
+                InsurerCode: InsuranceCode,
+                IdType: selectedOption,
+                PID: "",
+                HN: pidValue,
+                PassportNumber: "",
+                datefrom: "",
+                dateto: "",
+                ClaimStatusCode: statusValue,
+              };
+              axios
+              .post(
+                process.env.NEXT_PUBLIC_URL_PD + "v1/aia-patient-info/PatientSearch",
+                {
+                  PatientInfo,
+                }
+              )
+              .then(function (response) {
+                console.log(response.data);
+                setPost(response.data);
+              })
+              .catch(function (error) {
+                console.log(error.data);
+              });
+            } else if (selectedOption === "PASSPORT_NO") {
+              //console.log("PASSPORT_NO");
+              const PatientInfo = {
+                InsurerCode: InsuranceCode,
+                IdType: selectedOption,
+                PID: "",
+                HN: "",
+                PassportNumber: pidValue,
+                datefrom: "",
+                dateto: "",
+                ClaimStatusCode: statusValue,
+              };
+              axios
+              .post(
+                process.env.NEXT_PUBLIC_URL_PD + "v1/aia-patient-info/PatientSearch",
+                {
+                  PatientInfo,
+                }
+              )
+              .then(function (response) {
+                console.log(response.data);
+                setPost(response.data);
+              })
+              .catch(function (error) {
+                console.log(error.data);
+              });
+          };
+    // }
+    // else if (!fromValue || !toValue){
+    //   setMassError("Error")
+    // }
 
-    if (selectedOption === "NATIONAL_ID") {
-// console.log("PID")
-      const PatientInfo = {
-        InsurerCode: InsuranceCode,
-        IdType: selectedOption,
-        PID: pidValue,
-        HN: "",
-        PassportNumber: "",
-        datefrom: "",
-        dateto: "",
-        ClaimStatusCode: statusValue,
-      };
-
-      axios
-      .post(
-        process.env.NEXT_PUBLIC_URL_PD + "v1/aia-patient-info/PatientSearch",
-        {
-          PatientInfo,
-        }
-      )
-      .then(function (response) {
-        console.log(response.data);
-        setPost(response.data);
-      })
-      .catch(function (error) {
-        console.log(error.data);
-      });
-    } else if (selectedOption === "HOSPITAL_ID") {
-      //console.log("HN")
-      const PatientInfo = {
-        InsurerCode: InsuranceCode,
-        IdType: selectedOption,
-        PID: "",
-        HN: pidValue,
-        PassportNumber: "",
-        datefrom: "",
-        dateto: "",
-        ClaimStatusCode: statusValue,
-      };
-      axios
-      .post(
-        process.env.NEXT_PUBLIC_URL_PD + "v1/aia-patient-info/PatientSearch",
-        {
-          PatientInfo,
-        }
-      )
-      .then(function (response) {
-        console.log(response.data);
-        setPost(response.data);
-      })
-      .catch(function (error) {
-        console.log(error.data);
-      });
-    } else if (selectedOption === "PASSPORT_NO") {
-      //console.log("PASSPORT_NO");
-      const PatientInfo = {
-        InsurerCode: InsuranceCode,
-        IdType: selectedOption,
-        PID: "",
-        HN: "",
-        PassportNumber: pidValue,
-        datefrom: "",
-        dateto: "",
-        ClaimStatusCode: statusValue,
-      };
-      axios
-      .post(
-        process.env.NEXT_PUBLIC_URL_PD + "v1/aia-patient-info/PatientSearch",
-        {
-          PatientInfo,
-        }
-      )
-      .then(function (response) {
-        console.log(response.data);
-        setPost(response.data);
-      })
-      .catch(function (error) {
-        console.log(error.data);
-      });
-  };
 };
 
   const handleChange = (e) => {
@@ -335,7 +463,7 @@ export default function SelectPatient() {
     e.preventDefault();
       document.getElementById("my_modal_3").showModal()
 }
-
+//console.log(post)
   return (
     <>
       {/* <div className="justify-center border-solid w-screen m-auto border-4 rounded-lg p-4"> */}
@@ -349,13 +477,9 @@ export default function SelectPatient() {
                         id="NATIONAL_ID"
                         name="identity_type"
                         value="NATIONAL_ID"
+                        className="checkbox checkbox-info"
                         defaultChecked
                         onChange={handleOptionChange}
-                // type="radio"
-                // name="exampleRadios"
-                // id="NATIONAL_ID"
-                // value="NATIONAL_ID"
-                //defaultChecked
               />
               <p className="text-left">&nbsp;Personal ID &nbsp;</p>
               <input
@@ -363,12 +487,9 @@ export default function SelectPatient() {
                         id="PASSPORT_NO"
                         name="identity_type"
                         value="PASSPORT_NO"
+                        className="checkbox checkbox-info"
                         checked={selectedOption === 'PASSPORT_NO'}
                         onChange={handleOptionChange}
-                // type="radio"
-                // name="exampleRadios"
-                // id="PASSPORT_NO"
-                // value="PASSPORT_NO"
                 
               />
               <p className="text-left">&nbsp;Passport &nbsp;</p>
@@ -377,25 +498,12 @@ export default function SelectPatient() {
                         id="HOSPITAL_ID"
                         name="identity_type"
                         value="HOSPITAL_ID"
+                        className="checkbox checkbox-info"
                         checked={selectedOption === 'HOSPITAL_ID'}
                         onChange={handleOptionChange}
-                // type="radio"
-                // name="exampleRadios"
-                // id="HOSPITAL_ID"
-                // value="HOSPITAL_ID"
               />
               <p className="text-left">&nbsp;HN &nbsp;</p>
             </div>
-            {/* <input
-                      type="text"
-                      value={pidValue}
-                      onChange={(e) => setPidValue(e.target.value)}
-              // type="text"
-               name="PID"
-              // id="PID"
-             className="input input-accent w-full rounded-full px-3 py-2"
-             
-            /> */}
                     <TextField
           id="standard-multiline-flexible"
           label="Personal ID / Passport / HN"
@@ -412,7 +520,7 @@ export default function SelectPatient() {
         <div className="rounded-md pt-6">
             <div className="w-full">
               <div className="rounded-md">
-                <button className="btn btn-neutral text-base-100 text-lg rounded-full px-3 py-2"
+                <button className="btn btn-primary text-base-100 text-lg rounded-full px-3 py-2"
 
                 type="submit"
                 >
@@ -426,19 +534,14 @@ export default function SelectPatient() {
                 >
                   <FaUserPlus /> Create Patient
                 </button>
-                {/* <button
-                className="btn btn-success text-base-100 text-lg rounded-full px-3 py-2 ml-2"
-                onClick={showsearch}
-         
-                ><FaSearch /> เพิ่มเติม</button> */}
               </div>
               <div className="rounded-md"></div>
             </div>
           </div>
           <div className="px-2 rounded-md"></div>
         </div>
-        <details className="collapse -mt-3">
-          <summary className="collapse-title font-medium">เพิ่มเติม</summary>
+        {/* <details className="collapse -mt-3">
+          <summary className="collapse-title font-medium">More</summary>
           <div className="collapse-content"> 
 
           <div className="grid gap-1 sm:grid-cols-3 w-full">
@@ -446,15 +549,7 @@ export default function SelectPatient() {
           <div className="rounded-md">
         <div className="grid gap-1 sm:grid-cols-2 w-full">
           <div className="px-2 rounded-md">
-            {/* <input
-               type="date"
-              // name="DateFrom"
-              // id="DateFrom"
-               className="input input-accent w-full rounded-full px-3 py-2"
 
-              value={fromValue}
-              onChange={(e) => setFromValue(e.target.value)}
-            /> */}
 
 <LocalizationProvider dateAdapter={AdapterDayjs}>
 
@@ -462,28 +557,19 @@ export default function SelectPatient() {
             label="Date From"
             value={fromValue}
             onChange={(newDate) => setFromValue(newDate)}
-           
+            format="YYYY-MM-DD"
           />
       
     </LocalizationProvider>
 
             </div>
             <div className="px-2 rounded-md">
-            {/* <input
-              type="date"
-              name="DateTo"
-              id="DateTo"
-              className="input input-accent w-full rounded-full px-3 py-2"
-
-              value={toValue}
-              onChange={(e) => setToValue(e.target.value)}
-       
-            /> */}
            <LocalizationProvider dateAdapter={AdapterDayjs}>
 
 <DatePicker
             label="Date To"
             value={toValue}
+            format="YYYY-MM-DD"
             onChange={(newDate) => setToValue(newDate)}
            
           />
@@ -497,21 +583,6 @@ export default function SelectPatient() {
           </div>
           <div className="grid gap-1 sm:grid-cols-2 w-full">
           <div className="px-2 rounded-md">
-            {/* <select
-              className="select input-accent w-full rounded-full px-3 py-2"
-              name="ClaimStatusCode"
-              id="ClaimStatusCode"
-              
-              value={statusValue}
-              onChange={(e) => setStatusValue(e.target.value)}
-            >
-              <option></option>
-              {claimStatus
-                ? claimStatus.map((status, index) => (
-                    <option key={index}>{status.StatusDescTH}</option>
-                  ))
-                : ""}
-            </select> */}
      <FormControl fullWidth>
         <InputLabel id="demo-simple-select-label">Claim Status</InputLabel>
         <Select
@@ -523,7 +594,7 @@ export default function SelectPatient() {
         >
           {claimStatus
                 ? claimStatus.map((status, index) => (
-                    <MenuItem key={index} value={status.StatusDescTH}>{status.StatusDescTH}</MenuItem>
+                    <MenuItem key={index} value={status.statusCode}>{status.StatusDescTH}</MenuItem>
                   ))
                 : ""}
 
@@ -537,11 +608,11 @@ export default function SelectPatient() {
 
 
           </div>
-        </details>
+        </details> */}
        
         {/* <div className="grid gap-1 sm:grid-cols-3 w-full"> */}
 
-          <div className="px-2 rounded-md">
+          {/* <div className="px-2 rounded-md"> */}
 
             
       {/* </div> */}
@@ -549,49 +620,69 @@ export default function SelectPatient() {
 
        
 
-      </div>
+      {/* </div> */}
     </form>
       {/* </div> */}
-      <div className="justify-center border-solid w-full m-auto border-4 rounded-lg p-4 mt-6">
-        <div className="overflow-x-auto">
+      <div className="justify-center border-solid w-full m-auto border-2 border-warning rounded-lg p-4 mt-6">
+      {/* {massError === "Error" ? (
+        <>
+        <div role="alert" className="alert alert-error">
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    className="h-6 w-6 shrink-0 stroke-current"
+    fill="none"
+    viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="2"
+      d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+  </svg>
+  <span>กรุณากรอกวันที่ให้ครบ!!</span>
+</div>
+        </>
+      ) : ""}  */}
+        <div className="overflow-x-auto mt-2">
           <table className="table">
             <thead className="bg-info text-base-100 text-center text-lg">
               <tr>
-                <th>ลำดับ</th>
+                <th>No.</th>
                 <th>Personal ID</th>
                 <th>Passport</th>
                 <th>HN</th>
                 <th>Fullname</th>
-                <th>Date of Birth</th>
+                <th>Date of Birth (Y-M-D)</th>
                 <th>Action</th>
               </tr>
             </thead>
             <tbody>
               {post
                 ? post.HTTPStatus.statusCode < 400
-                  ? (post.Result.PatientInfo.map((patientinfo, index) => (
-                      <>
-                        <tr className="hover" key={index}>
+                  ? (post.Result.PatientInfo.map((patient , index) => (
+
+                        <tr className="hover" key={index} >
                           <td className="text-center">{index+1}</td>
-                          <td>{patientinfo.PID}</td>
-                          <td>{patientinfo.PassportNumber}</td>
-                          <td className="text-center">{patientinfo.HN}</td>
+                          <td>{patient.PID}</td>
+                          <td>{patient.PassportNumber}</td>
+                          <td className="text-center">{patient.HN}</td>
                           <td>
-                            {patientinfo.TitleTH}
-                            {patientinfo.GivenNameTH} {patientinfo.SurnameTH}
+                            {patient.TitleTH}
+                            {patient.GivenNameTH} {patient.SurnameTH}
                           </td>
                           <td className="text-center">
-                            {patientinfo.DateOfBirth}
+                            {patient.DateOfBirth}
                           </td>
                           <td>
                             <div className="grid gap-1 sm:grid-cols-2 w-full text-accent ">
-                              <Link href={`/aia/opd/checkeilgible`}>
-                                <button className="btn bg-white text-accent w-full hover:text-base-100 hover:bg-neutral">
+                              {/* <Link href={`/aia/opd/checkeilgible`}> */}
+                                <button className="btn bg-white text-primary w-full hover:text-base-100 hover:bg-primary"
+                                onClick={() => PatientB(patient)}
+                                >
                                   Chack Eilgible
                                 </button>
-                              </Link>
+                              {/* </Link> */}
                               <button
-                                className="btn bg-white text-accent w-full hover:text-base-100 hover:bg-neutral"
+                                className="btn bg-white text-error w-full hover:text-base-100 hover:bg-primary"
                                 onClick={Verify}
                                  
                                 
@@ -601,7 +692,7 @@ export default function SelectPatient() {
                             </div>
                           </td>
                         </tr>
-                      </>
+
                     )
                 ))
                 : (
@@ -686,7 +777,7 @@ export default function SelectPatient() {
                     strokeLinejoin="round"
                     strokeWidth="2"
                     d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                  />
+                  />เ
                 </svg>
                 <span>รายชื่อนี้มีอยู่แล้ว!</span>
               </div>
@@ -727,6 +818,7 @@ export default function SelectPatient() {
                       id="NATIONAL_ID"
                       value="NATIONAL_ID"
                       defaultChecked
+                      className="checkbox checkbox-info size-5"
                     />
                     <p className="text-left">&nbsp;Personal ID</p>
                   </div>
@@ -736,6 +828,7 @@ export default function SelectPatient() {
                       name="exampleRadios"
                       id="HOSPITAL_ID"
                       value="HOSPITAL_ID"
+                      className="checkbox checkbox-info size-5"
                     />
                     <p className="text-left">&nbsp;HN</p>
                   </div>
@@ -745,6 +838,7 @@ export default function SelectPatient() {
                       name="exampleRadios"
                       id="PASSPORT_NO"
                       value="PASSPORT_NO"
+                      className="checkbox checkbox-info size-5"
                     />
                     <p className="text-left">&nbsp;Passport Number</p>
                   </div>
@@ -766,7 +860,7 @@ export default function SelectPatient() {
                       value={input}
                       required
                     />
-                    <button className="btn btn-primary absolute top-0 right-0 rounded-l-none">
+                    <button className="btn btn-primary text-base-100 absolute top-0 right-0 rounded-l-none">
                       <FaSearch />
                     </button>
                   </div>
@@ -844,7 +938,7 @@ export default function SelectPatient() {
                       <>
                         <button
                           type="submit"
-                          className="btn btn-accent text-base-100 text-lg rounded-full px-3 py-2 center"
+                           className="btn btn-success text-base-100 text-lg rounded-full px-3 py-2 center"
                           onClick={saveCreate}
                         >
                           <RiSave3Fill /> Save
@@ -918,7 +1012,7 @@ export default function SelectPatient() {
               <div className="rounded-md ">
                 <button
                   type="submit"
-                  className="btn btn-accent text-base-100 text-lg w-full rounded-full px-3 py-2"
+                  className="btn btn-success text-base-100 text-lg w-full rounded-full px-3 py-2"
                   onClick={saveUpdate}
                 >
                   <RiSave3Fill /> Update

@@ -3,67 +3,63 @@ export async function GET(request, { params }) {
   // if (params.id === "66021995") {
   console.log("ดึงข้อมูลเช็คสำเร็จ");
   return Response.json({
-    Result: {
-      Code: "S",
-      Message: "success",
-      MessageTh: "ทำรายการสำเร็จ",
+    "HTTPStatus": {
+        "statusCode": 200,
+        "message": "success",
+        "error": ""
     },
-    PatientInfo: {
-      PID: "1103900068701",
-      PIDEncrypt: "1103900068701Eng",
-      Passport: "",
-      PassportEncrypt: "",
-      HN: "66-021995",
-      Title: "นาย",
-      Gender: "ผู้ชาย",
-      FirstName: "ปฏิภาณ",
-      LastName: "ไขไพรวัน",
-      DOB: "19/10/2000",
-      IdType: "NATIONAL_ID",
+    "TransactionQuery": {
+        "RefID": "",
+        "TransactionNo": "",
+        "PID": "1160100078831",
+        "PassportNumber": "",
+        "IdType": "HOSPITAL_ID",
+        "ServiceSettingCode": "I",
+        "InsurerCode": null,
+        "HN": "52-058092",
+        "VN": "",
+        "VisitDatefrom": "2024-09-05",
+        "VisitDateto": null
     },
-    EpisodeInfo: [
-      {
-        VN: "I66-021574",
-        Episodetype: "I",
-        VisitDate: "2024-01-31",
-        VisitTime: "12:00",
-        VisitDateTime: "2024-01-31 12:00",
-        AccidentDate: "2024-01-31",
-        LocationCode: "2543",
-        LocationDesc: "คลินิกอายุรกรรม",
-        WardCode: "",
-        WardDesc: "",
-        BedCode: "",
-        MainCareproviderCode: "C220266",
-        DoctorLicense: "PM271045",
-        DoctorFirstName: "ปริญญา",
-        DoctorLastName: "แสนลคร",
-        MainCareproviderDecs: "พญ. ปริญญา แสนลคร",
-        SurgeryType: "N",
-        DoctorRole: "OWNER",
-      },
-      {
-        VN: "I66-099999",
-        Episodetype: "I",
-        VisitDate: "2024-01-31",
-        VisitTime: "17:59",
-        VisitDateTime: "2024-01-31 59:00",
-        AccidentDate: "2024-01-31",
-        LocationCode: "2543",
-        LocationDesc: "คอมพิวเตอร์",
-        WardCode: "",
-        WardDesc: "",
-        BedCode: "",
-        MainCareproviderCode: "C220266",
-        DoctorLicense: "PM271045",
-        DoctorFirstName: "สมชาย",
-        DoctorLastName: "รักชาติ",
-        MainCareproviderDecs: "นพ. สมชาย รักชาติ",
-        SurgeryType: "N",
-        DoctorRole: "OWNER",
-      },
-    ],
-  });
+    "Result": {
+        "PatientInfo": {
+            "PatientID": "456114",
+            "PID": "1103701284544",
+            "PassportNumber": "",
+            "HN": "52-058092",
+            "TitleTH": "นาย",
+            "GivenNameTH": "วุฒิชัย",
+            "SurnameTH": "เห่ววิพัฒน์",
+            "TitleEN": "MR.",
+            "GivenNameEN": "VUDHICHAI",
+            "SurnameEN": "HELVIPHAT",
+            "DateOfBirth": "1993-12-19",
+            "Gender": "ชาย",
+            "MobilePhone": "0875182319"
+        },
+        "EpisodeInfo": [
+            {
+                "VN": "I010162-67",
+                "EpisodeType": "In Patient",
+                "VisitDate": "09/05/2024",
+                "VisitTime": "17:51:00",
+                "VisitDateTime": "09/05/2024 17:51:00",
+                "AccidentDate": "",
+                "LocationCode": "4144",
+                "LocationDesc": "อายุรกรรม",
+                "WardCode": "3720",
+                "WardDesc": "หอผู้ป่วยชั้น 19ES",
+                "BedCode": "19E03",
+                "MainCareproviderCode": "45808",
+                "MainCareproviderDesc": "พญ. สลิลนาท พานประเสริฐ ",
+                "DoctorLicense": "45808",
+                "DoctorFirstName": "",
+                "DoctorLastName": "",
+                "SurgeryType": ""
+            }
+        ]
+    }
+});
   // } else {
   //   console.log("ดึงข้อมูลเช็คไม่สำเร็จ");
   //   return Response.json({

@@ -31,7 +31,7 @@ export default function layout({ children }) {
 
       <Providers>
         <div className="flex flex-col h-screen">
-          {/* <Navbar /> */}
+            <Navbar />  
           <div className="flex flex-1">
             <Drawer />
             <main className="bg-white flex-1 p-4">{children}</main>

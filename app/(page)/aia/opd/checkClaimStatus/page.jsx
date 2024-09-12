@@ -6,7 +6,7 @@ import SelectPatient from "../../../../components/aia/opd/chackpatient/selectPat
 
 export default function Home() {
   const DataTran  = useSelector((state) => ({ ...state }));
-console.log(DataTran)
+//console.log(DataTran)
 
 
   return (

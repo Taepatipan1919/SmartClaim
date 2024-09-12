@@ -8,21 +8,47 @@ module.exports = {
   theme: {
     extend: {},
   },
-  plugins: [require("daisyui")],
+  plugins: [
+    require('daisyui'),
+  ],
   daisyui: {
     themes: [
       {
         mytheme: {
-          primary: "#a2d2ff", //ฟ้าอ่อนๆ  //side
-          accent: "#6C5D4E", //ฟ้าเข้ม
-          neutral: "#A2D2FF", //ฟ้าอ่อน
-          secondary: "#FF0000", //แดง
-          "base-100": "#ffffff",
-          info: "#BDE0FE", //ฟ้าเข็ม
-          "info-content": "#FFAFCC",
-          success: "#3dccc7", /** BDE0FE*/
-          warning: "#ffc8dd",
-          error: "#ff003f",
+          // primary: "#a2d2ff", //ฟ้าอ่อนๆ  //side
+          // accent: "#6C5D4E", //ฟ้าเข้ม
+          // neutral: "#A2D2FF", //ฟ้าอ่อน
+          // secondary: "#FF0000", //แดง
+          // "base-100": "#ffffff",
+          // info: "#BDE0FE", //ฟ้าเข็ม
+          // "info-content": "#FFAFCC",
+          // success: "#3dccc7", /** BDE0FE*/
+          // warning: "#ffc8dd",
+          // error: "#ff003f",
+          primary: "#69C2EE",  // ฟ้าอ่อนพาสเทล   //ปุ่ม search ยืนยัน
+          secondary: "#E0F7FA",  // ฟ้าขาวอ่อน
+          accent: "#F7C6A4",  // ส้มอ่อนพาสเทล
+          neutral: "#F3F9FC",  // ฟ้าขาวอมเทา
+          "base-100": "#FFFFFF",  // พื้นหลังขาว
+          info: "#76D7EA",  // ฟ้าสดใส
+          success: "#72d572",  // เขียวพาสเทล      //ปุ่ม create save
+          warning: "#F9E79F",  // เหลืองพาสเทล
+          error: "#F1948A",  // แดงพาสเทล
+          "text-primary": "#333333",  // ตัวหนังสือหลัก
+          "text-accent": "#FFFFFF",  // ตัวหนังสือบนปุ่มหรือพื้นหลังสีเข้ม
+
+          // ปุ่ม
+          "btn-search": "#69C2EE",  // ฟ้าอ่อนพาสเทล
+          "btn-create": "#A9DFBF",  // เขียวพาสเทล
+          "btn-update": "#1F9CD6",  // ฟ้าเข้ม
+          "btn-save": "#B3E5C2",  // เขียวพาสเทล
+
+          // ตาราง
+          "table-header-bg": "#69C2EE",  // สีพื้นหลังของหัวตาราง
+          "table-row-bg": "#FFFFFF",  // สีพื้นหลังของแถวในตาราง
+          "table-row-hover-bg": "#E0F7FA",  // สีพื้นหลังของแถวที่เลือก
+          "table-border": "#D0D0D0",  // สีเส้นขอบของตาราง
+          "table-text": "#4A4A4A",  // สีข้อความในตาราง
         },
       },
     ],

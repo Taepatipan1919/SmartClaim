@@ -1,8 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  value: "",
-  Data: [],
+  value: "ไม่มีข้อมูล",
+  Data: {},
 };
 
 export const counterSlice = createSlice({

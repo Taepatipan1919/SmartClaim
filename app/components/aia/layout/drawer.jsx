@@ -60,7 +60,7 @@ export default function Drawer() {
     <div className="">
       <div
         className={`bg-primary h-screen  p-5 ${
-          open ? "w-[190px]" : "w-20"
+          open ? "w-[200px]" : "w-20"
         } duration-300 relative`}
       >
         <div className="flex justify-center">
@@ -81,7 +81,7 @@ export default function Drawer() {
               src="/hch-logo.png"
             /> 
           <BsArrowLeftShort
-            className={`bg-7u-300 mt-6 text-black-200 text-3xl rounded-full absolute -right-3 top-9 border  bg-neutral  cursor-pointer ${
+            className={`bg-7u-300 mt-6 text-black-200 text-3xl rounded-full absolute -right-3 top-9 border  bg-info  cursor-pointer ${
               !open && "rotate-180"
             }`}
             onClick={() => setOpen(!open)}
@@ -90,7 +90,7 @@ export default function Drawer() {
         </div>
         {open &&
         <h1
-          className="font-black text-accent text-1xl text-center kanit bg-primary"
+          className="font-black text-base-100 text-1xl text-center kanit bg-primary"
           data-theme="mytheme"
         >
           Smart Claim
@@ -98,7 +98,7 @@ export default function Drawer() {
       }
         <div className="">
           <div
-            className={`divider divider-warning origin-left font-medium text-2xl duration-300 ${
+            className={`divider divider-warning origin-left font-medium text-2xl duration-300  ${
               !open && "scale-0"
             } `}
           ></div>
@@ -132,7 +132,7 @@ export default function Drawer() {
                
                 <button
                   onClick={() => toggleMenu(menuitem.id)}
-                  className={`text-accent text-3xl  flex gap-x-1 self-center  hover:bg-info hover:text-base-100 rounded-md mt-4 ${
+                  className={`text-base-100 text-3xl  flex gap-x-1 self-center  hover:bg-accent hover:text-base-100 rounded-md mt-4 ${
                     open && "hidden"
                   }`}
                 >
@@ -142,7 +142,7 @@ export default function Drawer() {
      
                 <button
                   onClick={() => toggleMenu(menuitem.id)}
-                  className={`text-accent text-xl  flex gap-x-1 cursor-point p-4 px-5 hover:bg-info hover:text-base-100 w-full  rounded-md mt-4" ${
+                  className={`text-base-100 text-xl  flex gap-x-1 cursor-point p-4 px-5 hover:bg-accent hover:text-neutral w-full  rounded-md mt-4 " ${
                     !open && "hidden"
                   }`}
                 >
@@ -151,11 +151,11 @@ export default function Drawer() {
                   
                 </button>
                 {open && openMenu === menuitem.id && menuitem.submenu && (
-            <ul className="bg-base-100 rounded-lg">
+            <ul className="bg-base-100 rounded-lg border-2">
               {menuitem.submenu.map((subItem) => (
                 <li key={subItem.id}>
                   <Link href={subItem.href}>
-                    <h1 className="block text-base rounded-lg text-accent my-1 px-3 hover:text-base-100 hover:bg-neutral">
+                    <h1 className="block text-primary rounded-lg text-accent m-0.5 mt-1 px-3 hover:text-base-100 hover:bg-success">
                     <div className="flex items-center "><IoArrowForwardCircleSharp />&nbsp;{subItem.label}</div>
                     </h1>
                   </Link>

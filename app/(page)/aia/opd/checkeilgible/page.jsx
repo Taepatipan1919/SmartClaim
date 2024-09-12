@@ -1,20 +1,36 @@
 "use client";
-import { useState } from "react";
+import { useState, createContext } from "react";
+import { useSelector } from "react-redux";
 import ChackData from "../../../../components/aia/opd/checkeilgible/chackData";
+import SelectPatient from "../../../../components/aia/opd/chackpatient/selectPatient";
+
 export default function Home() {
- 
+  const DataTran  = useSelector((state) => ({ ...state }));
+//console.log(DataTran)
+
 
   return (
     <>
-      <ChackData />
-      {/* <div className="w-full">
-        RefId : {DataTran.value}
-        <hr />
-        <br />
-        <button className="btn" onClick={handlebutton}>
-          Check Eligible
-        </button>
-      </div> */}
+    {DataTran.Patient.value === "มีรายชื่อ" ? (
+    <>
+    <ChackData />
+    value : {DataTran.DataTran.value}
+      <hr />
+      VN : {DataTran.DataTran.Data.VN}
+      <br />
+      RefId : {DataTran.DataTran.Data.RefId}
+      <br />
+      TransactionNo : {DataTran.DataTran.Data.TransactionNo}
+      <br />
+    </>) : 
+    (
+    <>
+    <SelectPatient />
+    </>)
+    }
+
+    
+
     </>
   );
 }
