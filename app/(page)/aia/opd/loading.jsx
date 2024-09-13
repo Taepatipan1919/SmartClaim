@@ -9,7 +9,6 @@ export default function Loading() {
           <div className="justify-center text-4xl">Loading....</div>
         </div>
       </div>
-      ;
     </>
   );
 }

@@ -43,11 +43,14 @@ export default function SelectPatient() {
   const [toValue, setToValue] = useState(null);
   const [statusValue, setStatusValue] = useState("");
   const [massError, setMassError] = useState("");
+  const [showFormError, setShowFormError] = useState("");
+  
 ////////////////Create Redux Patient /////////////////////////
 const { Patient } = useSelector((state) => ({ ...state }));
 // console.log(Patient)
 const dispatch = useDispatch();
-const PatientB = (patient) => {
+
+const PatientA = (patient) => {
   dispatch(save2({
     value: "มีรายชื่อ",
     Data: 
@@ -188,7 +191,7 @@ router.push('/aia/opd/checkeilgible');
         }
       )
       .then(function (response) {
-        console.log(response.data);
+        //console.log(response.data);
         setShowFormCreate("Succ");
       })
       .catch(function (error) {
@@ -203,7 +206,8 @@ router.push('/aia/opd/checkeilgible');
     //console.log(dataCreate);
   }
 
-  function Verify() {
+  const PatientB = (patient) => {
+    //console.log(patient)
     axios
       .post(
         process.env.NEXT_PUBLIC_URL + "v1/aia-patient-info/PatientFindforUpdate",
@@ -224,7 +228,7 @@ router.push('/aia/opd/checkeilgible');
         }
       )
       .then(function (response) {
-        console.log(response.data);
+       // console.log(response.data);
         setPatientFindforUpdate(response.data)
          document.getElementById("my_modal_1").showModal()
       })
@@ -389,11 +393,20 @@ router.push('/aia/opd/checkeilgible');
                 }
               )
               .then(function (response) {
-                //console.log(response.data);
-                setPost(response.data);
+              //    console.log(response.data);
+                if (response.data.HTTPStatus.statusCode === 200){
+                  setShowFormError("")
+                  setPost(response.data);
+                }else{
+                setMassError(response.data.HTTPStatus.message);
+                setShowFormError("Err")
+                }
+                
+            
               })
               .catch(function (error) {
                 console.log(error.data);
+                //console.log("5555555555555555555555555555555555555555");
               });
             } else if (selectedOption === "HOSPITAL_ID") {
               //console.log("HN")
@@ -415,11 +428,19 @@ router.push('/aia/opd/checkeilgible');
                 }
               )
               .then(function (response) {
-                console.log(response.data);
-                setPost(response.data);
-              })
+              //  console.log(response.data);
+                 if (response.data.HTTPStatus.statusCode === 200){
+                  setShowFormError("")
+                  setPost(response.data);
+                }else{
+                setMassError(response.data.HTTPStatus.message);
+                setShowFormError("Err")
+                }
+               })
               .catch(function (error) {
-                console.log(error.data);
+                setMassError(error.message);
+                setShowFormError("Err")
+                //console.log("5555555555555555555555555555555555555555");
               });
             } else if (selectedOption === "PASSPORT_NO") {
               //console.log("PASSPORT_NO");
@@ -441,31 +462,34 @@ router.push('/aia/opd/checkeilgible');
                 }
               )
               .then(function (response) {
-                console.log(response.data);
-                setPost(response.data);
+             //   console.log(response.data);
+                if (response.data.HTTPStatus.statusCode === 200){
+                  setShowFormError("")
+                  setPost(response.data);
+                }else{
+                setMassError(response.data.HTTPStatus.message);
+                setShowFormError("Err")
+                }
               })
               .catch(function (error) {
                 console.log(error.data);
+                setShowFormCreate("Err");
               });
           };
-    // }
-    // else if (!fromValue || !toValue){
-    //   setMassError("Error")
-    // }
 
 };
 
   const handleChange = (e) => {
     const value = e.target.value;
-    if (/^[a-zA-Z0-9]*$/.test(value)) {
+    // if (/^[a-zA-Z0-9]*$/.test(value)) {
       setInput(value);
-    }
+    // }
   };
   const createpatient = (e) => {
     e.preventDefault();
       document.getElementById("my_modal_3").showModal()
 }
-console.log(post)
+//console.log(post)
   return (
     <>
       {/* <div className="justify-center border-solid w-screen m-auto border-4 rounded-lg p-4"> */}
@@ -625,6 +649,27 @@ console.log(post)
       {/* </div> */}
     </form>
       {/* </div> */}
+      {showFormError === "Err" ? (
+              <div role="alert" className="alert alert-error mt-2 text-base-100">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6 shrink-0 stroke-current"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                <span>{massError}</span>
+              </div>
+            ) : (
+              ""
+            )}
+            {showFormError === "" ? (
       <div className="justify-center border-solid w-full m-auto border-2 border-warning rounded-lg p-4 mt-6">
       {/* {massError === "Error" ? (
         <>
@@ -678,14 +723,14 @@ console.log(post)
                             <div className="grid gap-1 sm:grid-cols-2 w-full text-accent ">
                               {/* <Link href={`/aia/opd/checkeilgible`}> */}
                                 <button className="btn bg-white text-primary w-full hover:text-base-100 hover:bg-primary"
-                                onClick={() => PatientB(patient)}
+                                onClick={() => PatientA(patient)}
                                 >
                                   Chack Eilgible
                                 </button>
                               {/* </Link> */}
                               <button
                                 className="btn bg-white text-error w-full hover:text-base-100 hover:bg-primary"
-                                onClick={Verify}
+                                onClick={() => PatientB(patient)}
                                  
                                 
                               >
@@ -714,6 +759,7 @@ console.log(post)
           </table>
         </div>
       </div>
+            ) : "" }
 
       {/* /////////////////////////////////////////////////////////////////////////////// */}
       <dialog id="my_modal_3" className="modal">
@@ -1025,5 +1071,5 @@ console.log(post)
         </div>
       </dialog>
     </>
-  );
+  )
 }

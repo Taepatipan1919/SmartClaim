@@ -57,7 +57,7 @@ export default function chackData() {
   return (
     <>
     <div role="tablist" className="tabs tabs-lifted">
-  <input type="radio" name="my_tabs_2" role="tab" className="tab text-secondary" aria-label="รายการที่ยังไม่วางบิล" />
+  <input type="radio" name="my_tabs_2" role="tab" className="tab text-error" aria-label="รายการที่ยังไม่วางบิล" />
   <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6">
     
   <form onSubmit={handleSubmit}>
@@ -137,7 +137,7 @@ export default function chackData() {
     type="radio"
     name="my_tabs_2"
     role="tab"
-    className="tab text-green-600"
+    className="tab text-success"
     aria-label="รายการที่วางบิลแล้ว"
     defaultChecked />
   <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6">

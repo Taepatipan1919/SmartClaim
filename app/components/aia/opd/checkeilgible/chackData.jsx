@@ -6,6 +6,7 @@ import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { save } from "../../../../store/counterSlice";
 import { FaSearch } from "react-icons/fa";
+import { useRouter } from 'next/navigation';
 
 import dayjs from 'dayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -22,37 +23,34 @@ export default function chackData() {
   const [serviceSetting, setServiceSetting] = useState();
   const [policyType, setPolicyType] = useState();
   const [illnessType, setIllnessType] = useState();
-  const [illnessSurgeryType, setIllnessSurgeryType] = useState();
+  const [surgeryType, setSurgeryType] = useState();
   const [showForm, setShowForm] = useState(false);
   const [result, setResult] = useState();
   const [detailVN, setDetailVN] = useState();
   const [fromValue, setFromValue] = useState(null);
   const [statusValue, setStatusValue] = useState("");
   const [policyTypeValue, setPolicyTypeValue] = useState("");
-  const [illnessSurgeryTypeValue, setIllnessSurgeryTypeValue] = useState("");
+  const [surgeryTypeValue, setSurgeryTypeValue] = useState("");
   const [illnessTypeValue, setIllnessTypeValue] = useState("");
-  console.log(illnessSurgeryType)
+  const router = useRouter();
 
   const { Patient } = useSelector((state) => ({ ...state }));
   const dispatch = useDispatch();
-  //console.log(Patient)
+  
   // const router = useRouter();
   const confirmButton = () => {
     dispatch(
       save({
         value: "มีข้อมูล",
         Data: {
-          RefId: result.Data.RefId,
-          TransactionNo: result.Data.TransactionNo,
+          RefId: result.TransactionQuery.RefID,
+          TransactionNo: result.TransactionQuery.TransactionNo,
           VN: detailVN,
           InsurerCode: InsurerCode,
         },
       })
     );
-
-    // setTimeout(() => {
-    //   router.push("/aia"); // เปลี่ยน '/new-page' เป็นหน้าที่คุณต้องการเปลี่ยนไป
-    // }, 5000); // 5000 มิลลิวินาที = 5 วินาที
+    router.push('/aia/opd/eilgible');
   };
   const Status = (event) => {
     setStatusValue(event.target.value);
@@ -64,29 +62,27 @@ export default function chackData() {
   const Illness = (event) => {
     setIllnessTypeValue(event.target.value);
   }
-  const illnessSurgery = (event) => {
-    setIllnessSurgeryTypeValue(event.target.value);
+  const surgery = (event) => {
+    setSurgeryTypeValue(event.target.value);
   }
   // const policy = (event) => {
   //   setPolicyTypeValue(event.target.value);
   // }
   useEffect(() => {
-    const getIllnessSurgery = async () => {
+    const getSurgery = async () => {
       const response = await fetch(
-        process.env.NEXT_PUBLIC_URL +
-          "/v1/utils/IllnessSurgery/" +
-          InsurerCode
+        process.env.NEXT_PUBLIC_URL_SV + "v1/utils/IllnessSurgery/" + InsurerCode
       );
       const data = await response.json();
-      setIllnessSurgeryType(data);
+      setSurgeryType(data);
     };
-    getIllnessSurgery();
+    getSurgery();
   }, []);
-
+    //console.log(surgeryType)
   useEffect(() => {
     const getIllnessType = async () => {
       const response = await fetch(
-        process.env.NEXT_PUBLIC_URL + "/v1/utils/IllnessType/" + InsurerCode
+        process.env.NEXT_PUBLIC_URL_SV + "v1/utils/IllnessType/" + InsurerCode
       );
       const data = await response.json();
       setIllnessType(data);
@@ -96,7 +92,7 @@ export default function chackData() {
   useEffect(() => {
     const getPolicyType = async () => {
       const response = await fetch(
-        process.env.NEXT_PUBLIC_URL + "/v1/utils/policyType/" + InsurerCode
+        process.env.NEXT_PUBLIC_URL_SV + "v1/utils/policyType/" + InsurerCode
       );
       const data = await response.json();
       setPolicyType(data);
@@ -106,7 +102,7 @@ export default function chackData() {
   useEffect(() => {
     const getServiceSetting = async () => {
       const response = await fetch(
-        process.env.NEXT_PUBLIC_URL + "/v1/utils/serviceSetting/"
+        process.env.NEXT_PUBLIC_URL_SV + "v1/utils/serviceSetting/" + InsurerCode
       );
       const data = await response.json();
       setServiceSetting(data);
@@ -118,58 +114,69 @@ export default function chackData() {
     event.preventDefault();
           const DatefromValue = dayjs(fromValue.$d).format('YYYY-MM-DD');
    
-    const search = {
+    const PatientInfo = {
       PID: Patient.Data.PID,
       PassportNumber: Patient.Data.PassportNumber,
       IdType: Patient.Data.IdType,
       ServiceSettingCode: statusValue,
-      InsurerCode: InsurerCode,
+      Insurerid: InsurerCode,
       HN: Patient.Data.HN,
       VisitDatefrom: DatefromValue,
+      VisitDateto: "",
     };
+
     axios
-      .post(process.env.NEXT_PUBLIC_URL + "/v1/utils/checkeilgible/",{
-        search
+      .post(process.env.NEXT_PUBLIC_URL_PD + "v1/aia-checkeligible/getEpisodeByHN/",{
+        PatientInfo
       })
       .then((response) => {
         setPost(response.data);
       })
-      .catch((err) => console.error("Error", err));
+      .catch((err) => {
+       // console.error("Error", err)
+        console.log(err)
+  });
   };
 
   const check = (event) => {
     event.preventDefault();
-    console.log(result);
-    setDetailVN(event.target.selectVN.value);
+    
+    //console.log(event.target.selectVN.value);
+
+    const [VNselectVN, VisitDateselectVN, AccidentDateselectVN] = event.target.selectVN.value.split(' | ');
+    const [DayVN, MonthVN, YearVN] = VisitDateselectVN.split('/');
+     setDetailVN(VNselectVN);
+
     axios
-      .post(process.env.NEXT_PUBLIC_URL + "/v1/utils/eligible/episodelist/", {
-        PatientInfo: {
+      .post(process.env.NEXT_PUBLIC_URL_PD + "v1/aia-checkeligible/checkeligible/", {
+    PatientInfo : {
           InsurerCode: InsurerCode, // ควรเป็น integer ไม่ใช่ string
-          PatientID: "18356090", // ควรเป็น integer ไม่ใช่ string
-          PID: "1723098012313",
-          PassportNumber: "ABC12345",
-          HN: "61-028993",
-          TitleTH: "นาย",
-          GivenNameTH: "กฤษณ์",
-          SurnameTH: "จันทรวงศ์",
-          TitleEN: "MR.",
-          GivenNameEN: "KRIT",
-          SurnameEN: "CHANTARAWONG",
-          DateOfBirth: "1985-07-15",
-          Gender: "ชาย",
-          MobilePhone: "0989923557"
+          PID: Patient.Data.PID,
+          HN: Patient.Data.HN,
+          GivenNameTH: Patient.Data.GivenNameTH,
+          SurnameTH: Patient.Data.SurnameTH,
+          DateOfBirth: Patient.Data.DateOfBirth,
+          PassportNumber: Patient.Data.PassportNumber,
+          IdType: Patient.Data.IdType,
+          VN: VNselectVN,
+          VisitDateTime: YearVN+"-"+MonthVN+"-"+DayVN,
+          AccidentDate: AccidentDateselectVN,
+          PolicyTypeCode: policyTypeValue,
+          ServiceSettingCode: statusValue, 
+          IllnessTypeCode: illnessTypeValue,
+          SurgeryTypeCode:  surgeryTypeValue,
         }
       })
       .then(function (response) {
-        //console.log(response);
+        
         setResult(response.data);
       })
       .catch(function (error) {
         console.log(error);
       });
     // setShowForm(!showForm);
-
-    document.getElementById("my_modal_3").showModal();
+    console.log(result)
+      document.getElementById("my_modal_3").showModal();
   };
 
 
@@ -218,17 +225,6 @@ export default function chackData() {
           <div className="px-2">
             {" "}
             <div className="">
-              {/* <p className="text-left">
-                วันที่เข้ารับการรักษา&nbsp;
-                <span className="text-secondary">*</span>&nbsp;
-              </p>
-              <input
-                type="date"
-                name="date"
-                id="date"
-                className="input input-bordered input-info"
-                required
-              /> */}
               <LocalizationProvider dateAdapter={AdapterDayjs}>
 
 <DatePicker
@@ -245,25 +241,6 @@ export default function chackData() {
           </div>
           <div className="px-2">
             <div className="">
-              {/* <p className="text-left">
-                ประเภทการเข้ารักษา&nbsp;
-                <span className="text-secondary">*</span>&nbsp;
-              </p>
-              <select
-                className="select select-bordered w-52 max-w-xs"
-                name="type"
-                id="type"
-                required
-              >
-                <option></option>
-                {serviceSetting
-                  ? serviceSetting.Data.map((Service, index) => (
-                      <option key={index}>
-                        {Service.Code} - {Service.Desc}
-                      </option>
-                    ))
-                  : ""}
-              </select> */}
                    <FormControl fullWidth>
         <InputLabel id="demo-simple-select-label">ประเภทการเข้ารักษา</InputLabel>
         <Select
@@ -275,8 +252,8 @@ export default function chackData() {
           className="w-52 max-w-xs"
         >
           {serviceSetting
-                ? serviceSetting.Data.map((Service, index) => (
-                    <MenuItem key={index} value={Service.Code}>{Service.Code} - {Service.Desc}</MenuItem>
+                ? serviceSetting.map((Service, index) => (
+                    <MenuItem key={index} value={Service.ServiceSettingCode}>{Service.ServiceSettingCode} - {Service.ServiceSettingDesc}</MenuItem>
                   ))
                 : ""}
 
@@ -319,7 +296,7 @@ type="submit"
                               <input
                                 type="radio"
                                 name="selectVN"
-                                value={ep.VN}
+                                value={`${ep.VN} | ${ep.VisitDate} | ${ep.AccidentDate}`}
                                 className="radio checked:bg-blue-500"
                                 defaultChecked
                               />
@@ -379,18 +356,18 @@ type="submit"
 </div>
 <div>
 <FormControl fullWidth>
-  <InputLabel id="illnessSurgeryTypeValue">การผ่าตัด</InputLabel>
+  <InputLabel id="surgeryTypeValue">การผ่าตัด</InputLabel>
   <Select
-    labelId="illnessSurgeryTypeValue"
+    labelId="surgeryTypeValue"
     id="demo-simple-select"
-    value={illnessSurgeryTypeValue}
-    label="illnessSurgery"
-    onChange={illnessSurgery}
+    value={surgeryTypeValue}
+    label="surgery"
+    onChange={surgery}
     className=""
     required
   >
-{illnessSurgeryType ? illnessSurgeryType.map((Illne, index) => (
-    <MenuItem key={index} value={Illne.ISCode}>{Illne.ISDescription}</MenuItem>
+{surgeryType ? surgeryType.map((surgery, index) => (
+    <MenuItem key={index} value={surgery.ISCode}>{surgery.ISDescription}</MenuItem>
     ))
     : ""}
     </Select>
@@ -451,19 +428,21 @@ type="submit"
 
             <h1 className="text-accent text-3xl ">รายการสิทธิ์ประกัน</h1>
             <hr />
-            {result
-              ? result.Data.CoverageList.map((e, index) => (
+            {/* {result
+              ? result.Result.InsuranceData.CoverageList.map((e, index) => (
                   <div key={index}>
                     <ul>
                       <li>
                         {e.Status === true ? (
-                          <>Insurer : {result.Data.Insurer}</>
+                          <>Insurer : {result.Result.InsuranceData.InsurerCode}</>
                         ) : (
-                          ""
+                          <>
+                          Insurer :  ไม่มี
+                          </>
                         )}
                         <ul>
                           <li>
-                            {e.Status === true ? <>TypeTh : {e.TypeTh}</> : ""}{" "}
+                            {e.Status === true ? <>TypeTh : {e.Type}</> : <>TypeTh : ไม่มี</>}{" "}
                           </li>
                           <li>
                             {e.Status === true ? (
@@ -482,10 +461,42 @@ type="submit"
                     </ul>
                   </div>
                 ))
-              : ""}
+              : ""} */}
+
+
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>Type</th>
+                  <th>PolicyNo</th>
+                  <th>PlanName</th>
+                  <th>MessageTh</th>
+                </tr>
+              </thead>
+              <tbody>
+                {result ? (result.Result.InsuranceData.CoverageList.map((coverage, index) => (
+                             coverage.Status === true ? (
+                  coverage.MessageList.map((message, msgIndex) => (
+                    <tr key={`${index}-${msgIndex}`}>
+           
+                      <td>{coverage.Type}</td>
+                      <td>{message.PolicyNo}</td>
+                      <td>{message.PlanName}</td>
+                      <td>{message.MessageTh}</td>
+                  
+                    </tr>
+                  ))
+                ) : ""
+                ))) : ""}
+              </tbody>
+            </table>
+      
+
+
+
             <div className="modal-action">
               <button
-                className="btn btn-neutral text-base-100"
+                className="btn btn-primary text-base-100"
                 onClick={() =>
                   document.getElementById("my_modal_2").showModal()
                 }
@@ -495,7 +506,7 @@ type="submit"
             </div>
           </form>
         </div>
-      </dialog>
+        </dialog>
 
       <dialog id="my_modal_2" className="modal text-xl">
         <div className="modal-box">
@@ -525,7 +536,7 @@ type="submit"
                                     href={`/aia/opd/opdDischarge`}
                                   >  */}
               <button
-                className="btn btn-success text-base-100"
+                className="btn btn-primary text-base-100"
                 onClick={confirmButton}
               >
                 ยืนยัน
@@ -536,5 +547,5 @@ type="submit"
         </div>
       </dialog>
     </>
-  );
+  )
 }
