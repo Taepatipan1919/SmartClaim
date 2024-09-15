@@ -11,8 +11,22 @@ export default function Home() {
 
   return (
     <>
+
     {DataTran.Patient.value === "มีรายชื่อ" ? (
     <>
+                 <h1
+        className="font-black text-secondary text-5xl"
+        data-theme="mytheme"
+      >
+        ตรวจสอบสิทธิ์
+      </h1>
+    
+      <div className="breadcrumbs text-xl">
+  <ul>
+    <li>ข้อมูลผู้ป่วย</li>
+    <li><a className="text-error underline ">ตรวจสอบสิทธิ์</a></li>
+  </ul>
+</div>
     <ChackData />
     value : {DataTran.DataTran.value}
       <hr />
@@ -22,11 +36,20 @@ export default function Home() {
       <br />
       TransactionNo : {DataTran.DataTran.Data.TransactionNo}
       <br />
-    </>) : 
+    </>
+    ) : 
     (
     <>
+              <h1 className="font-black text-secondary text-5xl" data-theme="mytheme">ข้อมูลผู้ป่วย</h1>
+
+      <div className="breadcrumbs text-xl">
+  <ul>
+    <li><a className="text-error underline ">ข้อมูลผู้ป่วย</a></li>
+  </ul>
+</div>
     <SelectPatient />
-    </>)
+    </>
+    )
     }
 
     

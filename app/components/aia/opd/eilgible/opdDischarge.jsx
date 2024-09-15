@@ -11,7 +11,7 @@ export default function Page({ params }) {
   useEffect(() => {
     const getDiagnosis = async () => {
       const response = await fetch(
-        `http://localhost:3001/api/opdDischarge/Diagnosis`
+        `http://localhost:3000/api/aia/opdDischarge/Diagnosis`
       );
       const data = await response.json();
       setDiagnosis(data);
@@ -22,7 +22,7 @@ export default function Page({ params }) {
   useEffect(() => {
     const getVisit = async () => {
       const response = await fetch(
-        `http://localhost:3001/api/opdDischarge/Visit`
+        `http://localhost:3000/api/aia/opdDischarge/Visit`
       );
       const data = await response.json();
       setVisit(data);
@@ -33,7 +33,7 @@ export default function Page({ params }) {
   useEffect(() => {
     const getVitalsign = async () => {
       const response = await fetch(
-        `http://localhost:3001/api/opdDischarge/VitalSign`
+        `http://localhost:3000/api/aia/opdDischarge/VitalSign`
       );
       const data = await response.json();
       setVitalsign(data);
@@ -44,7 +44,7 @@ export default function Page({ params }) {
   useEffect(() => {
     const getPatien = async () => {
       const response = await fetch(
-        `http://localhost:3001/api/opdDischarge/PatienDischarge/`
+        `http://localhost:3000/api/aia/opdDischarge/PatienDischarge/`
       );
       const data = await response.json();
       setPatien(data);
@@ -55,7 +55,7 @@ export default function Page({ params }) {
   useEffect(() => {
     const getBilling = async () => {
       const response = await fetch(
-        `http://localhost:3001/api/opdDischarge/Billing`
+        `http://localhost:3000/api/aia/opdDischarge/Billing`
       );
       const data = await response.json();
       setBilling(data);
@@ -65,7 +65,7 @@ export default function Page({ params }) {
   useEffect(() => {
     const getOrderItem = async () => {
       const response = await fetch(
-        `http://localhost:3001/api/opdDischarge/OrderItem`
+        `http://localhost:3000/api/aia/opdDischarge/OrderItem`
       );
       const data = await response.json();
       setOrderItem(data);
@@ -85,7 +85,7 @@ export default function Page({ params }) {
         Name: patien.PatientInfo.FirstName,
       },
     };
-    fetch(`http://localhost:3001/api/checkClaimStatus/`, {
+    fetch(`http://localhost:3000/api/aia/checkClaimStatus/`, {
       method: "POST",
       headers: {
         "Context-Type": "application/json",

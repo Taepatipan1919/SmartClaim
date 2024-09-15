@@ -9,6 +9,14 @@ import { FaSearch } from "react-icons/fa";
 // import { save } from "../../../../store/counterSlice";
 // import { useSelector } from "react-redux";
 
+
+import dayjs from 'dayjs';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import TextField from '@mui/material/TextField';
+
+
 export default function chackData() {
   const InsuranceCode = 13;
   const [post, setPost] = useState("");
@@ -35,75 +43,47 @@ export default function chackData() {
   return (
     <>
       <form onSubmit={handleSubmit}>
-        <div className="grid gap-1 sm:grid-cols-4 w-full">
+        <div className="grid gap-1 sm:grid-cols-4 w-full mt-2">
+       <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <DatePicker
+            label="วันที่เข้ารับการรักษา"
+            format="YYYY-MM-DD"
+            className="input-info"
+            required
+          />
+        </LocalizationProvider> 
+
           <div className="px-2 rounded-md">
-            <p className="text-left">DateFrom</p>
-            <input
-              type="date"
-              name="datefrom"
-              id="datefrom"
-              className="input input-accent w-full rounded-full px-3 py-2"
-              // required
-            />
-          </div>
-          <div className="px-2 rounded-md">
-            <p className="text-left">DateTo</p>
-            <input
-              type="date"
-              name="dateto"
-              className="input input-accent w-full rounded-full px-3 py-2"
-              // required
-            />
-          </div>
-          <div className="px-2 rounded-md">
-            <p className="text-left">บัตรประชาชน / พาสปอร์ต</p>
-            <input
-              type="text"
-              name="PID"
-              className="input input-accent w-full rounded-full px-3 py-2"
-              // required
-            />
+          <TextField
+          id="standard-multiline-flexible"
+          label="VN"
+          multiline
+          maxRows={4}
+          variant="standard"
+          className="w-full"
+          name="PID"
+          type="text"
+        />
           </div>
           <div className="px-2 rounded-md">
-            <p className="text-left">HN</p>
-            <input
-              type="text"
-              name="HN"
-              className="input input-accent w-full rounded-full px-3 py-2"
-              // required
-            />
+          <TextField
+          id="standard-multiline-flexible"
+          label="Invoice"
+          multiline
+          maxRows={4}
+          variant="standard"
+          className="w-full"
+          name="PID"
+          type="text"
+        />
           </div>
           <div className="px-2 rounded-md">
-            <p className="text-left">VN</p>
-            <input
-              type="text"
-              name="VN"
-              className="input input-accent w-full rounded-full px-3 py-2"
-              // required
-            />
+            <button className="btn btn-primary text-base-100 text-lg rounded-full px-3 py-2" type="submit">
+            <FaSearch /> Search
+            </button>
           </div>
-          <div className="px-2 rounded-md">
-            <p className="text-left">เลขที่ใบแจ้งหนี้</p>
-            <input
-              type="text"
-              name="invoice"
-              className="input input-accent w-full rounded-full px-3 py-2"
-              // required
-            />
-          </div>
-          <div className="px-2 rounded-md"></div>
-          <div className="rounded-md pt-6">
-            <div className="grid gap-1 sm:grid-cols-2 w-full">
-              <div className="rounded-md">
-                <button className="btn btn-neutral text-base-100 text-lg rounded-full px-3 py-2">
-                  <FaSearch /> ค้นหา
-                </button>
-              </div>
-              <div className="rounded-md"></div>
-            </div>
-          </div>
-        </div>
-      </form>
+      </div>
+    </form>
 
       <div className="justify-center border-solid m-auto border-4 rounded-lg p-4 mt-6">
         <div className="overflow-x-auto">

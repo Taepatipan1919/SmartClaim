@@ -16,8 +16,7 @@ export default function Home() {
       {/* value : {DataTran.value}
       <hr />
       VN : {DataTran.Data.VN}
-      <br />
-      RefId : {DataTran.Data.RefId}
+      <br />      RefId : {DataTran.Data.RefId}
       <br />
       TransactionNo : {DataTran.Data.TransactionNo}
       <br /> */}

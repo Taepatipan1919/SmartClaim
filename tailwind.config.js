@@ -26,7 +26,7 @@ module.exports = {
           // warning: "#ffc8dd",
           // error: "#ff003f",
           primary: "#69C2EE",  // ฟ้าอ่อนพาสเทล   //ปุ่ม search ยืนยัน
-          secondary: "#E0F7FA",  // ฟ้าขาวอ่อน
+          secondary: "#0043FF",  // น้ำเเงิน
           accent: "#F7C6A4",  // ส้มอ่อนพาสเทล
           neutral: "#F3F9FC",  // ฟ้าขาวอมเทา
           "base-100": "#FFFFFF",  // พื้นหลังขาว

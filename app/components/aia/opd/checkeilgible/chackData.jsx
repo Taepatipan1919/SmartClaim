@@ -33,6 +33,8 @@ export default function chackData() {
   const [surgeryTypeValue, setSurgeryTypeValue] = useState("");
   const [illnessTypeValue, setIllnessTypeValue] = useState("");
   const router = useRouter();
+  const [massError, setMassError] = useState("");
+  const [showFormError, setShowFormError] = useState("");
 
   const { Patient } = useSelector((state) => ({ ...state }));
   const dispatch = useDispatch();
@@ -126,7 +128,7 @@ export default function chackData() {
     };
 
     axios
-      .post(process.env.NEXT_PUBLIC_URL_PD + "v1/aia-checkeligible/getEpisodeByHN/",{
+      .post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-checkeligible/getEpisodeByHN",{
         PatientInfo
       })
       .then((response) => {
@@ -147,35 +149,40 @@ export default function chackData() {
     const [DayVN, MonthVN, YearVN] = VisitDateselectVN.split('/');
      setDetailVN(VNselectVN);
 
+  const   PatientInfo = {
+      InsurerCode: InsurerCode, // ควรเป็น integer ไม่ใช่ string
+      PID: Patient.Data.PID,
+      HN: Patient.Data.HN,
+      GivenNameTH: Patient.Data.GivenNameTH,
+      SurnameTH: Patient.Data.SurnameTH,
+      DateOfBirth: Patient.Data.DateOfBirth,
+      PassportNumber: Patient.Data.PassportNumber,
+      IdType: Patient.Data.IdType,
+      VN: VNselectVN,
+      VisitDateTime: YearVN+"-"+MonthVN+"-"+DayVN,
+      AccidentDate: AccidentDateselectVN,
+      PolicyTypeCode: policyTypeValue,
+      ServiceSettingCode: statusValue, 
+      IllnessTypeCode: illnessTypeValue,
+      SurgeryTypeCode:  surgeryTypeValue,
+    }
     axios
-      .post(process.env.NEXT_PUBLIC_URL_PD + "v1/aia-checkeligible/checkeligible/", {
-    PatientInfo : {
-          InsurerCode: InsurerCode, // ควรเป็น integer ไม่ใช่ string
-          PID: Patient.Data.PID,
-          HN: Patient.Data.HN,
-          GivenNameTH: Patient.Data.GivenNameTH,
-          SurnameTH: Patient.Data.SurnameTH,
-          DateOfBirth: Patient.Data.DateOfBirth,
-          PassportNumber: Patient.Data.PassportNumber,
-          IdType: Patient.Data.IdType,
-          VN: VNselectVN,
-          VisitDateTime: YearVN+"-"+MonthVN+"-"+DayVN,
-          AccidentDate: AccidentDateselectVN,
-          PolicyTypeCode: policyTypeValue,
-          ServiceSettingCode: statusValue, 
-          IllnessTypeCode: illnessTypeValue,
-          SurgeryTypeCode:  surgeryTypeValue,
-        }
+      .post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-checkeligible/checkeligible/", {
+        PatientInfo
       })
       .then(function (response) {
+        console.log(response.data)
         
         setResult(response.data);
+        setShowFormError("Suc")
       })
       .catch(function (error) {
-        console.log(error);
+        setShowFormError("Err")
+        console.log(error.response.request.status);
+        setMassError(error.response.request.statusText);
       });
     // setShowForm(!showForm);
-    console.log(result)
+    //console.log(result)
       document.getElementById("my_modal_3").showModal();
   };
 
@@ -418,14 +425,36 @@ type="submit"
         <></>
       )}  */}
 
-      {/* {showForm && ( */}
+      {/* {showForm && ( */}      
+     
+     
+          
+       
       <dialog id="my_modal_3" className="modal text-xl	">
         <div className="modal-box w-11/12 max-w-5xl">
           <form method="dialog">
             <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
               ✕
             </button>
-
+            {showFormError === "Err" ? (
+            <div role="alert" className="alert alert-error mt-2 text-base-100">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6 shrink-0 stroke-current"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <span>{massError}</span>
+            </div>
+            ) : (
+              <>
             <h1 className="text-accent text-3xl ">รายการสิทธิ์ประกัน</h1>
             <hr />
             {/* {result
@@ -475,7 +504,7 @@ type="submit"
               </thead>
               <tbody>
                 {result ? (result.Result.InsuranceData.CoverageList.map((coverage, index) => (
-                             coverage.Status === true ? (
+                            //  coverage.Status === true ? (
                   coverage.MessageList.map((message, msgIndex) => (
                     <tr key={`${index}-${msgIndex}`}>
            
@@ -486,24 +515,44 @@ type="submit"
                   
                     </tr>
                   ))
-                ) : ""
+                // ) : (
+                //   coverage.MessageList.map((message, msgIndex) => (
+                //     <tr key={`${index}-${msgIndex}`}>
+           
+                //       <td>{coverage.Type}</td>
+                //       <td>{message.PolicyNo}</td>
+                //       <td>{message.PlanName}</td>
+                //       <td>{message.MessageTh}</td>
+                  
+                //     </tr>
+                //   ))
+                // )
                 ))) : ""}
               </tbody>
             </table>
       
 
 
-
-            <div className="modal-action">
+            {result ? (result.Result.InsuranceData.CoverageList.map((coverage, index) => (
+                         coverage.Status === true ? (
+             
+            <div className="modal-action" key={index}>
               <button
                 className="btn btn-primary text-base-100"
                 onClick={() =>
                   document.getElementById("my_modal_2").showModal()
                 }
               >
-                ยืนยันการเคลม
+                ยืนยันการเคลม {coverage.Status}
               </button>
             </div>
+             ) : ""
+            ))
+            ): ""
+            }
+
+          </>
+            )}
           </form>
         </div>
         </dialog>

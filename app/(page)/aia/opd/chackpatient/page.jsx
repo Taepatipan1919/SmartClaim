@@ -43,7 +43,18 @@ export default function Home() {
   //console.log(DataTran);
   return (
     <>
+          <h1
+        className="font-black text-secondary text-5xl"
+        data-theme="mytheme"
+      >
+        ข้อมูลผู้ป่วย
+      </h1>
       <div>
+      <div className="breadcrumbs text-xl">
+  <ul>
+    <li><a className="text-error underline ">ข้อมูลผู้ป่วย</a></li>
+  </ul>
+</div>
         {/* <Navbar /> */}
         <SelectPatient />
         {/* <button onClick={PatientB}>Click</button> */}
