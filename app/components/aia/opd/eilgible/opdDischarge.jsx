@@ -1,6 +1,8 @@
 "use client";
 import { useState, useEffect } from "react";
-export default function Page({ params }) {
+import axios from "axios";
+export default function Page({data}) {
+  //console.log(data)
   const [patien, setPatien] = useState();
   const [visit, setVisit] = useState();
   const [vitalsign, setVitalsign] = useState();
@@ -8,21 +10,49 @@ export default function Page({ params }) {
   const [billing, setBilling] = useState();
   const [orderitem, setOrderItem] = useState();
   const [result, setResult] = useState("");
-  useEffect(() => {
-    const getDiagnosis = async () => {
-      const response = await fetch(
-        `http://localhost:3000/api/aia/opdDischarge/Diagnosis`
-      );
-      const data = await response.json();
-      setDiagnosis(data);
-    };
-    getDiagnosis();
-  }, []);
+const PatientInfo = {
+        "InsurerCode": data.DataTran.Data.InsurerCode, 
+        "RefId": data.DataTran.Data.RefId,
+        "TransactionNo": data.DataTran.Data.TransactionNo,
+        "PID": data.Patient.Data.PID,
+        "HN": data.Patient.Data.HN,
+        "PassportNumber": data.Patient.Data.PassportNumber,
+        "IdType": data.Patient.Data.IdType,
+        "VN": data.DataTran.Data.VN,
+        "PolicyTypeCode": data.DataTran.Data.PolicyTypeCode,
+        "ServiceSettingCode": data.DataTran.Data.ServiceSettingCode, 
+        "IllnessTypeCode": data.DataTran.Data.IllnessTypeCode,
+        "SurgeryTypeCode":  data.DataTran.Data.SurgeryTypeCode
+}
 
+//console.log(PatientInfo)
+  useEffect(() => {
+    axios
+      .post(process.env.NEXT_PUBLIC_URL + "v1/aia-opddischarge/diagnosis",{
+        PatientInfo
+      })
+      .then((response) => {
+        setDiagnosis(response.data);
+      })
+      .catch((err) => {
+       // console.error("Error", err)
+        console.log(err)
+  });
+
+    // const getDiagnosis = async () => {
+    //   const response = await fetch(
+    //     `http://localhost:3000/api/v1/aia-opddischarge/diagnosis`
+    //   );
+    //   const data = await response.json();
+    //   setDiagnosis(data);
+    // };
+    // getDiagnosis();
+  }, []);
+console.log(diagnosis)
   useEffect(() => {
     const getVisit = async () => {
       const response = await fetch(
-        `http://localhost:3000/api/aia/opdDischarge/Visit`
+        `http://localhost:3000/api/v1/aia-opddischarge/visit`
       );
       const data = await response.json();
       setVisit(data);
@@ -33,7 +63,7 @@ export default function Page({ params }) {
   useEffect(() => {
     const getVitalsign = async () => {
       const response = await fetch(
-        `http://localhost:3000/api/aia/opdDischarge/VitalSign`
+        `http://localhost:3000/api/v1/aia-opddischarge/vitalsign`
       );
       const data = await response.json();
       setVitalsign(data);
@@ -44,7 +74,7 @@ export default function Page({ params }) {
   useEffect(() => {
     const getPatien = async () => {
       const response = await fetch(
-        `http://localhost:3000/api/aia/opdDischarge/PatienDischarge/`
+        `http://localhost:3000/api/v1/aia-opddischarge/patiendischarge`
       );
       const data = await response.json();
       setPatien(data);
@@ -55,7 +85,7 @@ export default function Page({ params }) {
   useEffect(() => {
     const getBilling = async () => {
       const response = await fetch(
-        `http://localhost:3000/api/aia/opdDischarge/Billing`
+        `http://localhost:3000/api/v1/aia-opddischarge/billing`
       );
       const data = await response.json();
       setBilling(data);
@@ -65,7 +95,7 @@ export default function Page({ params }) {
   useEffect(() => {
     const getOrderItem = async () => {
       const response = await fetch(
-        `http://localhost:3000/api/aia/opdDischarge/OrderItem`
+        `http://localhost:3000/api/v1/aia-opddischarge/orderitem`
       );
       const data = await response.json();
       setOrderItem(data);
@@ -85,7 +115,7 @@ export default function Page({ params }) {
         Name: patien.PatientInfo.FirstName,
       },
     };
-    fetch(`http://localhost:3000/api/aia/checkClaimStatus/`, {
+    fetch(`http://localhost:3000/api/v1/aia-opddischarge/checkClaimStatus/`, {
       method: "POST",
       headers: {
         "Context-Type": "application/json",

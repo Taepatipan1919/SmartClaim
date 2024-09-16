@@ -7,6 +7,8 @@ import { useSelector } from "react-redux";
 import { save } from "../../../../store/counterSlice";
 import { FaSearch } from "react-icons/fa";
 import { useRouter } from 'next/navigation';
+import { IoMdCheckmarkCircle } from "react-icons/io";
+import { FaCircleXmark } from "react-icons/fa6";
 
 import dayjs from 'dayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -17,7 +19,7 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
-export default function chackData() {
+export  default  function chackData() {
   const InsurerCode = 13;
   const [post, setPost] = useState("");
   const [serviceSetting, setServiceSetting] = useState();
@@ -45,10 +47,14 @@ export default function chackData() {
       save({
         value: "มีข้อมูล",
         Data: {
-          RefId: result.TransactionQuery.RefID,
-          TransactionNo: result.TransactionQuery.TransactionNo,
+          RefId: result.Result.InsuranceData.RefId,
+          TransactionNo: result.Result.InsuranceData.TransactionNo,
           VN: detailVN,
           InsurerCode: InsurerCode,
+          ServiceSettingCode: statusValue, 
+          IllnessTypeCode: illnessTypeValue,
+          SurgeryTypeCode:  surgeryTypeValue,
+          PolicyTypeCode: policyTypeValue,
         },
       })
     );
@@ -115,13 +121,13 @@ export default function chackData() {
   const handleSubmit = (event) => {
     event.preventDefault();
           const DatefromValue = dayjs(fromValue.$d).format('YYYY-MM-DD');
-   
+          setShowFormError();
     const PatientInfo = {
+      Insurerid: InsurerCode,
       PID: Patient.Data.PID,
       PassportNumber: Patient.Data.PassportNumber,
       IdType: Patient.Data.IdType,
       ServiceSettingCode: statusValue,
-      Insurerid: InsurerCode,
       HN: Patient.Data.HN,
       VisitDatefrom: DatefromValue,
       VisitDateto: "",
@@ -137,20 +143,31 @@ export default function chackData() {
       .catch((err) => {
        // console.error("Error", err)
         console.log(err)
+        //  if (err.response.request.status === 500) {
+                setShowFormError("Error");
+                setMassError(err.response.data.HTTPStatus.message);
+            //  } 
+        
   });
   };
 
-  const check = (event) => {
+  const check = async (event) => {
     event.preventDefault();
+ 
+      setResult()
+      setShowFormError();
     
-    //console.log(event.target.selectVN.value);
+   // console.log(event.target.selectVN.value);
 
-    const [VNselectVN, VisitDateselectVN, AccidentDateselectVN] = event.target.selectVN.value.split(' | ');
-    const [DayVN, MonthVN, YearVN] = VisitDateselectVN.split('/');
+     const [VNselectVN, VisitDateselectVN, AccidentDateselectVN ] = event.target.selectVN.value.split(' | ');
+      //const [YearVN, MonthVN, DayVN] = VisitDateselectVN.split('-');
+      const Acc = VisitDateselectVN.split(' ');
      setDetailVN(VNselectVN);
 
   const   PatientInfo = {
       InsurerCode: InsurerCode, // ควรเป็น integer ไม่ใช่ string
+      RefID: "",
+      TransactionNo: "",
       PID: Patient.Data.PID,
       HN: Patient.Data.HN,
       GivenNameTH: Patient.Data.GivenNameTH,
@@ -159,31 +176,41 @@ export default function chackData() {
       PassportNumber: Patient.Data.PassportNumber,
       IdType: Patient.Data.IdType,
       VN: VNselectVN,
-      VisitDateTime: YearVN+"-"+MonthVN+"-"+DayVN,
-      AccidentDate: AccidentDateselectVN,
+      VisitDateTime: VisitDateselectVN,
+      // AccidentDate: AccidentDateselectVN,         //ทำฟังชั่น จังหวัด (ยังไมไ่ด้ทำ)
+      AccidentDate: Acc[0],         //ทำฟังชั่น จังหวัด (ยังไมไ่ด้ทำ)
+      //AccidentDate: "",
       PolicyTypeCode: policyTypeValue,
       ServiceSettingCode: statusValue, 
       IllnessTypeCode: illnessTypeValue,
       SurgeryTypeCode:  surgeryTypeValue,
     }
-    axios
-      .post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-checkeligible/checkeligible/", {
+    console.log(PatientInfo)
+    document.getElementById("my_modal_3").showModal();
+    try {
+      const response = await axios.post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-checkeligible/checkeligible", {
         PatientInfo
-      })
-      .then(function (response) {
-        console.log(response.data)
-        
-        setResult(response.data);
-        setShowFormError("Suc")
-      })
-      .catch(function (error) {
-        setShowFormError("Err")
-        console.log(error.response.request.status);
-        setMassError(error.response.request.statusText);
       });
+
+     // console.log(response.data)
+      setResult(response.data);
+      setShowFormError()
+
+    } catch (error) {
+       console.log(error);
+      // if (error.response.request.status === 500) {
+        setShowFormError("Err");
+        setMassError(error.response.data.HTTPStatus.message);
+      // } 
+
+    }
+
+
+
+
     // setShowForm(!showForm);
-    //console.log(result)
-      document.getElementById("my_modal_3").showModal();
+    console.log(result)
+      
   };
 
 
@@ -242,7 +269,6 @@ export default function chackData() {
             className="input-info"
             required
           />
-      
     </LocalizationProvider>
             </div>
           </div>
@@ -257,6 +283,7 @@ export default function chackData() {
           label="Type"
           onChange={Status}
           className="w-52 max-w-xs"
+          required
         >
           {serviceSetting
                 ? serviceSetting.map((Service, index) => (
@@ -279,7 +306,27 @@ type="submit"
           </div>
         </div>
       </form>
-                  {post ? post.HTTPStatus.statusCode === 200 ? (  
+      {showFormError === "Error" ? (
+            <div role="alert" className="alert alert-error mt-2 text-base-100">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6 shrink-0 stroke-current"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <span>{massError}</span>
+            </div>
+            ) : ""
+            }
+
+                  {post ? (post.HTTPStatus.statusCode === 200 ? (  
             <>
               <form onSubmit={check}>
                   <div className="overflow-x-auto mt-2">
@@ -289,7 +336,7 @@ type="submit"
                           <th></th>
                           <th>VN</th>
                           <th>VisitDate</th>
-                          <th>AccidentDate</th>
+                          {/* <th>AccidentDate</th> */}
                           <th>LocationDesc</th>
                           <th>WardDesc</th>
                           <th>DoctorLicense</th>
@@ -297,26 +344,40 @@ type="submit"
                         </tr>
                       </thead>
                       <tbody>
-                        {post.Result.EpisodeInfo.map((ep, index) => (
+                        {post ? (post.Result.EpisodeInfo.map((ep, index) => (
                           <tr key={index} className="hover">
                             <td>
                               <input
                                 type="radio"
                                 name="selectVN"
-                                value={`${ep.VN} | ${ep.VisitDate} | ${ep.AccidentDate}`}
+                                value={`${ep.VN} | ${ep.VisitDateTime} | ${ep.AccidentDate}`}
                                 className="radio checked:bg-blue-500"
                                 defaultChecked
                               />
                             </td>
                             <td>{ep.VN}</td>
                             <td>{ep.VisitDateTime}</td>
-                            <td>{ep.AccidentDate}</td>
+                            {/* <td>{ep.AccidentDate}</td> */}
                             <td>{ep.LocationDesc}</td>
                             <td>{ep.WardDesc}</td>
                             <td>{ep.DoctorLicense}</td>
                             <td>{ep.MainCareproviderDesc}</td>
                           </tr>
-                        ))}
+                        ) ))
+                        : 
+                        (
+                          <tr>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                        </tr>
+                        )
+                        }
                       </tbody>
                     </table>
                   </div>
@@ -417,7 +478,7 @@ type="submit"
                 <span className="text-base-100">ไม่พบข้อมูล กรุณาลองใหม่อีกครั้ง</span>
         </div>
             </>
-          ) : ""}
+          )) : ""}
           </div>
 
        {/* </>
@@ -457,42 +518,6 @@ type="submit"
               <>
             <h1 className="text-accent text-3xl ">รายการสิทธิ์ประกัน</h1>
             <hr />
-            {/* {result
-              ? result.Result.InsuranceData.CoverageList.map((e, index) => (
-                  <div key={index}>
-                    <ul>
-                      <li>
-                        {e.Status === true ? (
-                          <>Insurer : {result.Result.InsuranceData.InsurerCode}</>
-                        ) : (
-                          <>
-                          Insurer :  ไม่มี
-                          </>
-                        )}
-                        <ul>
-                          <li>
-                            {e.Status === true ? <>TypeTh : {e.Type}</> : <>TypeTh : ไม่มี</>}{" "}
-                          </li>
-                          <li>
-                            {e.Status === true ? (
-                              <>
-                                {e.MessageList.map((ee, index) => (
-                                  <div key={index}>- {ee.PlanName}</div>
-                                ))}
-                              </>
-                            ) : (
-                              ""
-                            )}
-                            <hr />
-                          </li>
-                        </ul>
-                      </li>
-                    </ul>
-                  </div>
-                ))
-              : ""} */}
-
-
             <table className="table">
               <thead>
                 <tr>
@@ -500,6 +525,7 @@ type="submit"
                   <th>PolicyNo</th>
                   <th>PlanName</th>
                   <th>MessageTh</th>
+                  <th>Chack Eilgible</th>
                 </tr>
               </thead>
               <tbody>
@@ -511,7 +537,8 @@ type="submit"
                       <td>{coverage.Type}</td>
                       <td>{message.PolicyNo}</td>
                       <td>{message.PlanName}</td>
-                      <td>{message.MessageTh}</td>
+                     <td>{message.MessageTh}</td>
+                     {coverage.Status === true ? (<><td className="text-success text-2xl"><IoMdCheckmarkCircle /></td></>) : (<><td className="text-error text-2xl"><FaCircleXmark /></td></>) }
                   
                     </tr>
                   ))
@@ -527,7 +554,15 @@ type="submit"
                 //     </tr>
                 //   ))
                 // )
-                ))) : ""}
+                ))) : 
+                (
+                  <tr>
+                  <td></td>
+                  <td><span className="loading loading-spinner text-error size-10 "></span></td>
+                  <td><div className="justify-center text-4xl">Loading....</div></td>
+                  <td></td>
+                </tr>
+                )}
               </tbody>
             </table>
       

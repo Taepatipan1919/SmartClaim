@@ -195,7 +195,7 @@ router.push('/aia/opd/checkeilgible');
         setShowFormCreate("Succ");
       })
       .catch(function (error) {
-        console.log(error.response.request.status);
+        console.log(error.response.data.HTTPStatus.message);
         if (error.response.request.status === 500) {
           setShowFormCreate("Again");
         } else {
@@ -495,7 +495,7 @@ router.push('/aia/opd/checkeilgible');
       {/* <div className="justify-center border-solid w-screen m-auto border-4 rounded-lg p-4"> */}
 
     <form onSubmit={handleSubmit}>
-      <div className="grid gap-1 sm:grid-cols-3 w-full">
+      <div className="grid gap-1 sm:grid-cols-3 w-full mt-2">
         <div className="px-2 rounded-md">
             <div className="flex items-center ">
               <input

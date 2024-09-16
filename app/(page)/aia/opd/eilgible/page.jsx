@@ -27,19 +27,20 @@ export default function Home() {
     <li><a className="text-error underline ">ส่งยอดเคลม</a></li>
   </ul>
 </div>
-{DataTran.Patient.value === "มีรายชื่อ" ? (
+{DataTran.DataTran.value === "มีข้อมูล" ? (
     <>
-    <Eilgible />
-    </>
-    ) : (
-         <>
-            <OpdDischarge />
+            <OpdDischarge data={DataTran}/>
             value : {DataTran.DataTran.value}
           <hr />
           VN : {DataTran.DataTran.Data.VN}
           <br />
           RefId : {DataTran.DataTran.Data.RefId}
           <br />
+    </>
+    ) : (
+         <>
+             <Eilgible />
+
           </>
     )}
                      {/* <h1
