@@ -17,7 +17,7 @@ export async function GET() {
                 InjuryArea: "S099"
             }
         ]
-    ],
   },
+  }
   });
 }

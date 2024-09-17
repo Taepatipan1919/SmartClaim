@@ -22,7 +22,7 @@ export async function GET() {
         SignSymptomsDate: "2024-09-01",
         UnderlyingCondition: "DM",
         VisitDateTime: "2024-09-01 00:00",
-        Vn: "VN2024OPD",
+        VN: "VN2024OPD",
         Weight: "60"
     },
   },

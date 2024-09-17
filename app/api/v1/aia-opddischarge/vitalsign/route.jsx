@@ -1,6 +1,6 @@
 export async function GET() {
   return Response.json({
-    DataJson: {
+    Result: {
       VitalSign: [
         {
           DiastolicBp: "79",

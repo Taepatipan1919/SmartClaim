@@ -1,15 +1,39 @@
 "use client";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import TextField from '@mui/material/TextField';
+
+
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
 export default function Page({data}) {
   //console.log(data)
   const [patien, setPatien] = useState();
   const [visit, setVisit] = useState();
+  const [accidentDetail, setAccidentDetail] = useState();
+  const [accidentPlaceValue, setAccidentPlaceValue] = useState("");
+  const [dataaccidentPlace, setDataaccidentPlace] = useState("");
+  const [datainjurySide, setDatainjurySide] = useState("");
+  const [injurySide, setInjurySide] = useState("");
+  const [DataWoundType, setDataWoundType] = useState("");
+  const [woundType, setWoundType] = useState("");
   const [vitalsign, setVitalsign] = useState();
-  const [diagnosis, setDiagnosis] = useState();
-  const [billing, setBilling] = useState();
-  const [orderitem, setOrderItem] = useState();
+  // const [diagnosis, setDiagnosis] = useState();
+  // const [billing, setBilling] = useState();
+  // const [orderitem, setOrderItem] = useState();
   const [result, setResult] = useState("");
+
+  const AccidentPlace = (event) => {
+    setAccidentPlaceValue(event.target.value);
+  }
+  const InjurySide = (event) => {
+    setInjurySide(event.target.value);
+  }
+  const WoundType = (event) => {
+    setWoundType(event.target.value);
+  }
 const PatientInfo = {
         "InsurerCode": data.DataTran.Data.InsurerCode, 
         "RefId": data.DataTran.Data.RefId,
@@ -25,8 +49,116 @@ const PatientInfo = {
         "SurgeryTypeCode":  data.DataTran.Data.SurgeryTypeCode,
         "AccidentDate": data.DataTran.Data.AccidentDate,
 }
+  useEffect(() => {
+        axios
+      .get(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-opddischarge/patient",{
+        PatientInfo
+      })
+      .then((response) => {
+        setPatien(response.data);
+      })
+      .catch((err) => {
+       // console.error("Error", err)
+        console.log(err)
+  });
+  }, []);
 
-//console.log(PatientInfo)
+  useEffect(() => {
+    axios
+    .get(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-opddischarge/visit",{
+      PatientInfo
+    })
+    .then((response) => {
+      setVisit(response.data);
+
+    })
+    .catch((err) => {
+     // console.error("Error", err)
+      console.log(err)
+    });
+
+  }, []);
+
+  useEffect(() => {
+    axios
+    .get(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-opddischarge/accidentDetail",{
+      PatientInfo
+    })
+    .then((response) => {
+      setAccidentDetail(response.data);
+
+    })
+    .catch((err) => {
+     // console.error("Error", err)
+      console.log(err)
+    });
+
+  }, []);
+
+  useEffect(() => {
+    axios
+    .get(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-opddischarge/accidentDetail/dataaccidentPlace",{
+      PatientInfo
+    })
+    .then((response) => {
+      setDataaccidentPlace(response.data);
+
+    })
+    .catch((err) => {
+     // console.error("Error", err)
+      console.log(err)
+    });
+
+  }, []);
+
+  useEffect(() => {
+    axios
+    .get(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-opddischarge/accidentDetail/injurySide",{
+      PatientInfo
+    })
+    .then((response) => {
+      setDatainjurySide(response.data);
+
+    })
+    .catch((err) => {
+     // console.error("Error", err)
+      console.log(err)
+    });
+
+  }, []);
+
+  useEffect(() => {
+    axios
+    .get(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-opddischarge/accidentDetail/woundType",{
+      PatientInfo
+    })
+    .then((response) => {
+      setDataWoundType(response.data);
+
+    })
+    .catch((err) => {
+     // console.error("Error", err)
+      console.log(err)
+    });
+
+  }, []);
+
+  useEffect(() => {
+    axios
+    .get(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-opddischarge/vitalsign",{
+      PatientInfo
+    })
+    .then((response) => {
+      setVitalsign(response.data);
+
+    })
+    .catch((err) => {
+     // console.error("Error", err)
+      console.log(err)
+    });
+  }, []);
+
+
 //   useEffect(() => {
 //     axios
 //       .post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-opddischarge/diagnosis",{
@@ -50,49 +182,11 @@ const PatientInfo = {
 //     // getDiagnosis();
 //   }, []);
 // console.log(diagnosis)
-  // useEffect(() => {
-  //   const getVisit = async () => {
-  //     const response = await fetch(
-  //       `http://localhost:3000/api/v1/aia-opddischarge/visit`
-  //     );
-  //     const data = await response.json();
-  //     setVisit(data);
-  //   };
-  //   getVisit();
-  // }, []);
 
-  // useEffect(() => {
-  //   const getVitalsign = async () => {
-  //     const response = await fetch(
-  //       `http://localhost:3000/api/v1/aia-opddischarge/vitalsign`
-  //     );
-  //     const data = await response.json();
-  //     setVitalsign(data);
-  //   };
-  //   getVitalsign();
-  // }, []);
 
-  // useEffect(() => {
-  //       axios
-  //     .post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-opddischarge/diagnosis",{
-  //       PatientInfo
-  //     })
-  //     .then((response) => {
-  //       setDiagnosis(response.data);
-  //     })
-  //     .catch((err) => {
-  //      // console.error("Error", err)
-  //       console.log(err)
-  // });
-  //   // const getPatien = async () => {
-  //   //   const response = await fetch(
-  //   //     `http://localhost:3000/api/v1/aia-opddischarge/patiendischarge`
-  //   //   );
-  //   //   const data = await response.json();
-  //   //   setPatien(data);
-  //   // };
-  //   // getPatien();
-  // }, []);
+
+
+
 
   // useEffect(() => {
   //   const getBilling = async () => {
@@ -148,176 +242,164 @@ const PatientInfo = {
     <>
       {patien ? (
         <>
-          <div className="breadcrumbs text-xl ml-20">
-            <ul>
-              <li>
-                <a>ตรวจสอบสิทธิ์</a>
-              </li>
-              <li>
-                <p className="text-secondary">ข้อมูลผู่ป่วย</p>
-              </li>
-              <li>
-                <a>วางบิล</a>
-              </li>
-              <li>
-                <a>สถานะการเคลม</a>
-              </li>
-            </ul>
-          </div>
           <form onSubmit={Claim}>
-            <div className="justify-center border-solid w-4/5 m-auto border-4 rounded-lg p-4">
+            {patien ? (
+            <div className="justify-center border-solid w-4/5 m-auto border-2 border-warning rounded-lg p-4">
               <h1 className="font-black text-accent text-3xl ">
-                ข้อมูลส่วนตัว
+                Patient Info
               </h1>
               <div className="grid gap-2 sm:grid-cols-4 w-full">
                 <div className="rounded-md">
-                  <h1>ชื่อ </h1>
-                  <input
-                    type="text"
-                    value={patien.PatientInfo.FirstName}
-                    className="input input-bordered w-full max-w-xs"
-                    disabled
-                  />
+                  <TextField id="standard-basic" label="FirstName (TH)" variant="standard" value={patien.Result.Patient.FirstName} />
                 </div>
                 <div className="rounded-md">
-                  <h1>นามสกุล</h1>
-                  <input
-                    type="text"
-                    value={patien.PatientInfo.LastName}
-                    className="input input-bordered w-full max-w-xs"
-                    disabled
-                  />
+                  <TextField id="standard-basic" label="LastName (TH)" variant="standard" value={patien.Result.Patient.LastName} />
                 </div>
                 <div className="rounded-md">
-                  <h1>บัตรประชาชน</h1>
-                  <input
-                    type="text"
-                    value={patien.PatientInfo.PID}
-                    className="input input-bordered w-full max-w-xs background-color-"
-                    disabled
-                  />
+                <TextField id="standard-basic" label="PID" variant="standard" value={PatientInfo.PID} />
                 </div>
-                {patien.PatientInfo.Passport ? (
+              {PatientInfo.PassportNumber ? (
                   <div className="rounded-md">
-                    <h1>Passport</h1>
-                    <input
-                      type="text"
-                      value={patien.PatientInfo.Passport}
-                      className="input input-bordered w-full max-w-xs"
-                      disabled
-                    />
+                    <TextField id="standard-basic" label="Passport" variant="standard" value={PatientInfo.PassportNumber} />
                   </div>
-                ) : (
-                  <></>
-                )}
+                ) : ""} 
                 <div className="rounded-md">
-                  <h1>วันเกิด</h1>
-                  <input
-                    type="text"
-                    value={patien.PatientInfo.DOB}
-                    className="input input-bordered w-full max-w-xs"
-                    disabled
-                  />
+                <TextField id="standard-basic" label="Date of Birth (YYYY-MM-DD)" variant="standard" value={patien.Result.Patient.DOB} />
                 </div>
                 <div className="rounded-md">
-                  <h1>HN </h1>
-                  <input
-                    type="text"
-                    value={patien.PatientInfo.HN}
-                    className="input input-bordered w-full max-w-xs"
-                    disabled
-                  />
+                <TextField id="standard-basic" label="HN" variant="standard" value={PatientInfo.HN} />
                 </div>
                 <div className="rounded-md">
-                  <h1>เพศ </h1>
-                  <input
-                    type="text"
-                    value={patien.PatientInfo.Gender}
-                    className="input input-bordered w-full max-w-xs"
-                    disabled
-                  />
+                <TextField id="standard-basic" label="Sex" variant="standard" value={patien.Result.Patient.Gender} />
                 </div>
               </div>
             </div>
-            <div className="justify-center border-solid w-4/5 m-auto border-4 rounded-lg p-4">
+            ) : ""}
+            {/* //////////////////////////////////////////////////////////////////////////// */}
+            {visit ? (
+            <div className="justify-center border-solid w-4/5 m-auto border-2 border-warning rounded-lg p-4">
               <h1 className="font-black text-accent text-3xl ">
-                ข้อมูลการตรวจ
+              Visit
               </h1>
               <div className="grid gap-2 sm:grid-cols-4 w-full">
                 <div className="rounded-md">
-                  VN <br />
-                  <input
-                    type="text"
-                    value={patien.EpisodeInfo.VN}
-                    className="input input-bordered w-full max-w-xs"
-                    disabled
-                  />
+                <TextField id="standard-basic" label="VN" variant="standard" value={visit.Result.Visit.VN} />
                 </div>
                 <div className="rounded-md">
-                  วันเวลาที่เข้ารับการรักษา
-                  <input
-                    type="text"
-                    value={patien.EpisodeInfo.VisitDateTime}
-                    className="input input-bordered w-full max-w-xs"
-                    disabled
-                  />
+                <TextField id="standard-basic" label="VisitDateTime" variant="standard" value={visit.Result.Visit.VisitDateTime} />
                 </div>
                 <div className="rounded-md">
-                  รหัสแพทย์
-                  <input
-                    type="text"
-                    value={patien.EpisodeInfo.DoctorLicense}
-                    className="input input-bordered w-full max-w-xs"
-                    disabled
-                  />
+                <TextField id="standard-basic" label="อาการสำคัญที่มาโรงพยาบาล" variant="standard" value={visit.Result.Visit.ChiefComplaint} />
                 </div>
                 <div className="rounded-md">
-                  ชื่อ-นามสกุล แพทย์
-                  <input
-                    type="text"
-                    value={
-                      patien.EpisodeInfo.DoctorFirstName +
-                      " " +
-                      patien.EpisodeInfo.DoctorLastName
-                    }
-                    className="input input-bordered w-full max-w-xs"
-                    disabled
-                  />
+                <TextField id="standard-basic" label="ข้อวินิจฉัยโรค" variant="standard" value={visit.Result.Visit.DxFreeText} />
                 </div>
                 <div className="rounded-md">
-                  สถานะของแพทย์
-                  <input
-                    type="text"
-                    value={patien.EpisodeInfo.DoctorRole}
-                    className="input input-bordered w-full max-w-xs"
-                    disabled
-                  />
+                <TextField id="standard-basic" label="ส่วนสูง" variant="standard" value={visit.Result.Visit.Height} />
+                </div>
+                <div className="rounded-md">
+                <TextField id="standard-basic" label="น้ำหนัก" variant="standard" value={visit.Result.Visit.Weight} />
                 </div>
               </div>
+            </div> 
+            ) : ""}
               {/* //////////////////////////////////////////////////////////////////////////// */}
-              {/* {patien.EpisodeInfo.DoctorRole === "OWNER"
-  ? "แพทย์เจ้าของไข้"
-  : ""}
-{patien.EpisodeInfo.DoctorRole === "ADM"
-  ? "แพทย์ที่ Admit"
-  : ""}
-{patien.EpisodeInfo.DoctorRole === "DSC"
-  ? "แพทย์ที่ Discharge"
-  : ""}
-{patien.EpisodeInfo.DoctorRole === "CONSULT"
-  ? "แพทย์ Consult"
-  : ""}
-{patien.EpisodeInfo.DoctorRole === "SURGEON"
-  ? "แพทย์ผ่าตัด"
-  : ""}
-{patien.EpisodeInfo.DoctorRole === "ASST"
-  ? "แพทย์ช่วยผ่าตัด"
-  : ""}
-{patien.EpisodeInfo.DoctorRole === "ANES" ? "แพทย์ดมยา" : ""}
-{patien.EpisodeInfo.DoctorRole === "OTHER" ? "แพทย์อื่น ๆ" : ""} */}
+              {PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER" ? (accidentDetail ? (
+              <div className="justify-center border-solid w-4/5 m-auto border-2 border-error rounded-lg p-4">
+              <h1 className="font-black text-accent text-3xl ">
+              AccidentDetail
+              </h1>
+              <div className="flex  w-full mt-4">
+                <div className="w-1/5">
+                <TextField error id="standard-error-helper-text" label="วันที่เกิดอุบัติเหตุ" variant="standard" value={accidentDetail.Result.AccidentDetail.AccidentDate} />
+                </div>
+                <div className="w-2/5">
+                <FormControl fullWidth>
+        <InputLabel id="demo-error-select-label">สถานที่เกิดอุบัติเหตุ</InputLabel>
+        <Select
+        error
+        className="mx-2"
+          labelId="demo-error-select-label"
+          id="demo-error-select"
+          value={injurySide}
+          label=""
+          onChange={InjurySide}
+        >
+          {dataaccidentPlace
+                ? dataaccidentPlace.Result.map((acc, index) => (
+                    <MenuItem key={index} value={acc.Code}>{acc.Desc}</MenuItem>
+                  ))
+                : ""}
+        </Select>
+      </FormControl>
+                </div>
+              <div className="w-2/5">
+          {/* <TextField error id="standard-error-helper-text" className="w-full" label="" variant="standard" value={""} />  */}
+          <TextField
+          error
+          className="w-full mx-2"
+          id="outlined-error"
+          label="เกิดอุบัติเหตุว่ามีลักษณะบาดแผลอย่างไร"
+          defaultValue=""
+        />
+                </div> 
+              </div>
+              <div className="flex  w-full mt-4">
+                <div className="w-1/5">
+                <FormControl fullWidth>
+        <InputLabel id="demo-error-select-label">ข้างที่ได้รับบาดเจ็บจากการเกิดอุบัติเหตุ</InputLabel>
+        <Select
+        error
+          labelId="demo-error-select-label"
+          id="demo-error-select"
+          value={accidentPlaceValue}
+          label=""
+          onChange={AccidentPlace}
+        >
+          {datainjurySide
+                ? datainjurySide.Result.map((inj, index) => (
+                    <MenuItem key={index} value={inj.DescEN}>{inj.DescTH} - {inj.DescEN}</MenuItem>
+                  ))
+                : ""}
+        </Select>
+      </FormControl>
+                </div>
+                <div className="w-2/5">
+                <FormControl fullWidth>
+        <InputLabel id="demo-error-select-label">ลักษณะบาดแผลที่ได้รับจากการเกิดอุบัติเหตุ</InputLabel>
+        <Select
+        error
+        className="mx-2"
+          labelId="demo-error-select-label"
+          id="demo-error-select"
+          value={woundType}
+          label=""
+          onChange={WoundType}
+        >
+          {DataWoundType
+                ? DataWoundType.Result.map((wound, index) => (
+                    <MenuItem key={index} value={wound.Code}>{wound.Desc}</MenuItem>
+                  ))
+                : ""}
+        </Select>
+      </FormControl>
+                </div>
+              </div>
+                {/* <div className="rounded-md">
+                <TextField id="standard-basic" label="ข้อวินิจฉัยโรค" variant="standard" value={visit.Result.Visit.DxFreeText} />
+                </div>
+                <div className="rounded-md">
+                <TextField id="standard-basic" label="ส่วนสูง" variant="standard" value={visit.Result.Visit.Height} />
+                </div>
+                <div className="rounded-md">
+                <TextField id="standard-basic" label="น้ำหนัก" variant="standard" value={visit.Result.Visit.Weight} />
+                </div> */}
+          
+            </div> 
+            ) : ""  ) : ""}
               {/* //////////////////////////////////////////////////////////////////////////// */}
 
-              <div className="grid gap-2 sm:grid-cols-4 w-full pt-2">
+              {/* <div className="grid gap-2 sm:grid-cols-4 w-full pt-2">
                 <div className="rounded-md">
                   วันที่เข้ารับการรักษาครั้งก่อน
                   <input
@@ -400,15 +482,15 @@ const PatientInfo = {
                     disabled
                   />
                 </div>
-              </div>
-              <h1 className="font-black text-accent text-3xl ">Diagnosis</h1>
+              </div> */}
+              {/* <h1 className="font-black text-accent text-3xl ">Diagnosis</h1>
               <div className="grid gap-2 sm:grid-cols-3 w-full pt-2">
                 {diagnosis
                   ? diagnosis.DataJson.Diagnosis.map((bbe, index) => {
                       return (
                         <div className="" key={index}>
                           {index + 1}. ชื่อของการวินิจฉัยโรค : {bbe.DxName}{" "}
-                          <br />
+                          <br /> */}
                           {/* ชนิดของการวินิจฉัยโรค : {bbe.DxType} <br /> */}
                           {/* //////////////////////////////////////////////////////////////////////////// */}
                           {/* {bbe.DxType === "PP" ? "Principal (โรคหลักที่ให้การรักษา)" : ""}
@@ -416,7 +498,7 @@ const PatientInfo = {
 {bbe.DxType === "CM" ? "Co-morbid (โรคร่วม)" : ""}
 {bbe.DxType === "OT" ? "Other" : ""}   */}
                           {/* //////////////////////////////////////////////////////////////////////////// */}
-                          รหัสอ้างอิงของการวินิจฉัยโรค (ICD10) : {bbe.Icd10}
+                          {/* รหัสอ้างอิงของการวินิจฉัยโรค (ICD10) : {bbe.Icd10}
                         </div>
                       );
                     })
@@ -428,7 +510,7 @@ const PatientInfo = {
               />
               <div className="py-2">
                 <hr />
-              </div>
+              </div> */}
               <div className="overflow-x-auto">
                 <h1 className="font-black text-accent text-3xl ">VitalSign</h1>
                 <table className="table">
@@ -447,62 +529,61 @@ const PatientInfo = {
                   </thead>
                   <tbody>
                     {vitalsign
-                      ? vitalsign.DataJson.Result.NumberVitalSign === "false"
-                        ? vitalsign.DataJson.VitalSign.map((aa, index) => (
+                        ? vitalsign.Result.VitalSign.map((vts, index) => (
                             <tr
                               key={index}
-                              className="text-base-100 bg-neutral text-sm"
+                              className="text-primary bg-neutral text-sm"
                             >
                               <td>{index + 1}</td>
-                              <td>{aa.VitalSignEntryDateTime}</td>
+                              <td>{vts.VitalSignEntryDateTime}</td>
                               <td>
-                                {aa.DiastolicBp +
+                                {vts.DiastolicBp +
                                   " " +
-                                  (aa.DiastolicBp === "" ? "" : "mmHg")}
+                                  (vts.DiastolicBp === "" ? "" : "mmHg")}
                               </td>
                               <td>
-                                {aa.HeartRate +
+                                {vts.HeartRate +
                                   " " +
-                                  (aa.HeartRate === "" ? "" : "bpm")}
+                                  (vts.HeartRate === "" ? "" : "bpm")}
                               </td>
                               <td>
-                                {aa.OxygenSaturation +
+                                {vts.OxygenSaturation +
                                   " " +
-                                  (aa.OxygenSaturation === "" ? "" : "%")}
+                                  (vts.OxygenSaturation === "" ? "" : "%")}
                               </td>
                               <td>
-                                {aa.PainScore +
+                                {vts.PainScore +
                                   " " +
-                                  (aa.PainScore === "" ? "" : "score")}
+                                  (vts.PainScore === "" ? "" : "score")}
                               </td>
                               <td>
-                                {aa.RespiratoryRate +
+                                {vts.RespiratoryRate +
                                   " " +
-                                  (aa.RespiratoryRate === "" ? "" : "min")}
+                                  (vts.RespiratoryRate === "" ? "" : "min")}
                               </td>
                               <td>
-                                {aa.SystolicBp +
+                                {vts.SystolicBp +
                                   " " +
-                                  (aa.SystolicBp === "" ? "" : "mmHg")}
+                                  (vts.SystolicBp === "" ? "" : "mmHg")}
                               </td>
                               <td>
-                                {aa.Temperature +
+                                {vts.Temperature +
                                   " " +
-                                  (aa.Temperature === "" ? "" : "℃")}
+                                  (vts.Temperature === "" ? "" : "℃")}
                               </td>
                             </tr>
                           ))
                         : "เยอะกว่า 5"
-                      : ""}
+                      }
                   </tbody>
-                </table>
+                </table> 
                 {/* <div className="grid gap-2 sm:grid-cols-4 text-base-100 bg-accent w-full whitespace-normal text-center">
                   <div className="rounded-md"></div>
                   <div className="rounded-md"></div>
                   <div className="rounded-md "></div>
-                  <div className="rounded-md ">&nbsp;</div>
-                </div> */}
-              </div>
+                  <div className="rounded-md ">&nbsp;</div> */}
+              </div> 
+              {/* </div>
               <div className="py-2">
                 <hr />
               </div>
@@ -538,9 +619,9 @@ const PatientInfo = {
                       : ""}
                   </tbody>
                 </table>
-              </div>
+              </div> */}
               {/* <div className="text-right mr-20"> */}
-              <div className="grid gap-2 sm:grid-cols-4 text-base-100 bg-accent whitespace-normal text-center">
+              {/* <div className="grid gap-2 sm:grid-cols-4 text-base-100 bg-accent whitespace-normal text-center">
                 <div className="rounded-md"></div>
                 <div className="rounded-md"></div>
                 <div className="rounded-md ">สรุปค่ารักษาพยาบาล</div>
@@ -585,9 +666,9 @@ const PatientInfo = {
                       : ""}
                   </tbody>
                 </table>
-              </div>
+              </div> */}
               {/* <div className="text-right mr-20"> */}
-              <div className="grid gap-2 sm:grid-cols-4 text-base-100 bg-accent whitespace-normal text-center">
+              {/* <div className="grid gap-2 sm:grid-cols-4 text-base-100 bg-accent whitespace-normal text-center">
                 <div className="rounded-md"></div>
                 <div className="rounded-md"></div>
                 <div className="rounded-md ">สรุปค่ารักษาพยาบาล</div>
@@ -605,8 +686,8 @@ const PatientInfo = {
                 >
                   ส่งการเรียกร้องค่าสินไหม
                 </button>
-              </div>
-            </div>
+              </div>*/}
+            
           </form>
         </>
       ) : (
