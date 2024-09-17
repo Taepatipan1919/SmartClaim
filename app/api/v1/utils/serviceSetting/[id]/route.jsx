@@ -1,5 +1,5 @@
 export async function GET() {
-  return Response.json({
+  return Response.json([
     {
       "ServiceSettingCode": "OPD",
       "ServiceSettingDesc": "ผู้ป่วยนอก",
@@ -27,5 +27,5 @@ export async function GET() {
           "insurername": "เอไอเอ"
       }
   }
-  });
+]);
 }

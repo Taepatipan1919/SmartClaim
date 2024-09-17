@@ -37,7 +37,7 @@ export  default  function chackData() {
   const router = useRouter();
   const [massError, setMassError] = useState("");
   const [showFormError, setShowFormError] = useState("");
-
+const [accidentDate, setAccidentDate] = useState("");
   const { Patient } = useSelector((state) => ({ ...state }));
   const dispatch = useDispatch();
   
@@ -55,6 +55,7 @@ export  default  function chackData() {
           IllnessTypeCode: illnessTypeValue,
           SurgeryTypeCode:  surgeryTypeValue,
           PolicyTypeCode: policyTypeValue,
+          AccidentDate: accidentDate,
         },
       })
     );
@@ -162,6 +163,7 @@ export  default  function chackData() {
      const [VNselectVN, VisitDateselectVN, AccidentDateselectVN ] = event.target.selectVN.value.split(' | ');
       //const [YearVN, MonthVN, DayVN] = VisitDateselectVN.split('-');
       const Acc = VisitDateselectVN.split(' ');
+      setAccidentDate(Acc[0])
      setDetailVN(VNselectVN);
 
   const   PatientInfo = {
@@ -209,7 +211,7 @@ export  default  function chackData() {
 
 
     // setShowForm(!showForm);
-    console.log(result)
+   // console.log(result)
       
   };
 
@@ -336,7 +338,7 @@ type="submit"
                           <th></th>
                           <th>VN</th>
                           <th>VisitDate</th>
-                          {/* <th>AccidentDate</th> */}
+                          <th>AccidentDate</th> 
                           <th>LocationDesc</th>
                           <th>WardDesc</th>
                           <th>DoctorLicense</th>
@@ -357,7 +359,7 @@ type="submit"
                             </td>
                             <td>{ep.VN}</td>
                             <td>{ep.VisitDateTime}</td>
-                            {/* <td>{ep.AccidentDate}</td> */}
+                            <td>{ep.AccidentDate}</td>
                             <td>{ep.LocationDesc}</td>
                             <td>{ep.WardDesc}</td>
                             <td>{ep.DoctorLicense}</td>

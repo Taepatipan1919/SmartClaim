@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { save } from "../../../../store/counterSlice";
 import { save2 } from "../../../../store/patientSlice";
-import Navbar from "../../../../components/aia/layout/navbar";
+// import Navbar from "../../../../components/aia/layout/navbar";
 export default function Home() {
   // const transaction = useContext(DataContext);
   // console.log(transaction);
@@ -44,7 +44,7 @@ export default function Home() {
   return (
     <>
           <h1
-        className="font-black text-secondary text-5xl"
+        className="font-black text-accent text-3xl "
         data-theme="mytheme"
       >
         ข้อมูลผู้ป่วย

@@ -22,86 +22,100 @@ const PatientInfo = {
         "PolicyTypeCode": data.DataTran.Data.PolicyTypeCode,
         "ServiceSettingCode": data.DataTran.Data.ServiceSettingCode, 
         "IllnessTypeCode": data.DataTran.Data.IllnessTypeCode,
-        "SurgeryTypeCode":  data.DataTran.Data.SurgeryTypeCode
+        "SurgeryTypeCode":  data.DataTran.Data.SurgeryTypeCode,
+        "AccidentDate": data.DataTran.Data.AccidentDate,
 }
 
 //console.log(PatientInfo)
-  useEffect(() => {
-    axios
-      .post(process.env.NEXT_PUBLIC_URL + "v1/aia-opddischarge/diagnosis",{
-        PatientInfo
-      })
-      .then((response) => {
-        setDiagnosis(response.data);
-      })
-      .catch((err) => {
-       // console.error("Error", err)
-        console.log(err)
-  });
+//   useEffect(() => {
+//     axios
+//       .post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-opddischarge/diagnosis",{
+//         PatientInfo
+//       })
+//       .then((response) => {
+//         setDiagnosis(response.data);
+//       })
+//       .catch((err) => {
+//        // console.error("Error", err)
+//         console.log(err)
+//   });
 
-    // const getDiagnosis = async () => {
-    //   const response = await fetch(
-    //     `http://localhost:3000/api/v1/aia-opddischarge/diagnosis`
-    //   );
-    //   const data = await response.json();
-    //   setDiagnosis(data);
-    // };
-    // getDiagnosis();
-  }, []);
-console.log(diagnosis)
-  useEffect(() => {
-    const getVisit = async () => {
-      const response = await fetch(
-        `http://localhost:3000/api/v1/aia-opddischarge/visit`
-      );
-      const data = await response.json();
-      setVisit(data);
-    };
-    getVisit();
-  }, []);
+//     // const getDiagnosis = async () => {
+//     //   const response = await fetch(
+//     //     `http://localhost:3000/api/v1/aia-opddischarge/diagnosis`
+//     //   );
+//     //   const data = await response.json();
+//     //   setDiagnosis(data);
+//     // };
+//     // getDiagnosis();
+//   }, []);
+// console.log(diagnosis)
+  // useEffect(() => {
+  //   const getVisit = async () => {
+  //     const response = await fetch(
+  //       `http://localhost:3000/api/v1/aia-opddischarge/visit`
+  //     );
+  //     const data = await response.json();
+  //     setVisit(data);
+  //   };
+  //   getVisit();
+  // }, []);
 
-  useEffect(() => {
-    const getVitalsign = async () => {
-      const response = await fetch(
-        `http://localhost:3000/api/v1/aia-opddischarge/vitalsign`
-      );
-      const data = await response.json();
-      setVitalsign(data);
-    };
-    getVitalsign();
-  }, []);
+  // useEffect(() => {
+  //   const getVitalsign = async () => {
+  //     const response = await fetch(
+  //       `http://localhost:3000/api/v1/aia-opddischarge/vitalsign`
+  //     );
+  //     const data = await response.json();
+  //     setVitalsign(data);
+  //   };
+  //   getVitalsign();
+  // }, []);
 
-  useEffect(() => {
-    const getPatien = async () => {
-      const response = await fetch(
-        `http://localhost:3000/api/v1/aia-opddischarge/patiendischarge`
-      );
-      const data = await response.json();
-      setPatien(data);
-    };
-    getPatien();
-  }, []);
+  // useEffect(() => {
+  //       axios
+  //     .post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-opddischarge/diagnosis",{
+  //       PatientInfo
+  //     })
+  //     .then((response) => {
+  //       setDiagnosis(response.data);
+  //     })
+  //     .catch((err) => {
+  //      // console.error("Error", err)
+  //       console.log(err)
+  // });
+  //   // const getPatien = async () => {
+  //   //   const response = await fetch(
+  //   //     `http://localhost:3000/api/v1/aia-opddischarge/patiendischarge`
+  //   //   );
+  //   //   const data = await response.json();
+  //   //   setPatien(data);
+  //   // };
+  //   // getPatien();
+  // }, []);
 
-  useEffect(() => {
-    const getBilling = async () => {
-      const response = await fetch(
-        `http://localhost:3000/api/v1/aia-opddischarge/billing`
-      );
-      const data = await response.json();
-      setBilling(data);
-    };
-    getBilling();
-  }, []);
-  useEffect(() => {
-    const getOrderItem = async () => {
-      const response = await fetch(
-        `http://localhost:3000/api/v1/aia-opddischarge/orderitem`
-      );
-      const data = await response.json();
-      setOrderItem(data);
-    };
-    getOrderItem();
-  }, []);
+  // useEffect(() => {
+  //   const getBilling = async () => {
+  //     const response = await fetch(
+  //       `http://localhost:3000/api/v1/aia-opddischarge/billing`
+  //     );
+  //     const data = await response.json();
+  //     setBilling(data);
+  //   };
+  //   getBilling();
+  // }, []);
+
+  // useEffect(() => {
+  //   const getOrderItem = async () => {
+  //     const response = await fetch(
+  //       `http://localhost:3000/api/v1/aia-opddischarge/orderitem`
+  //     );
+  //     const data = await response.json();
+  //     setOrderItem(data);
+  //   };
+  //   getOrderItem();
+  // }, []);
+
   //console.log(diagnosis);
   //console.log(visit);
   //console.log(diagnosis);

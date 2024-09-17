@@ -45,7 +45,7 @@ export async function POST(request) {
                 "VisitDate": "09/05/2024",
                 "VisitTime": "17:51:00",
                 "VisitDateTime": "09/05/2024 17:51:00",
-                "AccidentDate": "",
+                "AccidentDate": "04/05/2024",
                 "LocationCode": "4144",
                 "LocationDesc": "อายุรกรรม",
                 "WardCode": "3720",

@@ -16,7 +16,7 @@ export default function Home() {
         {DataTran.Patient.value === "มีรายชื่อ" ? (
     <>
                                  <h1
-        className="font-black text-secondary text-5xl"
+        className="font-black text-accent text-3xl "
         data-theme="mytheme"
       >
         วางบิล
@@ -40,7 +40,7 @@ export default function Home() {
     </>
     ) : (
       <>
-      <h1 className="font-black text-secondary text-5xl" data-theme="mytheme">วางบิล</h1>
+      <h1 className="font-black text-accent text-3xl " data-theme="mytheme">วางบิล</h1>
 
 <div className="breadcrumbs text-xl">
 <ul>

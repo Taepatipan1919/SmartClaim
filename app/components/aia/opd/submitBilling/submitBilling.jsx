@@ -12,15 +12,17 @@ import TextField from '@mui/material/TextField';
 // import { useSelector } from "react-redux";
 
 import dayjs from 'dayjs';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
 
 export default function chackData() {
   const InsuranceCode = 13;
+  const DatefromValue = "";
+  const DateToValue = "";
   const [post, setPost] = useState("");
-  const [selectedOption, setSelectedOption] = useState("NATIONAL_ID");
+  const [selectedIdType, setSelectedIdType] = useState("NATIONAL_ID");
   const [pidValue, setPidValue] = useState("");
   const [vnValue, setVNValue] = useState("");
   const [invoiceValue, setInvoiceValue] = useState("");
@@ -30,78 +32,85 @@ export default function chackData() {
   const [showFormError, setShowFormError] = useState("");
 
   const handleOptionChange = (e) => {
-    setSelectedOption(e.target.value);
+    setSelectedIdType(e.target.value);
   };
 
 
   
   const handleSubmit = (event) => {
     event.preventDefault();
-
-    if (fromValue != null && toValue != null){
-
-     const DatefromValue = dayjs(fromValue.$d).format('YYYY-MM-DD');
-     const DateToValue = dayjs(toValue.$d).format('YYYY-MM-DD');
+    setPost();
 
 
-    const search = {
-      PID: selectedOption,
-      VN: selectedOption2,
-      pidValue: pidValue,
-      vnValue: vnValue,
-      fromValue: DatefromValue,
-      toValue: DateToValue,
 
-      // datefrom: event.target.datefrom.value,
-      // dateto: event.target.dateto.value,
-      //  PID: event.target.PID.value,
-      // HN: event.target.HN.value,
-      // VN: event.target.VN.value,
-      // invoice: event.target.invoice.value,
-    };
-    console.log(search)
-  //   axios
-  //     .post(process.env.NEXT_PUBLIC_URL + "v1/aia-submitBilling/selectbilling",{
-  //       search
-  //     })
-  //     .then((response) => {
-  //       setPost(response.data);
-  //     })
-  //     .catch((err) => {
-  //      // console.error("Error", err)
-  //       console.log(err)
-  //       //  if (err.response.request.status === 500) {
-  //               setShowFormError("Error");
-  //               setMassError(err.response.data.HTTPStatus.message);
-  //           //  }  
-  // });
+    if (event.target.T1.value || event.target.T2.value){
+
+    //  const DatefromValue = dayjs(event.target.T1.value.$d).format('YYYY-MM-DD');
+    //  const DateToValue = dayjs(event.target.T2.value.$d).format('YYYY-MM-DD');
+    try {
+      const DateFromValue = event.target.T1.value;
+      const DateToValue = event.target.T2.value;
+      if (!DateFromValue || !DateToValue) {
+        setShowFormError("Error")
+        setMassError("กรุณา กรอก ช่อง DateFrom หรือ DateTo ให้ครบ")
+      }else{
+        setShowFormError("");
+
+        axios
+      .post(process.env.NEXT_PUBLIC_URL + "v1/aia-submitbilling/selectbilling",{
+              //ส่งเป็น statisCode
+        Insurerid: InsuranceCode,
+        Status: "09",
+        IdType: selectedIdType,
+        PID: pidValue,
+        VN: vnValue,
+        Invoice: invoiceValue,
+        DateFrom: DateFromValue,
+        DateTo: DateToValue,
+      })
+      .then((response) => {
+        setPost(response.data);
+      })
+      .catch((error) => {
+       // console.error("Error", err)
+        console.log(error)
+        //  if (err.response.request.status === 500) {
+                setShowFormError("Error");
+                // setMassError(error.response.data.HTTPStatus.message);
+            //  }  
+  });
+  }
+  } catch (error){
+    setShowFormError("Error");
+    setMassError(error.message);
+  }
+  console.log(post)
+
   }else {
-    const search = {
+
+    axios
+    .post(process.env.NEXT_PUBLIC_URL + "v1/aia-submitbilling/selectbilling",{
+      //ส่งเป็น statisCode
+      Insurerid: InsuranceCode,
       Status: "Received",
-      IdType: selectedOption,
-      PID: selectedOption,
+      IdType: selectedIdType,
       PID: pidValue,
       VN: vnValue,
       Invoice: invoiceValue,
       DateFrom: "",
       DateTo: "",
-    };
-    //console.log(search)
-    axios
-      .post(process.env.NEXT_PUBLIC_URL + "v1/aia-submitbilling/selectbilling",{
-        search
-      })
-      .then((response) => {
-        setPost(response.data);
-      })
-      .catch((err) => {
-       // console.error("Error", err)
-        console.log(err)
-        //  if (err.response.request.status === 500) {
-                setShowFormError("Error");
-                setMassError(err.response.data.HTTPStatus.message);
-            //  }  
-  });
+    })
+    .then((response) => {
+      setPost(response.data);
+    })
+    .catch((error) => {
+     // console.error("Error", err)
+      console.log(error)
+      //  if (err.response.request.status === 500) {
+              setShowFormError("Error");
+              // setMassError(error.response.data.HTTPStatus.message);
+          //  }  
+});
   }
    };
    const handleSubmit2 = (event) => {
@@ -110,8 +119,8 @@ export default function chackData() {
     const DatefromValue = dayjs(fromValue.$d).format('YYYY-MM-DD');
     const DateToValue = dayjs(toValue.$d).format('YYYY-MM-DD');
     const search = {
-      PID: selectedOption,
-      VN: selectedOption2,
+      PID: selectedIdType,
+      VN: selectedIdType2,
       pidValue: pidValue,
       vnValue: vnValue,
       fromValue: DatefromValue,
@@ -168,12 +177,12 @@ document.getElementById("my_modal_3").showModal()
 
 
    
-console.log(post)
+
   return (
     <>
     <div role="tablist" className="tabs tabs-lifted">
       <input type="radio" name="my_tabs_2" role="tab" className="tab text-error" aria-label="รายการที่ยังไม่วางบิล" defaultChecked/>
-  <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6">
+    <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6">
     
     <form onSubmit={handleSubmit}>
     <div className="grid gap-1 sm:grid-cols-3 w-full">
@@ -195,7 +204,7 @@ console.log(post)
                         name="identity_type"
                         value="PASSPORT_NO"
                         className="checkbox checkbox-info"
-                        checked={selectedOption === 'PASSPORT_NO'}
+                        checked={selectedIdType === 'PASSPORT_NO'}
                         onChange={handleOptionChange}
                 
               />
@@ -206,12 +215,12 @@ console.log(post)
                         name="identity_type"
                         value="HOSPITAL_ID"
                         className="checkbox checkbox-info"
-                        checked={selectedOption === 'HOSPITAL_ID'}
+                        checked={selectedIdType === 'HOSPITAL_ID'}
                         onChange={handleOptionChange}
               />
               <p className="text-left">&nbsp;HN &nbsp;</p>
             </div>
-                    <TextField
+            <TextField
           id="standard-multiline-flexible"
           label="Personal ID / Passport / HN"
           multiline
@@ -221,12 +230,38 @@ console.log(post)
           name="PID"
           type="text"
                       value={pidValue}
-                      onChange={(newDate) => setPidValue(newDate)}
+                      onChange={(e) => setPidValue(e.target.value)}
         />
         </div>
         
-        <div className="px-2 rounded-md">
-                    <TextField
+        <div className="px-2  rounded-md mt-6">
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <DatePicker
+            label="Date From"
+            name="T1"
+            //value={fromValue}
+            //onChange={(newDate) => setFromValue(newDate)}
+            format="YYYY-MM-DD"
+          />
+      
+      </LocalizationProvider> 
+      &nbsp;&nbsp;
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <DatePicker
+            label="Date To"
+            name="T2"
+            //value={toValue}
+            //onChange={(newDate) => setToValue(newDate)}
+            format="YYYY-MM-DD"
+          />
+    </LocalizationProvider>
+                    
+        </div>
+        <div className="px-2 rounded-md mt-6">
+
+        </div>
+      <div className="px-2 rounded-md mt-2">
+      <TextField
           id="standard-multiline-flexible"
           label="VN"
           multiline
@@ -238,9 +273,11 @@ console.log(post)
                       value={vnValue}
                       onChange={(e) => setVNValue(e.target.value)}
         />
-        </div>
-        <div className="px-2 rounded-md">
-                    <TextField
+
+    
+       </div>
+       <div className="px-2  rounded-md mt-2">
+       <TextField
           id="standard-multiline-flexible"
           label="Invoice"
           multiline
@@ -252,28 +289,6 @@ console.log(post)
                       value={invoiceValue}
                       onChange={(e) => setInvoiceValue(e.target.value)}
         />
-        </div>
-      <div className="px-2 rounded-md w-full mt-2 ">
-      <div className="flex items-center ">
-      <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <DatePicker
-            label="Date From"
-            value={fromValue}
-            onChange={(newDate) => setFromValue(newDate)}
-            format="YYYY-MM-DD"
-          />
-      
-      </LocalizationProvider>
-      <h1 className="">&nbsp;-&nbsp;</h1>
-      <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <DatePicker
-            label="Date To"
-            value={toValue}
-            onChange={(newDate) => setToValue(newDate)}
-            format="YYYY-MM-DD"
-          />
-    </LocalizationProvider>
-      </div>
        </div>
        <div className="rounded-md mt-2"> 
               <div className="grid gap-1 sm:grid-cols-2 w-full">
@@ -319,7 +334,7 @@ console.log(post)
                         name="identity_type"
                         value="PASSPORT_NO"
                         className="checkbox checkbox-info"
-                        checked={selectedOption === 'PASSPORT_NO'}
+                        checked={selectedIdType === 'PASSPORT_NO'}
                         onChange={handleOptionChange}
                 
               />
@@ -330,7 +345,7 @@ console.log(post)
                         name="identity_type"
                         value="HOSPITAL_ID"
                         className="checkbox checkbox-info"
-                        checked={selectedOption === 'HOSPITAL_ID'}
+                        checked={selectedIdType === 'HOSPITAL_ID'}
                         onChange={handleOptionChange}
               />
               <p className="text-left">&nbsp;HN &nbsp;</p>
@@ -367,7 +382,7 @@ console.log(post)
                         name="identity_type2"
                         value="Invoice"
                         className="checkbox checkbox-info"
-                        checked={selectedOption2 === 'Invoice'}
+                        checked={selectedIdType2 === 'Invoice'}
                         onChange={handleOptionChange2}
                 
               />
@@ -450,8 +465,8 @@ console.log(post)
             }
 
           
- <table className="table">
-    <thead className="bg-info text-base-100 text-center text-lg">
+ <table className="table mt-2">
+    <thead className="bg-info text-base-100 text-center text-lg ">
       <tr>
         <th></th>
         <th>ชื่อ-นามสกุล</th>
@@ -459,32 +474,36 @@ console.log(post)
         <th>เลขที่การเคลม</th>
         <th>เลขที่ใบแจ้งหนี้</th>
         <th>ประเภทการเคลม</th>
-        <th>ประเภทการเคลม</th>
-        <th>รายการสถานะการเคลม</th>
+        <th>รายการ</th>
         <th>สถานะ</th>
         <th>ยอดเงิน</th>
+        <th></th>
       </tr>
     </thead>
     <tbody>
-    {/* {post ? (post.HTTPStatus.statusCode === 200 ? (post.Result.submitBilling 
-<>*/}
-<tr className="hover text-center">
-   <th>1</th>
-      <td>ปฏิภาณ ไขไพรวัน</td>
-      <td>035567-65</td>
-      <td>C50042420</td>
-      <td>C051275-66</td>
-      <td>อุบัติเหตุ</td>
-    <td><button className="btn bg-base-100 border-base-100 text-info"><LuRefreshCw /></button><button className="btn bg-base-100 border-base-100 text-info ml-2"><IoDocumentText /></button></td>
-        <td><div className="bg-success text-base-100 rounded-full px-3 py-2">จ่ายเงินสินไหมทดแทนแล้ว</div></td>
-        <th>2,299.00</th>
+    {post ? post.HTTPStatus.statusCode === 200 ? 
+    (post.Result.map((bill, index) => (
+<tr className="hover text-center" key={index}>
+   <th>{index+1}</th>
+      <td>{bill.TitleTH}</td>
+      <td>{bill.HN}</td>
+      <td>{bill.Invoice}</td>
+      <td>{bill.Invoice}</td>
+      <td>{bill.IllnessType}</td>
+    <td><button className="btn bg-base-100 border-base-100 text-secondary border-none hover:text-base-100 hover:bg-primary"><LuRefreshCw /></button><button className="btn bg-base-100 border-base-100 text-secondary hover:text-base-100 hover:bg-primary ml-2"><IoDocumentText /></button></td>
+        <td><div className="bg-success text-base-100 rounded-full px-3 py-2">{
+        
+        bill.status
+        }</div></td>
+        <th>{bill.TotalAmount}</th>
         <td><button className="btn btn-primary bg-base-100 text-info hover:text-base-100"
         onClick={() => handleButtonClick("1")}
         >วางบิล</button></td> 
        
       </tr>
-{/* </>
-    ) : (
+
+   ) 
+  )): (
       <>
       <tr>
       <th></th>
@@ -499,8 +518,7 @@ console.log(post)
       <td></td>
       </tr>
       </>
-    )
-    )} */}
+    ): ""}
     </tbody>
   </table>
   <dialog id="my_modal_3" className="modal text-xl	">
@@ -514,14 +532,15 @@ console.log(post)
                                   ส่งเอกสาร วางบิล
                                 </h3>
                                 <hr />
-                              <div className="grid gap-1 sm:grid-cols-2 w-full mt-2">
-                                <div className="flex pt-3 text-xl">
-                                  <h1>หมายเหตุ</h1>
-                                  
-                                </div>
-                                <div className="flex text-xl mt-2">
-                                <textarea className="textarea textarea-info ml-0" placeholder="Bio"></textarea>
-                                </div>
+                                <div className="flex items-center mt-3">
+                                <TextField
+                                className="w-full"
+                                color="primary"
+          id="outlined-multiline-static"
+          label="หมายเหตุ"
+          multiline
+          rows={6}
+        />
                               </div>
                       
                               <input type="file" className="file-input file-input-bordered file-input-info w-full mt-2" />

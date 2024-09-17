@@ -81,7 +81,7 @@ router.push('/aia/opd/checkeilgible');
   useEffect(() => {
     const getClaimStatus = async () => {
       const response = await fetch(
-        process.env.NEXT_PUBLIC_URL + "v1/utils/claimStatus/"
+        process.env.NEXT_PUBLIC_URL_SV + "v1/utils/claimStatus/"
       );
 
       const data = await response.json();
@@ -210,7 +210,7 @@ router.push('/aia/opd/checkeilgible');
     //console.log(patient)
     axios
       .post(
-        process.env.NEXT_PUBLIC_URL + "v1/aia-patient-info/PatientFindforUpdate",
+        process.env.NEXT_PUBLIC_URL_SV + "v1/aia-patient-info/PatientFindforUpdate",
         {
           PatientInfo: {
             "Insurerid": 13, 
@@ -239,7 +239,7 @@ router.push('/aia/opd/checkeilgible');
   function saveUpdate() {
     axios
       .patch(
-        process.env.NEXT_PUBLIC_URL + "v1/aia-patient-info/PatientUpdate",
+        process.env.NEXT_PUBLIC_URL_SV + "v1/aia-patient-info/PatientUpdate",
         {
           "PatientInfo": {
             "InsurerCode": 13, // ควรเป็น integer ไม่ใช่ string
@@ -473,7 +473,7 @@ router.push('/aia/opd/checkeilgible');
               })
               .catch(function (error) {
                 console.log(error.data);
-                setShowFormCreate("Err");
+                setShowFormError("Err");
               });
           };
 

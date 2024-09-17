@@ -81,7 +81,7 @@ export default function Drawer() {
               src="/hch-logo.png"
             /> 
           <BsArrowLeftShort
-            className={`bg-7u-300 mt-6 text-black-200 text-3xl rounded-full absolute -right-3 top-9 border  bg-info  cursor-pointer ${
+            className={`bg-7u-300 mt-6 text-black-200 text-3xl rounded-full absolute -right-3 top-9  bg-info  cursor-pointer ${
               !open && "rotate-180"
             }`}
             onClick={() => setOpen(!open)}
