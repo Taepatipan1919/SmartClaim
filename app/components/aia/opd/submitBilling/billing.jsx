@@ -158,10 +158,10 @@ document.getElementById("my_modal_3").showModal()
     <>
     <div role="tablist" className="tabs tabs-lifted">
       <input type="radio" name="my_tabs_2" role="tab" className="tab text-error" aria-label="รายการที่ยังไม่วางบิล" defaultChecked/>
-    <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6 w-2/5">
+    <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6 w-5/5">
     
     <form onSubmit={handleSubmit}>
-    <div className="grid gap-1 sm:grid-cols-2 w-full">
+    <div className="grid gap-1 sm:grid-cols-3 w-full">
           <div className="px-2 rounded-md ">
             <div className="flex items-center ">
               <input
@@ -199,7 +199,28 @@ document.getElementById("my_modal_3").showModal()
                       onChange={(e) => setNumberValue(e.target.value)}
         />
         </div>
-
+        <div className="px-2 rounded-md w-full mt-4">
+      <div className="flex items-center ">
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <DatePicker
+            label="Date From"
+            value={fromValue}
+            onChange={(newDate) => setFromValue(newDate)}
+            format="YYYY-MM-DD"
+          />
+      
+      </LocalizationProvider>
+      <h1 className="mt-5">&nbsp;</h1>
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <DatePicker
+            label="Date To"
+            value={toValue}
+            onChange={(newDate) => setToValue(newDate)}
+            format="YYYY-MM-DD"
+          />
+    </LocalizationProvider>
+      </div>
+       </div>
        <div className="rounded-md mt-6"> 
               <div className="grid gap-1 sm:grid-cols-2 w-full">
                 <div className="rounded-md">
@@ -329,6 +350,7 @@ document.getElementById("my_modal_3").showModal()
     (post.Result.map((bill, index) => (
 <tr className="hover text-center" key={index}>
    <th>{index+1}</th>
+   <td>{bill.VisitDatefrom}</td>
       <td>{bill.TitleTH}</td>
       <td>{bill.HN}</td>
       <td>{bill.Invoice}</td>
@@ -338,8 +360,8 @@ document.getElementById("my_modal_3").showModal()
         <th>{bill.TotalAmount}</th>
         <td><button className="btn btn-primary bg-base-100 text-info hover:text-base-100"
         onClick={() => handleButtonClick("1")}
-        >วางบิล</button></td> 
-        <td className="w-1"><Button variant="outlined" className="border-none"   onClick={handleClick}>
+        >วางบิล</button>
+        <Button variant="outlined" className="border-none"   onClick={handleClick}>
 
         <AiOutlineUnorderedList />
       </Button></td>

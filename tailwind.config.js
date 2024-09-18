@@ -25,12 +25,12 @@ module.exports = {
           // success: "#3dccc7", /** BDE0FE*/
           // warning: "#ffc8dd",
           // error: "#ff003f",
-          primary: "#69C2EE",  // ฟ้าอ่อนพาสเทล   //ปุ่ม search ยืนยัน
-          secondary: "#A2D2FF",  // น้ำเเงิน
-          accent: "#F7C6A4",  // ส้มอ่อนพาสเทล
-          neutral: "#F3F9FC",  // ฟ้าขาวอมเทา
-          "base-100": "#FFFFFF",  // พื้นหลังขาว
+          primary: "#34BFEA",  // ฟ้าอ่อนพาสเทล   //พื้นหลังเมนู ปุ่ม search ยืนยัน
+          secondary: "#5AB2FF",  // น้ำเเงิน
           info: "#76D7EA",  // ฟ้าสดใส
+          accent: "#00B0E3",  // สีฟ้าสว่าง        //หัวข้อ พื้นหลังเมนูย่อย
+          neutral: "#F3F9FC",  // ฟ้าขาวอมเทา 
+          "base-100": "#FFFFFF",  // พื้นหลังขาว
           success: "#72d572",  // เขียวพาสเทล      //ปุ่ม create save
           warning: "#F9E79F",  // เหลืองพาสเทล
           error: "#F1948A",  // แดงพาสเทล

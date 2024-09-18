@@ -26,6 +26,7 @@ export async function POST(request) {
                 "IllnessType": "ACC",
                 "status": "Received",
                 "TotalAmount": "2299",
+                "VisitDatefrom": "2024-09-17"
             },
             {
                 "HN": "61-022789",
@@ -40,6 +41,7 @@ export async function POST(request) {
                 "IllnessType": "ACC",
                 "status": "Received",
                 "TotalAmount": "1360",
+                "VisitDatefrom": "2024-09-10"
             },
         ],
         })

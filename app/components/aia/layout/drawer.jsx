@@ -54,6 +54,14 @@ export default function Drawer() {
       spacing: false,
       submenu: "",
     },
+    {
+      id: "3",
+      label: " Pre",
+      // icon: <GoBrowser />,
+      href: "/aia/Pre-Author",
+      spacing: false,
+      submenu: "",
+    },
   ];
 
   return (
@@ -81,7 +89,7 @@ export default function Drawer() {
               src="/hch-logo.png"
             /> 
           <BsArrowLeftShort
-            className={`bg-7u-300 mt-6 text-black-200 text-3xl rounded-full absolute -right-3 top-9  bg-info  cursor-pointer ${
+            className={`bg-7u-300 mt-6 text-black-200 text-3xl rounded-full absolute -right-3 top-9 text-base-100  bg-info  cursor-pointer ${
               !open && "rotate-180"
             }`}
             onClick={() => setOpen(!open)}
@@ -129,20 +137,20 @@ export default function Drawer() {
       ))} */}
          {menuItems.map((menuitem) => (
               <li key={menuitem.id}>
-               
+               {/* เมนูตอน พับ */}
                 <button
                   onClick={() => toggleMenu(menuitem.id)}
-                  className={`text-base-100 text-3xl  flex gap-x-1 self-center  hover:bg-accent hover:text-base-100 rounded-md mt-4 ${
+                  className={`text-base-100 text-3xl  flex gap-x-1 self-center  hover:bg-base-100 hover:text-accent rounded-md mt-4 ${
                     open && "hidden"
                   }`}
                 >
                   {menuitem.icon ? menuitem.icon : <AiFillHome />}
                 </button>
 
-     
+      {/* เมนูตอน เปิด */}
                 <button
                   onClick={() => toggleMenu(menuitem.id)}
-                  className={`text-base-100 text-xl  flex gap-x-1 cursor-point p-4 px-5 hover:bg-accent hover:text-neutral w-full  rounded-md mt-4 " ${
+                  className={`text-base-100 text-xl  flex gap-x-1 cursor-point p-4 px-5 hover:bg-base-100 hover:text-accent w-full  rounded-md mt-4 " ${
                     !open && "hidden"
                   }`}
                 >
@@ -155,7 +163,8 @@ export default function Drawer() {
               {menuitem.submenu.map((subItem) => (
                 <li key={subItem.id}>
                   <Link href={subItem.href}>
-                    <h1 className="block text-primary rounded-lg text-accent m-0.5 mt-1 px-3 hover:text-base-100 hover:bg-success">
+                    {/* เมนู ย่อย */}
+                    <h1 className="block text-primary rounded-lg m-0.5 mt-1 px-3 hover:text-base-100 hover:bg-secondary">
                     <div className="flex items-center "><IoArrowForwardCircleSharp />&nbsp;{subItem.label}</div>
                     </h1>
                   </Link>

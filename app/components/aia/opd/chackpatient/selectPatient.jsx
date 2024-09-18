@@ -284,94 +284,6 @@ router.push('/aia/opd/checkeilgible');
     e.preventDefault();
     //console.log('ค้นหาด้วย:', selectedOption, 'ค่า:', pidValue);
 
-    // if(fromValue && toValue){
-    //   const DatefromValue = dayjs(fromValue.$d).format('YYYY-MM-DD');
-    //   //console.log(DatefromValue);
-    //   const DatetoValue = dayjs(toValue.$d).format('YYYY-MM-DD');
-    //   //console.log(DatetoValue);
-    //   if (selectedOption === "NATIONAL_ID") {
-    //     // console.log("PID")
-    //           const PatientInfo = {
-    //             InsurerCode: InsurerCode,
-    //             IdType: selectedOption,
-    //             PID: pidValue,
-    //             HN: "",
-    //             PassportNumber: "",
-    //             datefrom: DatefromValue,
-    //             dateto: DatetoValue,
-    //             ClaimStatusCode: statusValue,
-    //           };
-        
-    //           axios
-    //           .post(
-    //             process.env.NEXT_PUBLIC_URL_SV + "v1/aia-patient-info/PatientSearch",
-    //             {
-    //               PatientInfo,
-    //             }
-    //           )
-    //           .then(function (response) {
-    //             //console.log(response.data);
-    //             setPost(response.data);
-    //           })
-    //           .catch(function (error) {
-    //             console.log(error.data);
-    //           });
-    //         } else if (selectedOption === "HOSPITAL_ID") {
-    //           //console.log("HN")
-    //           const PatientInfo = {
-    //             InsurerCode: InsurerCode,
-    //             IdType: selectedOption,
-    //             PID: "",
-    //             HN: pidValue,
-    //             PassportNumber: "",
-    //             datefrom: DatefromValue,
-    //             dateto: DatetoValue,
-    //             ClaimStatusCode: statusValue,
-    //           };
-    //           axios
-    //           .post(
-    //             process.env.NEXT_PUBLIC_URL_SV + "v1/aia-patient-info/PatientSearch",
-    //             {
-    //               PatientInfo,
-    //             }
-    //           )
-    //           .then(function (response) {
-    //             console.log(response.data);
-    //             setPost(response.data);
-    //           })
-    //           .catch(function (error) {
-    //             console.log(error.data);
-    //           });
-    //         } else if (selectedOption === "PASSPORT_NO") {
-    //           //console.log("PASSPORT_NO");
-    //           const PatientInfo = {
-    //             InsurerCode: InsurerCode,
-    //             IdType: selectedOption,
-    //             PID: "",
-    //             HN: "",
-    //             PassportNumber: pidValue,
-    //             datefrom: DatefromValue,
-    //             dateto: DatetoValue,
-    //             ClaimStatusCode: statusValue,
-    //           };
-    //           axios
-    //           .post(
-    //             process.env.NEXT_PUBLIC_URL_SV + "v1/aia-patient-info/PatientSearch",
-    //             {
-    //               PatientInfo,
-    //             }
-    //           )
-    //           .then(function (response) {
-    //             console.log(response.data);
-    //             setPost(response.data);
-    //           })
-    //           .catch(function (error) {
-    //             console.log(error.data);
-    //           });
-    //       };
-    // } 
-    // else if(!fromValue && !toValue){
-
       if (selectedOption === "NATIONAL_ID") {
         // console.log("PID")
               const PatientInfo = {
@@ -546,14 +458,14 @@ router.push('/aia/opd/checkeilgible');
         <div className="rounded-md pt-6">
             <div className="w-full">
               <div className="rounded-md">
-                <button className="btn btn-primary text-base-100 text-lg rounded-full px-3 py-2"
+                <button className="btn btn-primary text-base-100 hover:bg-base-100 hover:text-primary text-lg rounded-full px-3 py-2"
 
                 type="submit"
                 >
                   <FaSearch /> Search
                 </button>
                 <button
-                  className="btn btn-success text-base-100 text-lg rounded-full px-3 py-2 ml-2"
+                  className="btn btn-success text-base-100 hover:text-success hover:bg-base-100 text-lg rounded-full px-3 py-2 ml-2"
                   onClick={createpatient}
 
                   
@@ -914,7 +826,7 @@ router.push('/aia/opd/checkeilgible');
                       value={input}
                       required
                     />
-                    <button className="btn btn-primary text-base-100 absolute top-0 right-0 rounded-l-none">
+                    <button className="btn btn-primary hover:bg-base-100 hover:text-primary text-base-100 absolute top-0 right-0 rounded-l-none">
                       <FaSearch />
                     </button>
                   </div>
@@ -992,7 +904,7 @@ router.push('/aia/opd/checkeilgible');
                       <>
                         <button
                           type="submit"
-                           className="btn btn-success text-base-100 text-lg rounded-full px-3 py-2 center"
+                           className="btn btn-success text-base-100 hover:text-success hover:bg-base-100 text-lg rounded-full px-3 py-2 center"
                           onClick={saveCreate}
                         >
                           <RiSave3Fill /> Save
@@ -1066,7 +978,7 @@ router.push('/aia/opd/checkeilgible');
               <div className="rounded-md ">
                 <button
                   type="submit"
-                  className="btn btn-success text-base-100 text-lg w-full rounded-full px-3 py-2"
+                  className="btn btn-success text-base-100 hover:text-success hover:bg-base-100 text-lg w-full rounded-full px-3 py-2"
                   onClick={saveUpdate}
                 >
                   <RiSave3Fill /> Update

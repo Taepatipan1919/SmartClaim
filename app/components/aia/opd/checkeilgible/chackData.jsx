@@ -30,7 +30,7 @@ export  default  function chackData() {
   const [result, setResult] = useState();
   const [detailVN, setDetailVN] = useState();
   const [fromValue, setFromValue] = useState(null);
-  const [statusValue, setStatusValue] = useState("");
+  const [statusValue, setStatusValue] = useState("OPD");
   const [policyTypeValue, setPolicyTypeValue] = useState("");
   const [surgeryTypeValue, setSurgeryTypeValue] = useState("");
   const [illnessTypeValue, setIllnessTypeValue] = useState("");
@@ -61,9 +61,9 @@ const [accidentDate, setAccidentDate] = useState("");
     );
     router.push('/aia/opd/eilgible');
   };
-  const Status = (event) => {
-    setStatusValue(event.target.value);
-  }
+  // const Status = (event) => {
+  //   setStatusValue(event.target.value);
+  // }
   
   const policy = (event) => {
     setPolicyTypeValue(event.target.value);
@@ -133,7 +133,6 @@ const [accidentDate, setAccidentDate] = useState("");
       VisitDatefrom: DatefromValue,
       VisitDateto: "",
     };
-
     axios
       .post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-checkeligible/getEpisodeByHN",{
         PatientInfo
@@ -274,7 +273,7 @@ const [accidentDate, setAccidentDate] = useState("");
     </LocalizationProvider>
             </div>
           </div>
-          <div className="px-2">
+          {/* <div className="px-2">
             <div className="">
                    <FormControl fullWidth>
         <InputLabel id="demo-simple-select-label">ประเภทการเข้ารักษา</InputLabel>
@@ -296,10 +295,10 @@ const [accidentDate, setAccidentDate] = useState("");
         </Select>
       </FormControl>
             </div>
-          </div>
+          </div> */}
           <div className="">
             <div className="">
-            <button className="btn btn-primary text-base-100 text-lg rounded-full px-3 py-2"
+            <button className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 text-lg rounded-full px-3 py-2"
 type="submit"
 >
   <FaSearch /> Search
@@ -382,6 +381,12 @@ type="submit"
                         }
                       </tbody>
                     </table>
+                    <div className="grid gap-2 sm:grid-cols-4 text-base-100 bg-info w-full whitespace-normal text-center">
+                <div className="rounded-md"></div>
+                <div className="rounded-md"></div>
+                <div className="rounded-md "></div>
+                <div className="rounded-md ">&nbsp;</div> 
+            </div> 
                   </div>
                   <div className="grid grid-cols-6 gap-2 mt-4">
 <div></div>
@@ -444,7 +449,7 @@ type="submit"
 </FormControl>
 </div>
 <div><button
-                    className="btn btn-primary text-base-100 hover:text-white text-xl"
+                    className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 text-xl"
                     type="submit"
                     // onClick={() =>
 
@@ -521,7 +526,7 @@ type="submit"
             <h1 className="text-accent text-3xl ">รายการสิทธิ์ประกัน</h1>
             <hr />
             <table className="table">
-              <thead>
+              <thead className="bg-info text-base-100">
                 <tr>
                   <th>Type</th>
                   <th>PolicyNo</th>
@@ -575,7 +580,7 @@ type="submit"
              
             <div className="modal-action" key={index}>
               <button
-                className="btn btn-primary text-base-100"
+                className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100"
                 onClick={() =>
                   document.getElementById("my_modal_2").showModal()
                 }
@@ -622,7 +627,7 @@ type="submit"
                                     href={`/aia/opd/opdDischarge`}
                                   >  */}
               <button
-                className="btn btn-primary text-base-100"
+                className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100"
                 onClick={confirmButton}
               >
                 ยืนยัน

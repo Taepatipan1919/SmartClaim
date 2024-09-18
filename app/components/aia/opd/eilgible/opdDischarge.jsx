@@ -4,6 +4,7 @@ import axios from "axios";
 import TextField from '@mui/material/TextField';
 import { ImBin } from "react-icons/im";
 import { IoIosDocument } from "react-icons/io";
+import { useRouter } from 'next/navigation';
 
 import dayjs from 'dayjs';
 import InputLabel from '@mui/material/InputLabel';
@@ -38,8 +39,8 @@ export default function Page({data}) {
  const [billing, setBilling] = useState();
   const [orderItem, setOrderItem] = useState();
   const [result, setResult] = useState("");
-
-
+  const [showModal, setShowModal] = useState(false);
+  const router = useRouter();
 
   const [freetext , setFreeText] = useState();
   const AccidentPlace = (event) => {
@@ -267,7 +268,7 @@ useEffect(() => {
 
 
 
-
+// กดปุ่มส่งเคลม
   const Claim = (event) => {
     event.preventDefault();
 
@@ -289,6 +290,9 @@ useEffect(() => {
       },
     };
     console.log(data)
+    setShowModal(true)
+
+    router.push('/aia/opd/checkClaimStatus');
   };
 
 
@@ -314,7 +318,7 @@ useEffect(() => {
               </h1>
               <div className="grid gap-2 sm:grid-cols-4 w-full">
                 <div className="rounded-md">
-                  <TextField id="standard-basic" label="FirstName (TH)" variant="standard" value={patien.Result.Patient.FirstName} />
+                  <TextField id="standard-basic"   label="FirstName (TH)" variant="standard" value={patien.Result.Patient.FirstName} />
                 </div>
                 <div className="rounded-md">
                   <TextField id="standard-basic" label="LastName (TH)" variant="standard" value={patien.Result.Patient.LastName} />
@@ -426,7 +430,7 @@ useEffect(() => {
           id="demo-error-select"
           //name="accidentPlaceText"
           value={accidentPlaceValue}
-          label=""
+          label="สถานที่เกิดอุบัติเหตุ"
           onChange={AccidentPlace}
           required
         >
@@ -454,13 +458,13 @@ useEffect(() => {
               <div className="flex  w-full mt-4">
                 <div className="w-1/5">
                 <FormControl fullWidth>
-        <InputLabel id="demo-error-select-label">ข้างที่ได้รับบาดเจ็บจากการเกิดอุบัติเหตุ</InputLabel>
+        <InputLabel id="demo-error-select-label">ข้างที่ได้รับบาดเจ็บ</InputLabel>
         <Select
         error
           labelId="demo-error-select-label"
           id="demo-error-select"
           value={injurySide}
-          label=""
+          label="ข้างที่ได้รับบาดเจ็บ"
           onChange={InjurySide}
           //name="injurySideText"
           required
@@ -483,7 +487,7 @@ useEffect(() => {
           id="demo-error-select"
           //name="woundTypeText"
           value={woundType}
-          label=""
+          label="ลักษณะบาดแผลที่ได้รับจากการเกิดอุบัติเหตุ"
           onChange={WoundType}
           required
         >
@@ -521,7 +525,7 @@ useEffect(() => {
                         ? vitalsign.Result.VitalSign.map((vts, index) => (
                             <tr
                               key={index}
-                              className="text-primary bg-neutral text-sm"
+                              className=" bg-neutral text-sm"
                             >
                               <td>{index + 1}</td>
                               <td>{vts.VitalSignEntryDateTime}</td>
@@ -592,7 +596,7 @@ useEffect(() => {
                         ? doctor.Result.Doctor.map((dc, index) => (
                             <tr
                               key={index}
-                              className="text-primary bg-neutral text-sm"
+                              className=" bg-neutral text-sm"
                             >
                               <td>{index + 1}</td>
                               <td>{dc.DoctorLicense}</td>
@@ -636,7 +640,7 @@ useEffect(() => {
                   ? diagnosis.Result.Diagnosis.map((dns, index) => (
                             <tr
                               key={index}
-                              className="text-primary bg-neutral text-sm"
+                              className=" bg-neutral text-sm"
                             >
                               <td>{index + 1}</td>
                               <td>
@@ -687,7 +691,7 @@ useEffect(() => {
                       ? procedure.Result.Procedure.map((pcr, index) => (
                           <tr
                             key={index}
-                            className="text-primary bg-neutral text-sm"
+                            className=" bg-neutral text-sm"
                           >
                             <td>{index + 1}</td>
                             <td>{pcr.ProcedureDate}</td>
@@ -733,7 +737,7 @@ useEffect(() => {
                       ? investigation.Result.Investigation.map((inves, index) => (
                           <tr
                             key={index}
-                            className="text-primary bg-neutral text-sm"
+                            className=" bg-neutral text-sm"
                           >
                             <td>{index + 1}</td>
                             <td>{inves.InvestigationCode}</td>
@@ -787,7 +791,7 @@ useEffect(() => {
                       ? orderItem.Result.OrderItem.map((order, index) => (
                           <tr
                             key={index}
-                            className="text-primary bg-neutral text-sm"
+                            className=" bg-neutral text-sm"
                           >
                             <td class="px-6 py-4 whitespace-nowrap">{index + 1}</td>
                             <td class="px-6 py-4 whitespace-nowrap">{order.ItemId}</td>
@@ -846,7 +850,7 @@ useEffect(() => {
                       ? billing.Result.Billing.map((bill, index) => (
                           <tr
                             key={index}
-                            className="text-primary bg-neutral text-sm"
+                            className=" bg-neutral text-sm"
                           >
                             <td class="px-6 py-4 whitespace-nowrap">{index + 1}</td>
                             <td class="px-6 py-4 whitespace-nowrap">{bill.SimbBillingCode}</td>
@@ -887,7 +891,7 @@ useEffect(() => {
                       ? billing.Result.Billing.map((bill, index) => (
                           <tr
                             key={index}
-                            className="text-primary bg-neutral text-sm"
+                            className=" bg-neutral text-sm"
                           >
                             <td class="px-6 py-4 whitespace-nowrap">{index + 1}</td>
                             <td class="px-6 py-4 whitespace-nowrap">{bill.SimbBillingCode}</td>
@@ -901,7 +905,7 @@ useEffect(() => {
                   </tbody>
                 </table>
               </div> 
-              <div className="grid gap-2 sm:grid-cols-4 text-base-100 bg-primary w-full whitespace-normal text-center">
+              <div className="grid gap-2 sm:grid-cols-4  bg-primary w-full whitespace-normal text-center">
                 <div className="rounded-md"></div>
                 <div className="rounded-md"></div>
                 <div className="rounded-md ">สรุปค่ารักษาพยาบาล</div>
@@ -911,9 +915,9 @@ useEffect(() => {
                   {/* //////////////////////////////////////////////////////////////////////////// */}
         <div className="container mx-auto p-4 justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
               <h1 className="font-black text-accent text-3xl ">Upload File</h1>
-          <div className="overflow-x-auto mt-2">
+          <div className="overflow-x-auto mt-6">
             <form>
-          <FormControl className="w-80">
+          <FormControl className="w-80 ">
         <InputLabel id="demo-error-select-label">Type file</InputLabel>
         <Select
         error
@@ -921,7 +925,7 @@ useEffect(() => {
           labelId="demo-error-select-label"
           id="demo-error-select"
           value={injurySide}
-          label=""
+          label="Type file"
           onChange={InjurySide}
         >
           {dataaccidentPlace
@@ -933,7 +937,7 @@ useEffect(() => {
       </FormControl>
           <input type="file" name="file" className="file-input file-input-bordered file-input-info w-full max-w-xs ml-2" />
           <button
-                  className="btn btn-success text-base-100 ml-2"
+                  className="btn btn-success text-base-100 hover:bg-base-100 hover:text-success ml-2"
                   type="submit"
                   onClick={savefile}
                 >
@@ -960,8 +964,8 @@ useEffect(() => {
                             <td class="px-6 py-4 whitespace-nowrap">บัตรประชาชน</td>
                             <td class="px-6 py-4 whitespace-nowrap">123456789ำกไดำๆ21กๆ.pdf</td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                            <button className="btn btn-warning  mr-2" type="submit"><IoIosDocument /></button>
-                            <button className="btn btn-error " type="submit"><ImBin /></button>
+                            <button className="btn btn-secondary text-base-100 hover:bg-base-100 hover:text-secondary  mr-2" type="submit"><IoIosDocument /></button>
+                            <button className="btn btn-error text-base-100 hover:bg-base-100 hover:text-error" type="submit"><ImBin /></button>
                             </td>
                           </tr>
                         {/* ))
@@ -978,7 +982,7 @@ useEffect(() => {
             <div className="py-2">
               <div className="text-right">
              <button
-                  className="btn btn-primary "
+                  className="btn btn-primary text-base-100 hover:bg-base-100 hover:text-primary"
                   type="submit"
                 >
                   ส่งการเรียกร้องค่าสินไหม
@@ -993,7 +997,7 @@ useEffect(() => {
 
 
             
-          </form>
+    </form>
         </>
       ) : (
         <div className="pt-6 ">
@@ -1005,6 +1009,18 @@ useEffect(() => {
           </div>
         </div>
       )}
+
+{showModal ? (
+  <>
+          <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
+            <div className="bg-white p-4 rounded shadow-lg">
+                <h2 className="text-lg font-bold mb-4">ส่งเคลมเรียบร้อย</h2>
+               
+            </div>
+        </div>
+  </>
+) : ""}
+
     </>
   );
 }
