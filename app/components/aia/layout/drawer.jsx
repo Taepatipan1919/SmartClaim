@@ -57,7 +57,7 @@ export default function Drawer() {
   ];
 
   return (
-    <div className="">
+    <div className="sticky top-0 h-screen  ">
       <div
         className={`bg-primary h-screen  p-5 ${
           open ? "w-[200px]" : "w-20"

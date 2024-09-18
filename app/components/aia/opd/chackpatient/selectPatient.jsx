@@ -693,7 +693,7 @@ router.push('/aia/opd/checkeilgible');
           <table className="table">
             <thead className="bg-info text-base-100 text-center text-lg">
               <tr>
-                <th>No.</th>
+                <th></th>
                 <th>Personal ID</th>
                 <th>Passport</th>
                 <th>HN</th>
@@ -757,6 +757,12 @@ router.push('/aia/opd/checkeilgible');
                 )}
             </tbody>
           </table>
+          <div className="grid gap-2 sm:grid-cols-4 text-base-100 bg-info w-full whitespace-normal text-center">
+                <div className="rounded-md"></div>
+                <div className="rounded-md"></div>
+                <div className="rounded-md "></div>
+                <div className="rounded-md ">&nbsp;</div> 
+            </div> 
         </div>
       </div>
             ) : "" }

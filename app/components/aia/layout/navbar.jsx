@@ -34,9 +34,9 @@ export default function navbar() {
 
   return (
     <>
-    <div className="sticky">
+    <div className="sticky top-0 h-screen  ">
         {DataTran.Patient.value === "มีรายชื่อ" ? <>
-          <Tooltip title={<pre>{tooltipText}</pre>} arrow className="absolute right-2 top-6 mt-2 -translate-y-1/2 rounded-full bg-primary text-base-100 hover:bg-error">
+          <Tooltip title={<pre>{tooltipText}</pre>} arrow className="absolute right-2 top-6 mt-2 -translate-y-1/2 bg-primary text-base-100 hover:bg-error">
   <button className="btn">{DataTran.Patient.value === "มีรายชื่อ" ? <FaUserLarge /> : ""}</button>
   </Tooltip>
   </> : ""}

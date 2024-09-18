@@ -29,7 +29,7 @@ export default function Home() {
 </div>
 {DataTran.DataTran.value === "มีข้อมูล" ? (
     <>
-            <OpdDischarge data={DataTran}/>
+               <OpdDischarge data={DataTran}/>
             value : {DataTran.DataTran.value}
           <hr />
           VN : {DataTran.DataTran.Data.VN}
@@ -39,12 +39,9 @@ export default function Home() {
     </>
     ) : (
          <>
-             <Eilgible />
-
-          </>
-    )}
-                     {/* <h1
-        className="font-black text-secondary text-5xl"
+          {/* <Eilgible /> */}
+                   <h1
+        className="font-black text-accent text-3xl "
         data-theme="mytheme"
       >
         ตรวจสอบสิทธิ์
@@ -53,8 +50,7 @@ export default function Home() {
       <div className="breadcrumbs text-xl">
   <ul>
     <li>ข้อมูลผู้ป่วย</li>
-    <li>ตรวจสอบสิทธิ์</li>
-    <li><a className="text-error underline ">ส่งยอดเคลม</a></li>
+    <li><a className="text-error underline ">ตรวจสอบสิทธิ์</a></li>
   </ul>
 </div>
    
@@ -65,7 +61,10 @@ export default function Home() {
       RefId : {DataTran.DataTran.Data.RefId}
       <br />
       TransactionNo : {DataTran.DataTran.Data.TransactionNo}
-      <br /> */}
+      <br /> 
+          </>
+    )}
+
     </>) : 
     (
     <>

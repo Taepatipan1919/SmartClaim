@@ -10,6 +10,10 @@ import TextField from '@mui/material/TextField';
 // import { useDispatch } from "react-redux";
 // import { save } from "../../../../store/counterSlice";
 // import { useSelector } from "react-redux";
+import { ImBin } from "react-icons/im";
+import { IoIosDocument } from "react-icons/io";
+import { AiOutlineUnorderedList } from "react-icons/ai";
+import { Button, Menu, MenuItem } from '@mui/material';
 
 import dayjs from 'dayjs';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -22,14 +26,32 @@ export default function chackData() {
   const DatefromValue = "";
   const DateToValue = "";
   const [post, setPost] = useState("");
-  const [selectedIdType, setSelectedIdType] = useState("NATIONAL_ID");
-  const [pidValue, setPidValue] = useState("");
-  const [vnValue, setVNValue] = useState("");
+  const [selectedIdType, setSelectedIdType] = useState("VN");
+  const [numberValue, setNumberValue] = useState("");
   const [invoiceValue, setInvoiceValue] = useState("");
   const [fromValue, setFromValue] = useState();
   const [toValue, setToValue] = useState();
   const [massError, setMassError] = useState("");
   const [showFormError, setShowFormError] = useState("");
+
+
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+
+  const Delect = () => {
+    console.log("555555")
+  };
+
+
+
 
   const handleOptionChange = (e) => {
     setSelectedIdType(e.target.value);
@@ -42,31 +64,14 @@ export default function chackData() {
     setPost();
 
 
-
-    if (event.target.T1.value || event.target.T2.value){
-
-    //  const DatefromValue = dayjs(event.target.T1.value.$d).format('YYYY-MM-DD');
-    //  const DateToValue = dayjs(event.target.T2.value.$d).format('YYYY-MM-DD');
-    try {
-      const DateFromValue = event.target.T1.value;
-      const DateToValue = event.target.T2.value;
-      if (!DateFromValue || !DateToValue) {
-        setShowFormError("Error")
-        setMassError("กรุณา กรอก ช่อง DateFrom หรือ DateTo ให้ครบ")
-      }else{
-        setShowFormError("");
-
         axios
       .post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-submitbilling/selectbilling",{
               //ส่งเป็น statisCode
         Insurerid: InsuranceCode,
         Status: "09",
         IdType: selectedIdType,
-        PID: pidValue,
-        VN: vnValue,
-        Invoice: invoiceValue,
-        DateFrom: DateFromValue,
-        DateTo: DateToValue,
+        Number: numberValue,
+        // Invoice: invoiceValue,
       })
       .then((response) => {
         setPost(response.data);
@@ -77,29 +82,26 @@ export default function chackData() {
         console.log(error)
         //  if (err.response.request.status === 500) {
                 setShowFormError("Error");
+                setMassError(error.message);
                 // setMassError(error.response.data.HTTPStatus.message);
             //  }  
   });
-  }
-  } catch (error){
-    setShowFormError("Error");
-    setMassError(error.message);
-  }
-  console.log(post)
 
-  }else {
+}
 
-    axios
+const handleSubmit2 = (event) => {
+  event.preventDefault();
+  setPost();
+
+
+      axios
     .post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-submitbilling/selectbilling",{
-      //ส่งเป็น statisCode
+            //ส่งเป็น statisCode
       Insurerid: InsuranceCode,
-      Status: "09",
+      Status: "03",
       IdType: selectedIdType,
-      PID: pidValue,
-      VN: vnValue,
-      Invoice: invoiceValue,
-      DateFrom: "",
-      DateTo: "",
+      Number: numberValue,
+      // Invoice: invoiceValue,
     })
     .then((response) => {
       setPost(response.data);
@@ -110,50 +112,22 @@ export default function chackData() {
       console.log(error)
       //  if (err.response.request.status === 500) {
               setShowFormError("Error");
+              setMassError(error.message);
               // setMassError(error.response.data.HTTPStatus.message);
           //  }  
 });
-  }
-   };
-   const handleSubmit2 = (event) => {
+
+}
+console.log(post)
+   const submitbilling = (event) => {
     event.preventDefault();
-
-    const DatefromValue = dayjs(fromValue.$d).format('YYYY-MM-DD');
-    const DateToValue = dayjs(toValue.$d).format('YYYY-MM-DD');
-    const search = {
-      PID: selectedIdType,
-      VN: selectedIdType2,
-      pidValue: pidValue,
-      vnValue: vnValue,
-      fromValue: DatefromValue,
-      toValue: DateToValue,
-
-      // datefrom: event.target.datefrom.value,
-      // dateto: event.target.dateto.value,
-      //  PID: event.target.PID.value,
-      // HN: event.target.HN.value,
-      // VN: event.target.VN.value,
-      // invoice: event.target.invoice.value,
+    
+    const File = {
+      InsuranceCode: InsuranceCode,
     };
-    //console.log(search)
-    axios
-      .post(process.env.NEXT_PUBLIC_URL + "v1/aia-submitBilling/selectbilling",{
-        search
-      })
-      .then((response) => {
-        setPost(response.data);
-      })
-      .catch((err) => {
-       // console.error("Error", err)
-        console.log(err)
-        //  if (err.response.request.status === 500) {
-                setShowFormError("Error");
-                setMassError(err.response.data.HTTPStatus.message);
-            //  }  
-  });
-   };
+    console.log(File);
 
-
+  }
    const handleButtonClick = (data) => {
 
     //ส่ง Tran + RefID + VN ให้พี่โดม
@@ -184,115 +158,49 @@ document.getElementById("my_modal_3").showModal()
     <>
     <div role="tablist" className="tabs tabs-lifted">
       <input type="radio" name="my_tabs_2" role="tab" className="tab text-error" aria-label="รายการที่ยังไม่วางบิล" defaultChecked/>
-    <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6">
+    <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6 w-2/5">
     
     <form onSubmit={handleSubmit}>
-    <div className="grid gap-1 sm:grid-cols-3 w-full">
-          <div className="px-2 rounded-md">
+    <div className="grid gap-1 sm:grid-cols-2 w-full">
+          <div className="px-2 rounded-md ">
             <div className="flex items-center ">
               <input
                         type="radio"
-                        id="NATIONAL_ID"
+                        id="VN"
                         name="identity_type"
-                        value="NATIONAL_ID"
+                        value="VN"
                         className="checkbox checkbox-info"
                         defaultChecked
                         onChange={handleOptionChange}
               />
-              <p className="text-left">&nbsp;Personal ID &nbsp;</p>
+              <p className="text-left">&nbsp;VN &nbsp;</p>
               <input
                         type="radio"
-                        id="PASSPORT_NO"
+                        id="Invoice"
                         name="identity_type"
-                        value="PASSPORT_NO"
+                        value="Invoice"
                         className="checkbox checkbox-info"
-                        checked={selectedIdType === 'PASSPORT_NO'}
+                        checked={selectedIdType === 'Invoice'}
                         onChange={handleOptionChange}
                 
               />
-              <p className="text-left">&nbsp;Passport &nbsp;</p>
-              <input
-                        type="radio"
-                        id="HOSPITAL_ID"
-                        name="identity_type"
-                        value="HOSPITAL_ID"
-                        className="checkbox checkbox-info"
-                        checked={selectedIdType === 'HOSPITAL_ID'}
-                        onChange={handleOptionChange}
-              />
-              <p className="text-left">&nbsp;HN &nbsp;</p>
+              <p className="text-left">&nbsp;Invoice &nbsp;</p>
             </div>
             <TextField
           id="standard-multiline-flexible"
-          label="Personal ID / Passport / HN"
+          label="VN / Invoice"
           multiline
           maxRows={4}
           variant="standard"
           className="w-full"
-          name="PID"
+          name="number"
           type="text"
-                      value={pidValue}
-                      onChange={(e) => setPidValue(e.target.value)}
+                      value={numberValue}
+                      onChange={(e) => setNumberValue(e.target.value)}
         />
         </div>
-        
-        <div className="px-2  rounded-md mt-6">
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <DatePicker
-            label="Date From"
-            name="T1"
-            //value={fromValue}
-            //onChange={(newDate) => setFromValue(newDate)}
-            format="YYYY-MM-DD"
-          />
-      
-      </LocalizationProvider> 
-      &nbsp;&nbsp;
-      <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <DatePicker
-            label="Date To"
-            name="T2"
-            //value={toValue}
-            //onChange={(newDate) => setToValue(newDate)}
-            format="YYYY-MM-DD"
-          />
-    </LocalizationProvider>
-                    
-        </div>
-        <div className="px-2 rounded-md mt-6">
 
-        </div>
-      <div className="px-2 rounded-md mt-2">
-      <TextField
-          id="standard-multiline-flexible"
-          label="VN"
-          multiline
-          maxRows={4}
-          variant="standard"
-          className="w-full"
-          name="VN"
-          type="text"
-                      value={vnValue}
-                      onChange={(e) => setVNValue(e.target.value)}
-        />
-
-    
-       </div>
-       <div className="px-2  rounded-md mt-2">
-       <TextField
-          id="standard-multiline-flexible"
-          label="Invoice"
-          multiline
-          maxRows={4}
-          variant="standard"
-          className="w-full"
-          name="Invoice"
-          type="text"
-                      value={invoiceValue}
-                      onChange={(e) => setInvoiceValue(e.target.value)}
-        />
-       </div>
-       <div className="rounded-md mt-2"> 
+       <div className="rounded-md mt-6"> 
               <div className="grid gap-1 sm:grid-cols-2 w-full">
                 <div className="rounded-md">
                 <button className="btn btn-error text-base-100 text-lg rounded-full px-3 py-2 hover:bg-base-100 hover:text-error" type="submit">
@@ -301,6 +209,8 @@ document.getElementById("my_modal_3").showModal()
                 </div>
                 <div className="rounded-md"></div>
               </div>
+        </div>
+        <div className="rounded-md"> 
         </div>
 
   </div> 
@@ -315,117 +225,47 @@ document.getElementById("my_modal_3").showModal()
     aria-label="รายการที่วางบิลแล้ว"
      />
 <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6 w-5/12">
-{/*     
-  <form onSubmit={handleSubmit2}>
-  <div className="grid gap-1 sm:grid-cols-2 w-full">
-          <div className="px-2 rounded-md">
+<form onSubmit={handleSubmit2}>
+    <div className="grid gap-1 sm:grid-cols-2 w-full">
+          <div className="px-2 rounded-md ">
             <div className="flex items-center ">
               <input
-                        type="radio"
-                        id="NATIONAL_ID"
-                        name="identity_type"
-                        value="NATIONAL_ID"
-                        className="checkbox checkbox-info"
-                        defaultChecked
-                        onChange={handleOptionChange}
-              />
-              <p className="text-left">&nbsp;Personal ID &nbsp;</p>
-              <input
-                        type="radio"
-                        id="PASSPORT_NO"
-                        name="identity_type"
-                        value="PASSPORT_NO"
-                        className="checkbox checkbox-info"
-                        checked={selectedIdType === 'PASSPORT_NO'}
-                        onChange={handleOptionChange}
-                
-              />
-              <p className="text-left">&nbsp;Passport &nbsp;</p>
-              <input
-                        type="radio"
-                        id="HOSPITAL_ID"
-                        name="identity_type"
-                        value="HOSPITAL_ID"
-                        className="checkbox checkbox-info"
-                        checked={selectedIdType === 'HOSPITAL_ID'}
-                        onChange={handleOptionChange}
-              />
-              <p className="text-left">&nbsp;HN &nbsp;</p>
-            </div>
-                    <TextField
-          id="standard-multiline-flexible"
-          label="Personal ID / Passport / HN"
-          multiline
-          maxRows={4}
-          variant="standard"
-          className="w-full"
-          name="PID"
-          type="text"
-                      value={pidValue}
-                      onChange={(e) => setPidValue(e.target.value)}
-        />
-        </div>
-        
-        <div className="px-2 rounded-md">
-            <div className="flex items-center ">
-            <input
                         type="radio"
                         id="VN"
-                        name="identity_type2"
+                        name="identity_type"
                         value="VN"
                         className="checkbox checkbox-info"
                         defaultChecked
-                        onChange={handleOptionChange2}
+                        onChange={handleOptionChange}
               />
-              <p className="text-left">&nbsp;Personal ID &nbsp;</p>
+              <p className="text-left">&nbsp;VN &nbsp;</p>
               <input
                         type="radio"
                         id="Invoice"
-                        name="identity_type2"
+                        name="identity_type"
                         value="Invoice"
                         className="checkbox checkbox-info"
-                        checked={selectedIdType2 === 'Invoice'}
-                        onChange={handleOptionChange2}
+                        checked={selectedIdType === 'Invoice'}
+                        onChange={handleOptionChange}
                 
               />
               <p className="text-left">&nbsp;Invoice &nbsp;</p>
             </div>
-                    <TextField
+            <TextField
           id="standard-multiline-flexible"
-          label="Episode No / Invoice"
+          label="VN / Invoice"
           multiline
           maxRows={4}
           variant="standard"
           className="w-full"
-          name="VN"
+          name="number"
           type="text"
-                      value={vnValue}
-                      onChange={(e) => setVNValue(e.target.value)}
+                      value={numberValue}
+                      onChange={(e) => setNumberValue(e.target.value)}
         />
         </div>
-      <div className="px-2 rounded-md w-full">
-      <div className="flex items-center ">
-      <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <DatePicker
-            label="Date From"
-            value={fromValue}
-            onChange={(newDate) => setFromValue(newDate)}
-            format="YYYY-MM-DD"
-          />
-      
-      </LocalizationProvider>
-      <h1 className="mt-5">&nbsp;-&nbsp;</h1>
-      <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <DatePicker
-            label="Date To"
-            value={toValue}
-            onChange={(newDate) => setToValue(newDate)}
-            format="YYYY-MM-DD"
-          />
-    </LocalizationProvider>
-      </div>
-       </div>
-       <div className="rounded-md pt-6"> 
+
+       <div className="rounded-md mt-6"> 
               <div className="grid gap-1 sm:grid-cols-2 w-full">
                 <div className="rounded-md">
                 <button className="btn btn-error text-base-100 text-lg rounded-full px-3 py-2 hover:bg-base-100 hover:text-error" type="submit">
@@ -435,9 +275,11 @@ document.getElementById("my_modal_3").showModal()
                 <div className="rounded-md"></div>
               </div>
         </div>
+        <div className="rounded-md"> 
+        </div>
 
   </div> 
-  </form> */}
+  </form>
   </div>
   </div>
 
@@ -471,11 +313,11 @@ document.getElementById("my_modal_3").showModal()
     <thead className="bg-info text-base-100 text-center text-lg ">
       <tr>
         <th></th>
+        <th>วันที่เข้ารับการรักษา</th>
         <th>ชื่อ-นามสกุล</th>
         <th>HN</th>
         <th>เลขที่การเคลม</th>
         <th>เลขที่ใบแจ้งหนี้</th>
-        <th>ประเภทการเคลม</th>
         <th>รายการ</th>
         <th>สถานะ</th>
         <th>ยอดเงิน</th>
@@ -492,12 +334,15 @@ document.getElementById("my_modal_3").showModal()
       <td>{bill.Invoice}</td>
       <td>{bill.Invoice}</td>
       <td>{bill.IllnessType}</td>
-    <td><button className="btn bg-base-100 border-base-100 text-info border-none hover:text-base-100 hover:bg-primary"><LuRefreshCw /></button><button className="btn bg-base-100 border-base-100 text-secondary hover:text-base-100 hover:bg-primary ml-2"><IoDocumentText /></button></td>
         <td><div className="bg-success text-base-100 rounded-full px-3 py-2">{bill.status}</div></td>
         <th>{bill.TotalAmount}</th>
         <td><button className="btn btn-primary bg-base-100 text-info hover:text-base-100"
         onClick={() => handleButtonClick("1")}
         >วางบิล</button></td> 
+        <td className="w-1"><Button variant="outlined" className="border-none"   onClick={handleClick}>
+
+        <AiOutlineUnorderedList />
+      </Button></td>
        
       </tr>
 
@@ -520,6 +365,16 @@ document.getElementById("my_modal_3").showModal()
     ): ""}
     </tbody>
   </table>
+  <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleClose}
+      >
+        <MenuItem ><LuRefreshCw />&nbsp;Refresh</MenuItem>
+        <MenuItem ><IoDocumentText />&nbsp;Document</MenuItem>
+        <MenuItem onClick={Delect}><ImBin />&nbsp;Cancel</MenuItem>
+        
+      </Menu>
   <dialog id="my_modal_3" className="modal text-xl	">
                             <div className="modal-box">
                               <form method="dialog">
@@ -531,24 +386,52 @@ document.getElementById("my_modal_3").showModal()
                                   ส่งเอกสาร วางบิล
                                 </h3>
                                 <hr />
-                                <div className="flex items-center mt-3">
+                                {/* <div className="flex items-center mt-3">
                                 <TextField
                                 className="w-full"
                                 color="primary"
           id="outlined-multiline-static"
           label="หมายเหตุ"
+          name="textmass"
           multiline
           rows={6}
         />
-                              </div>
-                      
+              </div> */}
                               <input type="file" className="file-input file-input-bordered file-input-info w-full mt-2" />
-                      
+
+                              <div className="flex items-center mt-3">
+             <table className="table table-zebra mt-2">
+                <thead >
+                  <tr className="text-base-100 bg-primary py-8 text-sm w-full text-center">
+                      <th className="w-2/5">ชื่อไฟล์</th>
+                      <th className="w-1/5"></th>
+                    </tr>
+                </thead>
+                  <tbody class="bg-white divide-y divide-gray-200">
+                    {/* {billing
+                      ? billing.Result.Billing.map((bill, index) => ( */}
+                          <tr
+                            // key={index}
+                            className=" bg-neutral text-sm"
+                          >
+                            <td class="px-6 py-4 whitespace-nowrap">123456789ำกไดำๆ21กๆ.pdf</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                            <button className="btn btn-warning  mr-2" type="submit"><IoIosDocument /></button>
+                            <button className="btn btn-error " type="submit"><ImBin /></button>
+                            </td>
+                          </tr>
+                        {/* ))
+                      : ""} */}
+                  </tbody>
+              </table>
+                              </div>
                                 <div className="modal-action">
                                   {/* <Link
                                     href={`./ipd/eligible/${post.PatientInfo.HN}`}
                                   > */}
-                                    <button className="btn btn-primary text-base-100">
+                                    <button className="btn btn-primary text-base-100"
+                                    onClick={submitbilling}
+                                    >
                                       วางบิล
                                     </button>
                                   {/* </Link> */}
