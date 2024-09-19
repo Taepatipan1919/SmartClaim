@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import SelectPatient from "../../../../components/aia/opd/chackpatient/selectPatient";
 import Eilgible from "../../../../components/aia/opd/eilgible/eilgible";
 import OpdDischarge from "../../../../components/aia/opd/eilgible/opdDischarge";
+import ChackData from "../../../../components/aia/opd/checkeilgible/chackData";
 
 export default function Home() {
    const  DataTran  = useSelector((state) => ({ ...state }));
@@ -13,7 +14,10 @@ export default function Home() {
     <> 
     {DataTran.Patient.value === "มีรายชื่อ" ? (
     <>
-                             <h1
+
+{DataTran.DataTran.value === "มีข้อมูล" ? (
+    <>
+                                 <h1
         className="font-black text-accent text-3xl "
         data-theme="mytheme"
       >
@@ -27,8 +31,6 @@ export default function Home() {
     <li><a className="text-error underline ">ส่งยอดเคลม</a></li>
   </ul>
 </div>
-{DataTran.DataTran.value === "มีข้อมูล" ? (
-    <>
                <OpdDischarge data={DataTran}/>
             value : {DataTran.DataTran.value}
           <hr />
@@ -53,7 +55,7 @@ export default function Home() {
     <li><a className="text-error underline ">ตรวจสอบสิทธิ์</a></li>
   </ul>
 </div>
-   
+<ChackData />
     value : {DataTran.DataTran.value}
       <hr />
       VN : {DataTran.DataTran.Data.VN}

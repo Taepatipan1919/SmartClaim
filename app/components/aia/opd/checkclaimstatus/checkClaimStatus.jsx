@@ -150,7 +150,7 @@ console.log(post)
 
       <form onSubmit={handleSubmit}>
     <div className="grid gap-1 sm:grid-cols-4 w-full">
-        <div className="px-2 rounded-md ">
+        <div className="px-2 rounded-md">
             <div className="flex items-center ">
               <input
                         type="radio"
@@ -187,6 +187,39 @@ console.log(post)
                       onChange={(e) => setNumberValue(e.target.value)}
         />
       </div>
+      <div className="rounded-md mt-6"> 
+
+      <div className="grid gap-1 sm:grid-cols-2 w-full">
+          <div className="px-2 rounded-md">
+
+
+<LocalizationProvider dateAdapter={AdapterDayjs}>
+
+<DatePicker
+            label="Date From"
+            value={fromValue}
+            onChange={(newDate) => setFromValue(newDate)}
+            format="YYYY-MM-DD"
+          />
+      
+    </LocalizationProvider>
+
+            </div>
+            <div className="px-2 rounded-md">
+           <LocalizationProvider dateAdapter={AdapterDayjs}>
+
+<DatePicker
+            label="Date To"
+            value={toValue}
+            format="YYYY-MM-DD"
+            onChange={(newDate) => setToValue(newDate)}
+           
+          />
+      
+    </LocalizationProvider> 
+             </div>
+            </div>
+        </div>
       <div className="rounded-md mt-6"> 
       <FormControl fullWidth>
         <InputLabel id="demo-simple-select-label">Claim Status</InputLabel>

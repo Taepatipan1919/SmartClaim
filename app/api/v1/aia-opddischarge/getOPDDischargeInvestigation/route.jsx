@@ -1,7 +1,7 @@
 export async function GET() {
   return Response.json({
     Result: {
-      Investigation: [
+      InvestigationInfo: [
         {
           InvestigationCode: "",
           InvestigationGroup: "",

@@ -30,7 +30,7 @@ import { useSelector } from "react-redux";
 
 export default function SelectPatient() {
   const InsurerCode = 13;
-  const [claimStatus, setClaimStatus] = useState();
+  // const [claimStatus, setClaimStatus] = useState();
   const [post, setPost] = useState("");
   const [create, setCreate] = useState("");
   const [showFormCreate, setShowFormCreate] = useState("");
@@ -78,17 +78,17 @@ router.push('/aia/opd/checkeilgible');
 
 
 
-  useEffect(() => {
-    const getClaimStatus = async () => {
-      const response = await fetch(
-        process.env.NEXT_PUBLIC_URL_SV + "v1/utils/claimStatus/"
-      );
+  // useEffect(() => {
+  //   const getClaimStatus = async () => {
+  //     const response = await fetch(
+  //       process.env.NEXT_PUBLIC_URL_SV + "v1/utils/claimStatus/" + InsurerCode
+  //     );
 
-      const data = await response.json();
-      setClaimStatus(data);
-    };
-    getClaimStatus();
-  }, []);
+  //     const data = await response.json();
+  //     setClaimStatus(data);
+  //   };
+  //   getClaimStatus();
+  // }, []);
 
   const createPatientInfo = (event) => {
     event.preventDefault();
@@ -292,9 +292,9 @@ router.push('/aia/opd/checkeilgible');
                 PID: pidValue,
                 HN: "",
                 PassportNumber: "",
-                datefrom: "",
-                dateto: "",
-                ClaimStatusCode: statusValue,
+                // datefrom: "",
+                // dateto: "",
+                // ClaimStatusCode: statusValue,
               };
         
               axios
@@ -328,9 +328,9 @@ router.push('/aia/opd/checkeilgible');
                 PID: "",
                 HN: pidValue,
                 PassportNumber: "",
-                datefrom: "",
-                dateto: "",
-                ClaimStatusCode: statusValue,
+                // datefrom: "",
+                // dateto: "",
+                // ClaimStatusCode: statusValue,
               };
               axios
               .post(
@@ -362,9 +362,9 @@ router.push('/aia/opd/checkeilgible');
                 PID: "",
                 HN: "",
                 PassportNumber: pidValue,
-                datefrom: "",
-                dateto: "",
-                ClaimStatusCode: statusValue,
+                // datefrom: "",
+                // dateto: "",
+                // ClaimStatusCode: statusValue,
               };
               axios
               .post(

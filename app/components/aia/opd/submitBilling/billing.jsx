@@ -23,8 +23,6 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
 export default function chackData() {
   const InsuranceCode = 13;
-  const DatefromValue = "";
-  const DateToValue = "";
   const [post, setPost] = useState("");
   const [selectedIdType, setSelectedIdType] = useState("VN");
   const [numberValue, setNumberValue] = useState("");
@@ -118,7 +116,7 @@ const handleSubmit2 = (event) => {
 });
 
 }
-console.log(post)
+//console.log(post)
    const submitbilling = (event) => {
     event.preventDefault();
     
@@ -161,8 +159,8 @@ document.getElementById("my_modal_3").showModal()
     <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6 w-5/5">
     
     <form onSubmit={handleSubmit}>
-    <div className="grid gap-1 sm:grid-cols-3 w-full">
-          <div className="px-2 rounded-md ">
+    <div className="grid gap-1 sm:grid-cols-1 w-full">
+          <div className="px-2 rounded-md">
             <div className="flex items-center ">
               <input
                         type="radio"
@@ -192,17 +190,17 @@ document.getElementById("my_modal_3").showModal()
           multiline
           maxRows={4}
           variant="standard"
-          className="w-full"
+          className="w-64"
           name="number"
           type="text"
                       value={numberValue}
                       onChange={(e) => setNumberValue(e.target.value)}
         />
-        </div>
-        <div className="px-2 rounded-md w-full mt-4">
-      <div className="flex items-center ">
+      
+     
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <DatePicker
+        className="ml-2"
             label="Date From"
             value={fromValue}
             onChange={(newDate) => setFromValue(newDate)}
@@ -210,31 +208,25 @@ document.getElementById("my_modal_3").showModal()
           />
       
       </LocalizationProvider>
-      <h1 className="mt-5">&nbsp;</h1>
+  
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <DatePicker
+        className="ml-2"
             label="Date To"
             value={toValue}
             onChange={(newDate) => setToValue(newDate)}
             format="YYYY-MM-DD"
           />
     </LocalizationProvider>
-      </div>
-       </div>
-       <div className="rounded-md mt-6"> 
-              <div className="grid gap-1 sm:grid-cols-2 w-full">
-                <div className="rounded-md">
-                <button className="btn btn-error text-base-100 text-lg rounded-full px-3 py-2 hover:bg-base-100 hover:text-error" type="submit">
+                <button className="btn btn-error text-base-100 text-lg rounded-full px-3 py-2 hover:bg-base-100 hover:text-error ml-2" type="submit">
                     <FaSearch /> ค้นหา
                   </button>
-                </div>
-                <div className="rounded-md"></div>
-              </div>
-        </div>
-        <div className="rounded-md"> 
-        </div>
+      
+   
+       </div>
 
-  </div> 
+       </div>
+
   </form>
   </div>
 
@@ -356,7 +348,8 @@ document.getElementById("my_modal_3").showModal()
       <td>{bill.Invoice}</td>
       <td>{bill.Invoice}</td>
       <td>{bill.IllnessType}</td>
-        <td><div className="bg-success text-base-100 rounded-full px-3 py-2">{bill.status}</div></td>
+        {/* <td><div className="bg-success text-base-100 rounded-full px-3 py-2">{bill.status}</div></td> */}
+        <td ><a className="bg-success text-base-100 rounded-full px-3 py-2">{bill.status}</a></td>
         <th>{bill.TotalAmount}</th>
         <td><button className="btn btn-primary bg-base-100 text-info hover:text-base-100"
         onClick={() => handleButtonClick("1")}
@@ -370,7 +363,7 @@ document.getElementById("my_modal_3").showModal()
 
    ) 
   )): (
-      <>
+
       <tr>
       <th></th>
       <td></td>
@@ -383,7 +376,7 @@ document.getElementById("my_modal_3").showModal()
       <th></th>
       <td></td>
       </tr>
-      </>
+  
     ): ""}
     </tbody>
   </table>

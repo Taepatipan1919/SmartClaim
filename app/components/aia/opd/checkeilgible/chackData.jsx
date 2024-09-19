@@ -38,6 +38,7 @@ export  default  function chackData() {
   const [massError, setMassError] = useState("");
   const [showFormError, setShowFormError] = useState("");
 const [accidentDate, setAccidentDate] = useState("");
+const [visitDateTime,setVisitDateTime] = useState("")
   const { Patient } = useSelector((state) => ({ ...state }));
   const dispatch = useDispatch();
   
@@ -56,6 +57,7 @@ const [accidentDate, setAccidentDate] = useState("");
           SurgeryTypeCode:  surgeryTypeValue,
           PolicyTypeCode: policyTypeValue,
           AccidentDate: accidentDate,
+          VisitDateTime: visitDateTime,
         },
       })
     );
@@ -121,6 +123,9 @@ const [accidentDate, setAccidentDate] = useState("");
 
   const handleSubmit = (event) => {
     event.preventDefault();
+
+
+    if (fromValue){
           const DatefromValue = dayjs(fromValue.$d).format('YYYY-MM-DD');
           setShowFormError();
     const PatientInfo = {
@@ -149,7 +154,12 @@ const [accidentDate, setAccidentDate] = useState("");
             //  } 
         
   });
-  };
+
+      }else{
+        setShowFormError("Error");
+       setMassError("กรุณากรอกวันที่!!");
+      }
+};
 
   const check = async (event) => {
     event.preventDefault();
@@ -162,10 +172,12 @@ const [accidentDate, setAccidentDate] = useState("");
      const [VNselectVN, VisitDateselectVN, AccidentDateselectVN ] = event.target.selectVN.value.split(' | ');
       //const [YearVN, MonthVN, DayVN] = VisitDateselectVN.split('-');
       const Acc = VisitDateselectVN.split(' ');
+      // setVisitDate(VisitDateTime)
       setAccidentDate(Acc[0])
+      setVisitDateTime(VisitDateselectVN)
      setDetailVN(VNselectVN);
 
-  const   PatientInfo = {
+    const   PatientInfo = {
       InsurerCode: InsurerCode, // ควรเป็น integer ไม่ใช่ string
       RefID: "",
       TransactionNo: "",
@@ -186,26 +198,32 @@ const [accidentDate, setAccidentDate] = useState("");
       IllnessTypeCode: illnessTypeValue,
       SurgeryTypeCode:  surgeryTypeValue,
     }
-    console.log(PatientInfo)
-    document.getElementById("my_modal_3").showModal();
+   // console.log(PatientInfo)
+   document.getElementById("my_modal_3").showModal();
     try {
       const response = await axios.post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-checkeligible/checkeligible", {
         PatientInfo
-      });
+       });
 
-     // console.log(response.data)
+      if  (response.data.HTTPStatus.statusCode < 400){
+      //  console.log(response.data)
       setResult(response.data);
       setShowFormError()
-
-    } catch (error) {
-       console.log(error);
-      // if (error.response.request.status === 500) {
+      }else{
         setShowFormError("Err");
-        setMassError(error.response.data.HTTPStatus.message);
-      // } 
+     //   console.log(response);
+       setMassError(response.data.HTTPStatus.message);
+      }
+     } catch (error) {
 
-    }
-
+    //    console.log("555");
+        console.log(error)
+    //   //console.log(response)
+         setShowFormError("Err");
+         setMassError(error.response.data.HTTPStatus.message);
+    //   //setMassError("xxxxxxxxxxxx");
+     }
+    
 
 
 
@@ -213,7 +231,7 @@ const [accidentDate, setAccidentDate] = useState("");
    // console.log(result)
       
   };
-
+  
 
   return (
     <>
@@ -268,7 +286,9 @@ const [accidentDate, setAccidentDate] = useState("");
             onChange={(newDate) => setFromValue(newDate)}
             format="YYYY-MM-DD"
             className="input-info"
-            required
+            renderInput={(params) => (
+              <TextField {...params} className="input-info" error={error} helperText={error ? 'กรุณาเลือกวันที่' : ''} />
+            )}
           />
     </LocalizationProvider>
             </div>

@@ -1,6 +1,5 @@
 export async function GET() {
-  return Response.json({
-    Result: [
+  return Response.json([
       {
         Code : "1",
         DescTH : "ซ้าย",
@@ -11,6 +10,5 @@ export async function GET() {
         DescTH : "ขวา",
         DescEN : "Right",
       },
-    ]
-  });
+  ]);
 }

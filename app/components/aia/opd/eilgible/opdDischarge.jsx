@@ -21,6 +21,7 @@ import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
 
 export default function Page({data}) {
   //console.log(data)
+  const InsuranceCode = 13;
   const [patien, setPatien] = useState();
   const [visit, setVisit] = useState();
   const [accidentDetail, setAccidentDetail] = useState();
@@ -53,20 +54,31 @@ export default function Page({data}) {
     setWoundType(event.target.value);
   }
 const PatientInfo = {
-        "InsurerCode": data.DataTran.Data.InsurerCode, 
-        "RefId": data.DataTran.Data.RefId,
-        "TransactionNo": data.DataTran.Data.TransactionNo,
-        "PID": data.Patient.Data.PID,
-        "HN": data.Patient.Data.HN,
-        "PassportNumber": data.Patient.Data.PassportNumber,
-        "IdType": data.Patient.Data.IdType,
-        "VN": data.DataTran.Data.VN,
-        "PolicyTypeCode": data.DataTran.Data.PolicyTypeCode,
-        "ServiceSettingCode": data.DataTran.Data.ServiceSettingCode, 
-        "IllnessTypeCode": data.DataTran.Data.IllnessTypeCode,
-        "SurgeryTypeCode":  data.DataTran.Data.SurgeryTypeCode,
-        "AccidentDate": data.DataTran.Data.AccidentDate,
-}
+  InsurerCode: data.DataTran.Data.InsurerCode, 
+  RefId: data.DataTran.Data.RefId,
+  TransactionNo: data.DataTran.Data.TransactionNo,
+  PID: data.Patient.Data.PID,
+  HN: data.Patient.Data.HN,
+  GivenNameTH: data.Patient.Data.GivenNameTH,
+  SurnameTH: data.Patient.Data.SurnameTH,
+  DateOfBirth: data.Patient.Data.DateOfBirth,
+  PassportNumber: data.Patient.Data.PassportNumber,
+  IdType: data.Patient.Data.IdType,
+  VN: data.DataTran.Data.VN,
+  VisitDateTime: data.DataTran.Data.VisitDateTime,
+  ChiefComplaint:"",
+  PresentIllness:"",
+  AccidentDate: "",
+  AccidentPlaceCode: "",
+  WoundDetails: "",
+  AccidentInjurySideCode: "",
+  AccidentInjuryWoundtypeCode: "",
+  PolicyTypeCode: data.DataTran.Data.PolicyTypeCode,
+  ServiceSettingCode: data.DataTran.Data.ServiceSettingCode, 
+  IllnessTypeCode: data.DataTran.Data.IllnessTypeCode,
+  SurgeryTypeCode:  data.DataTran.Data.SurgeryTypeCode,
+  }
+ // console.log(PatientInfo)
   useEffect(() => {
         axios
       .get(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-opddischarge/patient",{
@@ -83,7 +95,7 @@ const PatientInfo = {
 
   useEffect(() => {
     axios
-    .get(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-opddischarge/visit",{
+    .get(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-opddischarge/getOPDDischargeVisit",{
       PatientInfo
     })
     .then((response) => {
@@ -119,7 +131,7 @@ const PatientInfo = {
 
   useEffect(() => {
     axios
-    .get(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-opddischarge/accidentDetail/dataaccidentPlace",{
+    .get(process.env.NEXT_PUBLIC_URL_SV + "v1/utils/accidentPlace/" + InsuranceCode,{
       PatientInfo
     })
     .then((response) => {
@@ -132,10 +144,9 @@ const PatientInfo = {
     });
 
   }, []);
-
   useEffect(() => {
     axios
-    .get(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-opddischarge/accidentDetail/injurySide",{
+    .get(process.env.NEXT_PUBLIC_URL_SV + "v1/utils/injurySide/" + InsuranceCode,{
       PatientInfo
     })
     .then((response) => {
@@ -151,7 +162,7 @@ const PatientInfo = {
 
   useEffect(() => {
     axios
-    .get(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-opddischarge/accidentDetail/woundType",{
+    .get(process.env.NEXT_PUBLIC_URL_SV + "v1/utils/InjuryWoundtype/" + InsuranceCode,{
       PatientInfo
     })
     .then((response) => {
@@ -168,7 +179,7 @@ const PatientInfo = {
 
   useEffect(() => {
     axios
-    .get(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-opddischarge/vitalsign",{
+    .post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-opddischarge/getOPDDischargeVitalSign",{
       PatientInfo
     })
     .then((response) => {
@@ -183,7 +194,7 @@ const PatientInfo = {
 
   useEffect(() => {
     axios
-    .get(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-opddischarge/doctor",{
+    .post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-opddischarge/getOPDDischargeDoctor",{
       PatientInfo
     })
     .then((response) => {
@@ -199,7 +210,7 @@ const PatientInfo = {
 
   useEffect(() => {
     axios
-      .get(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-opddischarge/diagnosis",{
+     .post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-opddischarge/getOPDDischargeDiagnosis",{
         PatientInfo
       })
       .then((response) => {
@@ -212,7 +223,7 @@ const PatientInfo = {
 }, []);
   useEffect(() => {
     axios
-      .get(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-opddischarge/procedure",{
+      .get(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-opddischarge/getOPDDischargeProcedure",{
         PatientInfo
       })
       .then((response) => {
@@ -225,7 +236,7 @@ const PatientInfo = {
 }, []);
 useEffect(() => {
   axios
-    .get(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-opddischarge/investigation",{
+    .get(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-opddischarge/getOPDDischargeInvestigation",{
       PatientInfo
     })
     .then((response) => {
@@ -239,7 +250,7 @@ useEffect(() => {
 
 useEffect(() => {
   axios
-    .get(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-opddischarge/orderItem",{
+    .get(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-opddischarge/getOPDDischargeOrderItem",{
       PatientInfo
     })
     .then((response) => {
@@ -253,7 +264,7 @@ useEffect(() => {
 
 useEffect(() => {
   axios
-    .get(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-opddischarge/billing",{
+    .get(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-opddischarge/getOPDDischargeBilling",{
       PatientInfo
     })
     .then((response) => {
@@ -275,24 +286,56 @@ useEffect(() => {
 
     const Datevalue = dayjs(value.$d).format('YYYY-MM-DD');
 
-    const data = {
-      DataJson: {
-        InsurerCode: PatientInfo.InsurerCode,
-        DxFreeText : event.target.DxFreeTextText.value,
-        AccidentDate : Datevalue,
-        AccidentPlace : accidentPlaceValue,
-        PresentIllness :  event.target.PresentIllnessText.value,
+if(PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER"){
+  const datasave = {
+    DataJson: {
+      InsurerCode: PatientInfo.InsurerCode,
+      DxFreeText : event.target.DxFreeTextText.value,
+      AccidentDate : Datevalue,
+      AccidentPlace : accidentPlaceValue,
+      PresentIllness :  event.target.PresentIllnessText.value,
 
-        InjurySide : injurySide,
-        WoundType : woundType,
-        CommentOfInjury : event.target.commentOfInjuryText.value,
+      InjurySide : injurySide,
+      WoundType : woundType,
+      CommentOfInjury : event.target.commentOfInjuryText.value,
 
-      },
-    };
-    console.log(data)
-    setShowModal(true)
+    },
+  };
 
-    router.push('/aia/opd/checkClaimStatus');
+
+
+
+
+
+
+}else{
+  const datasave = {
+    DataJson: {
+      InsurerCode: PatientInfo.InsurerCode,
+      DxFreeText : event.target.DxFreeTextText.value,
+      AccidentDate : Datevalue,
+      AccidentPlaceCode : accidentPlaceValue,
+      PresentIllness :  event.target.PresentIllnessText.value,
+
+      AccidentInjurySideCode : injurySide,
+      AccidentInjuryWoundtypeCode : woundType,
+      CommentOfInjury : "",
+
+    },
+
+  };
+  console.log(datasave)
+}
+ 
+console.log(data)
+    // setShowModal(true)
+
+
+    // setTimeout(() => {
+    //   setShowModal(false)
+    //   router.push('/aia/opd/checkClaimStatus');
+    // }, 5000);
+
   };
 
 
@@ -435,8 +478,8 @@ useEffect(() => {
           required
         >
           {dataaccidentPlace
-                ? dataaccidentPlace.Result.map((acc, index) => (
-                    <MenuItem key={index} value={acc.Code}>{acc.Desc}</MenuItem>
+                ? dataaccidentPlace.map((acc, index) => (
+                    <MenuItem key={index} value={acc.accidentplacecode}>{acc.accidentplacename}</MenuItem>
                   ))
                 : ""}
         </Select>
@@ -470,7 +513,7 @@ useEffect(() => {
           required
         >
           {datainjurySide
-                ? datainjurySide.Result.map((inj, index) => (
+                ? datainjurySide.map((inj, index) => (
                     <MenuItem key={index} value={inj.DescEN}>{inj.DescTH} - {inj.DescEN}</MenuItem>
                   ))
                 : ""}
@@ -492,8 +535,8 @@ useEffect(() => {
           required
         >
           {DataWoundType
-                ? DataWoundType.Result.map((wound, index) => (
-                    <MenuItem key={index} value={wound.Code}>{wound.Desc}</MenuItem>
+                ? DataWoundType.map((wound, index) => (
+                    <MenuItem key={index} value={wound.woundtypecode}>{wound.woundtypename}</MenuItem>
                   ))
                 : ""}
         </Select>
@@ -522,7 +565,7 @@ useEffect(() => {
                   </thead>
                   <tbody>
                     {vitalsign
-                        ? vitalsign.Result.VitalSign.map((vts, index) => (
+                        ? vitalsign.Result.VitalSignInfo.map((vts, index) => (
                             <tr
                               key={index}
                               className=" bg-neutral text-sm"
@@ -566,7 +609,7 @@ useEffect(() => {
                               </td>
                             </tr>
                           ))
-                        : "เยอะกว่า 5"
+                        : <tr><td></td></tr>
                       }
                   </tbody>
                 </table> 
@@ -593,7 +636,7 @@ useEffect(() => {
                   </thead>
                   <tbody>
                     {doctor
-                        ? doctor.Result.Doctor.map((dc, index) => (
+                        ? doctor.Result.DoctorInfo.map((dc, index) => (
                             <tr
                               key={index}
                               className=" bg-neutral text-sm"
@@ -601,7 +644,7 @@ useEffect(() => {
                               <td>{index + 1}</td>
                               <td>{dc.DoctorLicense}</td>
                               <td>
-                                {dc.DoctorFirstName} {dc.DoctorLastName}
+                                {dc.DoctorFirstName}
                               </td>
                               <td>
                                 {dc.DoctorRole}
@@ -609,7 +652,7 @@ useEffect(() => {
                               
                             </tr>
                           ))
-                        : ""
+                        : <tr><td></td></tr>
                       }
                   </tbody>
                 </table> 
@@ -637,18 +680,18 @@ useEffect(() => {
                   </thead>
                   <tbody>
                   {diagnosis
-                  ? diagnosis.Result.Diagnosis.map((dns, index) => (
+                  ? diagnosis.Result.DiagnosisInfo.map((dns, index) => (
                             <tr
                               key={index}
                               className=" bg-neutral text-sm"
                             >
                               <td>{index + 1}</td>
                               <td>
-                                {dns.Icd10}
+                                {dns.DxCode}
                               </td>
                               <td>{dns.DxName}</td>
                               <td>
-                                {dns.DxType}
+                                {dns.Dxtypenameinsurance}
                               </td>
                        
                             </tr>
@@ -688,7 +731,7 @@ useEffect(() => {
                 </thead>
                 <tbody>
                   {procedure
-                      ? procedure.Result.Procedure.map((pcr, index) => (
+                      ? procedure.Result.ProcedureInfo.map((pcr, index) => (
                           <tr
                             key={index}
                             className=" bg-neutral text-sm"
@@ -704,7 +747,7 @@ useEffect(() => {
                             
                           </tr>
                         ))
-                      : ""
+                      : <tr><td></td></tr>
                     }
                 </tbody>
               </table> 
@@ -734,7 +777,7 @@ useEffect(() => {
                 </thead>
                 <tbody>
                   {investigation
-                      ? investigation.Result.Investigation.map((inves, index) => (
+                      ? investigation.Result.InvestigationInfo.map((inves, index) => (
                           <tr
                             key={index}
                             className=" bg-neutral text-sm"
@@ -756,7 +799,7 @@ useEffect(() => {
                             
                           </tr>
                         ))
-                      : ""
+                      : <tr><td></td></tr>
                     }
                 </tbody>
               </table> 
@@ -818,7 +861,7 @@ useEffect(() => {
                             </td>
                           </tr>
                         ))
-                      : ""
+                      : <tr><td></td></tr>
                     }
                 </tbody>
               </table> 
@@ -860,7 +903,7 @@ useEffect(() => {
                             <td class="px-6 py-4 whitespace-nowrap">{bill.BillingNetAmount}</td>
                           </tr>
                         ))
-                      : ""}
+                      : <tr><td></td></tr>}
                   </tbody>
                 </table>
               </div> 
@@ -901,7 +944,7 @@ useEffect(() => {
                             <td class="px-6 py-4 whitespace-nowrap">{bill.BillingNetAmount}</td>
                           </tr>
                         ))
-                      : ""}
+                      : <tr><td></td></tr>}
                   </tbody>
                 </table>
               </div> 
@@ -929,7 +972,7 @@ useEffect(() => {
           onChange={InjurySide}
         >
           {dataaccidentPlace
-                ? dataaccidentPlace.Result.map((acc, index) => (
+                ? dataaccidentPlace.map((acc, index) => (
                     <MenuItem key={index} value={acc.Code}>{acc.Desc}</MenuItem>
                   ))
                 : ""}
@@ -1012,11 +1055,17 @@ useEffect(() => {
 
 {showModal ? (
   <>
-          <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
+          {/* <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
             <div className="bg-white p-4 rounded shadow-lg">
                 <h2 className="text-lg font-bold mb-4">ส่งเคลมเรียบร้อย</h2>
                
             </div>
+        </div> */}
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white p-8 rounded shadow-lg">
+            <h2 className="text-4xl font-bold mb-4 text-primary">ส่งเคลมเรียบร้อยแล้ว</h2>
+           <div className="text-center"> <span className="loading loading-bars loading-lg "></span></div>
+          </div>
         </div>
   </>
 ) : ""}
