@@ -3,9 +3,10 @@ import React, { useContext } from "react";
 import { FaSearch } from "react-icons/fa";
 // import Link from "next/link";
 import axios from "axios";
-
+import { LuRefreshCw } from "react-icons/lu";
+import { IoDocumentText } from "react-icons/io5";
 import { useRouter } from 'next/navigation';
-
+import { ImBin } from "react-icons/im";
 
 
 import TextField from '@mui/material/TextField';
@@ -13,12 +14,11 @@ import dayjs from 'dayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-
+import { Button ,Menu, MenuItem } from '@mui/material';
 import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
-
+import { AiOutlineUnorderedList } from "react-icons/ai";
 import { useDispatch } from "react-redux";
 import { save2 } from "../../../../store/patientSlice";
 import { useSelector } from "react-redux";
@@ -59,6 +59,21 @@ const dispatch = useDispatch();
     getClaimStatus();
   }, []);
 
+
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+
+  const Delect = () => {
+    console.log("555555")
+  };
 
   const handleOptionChange = (e) => {
     setSelectedIdType(e.target.value);
@@ -227,7 +242,7 @@ console.log(post)
           labelId="demo-simple-select-label"
           id="demo-simple-select"
           value={statusValue}
-          label=""
+          label="Claim Status"
           onChange={Status}
         >
           {claimStatus
@@ -330,17 +345,14 @@ console.log(post)
                             {statusinfo.IllnessType}
                           </td>
                           <td>
-                            {statusinfo.status}
+                          <td ><a className="bg-success text-base-100 rounded-full px-3 py-2">{statusinfo.status}</a></td>
                           </td>
                           <td>
                             <div className="grid gap-1 sm:grid-cols-2 w-full text-accent ">
-                              {/* <Link href={`/aia/opd/checkeilgible`}> */}
-                                <button className="btn bg-white text-primary w-full hover:text-base-100 hover:bg-primary"
-                                // onClick={() => PatientA(patient)}
-                                >
-                                  Chack Eilgible
-                                </button>
-                              {/* </Link> */}
+                            <Button variant="outlined" className="border-none"   onClick={handleClick}>
+
+<AiOutlineUnorderedList />
+</Button>
                             </div>
                           </td>
                         </tr>
@@ -365,7 +377,16 @@ console.log(post)
         </div>
       </div>
             ) : "" }
-
+  <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleClose}
+      >
+        <MenuItem ><LuRefreshCw />&nbsp;Refresh</MenuItem>
+        <MenuItem ><IoDocumentText />&nbsp;Document</MenuItem>
+        <MenuItem onClick={Delect}><ImBin />&nbsp;Cancel</MenuItem>
+        
+      </Menu>
 
     </>
   )

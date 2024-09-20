@@ -32,6 +32,7 @@ export  default  function chackData() {
   const [fromValue, setFromValue] = useState(null);
   const [statusValue, setStatusValue] = useState("OPD");
   const [policyTypeValue, setPolicyTypeValue] = useState("");
+  const [furtherClaimValue, setFurtherClaimValue] = useState("");
   const [surgeryTypeValue, setSurgeryTypeValue] = useState("");
   const [illnessTypeValue, setIllnessTypeValue] = useState("");
   const router = useRouter();
@@ -39,34 +40,86 @@ export  default  function chackData() {
   const [showFormError, setShowFormError] = useState("");
 const [accidentDate, setAccidentDate] = useState("");
 const [visitDateTime,setVisitDateTime] = useState("")
-  const { Patient } = useSelector((state) => ({ ...state }));
+const [showbutton,setShowbutton] = useState("")
+const [ furtherClaim , setFurtherClaim ]= useState("")
+  const  ReDux  = useSelector((state) => ({ ...state }));
   const dispatch = useDispatch();
-  
+
   // const router = useRouter();
   const confirmButton = () => {
-    dispatch(
-      save({
-        value: "มีข้อมูล",
-        Data: {
-          RefId: result.Result.InsuranceData.RefId,
-          TransactionNo: result.Result.InsuranceData.TransactionNo,
-          VN: detailVN,
-          InsurerCode: InsurerCode,
-          ServiceSettingCode: statusValue, 
-          IllnessTypeCode: illnessTypeValue,
-          SurgeryTypeCode:  surgeryTypeValue,
-          PolicyTypeCode: policyTypeValue,
-          AccidentDate: accidentDate,
-          VisitDateTime: visitDateTime,
-        },
-      })
-    );
-    router.push('/aia/opd/eilgible');
-  };
-  // const Status = (event) => {
-  //   setStatusValue(event.target.value);
-  // }
+    console.log(ReDux)
+
   
+    // const PatientInfo = {
+    //       "InsurerCode": 13, 
+    //       "RefId":"oljhnklefhbilubsEFJKLb651",
+    //       "TransactionNo":"",
+    //       "PID": "66-021995",
+    //       "HN": "66-021995",
+    //       "GivenNameTH": "วนิดา",
+    //       "SurnameTH": "แจ้งสกุลชัย",
+    //       "DateOfBirth": "1977-01-17",
+    //       "PassportNumber":"",
+    //       "IdType":"HOSPITAL_ID",
+    //       "VN":"O477382-67",
+    //       "VisitDateTime":"2024-05-01 13:17",
+    //       "AccidentDate":"2024-05-01"
+         
+    //       }
+       
+
+        axios
+        .post(process.env.NEXT_PUBLIC_URL_PD + "v1/aia-retrieve-further-claim-list/getRetrieveFurtherClaim",{
+          //  PatientInfo
+          PatientInfo: {
+          "InsurerCode": InsurerCode, 
+          "RefId": ReDux.DataTran.Data.RefId,
+          "TransactionNo": ReDux.DataTran.Data.TransactionNo,
+          "PID": ReDux.Patient.Data.PID,
+          "HN": ReDux.Patient.Data.HN,
+          "GivenNameTH": ReDux.Patient.Data.GivenNameTH,
+          "SurnameTH": ReDux.Patient.Data.SurnameTH,
+          "DateOfBirth": ReDux.Patient.Data.DateOfBirth,
+          "PassportNumber": ReDux.Patient.Data.PassportNumber,
+          "IdType": ReDux.Patient.Data.IdType,
+          "VN": ReDux.DataTran.Data.VN,
+          "VisitDateTime": ReDux.DataTran.Data.VisitDateTime,
+          "AccidentDate": ReDux.DataTran.Data.AccidentDate,
+          }
+        } )
+        .then((response) => {
+          setFurtherClaim(response.data);
+          //console.log(response)
+        })
+        .catch((err) => {
+         // console.error("Error", err)
+          console.log(err)
+          //  if (err.response.request.status === 500) {
+                  setShowFormError("Error");
+                  setMassError(err.response.data.HTTPStatus.message);
+              //  } 
+          
+    });
+
+
+
+
+
+
+
+
+     document.getElementById("my_modal_2").showModal()
+    
+  };
+  const gourl = () => {
+   router.push('/aia/opd/eilgible');
+  }
+  
+
+  const further = (event) => {
+    setFurtherClaimValue(event.target.value);
+  }
+
   const policy = (event) => {
     setPolicyTypeValue(event.target.value);
   }
@@ -82,7 +135,7 @@ const [visitDateTime,setVisitDateTime] = useState("")
   useEffect(() => {
     const getSurgery = async () => {
       const response = await fetch(
-        process.env.NEXT_PUBLIC_URL_SV + "v1/utils/IllnessSurgery/" + InsurerCode
+        process.env.NEXT_PUBLIC_URL_PD + "v1/utils/IllnessSurgery/" + InsurerCode
       );
       const data = await response.json();
       setSurgeryType(data);
@@ -93,7 +146,7 @@ const [visitDateTime,setVisitDateTime] = useState("")
   useEffect(() => {
     const getIllnessType = async () => {
       const response = await fetch(
-        process.env.NEXT_PUBLIC_URL_SV + "v1/utils/IllnessType/" + InsurerCode
+        process.env.NEXT_PUBLIC_URL_PD + "v1/utils/IllnessType/" + InsurerCode
       );
       const data = await response.json();
       setIllnessType(data);
@@ -103,7 +156,7 @@ const [visitDateTime,setVisitDateTime] = useState("")
   useEffect(() => {
     const getPolicyType = async () => {
       const response = await fetch(
-        process.env.NEXT_PUBLIC_URL_SV + "v1/utils/policyType/" + InsurerCode
+        process.env.NEXT_PUBLIC_URL_PD + "v1/utils/policyType/" + InsurerCode
       );
       const data = await response.json();
       setPolicyType(data);
@@ -113,7 +166,7 @@ const [visitDateTime,setVisitDateTime] = useState("")
   useEffect(() => {
     const getServiceSetting = async () => {
       const response = await fetch(
-        process.env.NEXT_PUBLIC_URL_SV + "v1/utils/serviceSetting/" + InsurerCode
+        process.env.NEXT_PUBLIC_URL_PD + "v1/utils/serviceSetting/" + InsurerCode
       );
       const data = await response.json();
       setServiceSetting(data);
@@ -130,16 +183,16 @@ const [visitDateTime,setVisitDateTime] = useState("")
           setShowFormError();
     const PatientInfo = {
       Insurerid: InsurerCode,
-      PID: Patient.Data.PID,
-      PassportNumber: Patient.Data.PassportNumber,
-      IdType: Patient.Data.IdType,
+      PID: ReDux.Patient.Data.PID,
+      PassportNumber: ReDux.Patient.Data.PassportNumber,
+      IdType: ReDux.Patient.Data.IdType,
       ServiceSettingCode: statusValue,
-      HN: Patient.Data.HN,
+      HN: ReDux.Patient.Data.HN,
       VisitDatefrom: DatefromValue,
       VisitDateto: "",
     };
     axios
-      .post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-checkeligible/getEpisodeByHN",{
+      .post(process.env.NEXT_PUBLIC_URL_PD + "v1/aia-checkeligible/getEpisodeByHN",{
         PatientInfo
       })
       .then((response) => {
@@ -163,8 +216,9 @@ const [visitDateTime,setVisitDateTime] = useState("")
 
   const check = async (event) => {
     event.preventDefault();
- 
-      setResult()
+   
+      setResult();
+     setShowbutton();
       setShowFormError();
     
    // console.log(event.target.selectVN.value);
@@ -181,13 +235,13 @@ const [visitDateTime,setVisitDateTime] = useState("")
       InsurerCode: InsurerCode, // ควรเป็น integer ไม่ใช่ string
       RefID: "",
       TransactionNo: "",
-      PID: Patient.Data.PID,
-      HN: Patient.Data.HN,
-      GivenNameTH: Patient.Data.GivenNameTH,
-      SurnameTH: Patient.Data.SurnameTH,
-      DateOfBirth: Patient.Data.DateOfBirth,
-      PassportNumber: Patient.Data.PassportNumber,
-      IdType: Patient.Data.IdType,
+      PID: ReDux.Patient.Data.PID,
+      HN: ReDux.Patient.Data.HN,
+      GivenNameTH: ReDux.Patient.Data.GivenNameTH,
+      SurnameTH: ReDux.Patient.Data.SurnameTH,
+      DateOfBirth: ReDux.Patient.Data.DateOfBirth,
+      PassportNumber: ReDux.Patient.Data.PassportNumber,
+      IdType: ReDux.Patient.Data.IdType,
       VN: VNselectVN,
       VisitDateTime: VisitDateselectVN,
       // AccidentDate: AccidentDateselectVN,         //ทำฟังชั่น จังหวัด (ยังไมไ่ด้ทำ)
@@ -201,7 +255,7 @@ const [visitDateTime,setVisitDateTime] = useState("")
    // console.log(PatientInfo)
    document.getElementById("my_modal_3").showModal();
     try {
-      const response = await axios.post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-checkeligible/checkeligible", {
+      const response = await axios.post(process.env.NEXT_PUBLIC_URL_PD + "v1/aia-checkeligible/checkeligible", {
         PatientInfo
        });
 
@@ -209,6 +263,30 @@ const [visitDateTime,setVisitDateTime] = useState("")
       //  console.log(response.data)
       setResult(response.data);
       setShowFormError()
+
+
+
+      dispatch(
+        save({
+          value: "มีข้อมูล",
+          Data: {
+            RefId: result.Result.InsuranceData.RefId,
+            TransactionNo: result.Result.InsuranceData.TransactionNo,
+            VN: detailVN,
+            InsurerCode: InsurerCode,
+            ServiceSettingCode: statusValue, 
+            IllnessTypeCode: illnessTypeValue,
+            SurgeryTypeCode:  surgeryTypeValue,
+            PolicyTypeCode: policyTypeValue,
+            AccidentDate: accidentDate,
+            VisitDateTime: visitDateTime,
+          },
+        })
+      );
+
+
+
+
       }else{
         setShowFormError("Err");
      //   console.log(response);
@@ -220,19 +298,21 @@ const [visitDateTime,setVisitDateTime] = useState("")
         console.log(error)
     //   //console.log(response)
          setShowFormError("Err");
-         setMassError(error.response.data.HTTPStatus.message);
+         //setMassError(error.response.data.HTTPStatus.message);
     //   //setMassError("xxxxxxxxxxxx");
      }
-    
+
 
 
 
     // setShowForm(!showForm);
-   // console.log(result)
-      
-  };
-  
+    //console.log(result)
 
+
+  };
+ 
+
+  
   return (
     <>
 
@@ -244,23 +324,23 @@ const [visitDateTime,setVisitDateTime] = useState("")
                 <div className="grid grid-cols-4 gap-2 ">
                   <div ></div>
                   <div >FullName (TH)</div>
-                  <div >{Patient.Data.TitleTH} {Patient.Data.GivenNameTH} {Patient.Data.SurnameTH}</div>
+                  <div >{ReDux.Patient.Data.TitleTH} {ReDux.Patient.Data.GivenNameTH} {ReDux.Patient.Data.SurnameTH}</div>
                   <div ></div>
                   <div></div>
                   <div >FullName (EN)</div>
-                  <div>{Patient.Data.TitleEN} {Patient.Data.GivenNameEN} {Patient.Data.SurnameEN}</div>
+                  <div>{ReDux.Patient.Data.TitleEN} {ReDux.Patient.Data.GivenNameEN} {ReDux.Patient.Data.SurnameEN}</div>
                   <div></div>
                   <div ></div>
                   <div>Date Of Birth</div>
-                    <div>{Patient.Data.DateOfBirth}</div>
+                    <div>{ReDux.Patient.Data.DateOfBirth}</div>
                     <div ></div>
                     <div ></div >
                     <div >Gender</div>
-                    <div >{Patient.Data.Gender}</div>
+                    <div >{ReDux.Patient.Data.Gender}</div>
                     <div ></div >
                     <div ></div >
                     <div>HN</div>
-                    <div>{Patient.Data.HN}</div>
+                    <div>{ReDux.Patient.Data.HN}</div>
                     <div ></div >
                 </div >
 
@@ -515,7 +595,8 @@ type="submit"
 
       {/* {showForm && ( */}      
      
-     
+
+
           
        
       <dialog id="my_modal_3" className="modal text-xl	">
@@ -558,6 +639,8 @@ type="submit"
               <tbody>
                 {result ? (result.Result.InsuranceData.CoverageList.map((coverage, index) => (
                             //  coverage.Status === true ? (
+
+                            
                   coverage.MessageList.map((message, msgIndex) => (
                     <tr key={`${index}-${msgIndex}`}>
            
@@ -568,7 +651,11 @@ type="submit"
                      {coverage.Status === true ? (<><td className="text-success text-2xl"><IoMdCheckmarkCircle /></td></>) : (<><td className="text-error text-2xl"><FaCircleXmark /></td></>) }
                   
                     </tr>
+                    
                   ))
+
+
+                  
                 // ) : (
                 //   coverage.MessageList.map((message, msgIndex) => (
                 //     <tr key={`${index}-${msgIndex}`}>
@@ -592,27 +679,25 @@ type="submit"
                 )}
               </tbody>
             </table>
-      
-
-
-            {result ? (result.Result.InsuranceData.CoverageList.map((coverage, index) => (
-                         coverage.Status === true ? (
-             
-            <div className="modal-action" key={index}>
+            <div className="grid gap-2 sm:grid-cols-4 text-base-100 bg-info w-full whitespace-normal text-center">
+                <div className="rounded-md"></div>
+                <div className="rounded-md"></div>
+                <div className="rounded-md "></div>
+                <div className="rounded-md ">&nbsp;</div> 
+            </div> 
+ {result ? (result.Result.InsuranceData.CoverageClaimStatus === true ? (
+          <div className="modal-action">
               <button
                 className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100"
-                onClick={() =>
-                  document.getElementById("my_modal_2").showModal()
-                }
+                onClick={confirmButton}
+                // onClick={() =>
+                //   document.getElementById("my_modal_2").showModal()
+                // }
               >
-                ยืนยันการเคลม {coverage.Status}
+                ยืนยันการเคลม 
               </button>
             </div>
-             ) : ""
-            ))
-            ): ""
-            }
-
+         ): ""): "" } 
           </>
             )}
           </form>
@@ -634,12 +719,27 @@ type="submit"
             </div>
             <div className="flex text-xl">
               <input type="radio" name="exampleRadios" />
-              <p className="text-left">&nbsp;เข้ารักษาแบบต่อเนื่อง</p>
-            </div>
+            {/*   <p className="text-left">&nbsp;เข้ารักษาแบบต่อเนื่อง</p>*/}
+
+            </div> 
             <div className="flex text-xl">
-              <select className="select select-bordered w-64 max-w-xs">
-                <option></option>
-              </select>
+              <FormControl fullWidth>
+  <InputLabel id="furtherClaimValue">เข้ารักษาแบบต่อเนื่อง</InputLabel>
+  <Select
+    labelId="furtherClaimValue"
+    id="demo-simple-select"
+    value={furtherClaimValue}
+    label="further"
+    onChange={further}
+    className=""
+    required
+  >
+{furtherClaim ? furtherClaim.Result.FurtherClaimList.map((ftc, index) => (
+    <MenuItem key={index} value={ftc.ClaimNo}>{ftc.ClaimNo} - {ftc.VisitDateTime}</MenuItem>
+    ))
+    : ""}
+    </Select>
+</FormControl>
             </div>
 
             <div className="modal-action">
@@ -648,7 +748,7 @@ type="submit"
                                   >  */}
               <button
                 className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100"
-                onClick={confirmButton}
+                 onClick={gourl}
               >
                 ยืนยัน
               </button>

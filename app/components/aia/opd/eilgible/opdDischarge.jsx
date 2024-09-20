@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import TextField from '@mui/material/TextField';
+import { Box , TextField } from '@mui/material';
 import { ImBin } from "react-icons/im";
 import { IoIosDocument } from "react-icons/io";
 import { useRouter } from 'next/navigation';
@@ -38,10 +38,16 @@ export default function Page({data}) {
   const [procedure, setProcedure] = useState();
   const [investigation, setInvestigation] = useState();
  const [billing, setBilling] = useState();
-  const [orderItem, setOrderItem] = useState();
+  const [orderItemz, setOrderItemz] = useState();
   const [result, setResult] = useState("");
   const [showModal, setShowModal] = useState(false);
   const router = useRouter();
+  const [bmi, setBmi] = useState("");
+
+
+
+
+
 
   const [freetext , setFreeText] = useState();
   const AccidentPlace = (event) => {
@@ -66,6 +72,7 @@ const PatientInfo = {
   IdType: data.Patient.Data.IdType,
   VN: data.DataTran.Data.VN,
   VisitDateTime: data.DataTran.Data.VisitDateTime,
+  FurtherClaimId: "",
   ChiefComplaint:"",
   PresentIllness:"",
   AccidentDate: "",
@@ -81,7 +88,7 @@ const PatientInfo = {
  // console.log(PatientInfo)
   useEffect(() => {
         axios
-      .get(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-opddischarge/patient",{
+      .post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-opddischarge/getOPDDischargePatient",{
         PatientInfo
       })
       .then((response) => {
@@ -95,7 +102,21 @@ const PatientInfo = {
 
   useEffect(() => {
     axios
-    .get(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-opddischarge/getOPDDischargeVisit",{
+  .post(process.env.NEXT_PUBLIC_URL_PD + "v1/aia-retrieve-further-claim-list/getRetrieveFurtherClaim",{
+    PatientInfo
+  })
+  .then((response) => {
+    console.log(response.data);
+  })
+  .catch((err) => {
+   // console.error("Error", err)
+    console.log(err)
+});
+}, []);
+
+  useEffect(() => {
+    axios
+    .post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-opddischarge/getOPDDischargeVisit",{
       PatientInfo
     })
     .then((response) => {
@@ -108,16 +129,19 @@ const PatientInfo = {
     });
 
   }, []);
+  const combinedString = visit?.Result?.VisitInfo
+    ? `${visit.Result.VisitInfo.Weight} / ${visit.Result.VisitInfo.Height}`
+    : '';
 
   useEffect(() => {
     axios
-    .get(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-opddischarge/accidentDetail",{
+    .post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-opddischarge/getOPDDischargeAccidentDetail",{
       PatientInfo
     })
     .then((response) => {
       //  console.log(response.data.Result.AccidentDetail.AccidentDate)
       setAccidentDetail(response.data);
-      const dateValue = dayjs(response.data.Result.AccidentDetail.AccidentDate);
+      const dateValue = dayjs(response.data.Result.AccidentDetailInfo.AccidentDate);
     
       setValue(dateValue);
 
@@ -223,7 +247,7 @@ const PatientInfo = {
 }, []);
   useEffect(() => {
     axios
-      .get(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-opddischarge/getOPDDischargeProcedure",{
+      .post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-opddischarge/getOPDDischargeProcedure",{
         PatientInfo
       })
       .then((response) => {
@@ -236,7 +260,7 @@ const PatientInfo = {
 }, []);
 useEffect(() => {
   axios
-    .get(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-opddischarge/getOPDDischargeInvestigation",{
+    .post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-opddischarge/getOPDDischargeInvestigation",{
       PatientInfo
     })
     .then((response) => {
@@ -250,11 +274,11 @@ useEffect(() => {
 
 useEffect(() => {
   axios
-    .get(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-opddischarge/getOPDDischargeOrderItem",{
+    .post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-opddischarge/getOPDDischargeOrderItem",{
       PatientInfo
     })
     .then((response) => {
-      setOrderitem(response.data);
+      setOrderItemz(response.data);
     })
     .catch((err) => {
      // console.error("Error", err)
@@ -264,7 +288,7 @@ useEffect(() => {
 
 useEffect(() => {
   axios
-    .get(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-opddischarge/getOPDDischargeBilling",{
+    .post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-opddischarge/getOPDDischargeBilling",{
       PatientInfo
     })
     .then((response) => {
@@ -307,7 +331,6 @@ if(PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER"
 
 
 
-
 }else{
   const datasave = {
     DataJson: {
@@ -327,14 +350,14 @@ if(PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER"
   console.log(datasave)
 }
  
-console.log(data)
-    // setShowModal(true)
+  //console.log(data)
+    setShowModal(true)
 
 
-    // setTimeout(() => {
-    //   setShowModal(false)
-    //   router.push('/aia/opd/checkClaimStatus');
-    // }, 5000);
+    setTimeout(() => {
+      setShowModal(false)
+      router.push('/aia/opd/checkClaimStatus');
+    }, 5000);
 
   };
 
@@ -345,10 +368,14 @@ console.log(data)
     const File = {
       InsurerCode: PatientInfo.InsurerCode,
       // Namefile: event.target.file.value,
-    };
+    };20
     console.log(File);
 
   }
+
+
+
+
   return (
     <>
       {patien ? (
@@ -359,29 +386,50 @@ console.log(data)
               <h1 className="font-black text-accent text-3xl ">
                 Patient Info
               </h1>
-              <div className="grid gap-2 sm:grid-cols-4 w-full">
+              <div className="grid gap-2 sm:grid-cols-4 w-full mt-2">
                 <div className="rounded-md">
-                  <TextField id="standard-basic"   label="FirstName (TH)" variant="standard" value={patien.Result.Patient.FirstName} />
+          <Box sx={{backgroundColor: '#e5e7eb', padding: 0, borderRadius: 0}}>
+                  {/* <TextField id="standard-basic" className="text-black bg-gray-200 border border-gray-300 rounded p-2 disabled:text-black"    label="FirstName (TH)" variant="standard" value={patien.Result.PatientInfo.FirstName} /> */}
+                  <TextField disabled id="outlined-disabled" label="FirstName (TH)" defaultValue={patien.Result.PatientInfo.FirstName} className="w-full text-black border border-black rounded disabled:text-black" InputProps={{style: { color: 'black' } }}/>
+        </Box>
                 </div>
                 <div className="rounded-md">
-                  <TextField id="standard-basic" label="LastName (TH)" variant="standard" value={patien.Result.Patient.LastName} />
+         <Box sx={{backgroundColor: '#e5e7eb', padding: 0, borderRadius: 0,}}>
+                  {/* <TextField id="standard-basic" className="text-black bg-gray-200 border border-gray-300 rounded p-2 disabled:text-black" label="LastName (TH)" variant="standard" value={patien.Result.PatientInfo.LastName} /> */}
+                  <TextField disabled id="outlined-disabled" label="LastName (TH)" defaultValue={patien.Result.PatientInfo.LastName} className="w-full  text-black border border-black rounded disabled:text-black"/>
+        </Box>
                 </div>
                 <div className="rounded-md">
-                <TextField id="standard-basic" label="PID" variant="standard" value={PatientInfo.PID} />
+                <Box sx={{backgroundColor: '#e5e7eb', padding: 0, borderRadius: 0,}}>
+                {/* <TextField id="standard-basic" className="text-black bg-gray-200 border border-gray-300 rounded p-2 disabled:text-black" label="PID" variant="standard" value={PatientInfo.PID} /> */}
+                <TextField disabled id="outlined-disabled" label="PID" defaultValue={PatientInfo.PID} className="w-full  text-black border border-black rounded disabled:text-black"/>
+        </Box>
                 </div>
               {PatientInfo.PassportNumber ? (
                   <div className="rounded-md">
-                    <TextField id="standard-basic" label="Passport" variant="standard" value={PatientInfo.PassportNumber} />
+               <Box sx={{backgroundColor: '#e5e7eb', padding: 0, borderRadius: 0,}}>
+                    {/* <TextField id="standard-basic" className="text-black bg-gray-200 border border-gray-300 rounded p-2 disabled:text-black" label="Passport" variant="standard" value={PatientInfo.PassportNumber} /> */}
+                    <TextField disabled id="outlined-disabled" label="Passport" defaultValue={PatientInfo.PassportNumber} className="w-full  text-black border border-black rounded disabled:text-black"/>
+        </Box>
                   </div>
                 ) : ""} 
                 <div className="rounded-md">
-                <TextField id="standard-basic" label="Date of Birth (YYYY-MM-DD)" variant="standard" value={patien.Result.Patient.DOB} />
+                <Box sx={{backgroundColor: '#e5e7eb', padding: 0, borderRadius: 0,}}>
+                {/* <TextField id="standard-basic"  className="text-black bg-gray-200 border border-gray-300 rounded p-2 disabled:text-black" label="Date of Birth (YYYY-MM-DD)" variant="standard" value={patien.Result.PatientInfo.DOB} /> */}
+                <TextField disabled id="outlined-disabled" label="Date of Birth (YYYY-MM-DD)" defaultValue={patien.Result.PatientInfo.DOB} className="w-full  text-black border border-black rounded disabled:text-black"/>
+        </Box>
                 </div>
                 <div className="rounded-md">
-                <TextField id="standard-basic" label="HN" variant="standard" value={PatientInfo.HN} />
+                <Box sx={{backgroundColor: '#e5e7eb', padding: 0, borderRadius: 0,}}>
+                {/* <TextField id="standard-basic" className="text-black bg-gray-200 border border-gray-300 rounded p-2 disabled:text-black" label="HN" variant="standard" value={PatientInfo.HN} /> */}
+                <TextField disabled id="outlined-disabled" label="HN" defaultValue={PatientInfo.HN} className="w-full  text-black border border-black rounded disabled:text-black"/>
+           </Box>
                 </div>
                 <div className="rounded-md">
-                <TextField id="standard-basic" label="Sex" variant="standard" value={patien.Result.Patient.Gender} />
+                <Box sx={{backgroundColor: '#e5e7eb', padding: 0, borderRadius: 0,}}>
+                {/* <TextField id="standard-basic" disabled className="text-black bg-gray-200 border border-gray-300 rounded p-2 disabled:text-black" label="Sex" variant="standard" value={patien.Result.PatientInfo.Gender} /> */}
+                <TextField disabled id="outlined-disabled" label="Sex" defaultValue={patien.Result.PatientInfo.Gender} className="w-full  text-black border border-black rounded disabled:text-black"/>
+           </Box>
                 </div>
               </div>
             </div>
@@ -392,19 +440,31 @@ console.log(data)
               <h1 className="font-black text-accent text-3xl ">
               Visit
               </h1>
-              <div className="grid gap-2 sm:grid-cols-4 w-full">
+              <div className="grid gap-2 sm:grid-cols-4 w-full mt-2">
                 <div className="rounded-md">
-                <TextField id="standard-basic" label="VN" variant="standard" value={visit.Result.Visit.VN} />
+              <Box sx={{backgroundColor: '#e5e7eb', padding: 0, borderRadius: 0,}}>
+                {/* <TextField id="standard-basic" className="text-black bg-gray-200 border border-gray-300 rounded p-2 disabled:text-black" label="VN" variant="standard" value={visit.Result.VisitInfo.VN} /> */}
+                <TextField disabled id="outlined-disabled" label="VN"  className="w-full text-black rounded disabled:text-black disabled:bg-gray-300" defaultValue={visit.Result.VisitInfo.VN} />
+           </Box>
                 </div>
                 <div className="rounded-md">
-                <TextField id="standard-basic" label="VisitDateTime" variant="standard" value={visit.Result.Visit.VisitDateTime} />
+                <Box sx={{backgroundColor: '#e5e7eb', padding: 0, borderRadius: 0,}}>
+                {/* <TextField id="standard-basic" className="text-black bg-gray-200 border border-gray-300 rounded p-2 disabled:text-black" label="VisitDateTime" variant="standard" value={visit.Result.VisitInfo.VisitDateTime} /> */}
+                <TextField disabled id="outlined-disabled"   className="w-full text-black rounded disabled:text-black disabled:bg-gray-300" label="VisitDateTime" defaultValue={visit.Result.VisitInfo.VisitDateTime} />
+                </Box>
                 </div>
                 <div className="rounded-md">
-                <TextField id="standard-basic" label="อาการสำคัญที่มาโรงพยาบาล" variant="standard" value={visit.Result.Visit.ChiefComplaint} />
+                <Box sx={{backgroundColor: '#e5e7eb', padding: 0, borderRadius: 0,}}>
+                {/* <TextField id="standard-basic" className="text-black bg-gray-200 border border-gray-300 rounded p-2 disabled:text-black" label="อาการสำคัญที่มาโรงพยาบาล" variant="standard" value={visit.Result.VisitInfo.ChiefComplaint} /> */}
+                <TextField disabled id="outlined-disabled"   className="w-full text-black rounded disabled:text-black disabled:bg-gray-300" label="อาการสำคัญที่มาโรงพยาบาล" defaultValue={visit.Result.VisitInfo.ChiefComplaint} />
+                </Box>
                 </div>
-                <div className="rounded-md grid sm:grid-cols-2">
-                <TextField id="standard-basic" className="w-1/2" label="ส่วนสูง" variant="standard" value={visit.Result.Visit.Height} />
-                <TextField id="standard-basic" className="w-1/2" label="น้ำหนัก" variant="standard" value={visit.Result.Visit.Weight} />
+                <div className="rounded-md text-black">
+                <Box sx={{backgroundColor: '#e5e7eb', padding: 0, borderRadius: 0,}}>
+                {/* <TextField id="standard-basic" className="text-black bg-gray-200 border border-gray-300 rounded p-2 disabled:text-black w-1/2" label="ส่วนสูง" variant="standard" value={visit.Result.VisitInfo.Height} />
+                <TextField id="standard-basic" className="text-black bg-gray-200 border border-gray-300 rounded p-2 disabled:text-black w-1/2" label="น้ำหนัก" variant="standard" value={visit.Result.VisitInfo.Weight} /> */}
+                <TextField disabled id="outlined-disabled"   className="w-full text-black rounded disabled:text-black disabled:bg-gray-300" label="น้ำหนัก / ส่วนสูง" defaultValue={combinedString} />
+                </Box>
                 </div>
                 </div>
                 <div className="rounded-md w-full border-2 mt-3">
@@ -418,7 +478,7 @@ console.log(data)
           name="DxFreeTextText"
           multiline
           rows={4}
-          defaultValue={visit.Result.Visit.DxFreeText}
+          defaultValue={visit.Result.VisitInfo.DxFreeText}
           inputProps={{ maxLength: 200 }}
           required
         />
@@ -440,7 +500,7 @@ console.log(data)
           label="ประวัติเจ็บป่วยปัจจุบัน รายละเอียดอาการ และประวัติที่เกี่ยวข้อง"
           multiline
           rows={4}
-          defaultValue={visit.Result.Visit.PresentIllness}
+          defaultValue={visit.Result.VisitInfo.PresentIllness}
           inputProps={{ maxLength: 500 }}
           required
         />
@@ -570,7 +630,7 @@ console.log(data)
                               key={index}
                               className=" bg-neutral text-sm"
                             >
-                              <td>{index + 1}</td>
+                              <td>{vts.VitalSignEntryDateTime ? index + 1 : ""}</td>
                               <td>{vts.VitalSignEntryDateTime}</td>
                               <td>
                                 {vts.DiastolicBp +
@@ -641,7 +701,7 @@ console.log(data)
                               key={index}
                               className=" bg-neutral text-sm"
                             >
-                              <td>{index + 1}</td>
+                              <td>{dc.DoctorLicense ? index + 1 : ""}</td>
                               <td>{dc.DoctorLicense}</td>
                               <td>
                                 {dc.DoctorFirstName}
@@ -685,7 +745,7 @@ console.log(data)
                               key={index}
                               className=" bg-neutral text-sm"
                             >
-                              <td>{index + 1}</td>
+                              <td>{dns.DxCode ? index + 1 : ""}</td>
                               <td>
                                 {dns.DxCode}
                               </td>
@@ -736,7 +796,7 @@ console.log(data)
                             key={index}
                             className=" bg-neutral text-sm"
                           >
-                            <td>{index + 1}</td>
+                            <td>{pcr.ProcedureDate ? index + 1 : ""}</td>
                             <td>{pcr.ProcedureDate}</td>
                             <td>
                               {pcr.ProcedureName}
@@ -782,7 +842,7 @@ console.log(data)
                             key={index}
                             className=" bg-neutral text-sm"
                           >
-                            <td>{index + 1}</td>
+                            <td>{inves.InvestigationCode ? index + 1 : ""}</td>
                             <td>{inves.InvestigationCode}</td>
                             <td>
                               {inves.InvestigationGroup}
@@ -830,13 +890,13 @@ console.log(data)
                   </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
-                  {orderItem
-                      ? orderItem.Result.OrderItem.map((order, index) => (
+                  {orderItemz
+                      ? orderItemz.Result.OrderItemInfo.map((order, index) => (
                           <tr
                             key={index}
                             className=" bg-neutral text-sm"
                           >
-                            <td class="px-6 py-4 whitespace-nowrap">{index + 1}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">{order.ItemId ? index + 1 : ""}</td>
                             <td class="px-6 py-4 whitespace-nowrap">{order.ItemId}</td>
                             <td class="px-6 py-4 whitespace-nowrap">
                               {order.ItemName}
@@ -890,12 +950,12 @@ console.log(data)
                   </thead>
                   <tbody class="bg-white divide-y divide-gray-200">
                     {billing
-                      ? billing.Result.Billing.map((bill, index) => (
+                      ? billing.Result.BillingInfo.map((bill, index) => (
                           <tr
                             key={index}
                             className=" bg-neutral text-sm"
                           >
-                            <td class="px-6 py-4 whitespace-nowrap">{index + 1}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">{bill.SimbBillingCode ? index + 1 : ""}</td>
                             <td class="px-6 py-4 whitespace-nowrap">{bill.SimbBillingCode}</td>
                             <td class="px-6 py-4 whitespace-nowrap">{bill.LocalBillingName}</td>
                             <td class="px-6 py-4 whitespace-nowrap">{bill.BillingInitial}</td>
@@ -931,12 +991,12 @@ console.log(data)
                   </thead>
                   <tbody class="bg-white divide-y divide-gray-200">
                     {billing
-                      ? billing.Result.Billing.map((bill, index) => (
+                      ? billing.Result.BillingInfo.map((bill, index) => (
                           <tr
                             key={index}
                             className=" bg-neutral text-sm"
                           >
-                            <td class="px-6 py-4 whitespace-nowrap">{index + 1}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">{bill.SimbBillingCode ? index + 1 : ""}</td>
                             <td class="px-6 py-4 whitespace-nowrap">{bill.SimbBillingCode}</td>
                             <td class="px-6 py-4 whitespace-nowrap">{bill.LocalBillingName}</td>
                             <td class="px-6 py-4 whitespace-nowrap">{bill.BillingInitial}</td>
@@ -998,7 +1058,7 @@ console.log(data)
                   </thead>
                   <tbody class="bg-white divide-y divide-gray-200">
                     {/* {billing
-                      ? billing.Result.Billing.map((bill, index) => ( */}
+                      ? billing.Result.BillingInfo.map((bill, index) => ( */}
                           <tr
                             // key={index}
                             className=" bg-neutral text-sm"

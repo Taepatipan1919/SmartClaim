@@ -81,7 +81,7 @@ router.push('/aia/opd/checkeilgible');
   // useEffect(() => {
   //   const getClaimStatus = async () => {
   //     const response = await fetch(
-  //       process.env.NEXT_PUBLIC_URL_SV + "v1/utils/claimStatus/" + InsurerCode
+  //       process.env.NEXT_PUBLIC_URL_PD + "v1/utils/claimStatus/" + InsurerCode
   //     );
 
   //     const data = await response.json();
@@ -103,7 +103,7 @@ router.push('/aia/opd/checkeilgible');
       };
       axios
         .post(
-          process.env.NEXT_PUBLIC_URL_SV + "v1/aia-patient-info/FindPatient/",
+          process.env.NEXT_PUBLIC_URL_PD + "v1/aia-patient-info/FindPatient/",
           {
             PatientInfo,
           }
@@ -126,7 +126,7 @@ router.push('/aia/opd/checkeilgible');
       };
       axios
         .post(
-          process.env.NEXT_PUBLIC_URL_SV + "v1/aia-patient-info/FindPatient/",
+          process.env.NEXT_PUBLIC_URL_PD + "v1/aia-patient-info/FindPatient/",
           {
             PatientInfo,
           }
@@ -151,7 +151,7 @@ router.push('/aia/opd/checkeilgible');
       };
       axios
         .post(
-          process.env.NEXT_PUBLIC_URL_SV + "v1/aia-patient-info/FindPatient/",
+          process.env.NEXT_PUBLIC_URL_PD + "v1/aia-patient-info/FindPatient/",
           {
             PatientInfo,
           }
@@ -170,7 +170,7 @@ router.push('/aia/opd/checkeilgible');
   function saveCreate() {
     axios
       .post(
-        process.env.NEXT_PUBLIC_URL_SV + "v1/aia-patient-info/CreatePatient",
+        process.env.NEXT_PUBLIC_URL_PD + "v1/aia-patient-info/CreatePatient",
         {
           PatientInfo: {
             InsurerCode: InsurerCode, // ควรเป็น integer ไม่ใช่ string
@@ -239,7 +239,7 @@ router.push('/aia/opd/checkeilgible');
   function saveUpdate() {
     axios
       .patch(
-        process.env.NEXT_PUBLIC_URL_SV + "v1/aia-patient-info/PatientUpdate",
+        process.env.NEXT_PUBLIC_URL_PD + "v1/aia-patient-info/PatientUpdate",
         {
           "PatientInfo": {
             "InsurerCode": 13, // ควรเป็น integer ไม่ใช่ string
@@ -299,7 +299,7 @@ router.push('/aia/opd/checkeilgible');
         
               axios
               .post(
-                process.env.NEXT_PUBLIC_URL_SV + "v1/aia-patient-info/PatientSearch",
+                process.env.NEXT_PUBLIC_URL_PD + "v1/aia-patient-info/PatientSearch",
                 {
                   PatientInfo,
                 }
@@ -334,7 +334,7 @@ router.push('/aia/opd/checkeilgible');
               };
               axios
               .post(
-                process.env.NEXT_PUBLIC_URL_SV + "v1/aia-patient-info/PatientSearch",
+                process.env.NEXT_PUBLIC_URL_PD + "v1/aia-patient-info/PatientSearch",
                 {
                   PatientInfo,
                 }
@@ -368,7 +368,7 @@ router.push('/aia/opd/checkeilgible');
               };
               axios
               .post(
-                process.env.NEXT_PUBLIC_URL_SV + "v1/aia-patient-info/PatientSearch",
+                process.env.NEXT_PUBLIC_URL_PD + "v1/aia-patient-info/PatientSearch",
                 {
                   PatientInfo,
                 }

@@ -276,40 +276,219 @@ export default function chackData() {
    };
    const handleSubmit2 = (event) => {
     event.preventDefault();
+    setPost();
 
-    const DatefromValue = dayjs(fromValue.$d).format('YYYY-MM-DD');
-    const DateToValue = dayjs(toValue.$d).format('YYYY-MM-DD');
-    const search = {
-      PID: selectedIdType,
-      VN: selectedIdType2,
-      pidValue: pidValue,
-      vnValue: vnValue,
-      fromValue: DatefromValue,
-      toValue: DateToValue,
 
-      // datefrom: event.target.datefrom.value,
-      // dateto: event.target.dateto.value,
-      //  PID: event.target.PID.value,
-      // HN: event.target.HN.value,
-      // VN: event.target.VN.value,
-      // invoice: event.target.invoice.value,
-    };
-    //console.log(search)
-    axios
-      .post(process.env.NEXT_PUBLIC_URL + "v1/aia-submitBilling/selectbilling",{
-        search
+
+    if (event.target.T1.value || event.target.T2.value){
+
+    //  const DatefromValue = dayjs(event.target.T1.value.$d).format('YYYY-MM-DD');
+    //  const DateToValue = dayjs(event.target.T2.value.$d).format('YYYY-MM-DD');
+    try {
+      const DateFromValue = event.target.T1.value;
+      const DateToValue = event.target.T2.value;
+      if (!DateFromValue || !DateToValue) {
+        setShowFormError("Error")
+        setMassError("กรุณา กรอก ช่อง DateFrom หรือ DateTo ให้ครบ")
+      }else{
+        setShowFormError("");
+
+        axios
+      .post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-submitbilling/selectbilling",{
+              //ส่งเป็น statisCode
+        Insurerid: InsuranceCode,
+        Status: "09",
+        IdType: selectedIdType,
+        PID: pidValue,
+        VN: vnValue,
+        Invoice: invoiceValue,
+        DateFrom: DateFromValue,
+        DateTo: DateToValue,
       })
       .then((response) => {
         setPost(response.data);
+        setShowFormError("");
       })
-      .catch((err) => {
+      .catch((error) => {
        // console.error("Error", err)
-        console.log(err)
+        console.log(error)
         //  if (err.response.request.status === 500) {
                 setShowFormError("Error");
-                setMassError(err.response.data.HTTPStatus.message);
+                // setMassError(error.response.data.HTTPStatus.message);
             //  }  
   });
+  }
+  } catch (error){
+    setShowFormError("Error");
+    setMassError(error.message);
+  }
+  console.log(post)
+
+  }else {
+ if(selectedIdType === "NATIONAL_ID"){
+  const TransactionQuery = {
+    Insurerid: InsuranceCode,
+    Status: "09",
+    IdType: selectedIdType,
+    PID: pidValue,
+    PassportNumber: "",
+    HN: "",
+    VN: "",
+    Invoice: "",
+    DateFrom: "",
+    DateTo: "",
+  }
+
+  axios
+  .post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-submitbilling/selectbilling",
+    //ส่งเป็น statisCode
+    TransactionQuery
+  )
+  .then((response) => {
+    setPost(response.data);
+    console.log(response.data)
+    setShowFormError("");
+  })
+  .catch((error) => {
+   // console.error("Error", err)
+    console.log(error)
+    //  if (err.response.request.status === 500) {
+            setShowFormError("Error");
+            // setMassError(error.response.data.HTTPStatus.message);
+        //  }  
+});
+
+ }else if(selectedIdType === "PASSPORT_NO"){
+  const TransactionQuery = {
+    Insurerid: InsuranceCode,
+    Status: "09",
+    IdType: selectedIdType,
+    PID: "",
+    PassportNumber: pidValue,
+    HN: "",
+    VN: "",
+    Invoice: "",
+    DateFrom: "",
+    DateTo: "",
+  }
+
+
+  axios
+  .post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-submitbilling/selectbilling",
+    //ส่งเป็น statisCode
+    TransactionQuery
+  )
+  .then((response) => {
+    setPost(response.data);
+    console.log(response.data)
+    setShowFormError("");
+  })
+  .catch((error) => {
+   // console.error("Error", err)
+    console.log(error)
+    //  if (err.response.request.status === 500) {
+            setShowFormError("Error");
+            // setMassError(error.response.data.HTTPStatus.message);
+        //  }  
+});
+}else if(selectedIdType === "HN"){
+  const TransactionQuery = {
+    Insurerid: InsuranceCode,
+    Status: "09",
+    IdType: selectedIdType,
+    PID: "",
+    PassportNumber: "",
+    HN: pidValue,
+    VN: "",
+    Invoice: "",
+    DateFrom: "",
+    DateTo: "",
+  }
+
+  axios
+  .post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-submitbilling/selectbilling",
+    //ส่งเป็น statisCode
+    TransactionQuery
+  )
+  .then((response) => {
+    setPost(response.data);
+    console.log(response.data)
+    setShowFormError("");
+  })
+  .catch((error) => {
+   // console.error("Error", err)
+    console.log(error)
+    //  if (err.response.request.status === 500) {
+            setShowFormError("Error");
+            // setMassError(error.response.data.HTTPStatus.message);
+        //  }  
+});
+ }else if(selectedIdType === "VN"){
+  const TransactionQuery = {
+    Insurerid: InsuranceCode,
+    Status: "09",
+    IdType: selectedIdType,
+    PID: "",
+    PassportNumber: "",
+    HN: "",
+    VN: pidValue,
+    Invoice: "",
+    DateFrom: "",
+    DateTo: "",
+  }
+
+  axios
+  .post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-submitbilling/selectbilling",
+    //ส่งเป็น statisCode
+    TransactionQuery
+  )
+  .then((response) => {
+    setPost(response.data);
+    console.log(response.data)
+    setShowFormError("");
+  })
+  .catch((error) => {
+   // console.error("Error", err)
+    console.log(error)
+    //  if (err.response.request.status === 500) {
+            setShowFormError("Error");
+            // setMassError(error.response.data.HTTPStatus.message);
+        //  }  
+});
+ }else if(selectedIdType === "Invoice"){
+  const TransactionQuery = {
+    Insurerid: InsuranceCode,
+    Status: "09",
+    IdType: selectedIdType,
+    PID: "",
+    PassportNumber: "",
+    HN: "",
+    VN: "",
+    Invoice: pidValue,
+    DateFrom: "",
+    DateTo: "",
+  }
+
+  axios
+  .post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-submitbilling/selectbilling",
+    //ส่งเป็น statisCode
+    TransactionQuery
+  )
+  .then((response) => {
+    setPost(response.data);
+    console.log(response.data)
+    setShowFormError("");
+  })
+  .catch((error) => {
+   // console.error("Error", err)
+    console.log(error)
+    //  if (err.response.request.status === 500) {
+            setShowFormError("Error");
+            // setMassError(error.response.data.HTTPStatus.message);
+        //  }  
+});
+ }
+  }
    };
 
 
@@ -456,8 +635,110 @@ document.getElementById("my_modal_3").showModal()
     className="tab text-success"
     aria-label="รายการที่วางบิลแล้ว"
      />
-<div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6 w-5/12">
+    <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6">
+    
+    <form onSubmit={handleSubmit2}>
+    <div className="grid gap-1 sm:grid-cols-1 w-full">
+          <div className="px-2 rounded-md">
+            <div className="flex items-center ">
+              <input
+                        type="radio"
+                        id="NATIONAL_ID"
+                        name="identity_2"
+                        value="NATIONAL_ID"
+                        className="checkbox checkbox-info"
+                        defaultChecked
+                        onChange={handleOptionChange}
+              />
+              <p className="text-left">&nbsp;Personal ID &nbsp;</p>
+              <input
+                        type="radio"
+                        id="PASSPORT_NO"
+                        name="identity_2"
+                        value="PASSPORT_NO"
+                        className="checkbox checkbox-info"
+                        checked={selectedIdType === 'PASSPORT_NO'}
+                        onChange={handleOptionChange}
+                
+              />
+              <p className="text-left">&nbsp;Passport &nbsp;</p>
+              <input
+                        type="radio"
+                        id="HOSPITAL_ID"
+                        name="identity_2"
+                        value="HOSPITAL_ID"
+                        className="checkbox checkbox-info"
+                        checked={selectedIdType === 'HOSPITAL_ID'}
+                        onChange={handleOptionChange}
+              />
+              <p className="text-left">&nbsp;HN &nbsp;</p>
+              <input
+                        type="radio"
+                        id="VN"
+                        name="identity_2"
+                        value="VN"
+                        className="checkbox checkbox-info"
+                        checked={selectedIdType === 'VN'}
+                        onChange={handleOptionChange}
+              />
+              <p className="text-left">&nbsp;VN &nbsp;</p>
+              <input
+                        type="radio"
+                        id="Invoice"
+                        name="identity_2"
+                        value="Invoice"
+                        className="checkbox checkbox-info"
+                        checked={selectedIdType === 'Invoice'}
+                        onChange={handleOptionChange}
+              />
+              <p className="text-left">&nbsp;Invoice &nbsp;</p>
+              <p className="ml-2">Visit Date</p>
+            </div>
+            <TextField
+          id="standard-multiline-flexible"
+          label="Personal ID / Passport / HN / VN / Invoice"
+          multiline
+          maxRows={4}
+          variant="standard"
+          className="w-96"
+          name="PID"
+          type="text"
+                      value={pidValue}
+                      onChange={(e) => setPidValue(e.target.value)}
+        />
 
+      
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <DatePicker
+        className="w-40 ml-10"
+            label="Date From"
+            name="T1"
+            //value={fromValue}
+            //onChange={(newDate) => setFromValue(newDate)}
+            format="YYYY-MM-DD"
+          />
+      
+      </LocalizationProvider> 
+      &nbsp;&nbsp;
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <DatePicker
+        className="w-40"
+            label="Date To"
+            name="T2"
+            //value={toValue}
+            //onChange={(newDate) => setToValue(newDate)}
+            format="YYYY-MM-DD"
+          />
+    </LocalizationProvider>
+                <button className="btn btn-success text-base-100 text-lg rounded-full px-3 py-2 hover:bg-base-100 hover:text-success ml-2" type="submit">
+                    <FaSearch /> ค้นหา
+                  </button>
+                  </div>
+
+
+
+  </div> 
+  </form>
   </div>
   </div>
 

@@ -1,16 +1,20 @@
-export async function GET() {
-  return Response.json({
+import { NextRequest, NextResponse } from "next/server";
+
+export async function POST(request) {
+    const date = await request.json();
+    console.log("ดึงข้อมูลเช็คสำเร็จ");
+    return NextResponse.json({
     Result: {
-      OrderItem: [
+      OrderItemInfo: [
         {
-          "Discount": "40",
-          "Initial": "100",
-          "ItemAmount": "1",
-          "ItemId": "00012345",
-          "ItemName": "Film",
-          "LocalBillingCode": "1.1.5",
-          "LocalBillingName": "Film X-Ray",
-          "NetAmount": "60"
+          Discount: "40",
+          Initial: "100",
+          ItemAmount: "1",
+          ItemId: "00012345",
+          ItemName: "Film",
+          LocalBillingCode: "1.1.5",
+          LocalBillingName: "Film X-Ray",
+          NetAmount: "60"
       },
       {
           "ItemId": "110082415185009401",

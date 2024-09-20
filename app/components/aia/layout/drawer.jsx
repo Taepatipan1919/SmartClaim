@@ -46,22 +46,22 @@ export default function Drawer() {
         { id: "1-5", label: "สถานะการเคลม", href: "/aia/opd/checkClaimStatus" },
       ],
     },
-    {
-      id: "2",
-      label: " IPD",
-      // icon: <GoBrowser />,
-      href: "/aia/ipd",
-      spacing: false,
-      submenu: "",
-    },
-    {
-      id: "3",
-      label: " Pre",
-      // icon: <GoBrowser />,
-      href: "/aia/Pre-Author",
-      spacing: false,
-      submenu: "",
-    },
+    // {
+    //   id: "2",
+    //   label: " IPD",
+    //   // icon: <GoBrowser />,
+    //   href: "/aia/ipd",
+    //   spacing: false,
+    //   submenu: "",
+    // },
+    // {
+    //   id: "3",
+    //   label: " Pre",
+    //   // icon: <GoBrowser />,
+    //   href: "/aia/Pre-Author",
+    //   spacing: false,
+    //   submenu: "",
+    // },
   ];
 
   return (

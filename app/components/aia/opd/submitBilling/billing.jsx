@@ -13,7 +13,8 @@ import TextField from '@mui/material/TextField';
 import { ImBin } from "react-icons/im";
 import { IoIosDocument } from "react-icons/io";
 import { AiOutlineUnorderedList } from "react-icons/ai";
-import { Button, Menu, MenuItem } from '@mui/material';
+import { Button ,Menu, MenuItem } from '@mui/material';
+import { useRouter } from 'next/navigation';
 
 import dayjs from 'dayjs';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -31,7 +32,8 @@ export default function chackData() {
   const [toValue, setToValue] = useState();
   const [massError, setMassError] = useState("");
   const [showFormError, setShowFormError] = useState("");
-
+  const [showModal, setShowModal] = useState(false);
+  const router = useRouter();
 
   const [anchorEl, setAnchorEl] = useState(null);
 
@@ -119,12 +121,18 @@ const handleSubmit2 = (event) => {
 //console.log(post)
    const submitbilling = (event) => {
     event.preventDefault();
-    
+    document.getElementById("my_modal_3").close()
     const File = {
       InsuranceCode: InsuranceCode,
     };
     console.log(File);
+    setShowModal(true)
 
+
+    setTimeout(() => {
+      setShowModal(false)
+      //router.push('/aia/opd/submitBilling');
+    }, 5000);
   }
    const handleButtonClick = (data) => {
 
@@ -183,6 +191,7 @@ document.getElementById("my_modal_3").showModal()
                 
               />
               <p className="text-left">&nbsp;Invoice &nbsp;</p>
+              <p className="ml-32">Visit Date</p>
             </div>
             <TextField
           id="standard-multiline-flexible"
@@ -237,15 +246,15 @@ document.getElementById("my_modal_3").showModal()
     className="tab text-success"
     aria-label="รายการที่วางบิลแล้ว"
      />
-<div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6 w-5/12">
+  <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6 w-5/5">
 <form onSubmit={handleSubmit2}>
-    <div className="grid gap-1 sm:grid-cols-2 w-full">
-          <div className="px-2 rounded-md ">
+    <div className="grid gap-1 sm:grid-cols-1 w-full">
+          <div className="px-2 rounded-md">
             <div className="flex items-center ">
               <input
                         type="radio"
                         id="VN"
-                        name="identity_type"
+                        name="identity_2"
                         value="VN"
                         className="checkbox checkbox-info"
                         defaultChecked
@@ -255,7 +264,7 @@ document.getElementById("my_modal_3").showModal()
               <input
                         type="radio"
                         id="Invoice"
-                        name="identity_type"
+                        name="identity_2"
                         value="Invoice"
                         className="checkbox checkbox-info"
                         checked={selectedIdType === 'Invoice'}
@@ -263,6 +272,7 @@ document.getElementById("my_modal_3").showModal()
                 
               />
               <p className="text-left">&nbsp;Invoice &nbsp;</p>
+              <p className="ml-32">Visit Date</p>
             </div>
             <TextField
           id="standard-multiline-flexible"
@@ -270,28 +280,43 @@ document.getElementById("my_modal_3").showModal()
           multiline
           maxRows={4}
           variant="standard"
-          className="w-full"
+          className="w-64"
           name="number"
           type="text"
                       value={numberValue}
                       onChange={(e) => setNumberValue(e.target.value)}
         />
-        </div>
-
-       <div className="rounded-md mt-6"> 
-              <div className="grid gap-1 sm:grid-cols-2 w-full">
-                <div className="rounded-md">
-                <button className="btn btn-error text-base-100 text-lg rounded-full px-3 py-2 hover:bg-base-100 hover:text-error" type="submit">
+      
+     
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <DatePicker
+        className="ml-2"
+            label="Date From"
+            value={fromValue}
+            onChange={(newDate) => setFromValue(newDate)}
+            format="YYYY-MM-DD"
+          />
+      
+      </LocalizationProvider>
+  
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <DatePicker
+        className="ml-2"
+            label="Date To"
+            value={toValue}
+            onChange={(newDate) => setToValue(newDate)}
+            format="YYYY-MM-DD"
+          />
+    </LocalizationProvider>
+                <button className="btn btn-success text-base-100 text-lg rounded-full px-3 py-2 hover:bg-base-100 hover:text-success ml-2" type="submit">
                     <FaSearch /> ค้นหา
                   </button>
-                </div>
-                <div className="rounded-md"></div>
-              </div>
-        </div>
-        <div className="rounded-md"> 
-        </div>
+      
+   
+       </div>
 
-  </div> 
+       </div>
+
   </form>
   </div>
   </div>
@@ -456,6 +481,27 @@ document.getElementById("my_modal_3").showModal()
                           </dialog>
 </div>
 </div>
+
+
+
+
+
+
+{showModal ? (
+  <>
+          {/* <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
+            <div className="bg-white p-4 rounded shadow-lg">
+                <h2 className="text-lg font-bold mb-4">ส่งเคลมเรียบร้อย</h2>
+               
+            </div>
+        </div> */}
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white p-8 rounded shadow-lg">
+          <h2 className="text-4xl font-bold mb-4 text-primary">วางบิลเรียบร้อยแล้ว</h2>
+          </div>
+        </div>
+  </>
+) : ""}
     </>
   );
 }
