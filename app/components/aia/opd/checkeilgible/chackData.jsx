@@ -44,29 +44,16 @@ const [showbutton,setShowbutton] = useState("")
 const [ furtherClaim , setFurtherClaim ]= useState("")
   const  ReDux  = useSelector((state) => ({ ...state }));
   const dispatch = useDispatch();
+  const [selectedValue, setSelectedValue] = useState('');
 
+  const handleSelectChange = (event) => {
+    setSelectedValue(event.target.value);
+  };
   // const router = useRouter();
   const confirmButton = () => {
-    console.log(ReDux)
+   // console.log(ReDux)
 
-  
-    // const PatientInfo = {
-    //       "InsurerCode": 13, 
-    //       "RefId":"oljhnklefhbilubsEFJKLb651",
-    //       "TransactionNo":"",
-    //       "PID": "66-021995",
-    //       "HN": "66-021995",
-    //       "GivenNameTH": "วนิดา",
-    //       "SurnameTH": "แจ้งสกุลชัย",
-    //       "DateOfBirth": "1977-01-17",
-    //       "PassportNumber":"",
-    //       "IdType":"HOSPITAL_ID",
-    //       "VN":"O477382-67",
-    //       "VisitDateTime":"2024-05-01 13:17",
-    //       "AccidentDate":"2024-05-01"
-         
-    //       }
-       
+
 
         axios
         .post(process.env.NEXT_PUBLIC_URL_PD + "v1/aia-retrieve-further-claim-list/getRetrieveFurtherClaim",{
@@ -89,7 +76,7 @@ const [ furtherClaim , setFurtherClaim ]= useState("")
         } )
         .then((response) => {
           setFurtherClaim(response.data);
-          //console.log(response)
+       // console.log(response.data)
         })
         .catch((err) => {
          // console.error("Error", err)
@@ -112,7 +99,56 @@ const [ furtherClaim , setFurtherClaim ]= useState("")
     
   };
   const gourl = () => {
-   router.push('/aia/opd/eilgible');
+  // console.log(selectedValue)
+
+ // console.log(FurtherClaimNo)
+  //console.log(FurtherClaimId)
+  if(selectedValue){
+    const [FurtherClaimNo, FurtherClaimId] = selectedValue.split(' | ');
+    dispatch(
+      save({
+        value: "มีข้อมูล",
+        Data: {
+          RefId: result.Result.InsuranceData.RefId,
+          TransactionNo: result.Result.InsuranceData.TransactionNo,
+          VN: detailVN,
+          InsurerCode: InsurerCode,
+          ServiceSettingCode: statusValue, 
+          IllnessTypeCode: illnessTypeValue,
+          SurgeryTypeCode:  surgeryTypeValue,
+          PolicyTypeCode: policyTypeValue,
+          AccidentDate: accidentDate,
+          VisitDateTime: visitDateTime,
+          FurtherClaimNo : FurtherClaimNo,
+          FurtherClaimId : FurtherClaimId,
+        },
+      })
+    );
+
+  }else{
+    dispatch(
+      save({
+        value: "มีข้อมูล",
+        Data: {
+          RefId: result.Result.InsuranceData.RefId,
+          TransactionNo: result.Result.InsuranceData.TransactionNo,
+          VN: detailVN,
+          InsurerCode: InsurerCode,
+          ServiceSettingCode: statusValue, 
+          IllnessTypeCode: illnessTypeValue,
+          SurgeryTypeCode:  surgeryTypeValue,
+          PolicyTypeCode: policyTypeValue,
+          AccidentDate: accidentDate,
+          VisitDateTime: visitDateTime,
+          FurtherClaimNo : "",
+          FurtherClaimId : "",
+        },
+      })
+    );
+
+  }
+  
+     router.push('/aia/opd/eilgible');
   }
   
 
@@ -220,7 +256,7 @@ const [ furtherClaim , setFurtherClaim ]= useState("")
       setResult();
      setShowbutton();
       setShowFormError();
-    
+      setSelectedValue();
    // console.log(event.target.selectVN.value);
 
      const [VNselectVN, VisitDateselectVN, AccidentDateselectVN ] = event.target.selectVN.value.split(' | ');
@@ -244,9 +280,8 @@ const [ furtherClaim , setFurtherClaim ]= useState("")
       IdType: ReDux.Patient.Data.IdType,
       VN: VNselectVN,
       VisitDateTime: VisitDateselectVN,
-      // AccidentDate: AccidentDateselectVN,         //ทำฟังชั่น จังหวัด (ยังไมไ่ด้ทำ)
-      AccidentDate: Acc[0],         //ทำฟังชั่น จังหวัด (ยังไมไ่ด้ทำ)
-      //AccidentDate: "",
+      // AccidentDate: AccidentDateselectVN,      
+      AccidentDate: Acc[0],       
       PolicyTypeCode: policyTypeValue,
       ServiceSettingCode: statusValue, 
       IllnessTypeCode: illnessTypeValue,
@@ -254,7 +289,7 @@ const [ furtherClaim , setFurtherClaim ]= useState("")
     }
    // console.log(PatientInfo)
    document.getElementById("my_modal_3").showModal();
-    try {
+    // try {
       const response = await axios.post(process.env.NEXT_PUBLIC_URL_PD + "v1/aia-checkeligible/checkeligible", {
         PatientInfo
        });
@@ -266,24 +301,6 @@ const [ furtherClaim , setFurtherClaim ]= useState("")
 
 
 
-      dispatch(
-        save({
-          value: "มีข้อมูล",
-          Data: {
-            RefId: result.Result.InsuranceData.RefId,
-            TransactionNo: result.Result.InsuranceData.TransactionNo,
-            VN: detailVN,
-            InsurerCode: InsurerCode,
-            ServiceSettingCode: statusValue, 
-            IllnessTypeCode: illnessTypeValue,
-            SurgeryTypeCode:  surgeryTypeValue,
-            PolicyTypeCode: policyTypeValue,
-            AccidentDate: accidentDate,
-            VisitDateTime: visitDateTime,
-          },
-        })
-      );
-
 
 
 
@@ -292,15 +309,15 @@ const [ furtherClaim , setFurtherClaim ]= useState("")
      //   console.log(response);
        setMassError(response.data.HTTPStatus.message);
       }
-     } catch (error) {
+    //  } catch (error) {
 
-    //    console.log("555");
-        console.log(error)
-    //   //console.log(response)
-         setShowFormError("Err");
-         //setMassError(error.response.data.HTTPStatus.message);
-    //   //setMassError("xxxxxxxxxxxx");
-     }
+    // //    console.log("555");
+    //     console.log(error)
+    // //   //console.log(response)
+    //      setShowFormError("Err");
+    //      //setMassError(error.response.data.HTTPStatus.message);
+    // //   //setMassError("xxxxxxxxxxxx");
+    //  }
 
 
 
@@ -497,7 +514,7 @@ type="submit"
     labelId="policyTypeValue"
     id="demo-simple-select"
     value={policyTypeValue}
-    label="policy"
+    label="ประเภทกรมธรรม์"
     onChange={policy}
     className=""
     required
@@ -516,7 +533,7 @@ type="submit"
     labelId="illnessTypeValue"
     id="demo-simple-select"
     value={illnessTypeValue}
-    label="illnessType"
+    label="ประเภทของการรักษา"
     onChange={Illness}
     className=""
     required
@@ -536,7 +553,7 @@ type="submit"
     labelId="surgeryTypeValue"
     id="demo-simple-select"
     value={surgeryTypeValue}
-    label="surgery"
+    label="การผ่าตัด"
     onChange={surgery}
     className=""
     required
@@ -706,49 +723,53 @@ type="submit"
 
       <dialog id="my_modal_2" className="modal text-xl">
         <div className="modal-box">
-          <form method="dialog">
+      <form method="dialog"  onSubmit={gourl}>
             <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
               ✕
             </button>
 
-            <h3 className="font-bold text-lg">ข้อมูลการส่งเคลม</h3>
+            <h3 className="font-bold text-2xl text-accent">ข้อมูลการส่งเคลม</h3>
             <hr />
             <div className="flex pt-3 text-xl">
-              <input type="radio" name="exampleRadios" defaultChecked />
-              <p className="text-left">&nbsp;เข้ารักษาครั้งแรก</p>
-            </div>
-            <div className="flex text-xl">
-              <input type="radio" name="exampleRadios" />
-            {/*   <p className="text-left">&nbsp;เข้ารักษาแบบต่อเนื่อง</p>*/}
 
-            </div> 
-            <div className="flex text-xl">
-              <FormControl fullWidth>
-  <InputLabel id="furtherClaimValue">เข้ารักษาแบบต่อเนื่อง</InputLabel>
-  <Select
-    labelId="furtherClaimValue"
-    id="demo-simple-select"
-    value={furtherClaimValue}
-    label="further"
-    onChange={further}
-    className=""
-    required
-  >
-{furtherClaim ? furtherClaim.Result.FurtherClaimList.map((ftc, index) => (
-    <MenuItem key={index} value={ftc.ClaimNo}>{ftc.ClaimNo} - {ftc.VisitDateTime}</MenuItem>
+            <div role="tablist" className="tabs-bordered">
+            
+  <input type="radio" name="my_tabs_1" role="tab" className="tab text-xl" aria-label="เข้ารักษาครั้งแรก" defaultChecked/>
+
+  <input
+    type="radio"
+    name="my_tabs_1"
+    role="tab"
+    className="tab text-xl"
+    aria-label="เข้ารักษาแบบต่อเนื่อง"
+     />
+  <div role="tabpanel" className="tab-content mt-4">
+  
+  
+  
+  <label className="form-control w-full">
+  <select className="select select-bordered" onChange={handleSelectChange}>
+    <option></option>
+    {furtherClaim ? furtherClaim.Result.FurtherClaimList.map((ftc, index) => (
+    // <option key={index} value={ftc.ClaimNo}>เลขกรมธรรม์: {ftc.ClaimNo}, วันที่เข้ารักษา: {ftc.VisitDateTime.split('T')[0]}</option>
+    <option key={index} value={`${ftc.ClaimNo} | ${ftc.FurtherClaimId}`}>เลขกรมธรรม์: {ftc.ClaimNo}, วันที่เข้ารักษา: {ftc.VisitDateTime.split('T')[0]}</option>
     ))
     : ""}
-    </Select>
-</FormControl>
-            </div>
+    <></>
 
+  </select>
+</label> 
+
+  </div>
+</div>
+</div>
             <div className="modal-action">
               {/* <Link
                                     href={`/aia/opd/opdDischarge`}
                                   >  */}
               <button
                 className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100"
-                 onClick={gourl}
+                //  onClick={gourl}
               >
                 ยืนยัน
               </button>
@@ -756,6 +777,7 @@ type="submit"
             </div>
           </form>
         </div>
+  
       </dialog>
     </>
   )

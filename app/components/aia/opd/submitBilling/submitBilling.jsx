@@ -26,8 +26,8 @@ export default function chackData() {
   const DatefromValue = "";
   const DateToValue = "";
   const [post, setPost] = useState("");
-  const [selectedIdType, setSelectedIdType] = useState("NATIONAL_ID");
-  const [pidValue, setPidValue] = useState("");
+  const [selectedIdType, setSelectedIdType] = useState("");
+  const [numberValue, setNumberValue] = useState("");
   const [fromValue, setFromValue] = useState();
   const [toValue, setToValue] = useState();
   const [massError, setMassError] = useState("");
@@ -59,10 +59,177 @@ export default function chackData() {
 
   
   const handleSubmit = (event) => {
+    //ยังไม่วางบิล
     event.preventDefault();
     setPost();
 
-
+    if(selectedIdType === "NATIONAL_ID"){
+      const TransactionQuery = {
+        Insurerid: InsuranceCode,
+        Status: "09",
+        IdType: selectedIdType,
+        PID: pidValue,
+        PassportNumber: "",
+        HN: "",
+        VN: "",
+        Invoice: "",
+        DateFrom: "",
+        DateTo: "",
+      }
+    
+      axios
+      .post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-submitbilling/selectbilling",
+        //ส่งเป็น statisCode
+        TransactionQuery
+      )
+      .then((response) => {
+        setPost(response.data);
+        console.log(response.data)
+        setShowFormError("");
+      })
+      .catch((error) => {
+       // console.error("Error", err)
+        console.log(error)
+        //  if (err.response.request.status === 500) {
+                setShowFormError("Error");
+                // setMassError(error.response.data.HTTPStatus.message);
+            //  }  
+    });
+    
+     }else if(selectedIdType === "PASSPORT_NO"){
+      const TransactionQuery = {
+        Insurerid: InsuranceCode,
+        Status: "09",
+        IdType: selectedIdType,
+        PID: "",
+        PassportNumber: pidValue,
+        HN: "",
+        VN: "",
+        Invoice: "",
+        DateFrom: "",
+        DateTo: "",
+      }
+    
+    
+      axios
+      .post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-submitbilling/selectbilling",
+        //ส่งเป็น statisCode
+        TransactionQuery
+      )
+      .then((response) => {
+        setPost(response.data);
+        console.log(response.data)
+        setShowFormError("");
+      })
+      .catch((error) => {
+       // console.error("Error", err)
+        console.log(error)
+        //  if (err.response.request.status === 500) {
+                setShowFormError("Error");
+                // setMassError(error.response.data.HTTPStatus.message);
+            //  }  
+    });
+    }else if(selectedIdType === "HN"){
+      const TransactionQuery = {
+        Insurerid: InsuranceCode,
+        Status: "09",
+        IdType: selectedIdType,
+        PID: "",
+        PassportNumber: "",
+        HN: pidValue,
+        VN: "",
+        Invoice: "",
+        DateFrom: "",
+        DateTo: "",
+      }
+    
+      axios
+      .post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-submitbilling/selectbilling",
+        //ส่งเป็น statisCode
+        TransactionQuery
+      )
+      .then((response) => {
+        setPost(response.data);
+        console.log(response.data)
+        setShowFormError("");
+      })
+      .catch((error) => {
+       // console.error("Error", err)
+        console.log(error)
+        //  if (err.response.request.status === 500) {
+                setShowFormError("Error");
+                // setMassError(error.response.data.HTTPStatus.message);
+            //  }  
+    });
+     }else if(selectedIdType === "VN"){
+      const TransactionQuery = {
+        Insurerid: InsuranceCode,
+        Status: "09",
+        IdType: selectedIdType,
+        PID: "",
+        PassportNumber: "",
+        HN: "",
+        VN: pidValue,
+        Invoice: "",
+        DateFrom: "",
+        DateTo: "",
+      }
+    
+      axios
+      .post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-submitbilling/selectbilling",
+        //ส่งเป็น statisCode
+        TransactionQuery
+      )
+      .then((response) => {
+        setPost(response.data);
+        console.log(response.data)
+        setShowFormError("");
+      })
+      .catch((error) => {
+       // console.error("Error", err)
+        console.log(error)
+        //  if (err.response.request.status === 500) {
+                setShowFormError("Error");
+                // setMassError(error.response.data.HTTPStatus.message);
+            //  }  
+    });
+     }else if(selectedIdType === "Invoice"){
+      const TransactionQuery = {
+        Insurerid: InsuranceCode,
+        Status: "09",
+        IdType: selectedIdType,
+        PID: "",
+        PassportNumber: "",
+        HN: "",
+        VN: "",
+        Invoice: pidValue,
+        DateFrom: "",
+        DateTo: "",
+      }
+    
+      axios
+      .post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-submitbilling/selectbilling",
+        //ส่งเป็น statisCode
+        TransactionQuery
+      )
+      .then((response) => {
+        setPost(response.data);
+        console.log(response.data)
+        setShowFormError("");
+      })
+      .catch((error) => {
+       // console.error("Error", err)
+        console.log(error)
+        //  if (err.response.request.status === 500) {
+                setShowFormError("Error");
+                // setMassError(error.response.data.HTTPStatus.message);
+            //  }  
+    });
+     }else{
+                      setShowFormError("Error");
+                    setMassError("กรุณาเลือกค้นหา อย่างน้อย 1 อย่าง");
+      //console.log("ไม่ได้เลือกไรเลย")
+     }
 
     if (event.target.T1.value || event.target.T2.value){
 
@@ -84,13 +251,14 @@ export default function chackData() {
         Status: "09",
         IdType: selectedIdType,
         PID: pidValue,
-        VN: vnValue,
-        Invoice: invoiceValue,
+        // VN: vnValue,
+        //Invoice: invoiceValue,
         DateFrom: DateFromValue,
         DateTo: DateToValue,
       })
       .then((response) => {
         setPost(response.data);
+        console.log(response.data)
         setShowFormError("");
       })
       .catch((error) => {
@@ -103,178 +271,28 @@ export default function chackData() {
   });
   }
   } catch (error){
+    console.log("Error")
     setShowFormError("Error");
     setMassError(error.message);
   }
   console.log(post)
 
-  }else {
- if(selectedIdType === "NATIONAL_ID"){
-  const TransactionQuery = {
-    Insurerid: InsuranceCode,
-    Status: "09",
-    IdType: selectedIdType,
-    PID: pidValue,
-    PassportNumber: "",
-    HN: "",
-    VN: "",
-    Invoice: "",
-    DateFrom: "",
-    DateTo: "",
   }
+  // else {
 
-  axios
-  .post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-submitbilling/selectbilling",
-    //ส่งเป็น statisCode
-    TransactionQuery
-  )
-  .then((response) => {
-    setPost(response.data);
-    console.log(response.data)
-    setShowFormError("");
-  })
-  .catch((error) => {
-   // console.error("Error", err)
-    console.log(error)
-    //  if (err.response.request.status === 500) {
-            setShowFormError("Error");
-            // setMassError(error.response.data.HTTPStatus.message);
-        //  }  
-});
-
- }else if(selectedIdType === "PASSPORT_NO"){
-  const TransactionQuery = {
-    Insurerid: InsuranceCode,
-    Status: "09",
-    IdType: selectedIdType,
-    PID: "",
-    PassportNumber: pidValue,
-    HN: "",
-    VN: "",
-    Invoice: "",
-    DateFrom: "",
-    DateTo: "",
-  }
-
-
-  axios
-  .post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-submitbilling/selectbilling",
-    //ส่งเป็น statisCode
-    TransactionQuery
-  )
-  .then((response) => {
-    setPost(response.data);
-    console.log(response.data)
-    setShowFormError("");
-  })
-  .catch((error) => {
-   // console.error("Error", err)
-    console.log(error)
-    //  if (err.response.request.status === 500) {
-            setShowFormError("Error");
-            // setMassError(error.response.data.HTTPStatus.message);
-        //  }  
-});
-}else if(selectedIdType === "HN"){
-  const TransactionQuery = {
-    Insurerid: InsuranceCode,
-    Status: "09",
-    IdType: selectedIdType,
-    PID: "",
-    PassportNumber: "",
-    HN: pidValue,
-    VN: "",
-    Invoice: "",
-    DateFrom: "",
-    DateTo: "",
-  }
-
-  axios
-  .post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-submitbilling/selectbilling",
-    //ส่งเป็น statisCode
-    TransactionQuery
-  )
-  .then((response) => {
-    setPost(response.data);
-    console.log(response.data)
-    setShowFormError("");
-  })
-  .catch((error) => {
-   // console.error("Error", err)
-    console.log(error)
-    //  if (err.response.request.status === 500) {
-            setShowFormError("Error");
-            // setMassError(error.response.data.HTTPStatus.message);
-        //  }  
-});
- }else if(selectedIdType === "VN"){
-  const TransactionQuery = {
-    Insurerid: InsuranceCode,
-    Status: "09",
-    IdType: selectedIdType,
-    PID: "",
-    PassportNumber: "",
-    HN: "",
-    VN: pidValue,
-    Invoice: "",
-    DateFrom: "",
-    DateTo: "",
-  }
-
-  axios
-  .post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-submitbilling/selectbilling",
-    //ส่งเป็น statisCode
-    TransactionQuery
-  )
-  .then((response) => {
-    setPost(response.data);
-    console.log(response.data)
-    setShowFormError("");
-  })
-  .catch((error) => {
-   // console.error("Error", err)
-    console.log(error)
-    //  if (err.response.request.status === 500) {
-            setShowFormError("Error");
-            // setMassError(error.response.data.HTTPStatus.message);
-        //  }  
-});
- }else if(selectedIdType === "Invoice"){
-  const TransactionQuery = {
-    Insurerid: InsuranceCode,
-    Status: "09",
-    IdType: selectedIdType,
-    PID: "",
-    PassportNumber: "",
-    HN: "",
-    VN: "",
-    Invoice: pidValue,
-    DateFrom: "",
-    DateTo: "",
-  }
-
-  axios
-  .post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-submitbilling/selectbilling",
-    //ส่งเป็น statisCode
-    TransactionQuery
-  )
-  .then((response) => {
-    setPost(response.data);
-    console.log(response.data)
-    setShowFormError("");
-  })
-  .catch((error) => {
-   // console.error("Error", err)
-    console.log(error)
-    //  if (err.response.request.status === 500) {
-            setShowFormError("Error");
-            // setMassError(error.response.data.HTTPStatus.message);
-        //  }  
-});
- }
-  }
+  // }
    };
+
+
+   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
    const handleSubmit2 = (event) => {
+       //วางบิลแล้ว
     event.preventDefault();
     setPost();
 
@@ -300,8 +318,8 @@ export default function chackData() {
         Status: "09",
         IdType: selectedIdType,
         PID: pidValue,
-        VN: vnValue,
-        Invoice: invoiceValue,
+        // VN: vnValue,
+        //Invoice: invoiceValue,
         DateFrom: DateFromValue,
         DateTo: DateToValue,
       })
@@ -487,7 +505,11 @@ export default function chackData() {
             // setMassError(error.response.data.HTTPStatus.message);
         //  }  
 });
- }
+ }else{
+  setShowFormError("Error");
+setMassError("กรุณาเลือกค้นหา อย่างน้อย 1 อย่าง");
+//console.log("ไม่ได้เลือกไรเลย")
+}
   }
    };
 
@@ -534,7 +556,7 @@ document.getElementById("my_modal_3").showModal()
                         name="identity_type"
                         value="NATIONAL_ID"
                         className="checkbox checkbox-info"
-                        defaultChecked
+                        // defaultChecked
                         onChange={handleOptionChange}
               />
               <p className="text-left">&nbsp;Personal ID &nbsp;</p>
@@ -590,8 +612,8 @@ document.getElementById("my_modal_3").showModal()
           className="w-96"
           name="PID"
           type="text"
-                      value={pidValue}
-                      onChange={(e) => setPidValue(e.target.value)}
+                      value={numberValue}
+                      onChange={(e) => setNumberValue(e.target.value)}
         />
 
       
@@ -647,7 +669,7 @@ document.getElementById("my_modal_3").showModal()
                         name="identity_2"
                         value="NATIONAL_ID"
                         className="checkbox checkbox-info"
-                        defaultChecked
+                        // defaultChecked
                         onChange={handleOptionChange}
               />
               <p className="text-left">&nbsp;Personal ID &nbsp;</p>
@@ -703,8 +725,8 @@ document.getElementById("my_modal_3").showModal()
           className="w-96"
           name="PID"
           type="text"
-                      value={pidValue}
-                      onChange={(e) => setPidValue(e.target.value)}
+                      value={numberValue}
+                      onChange={(e) => setNumberValue(e.target.value)}
         />
 
       

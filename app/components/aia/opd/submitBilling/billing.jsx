@@ -47,7 +47,7 @@ export default function chackData() {
 
 
   const Delect = () => {
-    console.log("555555")
+    console.log("Delect")
   };
 
 
@@ -60,19 +60,27 @@ export default function chackData() {
 
   
   const handleSubmit = (event) => {
+    //ยังไม่วางบิล
     event.preventDefault();
     setPost();
+    const DateFromValue = dayjs(fromValue.$d).format('YYYY-MM-DD');
+    const DateToValue = dayjs(toValue.$d).format('YYYY-MM-DD');
+  const  seach = {
+      Insurerid: InsuranceCode,
+      Status: "09",
+      IdType: selectedIdType,
+      Number: numberValue,
+      FromValue : DateFromValue,
+      ToValue : DateToValue,
+      // Invoice: invoiceValue,
 
-
+    }
+    //console.log(seach)
         axios
-      .post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-submitbilling/selectbilling",{
+      .post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-submitbilling/selectbilling",
               //ส่งเป็น statisCode
-        Insurerid: InsuranceCode,
-        Status: "09",
-        IdType: selectedIdType,
-        Number: numberValue,
-        // Invoice: invoiceValue,
-      })
+              seach
+      )
       .then((response) => {
         setPost(response.data);
         setShowFormError("");
@@ -90,18 +98,26 @@ export default function chackData() {
 }
 
 const handleSubmit2 = (event) => {
+  //วางบิลแล้ว
   event.preventDefault();
   setPost();
+  const DateFromValue = dayjs(fromValue.$d).format('YYYY-MM-DD');
+  const DateToValue = dayjs(toValue.$d).format('YYYY-MM-DD');
+const  seach = {
+    Insurerid: InsuranceCode,
+    Status: "03",
+    IdType: selectedIdType,
+    Number: numberValue,
+    FromValue : DateFromValue,
+    ToValue : DateToValue,
+    // Invoice: invoiceValue,
 
+  }
 
       axios
     .post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-submitbilling/selectbilling",{
             //ส่งเป็น statisCode
-      Insurerid: InsuranceCode,
-      Status: "03",
-      IdType: selectedIdType,
-      Number: numberValue,
-      // Invoice: invoiceValue,
+            seach
     })
     .then((response) => {
       setPost(response.data);
@@ -135,7 +151,7 @@ const handleSubmit2 = (event) => {
     }, 5000);
   }
    const handleButtonClick = (data) => {
-
+console.log(data)
     //ส่ง Tran + RefID + VN ให้พี่โดม
     // axios
     //   .post(process.env.NEXT_PUBLIC_URL + "v1/aia-submitBilling/selectbilling",{

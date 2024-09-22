@@ -84,6 +84,8 @@ const PatientInfo = {
   ServiceSettingCode: data.DataTran.Data.ServiceSettingCode, 
   IllnessTypeCode: data.DataTran.Data.IllnessTypeCode,
   SurgeryTypeCode:  data.DataTran.Data.SurgeryTypeCode,
+  FurtherClaimNo : data.DataTran.Data.FurtherClaimNo,
+  FurtherClaimId : data.DataTran.Data.FurtherClaimId,
   }
  // console.log(PatientInfo)
   useEffect(() => {
@@ -100,19 +102,19 @@ const PatientInfo = {
   });
   }, []);
 
-  useEffect(() => {
-    axios
-  .post(process.env.NEXT_PUBLIC_URL_PD + "v1/aia-retrieve-further-claim-list/getRetrieveFurtherClaim",{
-    PatientInfo
-  })
-  .then((response) => {
-    console.log(response.data);
-  })
-  .catch((err) => {
-   // console.error("Error", err)
-    console.log(err)
-});
-}, []);
+//   useEffect(() => {
+//     axios
+//   .post(process.env.NEXT_PUBLIC_URL_PD + "v1/aia-retrieve-further-claim-list/getRetrieveFurtherClaim",{
+//     PatientInfo
+//   })
+//   .then((response) => {
+//     //console.log(response.data);
+//   })
+//   .catch((err) => {
+//    // console.error("Error", err)
+//     console.log(err)
+// });
+// }, []);
 
   useEffect(() => {
     axios
@@ -322,15 +324,11 @@ if(PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER"
       InjurySide : injurySide,
       WoundType : woundType,
       CommentOfInjury : event.target.commentOfInjuryText.value,
-
+      FurtherClaimId : PatientInfo.FurtherClaimId,
+      FurtherClaimNo : PatientInfo.FurtherClaimNo,
     },
   };
-
-
-
-
-
-
+  console.log(datasave)
 }else{
   const datasave = {
     DataJson: {
@@ -342,6 +340,8 @@ if(PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER"
 
       AccidentInjurySideCode : injurySide,
       AccidentInjuryWoundtypeCode : woundType,
+      FurtherClaimId : PatientInfo.FurtherClaimId,
+      FurtherClaimNo : PatientInfo.FurtherClaimNo,
       CommentOfInjury : "",
 
     },
@@ -466,6 +466,13 @@ if(PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER"
                 <TextField disabled id="outlined-disabled"   className="w-full text-black rounded disabled:text-black disabled:bg-gray-300" label="น้ำหนัก / ส่วนสูง" defaultValue={combinedString} />
                 </Box>
                 </div>
+                {PatientInfo.FurtherClaimNo ? (
+                <div className="rounded-md text-black">
+                <Box sx={{backgroundColor: '#e5e7eb', padding: 0, borderRadius: 0,}}>
+                <TextField disabled id="outlined-disabled"   className="w-full text-black rounded disabled:text-black disabled:bg-gray-300" label="ประวัติการรักษาครั้งก่อนหน้า เลขที่อ้างอิง" defaultValue={PatientInfo.FurtherClaimNo} />
+                </Box>
+                </div>
+                ) : ""}
                 </div>
                 <div className="rounded-md w-full border-2 mt-3">
                 
@@ -934,7 +941,7 @@ if(PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER"
             </div> 
            </div>
                   {/* //////////////////////////////////////////////////////////////////////////// */}
-            <div className="container mx-auto p-4 justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
+            <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
               <h1 className="font-black text-accent text-3xl ">รายละเอียดค่ารักษาพยาบาล</h1>
               <div className="overflow-x-auto">
               <table className="table table-zebra mt-2">
