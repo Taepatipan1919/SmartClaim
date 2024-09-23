@@ -3,7 +3,7 @@ import { useState, createContext } from "react";
 import { useSelector } from "react-redux";
 import ChackData from "../../../../components/aia/opd/checkeilgible/chackData";
 import CheckClaimStatus from "../../../../components/aia/opd/checkClaimStatus/checkClaimStatus";
-import SelectPatient from "../../../../components/aia/opd/checkClaimStatus/selectPatient";
+import SubmitClaimStatus from "../../../../components/aia/opd/checkClaimStatus/submitClaimStatus";
 export default function Home() {
   const DataTran  = useSelector((state) => ({ ...state }));
 //console.log(DataTran)
@@ -45,7 +45,7 @@ export default function Home() {
 <li><a className="text-error underline ">สถานะการเคลม</a></li>
 </ul>
 </div>
-<SelectPatient />
+<SubmitClaimStatus />
     </>)
     }
 

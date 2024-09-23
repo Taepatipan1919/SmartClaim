@@ -9,7 +9,7 @@ import { IoDocumentText } from "react-icons/io5";
 import TextField from '@mui/material/TextField';
 // import { useDispatch } from "react-redux";
 // import { save } from "../../../../store/counterSlice";
-// import { useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { ImBin } from "react-icons/im";
 import { IoIosDocument } from "react-icons/io";
 import { AiOutlineUnorderedList } from "react-icons/ai";
@@ -24,30 +24,47 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
 export default function chackData() {
   const InsuranceCode = 13;
+  const  ReDux  = useSelector((state) => ({ ...state }));
+  //console.log(ReDux)
   const [post, setPost] = useState("");
-  const [selectedIdType, setSelectedIdType] = useState("VN");
+  const [selectedIdType, setSelectedIdType] = useState("");
   const [numberValue, setNumberValue] = useState("");
-  const [invoiceValue, setInvoiceValue] = useState("");
-  const [fromValue, setFromValue] = useState();
-  const [toValue, setToValue] = useState();
+  const [fromValue, setFromValue] = useState(null);
+  const [toValue, setToValue] = useState(null);
   const [massError, setMassError] = useState("");
   const [showFormError, setShowFormError] = useState("");
+  // const [seach, setSeach] = useState("");
+  // const [dateFromValue, setDateFromValue] = useState("");
+  // const [dateToValue, setDateToValue] = useState("");
   const [showModal, setShowModal] = useState(false);
   const router = useRouter();
 
-  const [anchorEl, setAnchorEl] = useState(null);
+/////////////////ปุ่ม ย่อย 3 อัน/////////////////////////////
+const [anchorEl, setAnchorEl] = React.useState(null);
+const open = Boolean(anchorEl);
+const handleClick = (event) => {
+  setAnchorEl(event.currentTarget);
+};
+const handleClose = () => {
+  setAnchorEl(null);
+};
+///////////////////////////////////////////
 
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
+
+  const Refresh = (data) => {
+    console.log("-Refresh-")
+    const [RefId, transactionNo , HN] = data.split(' | ');
+    console.log(RefId)
+    console.log(transactionNo)
+    console.log(HN)
   };
 
-  const handleClose = () => {
-    setAnchorEl(null);
+  const Document = () => {
+    console.log("-Document-")
   };
-
 
   const Delect = () => {
-    console.log("Delect")
+    console.log("-Delect-")
   };
 
 
@@ -58,80 +75,177 @@ export default function chackData() {
   };
 
 
-  
-  const handleSubmit = (event) => {
+  const handleSubmit =  (event) => {
     //ยังไม่วางบิล
     event.preventDefault();
     setPost();
-    const DateFromValue = dayjs(fromValue.$d).format('YYYY-MM-DD');
-    const DateToValue = dayjs(toValue.$d).format('YYYY-MM-DD');
-  const  seach = {
+    let data = {};  
+    let  dateToValue  = "";
+    let dateFromValue = "";
+
+
+
+  if(fromValue && toValue){
+      dateFromValue = dayjs(fromValue.$d).format('YYYY-MM-DD');
+      dateToValue = dayjs(toValue.$d).format('YYYY-MM-DD');
+
+  }
+if(selectedIdType === "VN" && numberValue){
+  
+  data = {
+      PID : ReDux.Patient.Data.PID,
+      HN : ReDux.Patient.Data.HN,
+      Insurerid: InsuranceCode,
+      Status: "09",
+      Invoice: "",
+      IdType: selectedIdType,
+      VN: numberValue,
+      FromValue : dateFromValue,
+      ToValue : dateToValue,
+    };
+}else if (selectedIdType === "Invoice" && numberValue){
+  data = {
+      PID : ReDux.Patient.Data.PID,
+      HN : ReDux.Patient.Data.HN,
       Insurerid: InsuranceCode,
       Status: "09",
       IdType: selectedIdType,
-      Number: numberValue,
-      FromValue : DateFromValue,
-      ToValue : DateToValue,
-      // Invoice: invoiceValue,
+      VN: "",
+      Invoice: numberValue,
+      FromValue : dateFromValue,
+      ToValue : dateToValue,
+    };
+}else if (fromValue && toValue){
+  data = {
+      PID : ReDux.Patient.Data.PID,
+      HN : ReDux.Patient.Data.HN,
+      Insurerid: InsuranceCode,
+      Status: "09",
+      IdType: "",
+      VN: "",
+      Invoice: "",
+      FromValue : dateFromValue,
+      ToValue : dateToValue,
+    };
 
-    }
-    //console.log(seach)
-        axios
-      .post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-submitbilling/selectbilling",
-              //ส่งเป็น statisCode
-              seach
-      )
-      .then((response) => {
-        setPost(response.data);
-        setShowFormError("");
-      })
-      .catch((error) => {
-       // console.error("Error", err)
-        console.log(error)
-        //  if (err.response.request.status === 500) {
-                setShowFormError("Error");
-                setMassError(error.message);
-                // setMassError(error.response.data.HTTPStatus.message);
-            //  }  
-  });
+}
+if(Object.keys(data).length === 0){
+  setShowFormError("Error");
+  setMassError("กรุณากรอก ข้อความที่จะค้นหาให้ครบ");
+}else{
+  setShowFormError()
+console.log(data)
+
+axios
+.post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-submitbilling/selectbilling",
+        //ส่งเป็น statisCode
+        data
+)
+.then((response) => {
+  setPost(response.data);
+  setShowFormError("");
+})
+.catch((error) => {
+ // console.error("Error", err)
+  console.log(error)
+
+          setShowFormError("Error");
+          setMassError(error.message);
+
+});
 
 }
 
-const handleSubmit2 = (event) => {
+
+
+
+}
+
+
+   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+  const handleSubmit2 = (event) => {
   //วางบิลแล้ว
   event.preventDefault();
   setPost();
-  const DateFromValue = dayjs(fromValue.$d).format('YYYY-MM-DD');
-  const DateToValue = dayjs(toValue.$d).format('YYYY-MM-DD');
-const  seach = {
+  let data = {};
+  let  dateToValue  = "";
+  let dateFromValue = "";
+
+if(fromValue && toValue){
+  dateFromValue = dayjs(fromValue.$d).format('YYYY-MM-DD');
+  dateToValue = dayjs(toValue.$d).format('YYYY-MM-DD');
+}
+if(selectedIdType === "VN" && numberValue){
+
+data = {
+    PID : ReDux.Patient.Data.PID,
+    HN : ReDux.Patient.Data.HN,
+    Insurerid: InsuranceCode,
+    Status: "03",
+    Invoice: "",
+    IdType: selectedIdType,
+    VN: numberValue,
+    FromValue : dateFromValue,
+    DateVisitTo : dateToValue,
+  };
+}else if (selectedIdType === "Invoice" && numberValue){
+data = {
+    PID : ReDux.Patient.Data.PID,
+    HN : ReDux.Patient.Data.HN,
     Insurerid: InsuranceCode,
     Status: "03",
     IdType: selectedIdType,
-    Number: numberValue,
-    FromValue : DateFromValue,
-    ToValue : DateToValue,
-    // Invoice: invoiceValue,
+    VN: "",
+    Invoice: numberValue,
+    FromValue : dateFromValue,
+    DateVisitTo : dateToValue,
+  };
+}else if (fromValue && toValue){
+data = {
+    PID : ReDux.Patient.Data.PID,
+    HN : ReDux.Patient.Data.HN,
+    Insurerid: InsuranceCode,
+    Status: "03",
+    IdType: "",
+    VN: "",
+    Invoice: "",
+    FromValue : dateFromValue,
+    DateVisitTo : dateToValue,
+  };
 
-  }
+}
+if(Object.keys(data).length === 0){
+setShowFormError("Error");
+setMassError("กรุณากรอก ข้อความที่จะค้นหาให้ครบ");
+}else{
+setShowFormError()
+console.log(data)
 
-      axios
-    .post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-submitbilling/selectbilling",{
-            //ส่งเป็น statisCode
-            seach
-    })
-    .then((response) => {
-      setPost(response.data);
-      setShowFormError("");
-    })
-    .catch((error) => {
-     // console.error("Error", err)
-      console.log(error)
-      //  if (err.response.request.status === 500) {
-              setShowFormError("Error");
-              setMassError(error.message);
-              // setMassError(error.response.data.HTTPStatus.message);
-          //  }  
+axios
+.post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-submitbilling/selectbilling",
+      //ส่งเป็น statisCode
+      data
+)
+.then((response) => {
+setPost(response.data);
+setShowFormError("");
+})
+.catch((error) => {
+// console.error("Error", err)
+console.log(error)
+
+        setShowFormError("Error");
+        setMassError(error.message);
+
 });
+
+}
 
 }
 //console.log(post)
@@ -151,7 +265,10 @@ const  seach = {
     }, 5000);
   }
    const handleButtonClick = (data) => {
-console.log(data)
+    const [RefId, transactionNo , HN] = data.split(' | ');
+console.log(RefId)
+console.log(transactionNo)
+console.log(HN)
     //ส่ง Tran + RefID + VN ให้พี่โดม
     // axios
     //   .post(process.env.NEXT_PUBLIC_URL + "v1/aia-submitBilling/selectbilling",{
@@ -168,7 +285,7 @@ console.log(data)
     //             setMassError(err.response.data.HTTPStatus.message);
     //         //  }  
 
-document.getElementById("my_modal_3").showModal()
+//document.getElementById("my_modal_3").showModal()
 
    }
 
@@ -192,7 +309,7 @@ document.getElementById("my_modal_3").showModal()
                         name="identity_type"
                         value="VN"
                         className="checkbox checkbox-info"
-                        defaultChecked
+                        // defaultChecked
                         onChange={handleOptionChange}
               />
               <p className="text-left">&nbsp;VN &nbsp;</p>
@@ -273,7 +390,7 @@ document.getElementById("my_modal_3").showModal()
                         name="identity_2"
                         value="VN"
                         className="checkbox checkbox-info"
-                        defaultChecked
+                        // defaultChecked
                         onChange={handleOptionChange}
               />
               <p className="text-left">&nbsp;VN &nbsp;</p>
@@ -367,38 +484,58 @@ document.getElementById("my_modal_3").showModal()
     <thead className="bg-info text-base-100 text-center text-lg ">
       <tr>
         <th></th>
-        <th>วันที่เข้ารับการรักษา</th>
-        <th>ชื่อ-นามสกุล</th>
-        <th>HN</th>
-        <th>เลขที่การเคลม</th>
-        <th>เลขที่ใบแจ้งหนี้</th>
-        <th>รายการ</th>
-        <th>สถานะ</th>
+        <th>Visit Date</th>
+        <th>Full Name</th>
+        <th>VN</th>
+        <th>ClaimNo</th>
+        <th>Invoicenumber</th>
+        <th>Illness</th>
+        <th>Status</th>
         <th>ยอดเงิน</th>
         <th></th>
       </tr>
     </thead>
     <tbody>
     {post ? post.HTTPStatus.statusCode === 200 ? 
-    (post.Result.map((bill, index) => (
+    (post.Result.Data.map((bill, index) => (
 <tr className="hover text-center" key={index}>
    <th>{index+1}</th>
-   <td>{bill.VisitDatefrom}</td>
-      <td>{bill.TitleTH}</td>
-      <td>{bill.HN}</td>
-      <td>{bill.Invoice}</td>
-      <td>{bill.Invoice}</td>
+   <td>{bill.VisitDateTime}</td>
+      <td>{bill.TitleTH} {bill.GivenNameTH} {bill.SurnameTH}</td>
+      <td>{bill.VN}</td>
+      <td>{bill.ClaimNo}</td>
+      <td>{bill.invoicenumber}</td>
       <td>{bill.IllnessType}</td>
         {/* <td><div className="bg-success text-base-100 rounded-full px-3 py-2">{bill.status}</div></td> */}
-        <td ><a className="bg-success text-base-100 rounded-full px-3 py-2">{bill.status}</a></td>
+        <td ><a className="bg-success text-base-100 rounded-full px-3 py-2">{bill.ClaimstatusName}</a></td>
         <th>{bill.TotalAmount}</th>
         <td><button className="btn btn-primary bg-base-100 text-info hover:text-base-100"
-        onClick={() => handleButtonClick("1")}
+        onClick={() => handleButtonClick(`${bill.RefId} | ${bill.transactionNo} | ${bill.HN}`)}
+        
         >วางบิล</button>
-        <Button variant="outlined" className="border-none"   onClick={handleClick}>
-
+                      <Button
+        id="basic-button"
+        aria-controls={open ? 'basic-menu' : undefined}
+        aria-haspopup="true"
+        aria-expanded={open ? 'true' : undefined}
+        onClick={handleClick}
+      >
         <AiOutlineUnorderedList />
-      </Button></td>
+      </Button>
+      <Menu
+        id="basic-menu"
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        MenuListProps={{
+          'aria-labelledby': 'basic-button',
+        }}
+      >
+        <MenuItem onClick={() => Refresh(`${bill.RefId} | ${bill.transactionNo} | ${bill.HN}`)}><LuRefreshCw />&nbsp;Refresh</MenuItem>
+        <MenuItem onClick={Document}><IoDocumentText />&nbsp;Document</MenuItem>
+        <MenuItem onClick={Delect}><ImBin />&nbsp;Cancel</MenuItem>
+      </Menu>
+        </td>
        
       </tr>
 
@@ -418,19 +555,23 @@ document.getElementById("my_modal_3").showModal()
       <td></td>
       </tr>
   
-    ): ""}
+    ): (
+      <tr>
+      <th></th>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <th></th>
+      <td></td>
+      </tr>
+    )}
     </tbody>
   </table>
-  <Menu
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={handleClose}
-      >
-        <MenuItem ><LuRefreshCw />&nbsp;Refresh</MenuItem>
-        <MenuItem ><IoDocumentText />&nbsp;Document</MenuItem>
-        <MenuItem onClick={Delect}><ImBin />&nbsp;Cancel</MenuItem>
-        
-      </Menu>
+
   <dialog id="my_modal_3" className="modal text-xl	">
                             <div className="modal-box">
                               <form method="dialog">
@@ -463,15 +604,15 @@ document.getElementById("my_modal_3").showModal()
                       <th className="w-1/5"></th>
                     </tr>
                 </thead>
-                  <tbody class="bg-white divide-y divide-gray-200">
+                  <tbody className="bg-white divide-y divide-gray-200">
                     {/* {billing
                       ? billing.Result.Billing.map((bill, index) => ( */}
                           <tr
                             // key={index}
                             className=" bg-neutral text-sm"
                           >
-                            <td class="px-6 py-4 whitespace-nowrap">123456789ำกไดำๆ21กๆ.pdf</td>
-                            <td class="px-6 py-4 whitespace-nowrap">
+                            <td className="px-6 py-4 whitespace-nowrap">123456789ำกไดำๆ21กๆ.pdf</td>
+                            <td className="px-6 py-4 whitespace-nowrap">
                             <button className="btn btn-warning  mr-2" type="submit"><IoIosDocument /></button>
                             <button className="btn btn-error " type="submit"><ImBin /></button>
                             </td>

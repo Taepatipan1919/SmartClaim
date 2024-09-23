@@ -6,44 +6,56 @@ export async function POST(request) {
     return NextResponse.json({
       
         
-            "HTTPStatus": {
-                "statusCode": 200,
-                "message": "success",
-                "error": ""
+            HTTPStatus: {
+                statusCode: 200,
+                message: "success",
+                error: ""
             },
             TransactionQuery,
-            "Result": [
+            Result: {
+                Data : [
             {
-                "HN": "61-022789",
-                "TitleTH": "นาย",
-                "GivenNameTH": "กฤษณ์",
-                "SurnameTH": "จันทรวงศ์",
-                "TitleEN": "MR.",
-                "GivenNameEN": "KRIT",
-                "SurnameEN": "CHANTARAWONG",
-                "เลขที่การเคลม": "",
-                "Invoice": "072023012",
-                "IllnessType": "ACC",
-                "status": "Received",
-                "TotalAmount": "2299",
-                "VisitDatefrom": "2024-09-17"
+                RefId: "RefId1",
+                transactionNo: "transactionNo1",
+                HN: "61-022789",
+                VN: "O458789-66",
+                TitleTH: "นาย",
+                GivenNameTH: "กฤษณ์",
+                SurnameTH: "จันทรวงศ์ 1",
+                TitleEN: "MR.",
+                GivenNameEN: "KRIT",
+                SurnameEN: "CHANTARAWONG",
+                invoicenumber: "072023012",
+                ClaimNo: "C012345678",
+                IllnessType: "ACC",
+                Claimstatuscode: "09",
+                ClaimstatusName: "ได้รับเอกสารแล้ว",
+                TotalAmount: "2299",
+                VisitDateTime: "2024-09-18",
+                batchnumber: "025-240807-02",
             },
             {
-                "HN": "61-022789",
-                "TitleTH": "นาย",
-                "GivenNameTH": "กฤษณ์",
-                "SurnameTH": "จันทรวงศ์",
-                "TitleEN": "MR.",
-                "GivenNameEN": "KRIT",
-                "SurnameEN": "CHANTARAWONG",
-                "เลขที่การเคลม": "",
-                "Invoice": "042023001",
-                "IllnessType": "ACC",
-                "status": "Received",
-                "TotalAmount": "1360",
-                "VisitDatefrom": "2024-09-10"
+                RefId: "RefId2",
+                transactionNo: "7transactionNo2",
+                HN: "61-022789",
+                VN: "O798212-67",
+                TitleTH: "นาย",
+                GivenNameTH: "กฤษณ์",
+                SurnameTH: "จันทรวงศ์ 2",
+                TitleEN: "MR.",
+                GivenNameEN: "KRIT",
+                SurnameEN: "CHANTARAWONG",
+                invoicenumber: "02751568",
+                ClaimNo: "C45103495",
+                IllnessType: "ILL",
+                Claimstatuscode: "03",
+                ClaimstatusName: "กำลังพิจารณา",
+                TotalAmount: "1960",
+                VisitDateTime: "2024-09-07",
+                batchnumber: "025-240807-02",
             },
-        ],
+                ],
+        },
         })
   }
   

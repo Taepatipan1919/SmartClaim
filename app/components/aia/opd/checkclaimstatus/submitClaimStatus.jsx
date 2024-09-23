@@ -9,8 +9,7 @@ import { IoDocumentText } from "react-icons/io5";
 import TextField from '@mui/material/TextField';
 // import { useDispatch } from "react-redux";
 // import { save } from "../../../../store/counterSlice";
-import { useSelector } from "react-redux";
-import { useDispatch } from "react-redux";
+// import { useSelector } from "react-redux";
 import { ImBin } from "react-icons/im";
 import { IoIosDocument } from "react-icons/io";
 import { AiOutlineUnorderedList } from "react-icons/ai";
@@ -19,6 +18,7 @@ import { useRouter } from 'next/navigation';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
+
 import dayjs from 'dayjs';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -27,28 +27,9 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
 export default function chackData() {
   const InsuranceCode = 13;
-  
-//////////////// Redux Patient /////////////////////////
-const ReDux = useSelector((state) => ({ ...state }));
+  // const  ReDux  = useSelector((state) => ({ ...state }));
   //console.log(ReDux)
-const dispatch = useDispatch();
-
-/////////////////////////////////////////
-  const [post, setPost] = useState("");
-  const [selectedIdType, setSelectedIdType] = useState("");
-  const [numberValue, setNumberValue] = useState("");
-  const [fromValue, setFromValue] = useState(null);
-  const [toValue, setToValue] = useState(null);
-  const [massError, setMassError] = useState("");
-  const [showFormError, setShowFormError] = useState("");
-  const [statusValue, setStatusValue] = useState("");
-  const [claimStatus, setClaimStatus] = useState();
-  // const [seach, setSeach] = useState("");
-  // const [dateFromValue, setDateFromValue] = useState("");
-  // const [dateToValue, setDateToValue] = useState("");
-  const [showModal, setShowModal] = useState(false);
-  const router = useRouter();
-/////////////////ปุ่ม ย่อย 3 อัน/////////////////////////////
+  /////////////////ปุ่ม ย่อย 3 อัน/////////////////////////////
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
@@ -58,6 +39,18 @@ const dispatch = useDispatch();
     setAnchorEl(null);
   };
   ///////////////////////////////////////////
+  const [post, setPost] = useState("");
+  const [selectedIdType, setSelectedIdType] = useState("");
+  const [numberValue, setNumberValue] = useState("");
+  const [fromValue, setFromValue] = useState(null);
+  const [toValue, setToValue] = useState(null);
+  const [massError, setMassError] = useState("");
+  const [showFormError, setShowFormError] = useState("");
+  const [dateFromValue, setDateFromValue] = useState("");
+  const [dateToValue, setDateToValue] = useState("");
+  const [statusValue, setStatusValue] = useState("");
+  const [claimStatus, setClaimStatus] = useState();
+  const router = useRouter();
 
 
 
@@ -78,6 +71,11 @@ const dispatch = useDispatch();
   };
 
 
+  const handleOptionChange = (e) => {
+    setSelectedIdType(e.target.value);
+  };
+
+
   useEffect(() => {
     const getClaimStatus = async () => {
       const response = await fetch(
@@ -89,87 +87,130 @@ const dispatch = useDispatch();
     };
     getClaimStatus();
   }, []);
+
+
   const Status = (event) => {
     setStatusValue(event.target.value);
   }
 
-  const handleOptionChange = (e) => {
-    setSelectedIdType(e.target.value);
-  };
-
-
   const handleSubmit =  (event) => {
+    //ยังไม่วางบิล
     event.preventDefault();
     setPost();
     let data = {};
     let  dateToValue  = "";
     let dateFromValue = "";
 
+   //  console.log(statusValue)
 
-    
+
   if(fromValue && toValue){
     dateFromValue = dayjs(fromValue.$d).format('YYYY-MM-DD');
     dateToValue = dayjs(toValue.$d).format('YYYY-MM-DD');
 
   }
-if(selectedIdType === "VN" && numberValue){
-  
-  data = {
-    PID : ReDux.Patient.Data.PID,
-    HN : ReDux.Patient.Data.HN,
-      Insurerid: InsuranceCode,
-      Claimstatuscode: statusValue,
-      Invoice: "",
-      IdType: selectedIdType,
-      VN: numberValue,
-      FromValue : dateFromValue,
-      ToValue : dateToValue,
-    };
-}else if (selectedIdType === "Invoice" && numberValue){
-  data = {
-    PID : ReDux.Patient.Data.PID,
-    HN : ReDux.Patient.Data.HN,
-      Insurerid: InsuranceCode,
-      Claimstatuscode: statusValue,
-      IdType: selectedIdType,
-      VN: "",
-      Invoice: numberValue,
-      FromValue : dateFromValue,
-      ToValue : dateToValue,
-    };
-}else if (fromValue && toValue){
-  data = {
-    PID : ReDux.Patient.Data.PID,
-    HN : ReDux.Patient.Data.HN,
-      Insurerid: InsuranceCode,
-      Claimstatuscode: statusValue,
-      IdType: "",
-      VN: "",
-      Invoice: "",
-      FromValue : dateFromValue,
-      ToValue : dateToValue,
-    };
 
-  }else if (statusValue){
+  if(selectedIdType === "PID" && numberValue){
+  
     data = {
-      PID : ReDux.Patient.Data.PID,
-      HN : ReDux.Patient.Data.HN,
-      Insurerid: InsuranceCode,
-        IdType: "",
-        VN: "",
+        Insurerid: InsuranceCode,
+        IdType: selectedIdType,
         Invoice: "",
+        VN: "",
+        PID : numberValue,
+        Passport : "",
+        HN : "",
         DateVisitFrom : dateFromValue,
         DateVisitTo : dateToValue,
         Claimstatuscode : statusValue,
       };
-  }
+}else if (selectedIdType === "Passport" && numberValue){
+  
+    data = {
+      Insurerid: InsuranceCode,
+      IdType: selectedIdType,
+      Invoice: "",
+      VN: "",
+      PID : "",
+      Passport : numberValue,
+      HN : "",
+      DateVisitFrom : dateFromValue,
+      DateVisitTo : dateToValue,
+      Claimstatuscode : statusValue,
+      };
+}else if (selectedIdType === "HN" && numberValue){
+  
+      data = {
+        Insurerid: InsuranceCode,
+        IdType: selectedIdType,
+        Invoice: "",
+        VN: "",
+        PID : "",
+        Passport : "",
+        HN : numberValue,
+        DateVisitFrom : dateFromValue,
+        DateVisitTo : dateToValue,
+        Claimstatuscode : statusValue,
+        };
+  }else if (selectedIdType === "VN" && numberValue){
+  
+  data = {
+    Insurerid: InsuranceCode,
+    IdType: selectedIdType,
+    Invoice: "",
+    VN: numberValue,
+    PID : "",
+    Passport : "",
+    HN : "",
+    DateVisitFrom : dateFromValue,
+    DateVisitTo : dateToValue,
+    Claimstatuscode : statusValue,
+    };
+}else if (selectedIdType === "Invoice" && numberValue){
+  data = {
+    Insurerid: InsuranceCode,
+    IdType: selectedIdType,
+    Invoice: numberValue,
+    VN: "",
+    PID : "",
+    Passport : "",
+    HN : "",
+    DateVisitFrom : dateFromValue,
+    DateVisitTo : dateToValue,
+    Claimstatuscode : statusValue,
+    };
+}else if (fromValue && toValue){
+  data = {
+    PID : "",
+    HN : "",
+      Insurerid: InsuranceCode,
+      IdType: "",
+      VN: "",
+      Invoice: "",
+      DateVisitFrom : dateFromValue,
+      DateVisitTo : dateToValue,
+      Claimstatuscode : statusValue,
+    };
 
+}else if (statusValue){
+  data = {
+    PID : "",
+    HN : "",
+      Insurerid: "",
+      IdType: "",
+      VN: "",
+      Invoice: "",
+      DateVisitFrom : dateFromValue,
+      DateVisitTo : dateToValue,
+      Claimstatuscode : statusValue,
+    };
+}
 if(Object.keys(data).length === 0){
   setShowFormError("Error");
   setMassError("กรุณากรอก ข้อความที่จะค้นหาให้ครบ");
 }else{
   setShowFormError()
-console.log(data)
+  //    console.log(data)
 
 axios
 .post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-submitbilling/selectbilling",
@@ -196,10 +237,7 @@ axios
 
 }
 
-
-//console.log(post)
-
-
+  //    console.log(post)
 
   return (
     <>
@@ -207,6 +245,36 @@ axios
     <div className="grid gap-1 sm:grid-cols-1 w-full">
           <div className="px-2 rounded-md">
             <div className="flex items-center ">
+            <input
+                        type="radio"
+                        id="PID"
+                        name="identity_type"
+                        value="PID"
+                        className="checkbox checkbox-info"
+                        // defaultChecked
+                        onChange={handleOptionChange}
+              />
+              <p className="text-left">&nbsp;Personal ID &nbsp;</p>
+              <input
+                        type="radio"
+                        id="Passport"
+                        name="identity_type"
+                        value="Passport"
+                        className="checkbox checkbox-info"
+                        // defaultChecked
+                        onChange={handleOptionChange}
+              />
+              <p className="text-left">&nbsp;Passport&nbsp;</p>
+              <input
+                        type="radio"
+                        id="HN"
+                        name="identity_type"
+                        value="HN"
+                        className="checkbox checkbox-info"
+                        // defaultChecked
+                        onChange={handleOptionChange}
+              />
+              <p className="text-left">&nbsp;HN&nbsp;</p>
               <input
                         type="radio"
                         id="VN"
@@ -228,7 +296,7 @@ axios
                 
               />
               <p className="text-left">&nbsp;Invoice &nbsp;</p>
-              <p className="ml-32">Visit Date</p>
+              <p className="ml-6">Visit Date</p>
             </div>
             <TextField
           id="standard-multiline-flexible"
@@ -236,7 +304,7 @@ axios
           multiline
           maxRows={4}
           variant="standard"
-          className="w-64"
+          className="w-96"
           name="number"
           type="text"
                       value={numberValue}
@@ -246,7 +314,7 @@ axios
      
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <DatePicker
-        className="ml-2"
+        className="ml-10 w-40"
             label="Date From"
             value={fromValue}
             onChange={(newDate) => setFromValue(newDate)}
@@ -257,14 +325,15 @@ axios
   
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <DatePicker
-        className="ml-2"
+        className="ml-2 w-40"
             label="Date To"
             value={toValue}
             onChange={(newDate) => setToValue(newDate)}
             format="YYYY-MM-DD"
           />
     </LocalizationProvider>
-    <FormControl className="ml-2 w-80">
+
+      <FormControl className="ml-2 w-80">
         <InputLabel id="demo-simple-select-label">Claim Status</InputLabel>
         <Select
           labelId="demo-simple-select-label"
@@ -281,6 +350,7 @@ axios
 
         </Select>
       </FormControl>
+
                 <button className="btn btn-primary text-base-100 text-lg rounded-full px-3 py-2 hover:bg-base-100 hover:text-primary ml-2" type="submit">
                     <FaSearch /> ค้นหา
                   </button>
@@ -291,7 +361,7 @@ axios
        </div>
 
   </form>
- 
+
 
 
 
@@ -345,8 +415,7 @@ axios
       <td>{bill.IllnessType}</td>
         <td ><a className="bg-success text-base-100 rounded-full px-3 py-2">{bill.ClaimstatusName}</a></td>
         <td>
-    
-      <Button
+        <Button
         id="basic-button"
         aria-controls={open ? 'basic-menu' : undefined}
         aria-haspopup="true"
@@ -368,8 +437,8 @@ axios
         <MenuItem onClick={Document}><IoDocumentText />&nbsp;Document</MenuItem>
         <MenuItem onClick={Delect}><ImBin />&nbsp;Cancel</MenuItem>
       </Menu>
- 
       </td>
+       
       </tr>
 
    ) 
@@ -404,9 +473,15 @@ axios
     )}
     </tbody>
   </table>
+</div>
+</div>
 
-</div>
-</div>
+
+
+
+
+
+
     </>
   );
 }

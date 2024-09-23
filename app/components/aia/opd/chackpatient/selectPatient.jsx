@@ -237,6 +237,7 @@ router.push('/aia/opd/checkeilgible');
       });
   }
   function saveUpdate() {
+
     axios
       .patch(
         process.env.NEXT_PUBLIC_URL_PD + "v1/aia-patient-info/PatientUpdate",

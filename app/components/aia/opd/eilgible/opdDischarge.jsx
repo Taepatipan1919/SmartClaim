@@ -1131,7 +1131,7 @@ if(PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER"
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
           <div className="bg-white p-8 rounded shadow-lg">
             <h2 className="text-4xl font-bold mb-4 text-primary">ส่งเคลมเรียบร้อยแล้ว</h2>
-           <div className="text-center"> <span className="loading loading-bars loading-lg "></span></div>
+           {/* <div className="text-center"> <span className="loading loading-bars loading-lg "></span></div> */}
           </div>
         </div>
   </>
