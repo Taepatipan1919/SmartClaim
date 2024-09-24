@@ -56,9 +56,9 @@ export default function chackData() {
 
   const Refresh = (data) => {
     console.log("-Refresh-")
-    const [RefId, transactionNo , HN] = data.split(' | ');
+    const [RefId, TransactionNo , HN] = data.split(' | ');
     console.log(RefId)
-    console.log(transactionNo)
+    console.log(TransactionNo)
     console.log(HN)
   };
 
@@ -66,9 +66,9 @@ export default function chackData() {
     console.log("-Document-")
   };
 
-  const Delect = () => {
-    console.log("-Delect-")
-  };
+  // const Delect = () => {
+  //   console.log("-Delect-")
+  // };
 
 
   const handleOptionChange = (e) => {
@@ -397,7 +397,7 @@ axios
         <th>VN</th>
         <th>ClaimNo</th>
         <th>Invoicenumber</th>
-        <th>Illness</th>
+        {/* <th>Illness</th> */}
         <th>Status</th>
         <th></th>
       </tr>
@@ -412,7 +412,7 @@ axios
       <td>{bill.VN}</td>
       <td>{bill.ClaimNo}</td>
       <td>{bill.invoicenumber}</td>
-      <td>{bill.IllnessType}</td>
+      {/* <td>{bill.IllnessType}</td> */}
         <td ><a className="bg-success text-base-100 rounded-full px-3 py-2">{bill.ClaimstatusName}</a></td>
         <td>
         <Button
@@ -433,9 +433,9 @@ axios
           'aria-labelledby': 'basic-button',
         }}
       >
-        <MenuItem onClick={() => Refresh(`${bill.RefId} | ${bill.transactionNo} | ${bill.HN}`)}><LuRefreshCw />&nbsp;Refresh</MenuItem>
+        <MenuItem onClick={() => Refresh(`${bill.RefId} | ${bill.TransactionNo} | ${bill.HN}`)}><LuRefreshCw />&nbsp;Refresh</MenuItem>
         <MenuItem onClick={Document}><IoDocumentText />&nbsp;Document</MenuItem>
-        <MenuItem onClick={Delect}><ImBin />&nbsp;Cancel</MenuItem>
+        {/* <MenuItem onClick={Delect}><ImBin />&nbsp;Cancel</MenuItem> */}
       </Menu>
       </td>
        

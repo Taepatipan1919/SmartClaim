@@ -56,7 +56,7 @@ const [ furtherClaim , setFurtherClaim ]= useState("")
 
 
         axios
-        .post(process.env.NEXT_PUBLIC_URL_PD + "v1/aia-retrieve-further-claim-list/getRetrieveFurtherClaim",{
+        .post(process.env.NEXT_PUBLIC_URL_PD + "v1/aia-retrieve-further-claim-list/getRetrieveFurther-claim",{
           //  PatientInfo
           PatientInfo: {
           "InsurerCode": InsurerCode, 
@@ -76,7 +76,7 @@ const [ furtherClaim , setFurtherClaim ]= useState("")
         } )
         .then((response) => {
           setFurtherClaim(response.data);
-       // console.log(response.data)
+        console.log(response.data)
         })
         .catch((err) => {
          // console.error("Error", err)

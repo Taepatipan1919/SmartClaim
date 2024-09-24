@@ -489,7 +489,7 @@ console.log(HN)
         <th>VN</th>
         <th>ClaimNo</th>
         <th>Invoicenumber</th>
-        <th>Illness</th>
+        {/* <th>Illness</th> */}
         <th>Status</th>
         <th>ยอดเงิน</th>
         <th></th>
@@ -505,7 +505,7 @@ console.log(HN)
       <td>{bill.VN}</td>
       <td>{bill.ClaimNo}</td>
       <td>{bill.invoicenumber}</td>
-      <td>{bill.IllnessType}</td>
+      {/* <td>{bill.IllnessType}</td> */}
         {/* <td><div className="bg-success text-base-100 rounded-full px-3 py-2">{bill.status}</div></td> */}
         <td ><a className="bg-success text-base-100 rounded-full px-3 py-2">{bill.ClaimstatusName}</a></td>
         <th>{bill.TotalAmount}</th>

@@ -15,7 +15,7 @@ import { IoIosDocument } from "react-icons/io";
 import { AiOutlineUnorderedList } from "react-icons/ai";
 import { Button ,Menu, MenuItem } from '@mui/material';
 import { useRouter } from 'next/navigation';
-
+// import { RefreshIcon, ClipboardIcon, TrashIcon } from '@heroicons/react/outline';
 import dayjs from 'dayjs';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -33,15 +33,17 @@ export default function chackData() {
   const [toValue, setToValue] = useState(null);
   const [massError, setMassError] = useState("");
   const [showFormError, setShowFormError] = useState("");
-  // const [seach, setSeach] = useState("");
-  // const [dateFromValue, setDateFromValue] = useState("");
-  // const [dateToValue, setDateToValue] = useState("");
   const [showModal, setShowModal] = useState(false);
   const router = useRouter();
 
+  const [ file , setFile ] = useState(null);
+  const [ progress , setProgress ] = useState({ started: false, pc: 0 });
+  const [ msg , setMsg ] = useState(null);
+
+
 /////////////////ปุ่ม ย่อย 3 อัน/////////////////////////////
-const [anchorEl, setAnchorEl] = React.useState(null);
-const open = Boolean(anchorEl);
+const [anchorEl, setAnchorEl] = useState(null);
+
 const handleClick = (event) => {
   setAnchorEl(event.currentTarget);
 };
@@ -49,13 +51,67 @@ const handleClose = () => {
   setAnchorEl(null);
 };
 ///////////////////////////////////////////
+const handleUpload = async () => {
+  if (!file){
+    setMsg("No file selected");
+    return;
+  }
 
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('VN', 'O477382-67'); 
+   formData.append('RefId', 'oljhnklefhbilubsEFJKLb651');
+   formData.append('TransactionNo', '70816a0d-107a-4772-9838-4578e874a172');
+   formData.append('HN', '66-021995');
+   formData.append('DocumentName', file.name);
+  // console.log(file)
+setMsg("Upload...")
+setProgress(prevState => {
+  return { ...prevState, started: true }
+})
+try{
+const response = await axios.post('http://10.80.1.130:3480/api/v1/utils/upload', formData, {
+      onUploadProgress: (progressEvent) => {  setProgress(prevState => {
+        return { ...prevState, pc: progressEvent.progress*100 }
+      })},
+      headers: {
+        "Content-Type": "multipart/form-data",
+      }
+    })
+
+console.log("server response",response.data)
+
+} catch (error){
+
+  console.log(error)
+  alert("something wrong when upload")
+}
+
+//   // axios.post('http://httpbin.org/post', formData, {
+//     axios.post('http://10.80.1.130:3480/api/v1/utils/upload', formData, {
+//     onUploadProgress: (progressEvent) => {  setProgress(prevState => {
+//       return { ...prevState, pc: progressEvent.progress*100 }
+//     })},
+//     headers: {
+//       // "Custom-Header": "value",
+//       "Content-Type": "multipart/form-data",
+//     }
+//   })
+//   .then(res => {
+//     setMsg("Upload successful");
+//     console.log(res.data)
+// })
+//   .catch(err => {
+//     setMsg("Upload Error");
+//     console.log(err)
+//   });
+}
 
 const Refresh = (data) => {
   console.log("-Refresh-")
-  const [RefId, transactionNo , HN] = data.split(' | ');
+  const [RefId, TransactionNo , HN] = data.split(' | ');
   console.log(RefId)
-  console.log(transactionNo)
+  console.log(TransactionNo)
   console.log(HN)
 };
 
@@ -361,9 +417,9 @@ console.log(error)
     }, 5000);
   }
    const handleButtonClick = (data) => {
-    const [RefId, transactionNo , HN] = data.split(' | ');
+    const [RefId, TransactionNo , HN] = data.split(' | ');
     console.log(RefId)
-    console.log(transactionNo)
+    console.log(TransactionNo)
     console.log(HN)
 
     //ส่ง Tran + RefID + VN ให้พี่โดม
@@ -646,7 +702,7 @@ document.getElementById("my_modal_3").showModal()
         <th>VN</th>
         <th>ClaimNo</th>
         <th>Invoicenumber</th>
-        <th>Illness</th>
+        {/* <th>Illness</th> */}
         <th>Status</th>
         <th>ยอดเงิน</th>
         <th></th>
@@ -656,45 +712,52 @@ document.getElementById("my_modal_3").showModal()
     {post ? post.HTTPStatus.statusCode === 200 ? 
     (post.Result.Data.map((bill, index) => (
 <tr className="hover text-center" key={index}>
-   <th>{index+1}</th>
-   <td>{bill.VisitDateTime}</td>
-      <td>{bill.TitleTH} {bill.GivenNameTH} {bill.SurnameTH}</td>
-      <td>{bill.VN}</td>
-      <td>{bill.ClaimNo}</td>
-      <td>{bill.invoicenumber}</td>
-      <td>{bill.IllnessType}</td>
-        {/* <td><div className="bg-success text-base-100 rounded-full px-3 py-2">{bill.status}</div></td> */}
-        <td ><a className="bg-success text-base-100 rounded-full px-3 py-2">{bill.ClaimstatusName}</a></td>
-        <th>{bill.TotalAmount}</th>
-        <td>
-        <Button
+   <th>{index+1}
+   {/* <Button
         id="basic-button"
         aria-controls={open ? 'basic-menu' : undefined}
         aria-haspopup="true"
         aria-expanded={open ? 'true' : undefined}
         onClick={handleClick}
       >
-        <AiOutlineUnorderedList />
+        <AiOutlineUnorderedList />{bill.RefId}
       </Button>
-      {bill.RefId}
       <Menu
         id="basic-menu"
         anchorEl={anchorEl}
-        open={open}
+        keepMounted
+        open={Boolean(anchorEl)}
         onClose={handleClose}
-        MenuListProps={{
-          'aria-labelledby': 'basic-button',
-        }}
-      >
-        
-        <MenuItem onClick={() => Refresh(`${bill.RefId} | ${bill.transactionNo} | ${bill.HN}`)}><LuRefreshCw />&nbsp;Refresh</MenuItem>
-        <MenuItem onClick={() => Document(`${bill.RefId}`)}><IoDocumentText />&nbsp;Document</MenuItem>
+        // MenuListProps={{
+        //   'aria-labelledby': 'basic-button',
+        // }}
+      > */}
+
+               <MenuItem onClick={() => Refresh(bill.RefId)}><LuRefreshCw />&nbsp;Refresh {bill.RefId}</MenuItem>
+        <MenuItem onClick={() => Document(`${bill.RefId}`)}><IoDocumentText />&nbsp;Document {bill.RefId}</MenuItem>
         <MenuItem onClick={Delect}><ImBin />&nbsp;Cancel</MenuItem>
-      </Menu>
+        {/* <MenuItem onClick={() => Refresh(`${bill.RefId} | ${bill.TransactionNo} | ${bill.HN}`)}><LuRefreshCw />&nbsp;Refresh {bill.RefId}</MenuItem> */}
+{/* 
+      </Menu> */}
+
+   </th>
+   <td>{bill.VisitDateTime}</td>
+      <td>{bill.TitleTH} {bill.GivenNameTH} {bill.SurnameTH}</td>
+      <td>{bill.VN}</td>
+      <td>{bill.ClaimNo}</td>
+      <td>{bill.invoicenumber}</td>
+      {/* <td>{bill.IllnessType}</td> */}
+        {/* <td><div className="bg-success text-base-100 rounded-full px-3 py-2">{bill.status}</div></td> */}
+        <td ><a className="bg-success text-base-100 rounded-full px-3 py-2">{bill.ClaimstatusName}</a></td>
+        <th>{bill.TotalAmount}</th>
+        <td>
+
+      {/* {bill.RefId} */}
+
           
           
           <button className="btn btn-primary bg-base-100 text-info hover:text-base-100"
-        onClick={() => handleButtonClick(`${bill.RefId} | ${bill.transactionNo} | ${bill.HN}`)}
+        onClick={() => handleButtonClick(`${bill.RefId} | ${bill.TransactionNo} | ${bill.HN}`)}
         >วางบิล</button>
 
         </td>
@@ -755,7 +818,19 @@ document.getElementById("my_modal_3").showModal()
           rows={6}
         />
               </div> */}
-                              <input type="file" className="file-input file-input-bordered file-input-info w-full mt-2" />
+                            <input type="file" className="file-input file-input-bordered file-input-info w-full mt-2" /> 
+
+
+
+
+
+
+
+
+
+
+
+
 
                               <div className="flex items-center mt-3">
              <table className="table table-zebra mt-2">
@@ -784,19 +859,25 @@ document.getElementById("my_modal_3").showModal()
               </table>
                               </div>
                                 <div className="modal-action">
-                                  {/* <Link
-                                    href={`./ipd/eligible/${post.PatientInfo.HN}`}
-                                  > */}
                                     <button className="btn btn-primary text-base-100"
-                                    onClick={submitbilling}
+                                    // onClick={submitbilling}
                                     >
                                       วางบิล
                                     </button>
-                                  {/* </Link> */}
                                 </div>
                               </form>
                             </div>
                           </dialog>
+
+
+
+
+                          <input onChange={ (e) => { setFile(e.target.files[0]) } } type="file" multiple/>
+<button className="btn" onClick={ handleUpload }>Upload</button>
+<br />
+{ progress.started && <progress max="100" value={progress.pc}></progress> }
+<br />
+<spen>{ msg }</spen>
 </div>
 </div>
 
