@@ -299,11 +299,6 @@ const [ furtherClaim , setFurtherClaim ]= useState("")
       setResult(response.data);
       setShowFormError()
 
-
-
-
-
-
       }else{
         setShowFormError("Err");
      //   console.log(response);

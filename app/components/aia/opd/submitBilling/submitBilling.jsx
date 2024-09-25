@@ -20,7 +20,7 @@ import dayjs from 'dayjs';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-
+import { FaCloudUploadAlt } from "react-icons/fa";
 
 export default function chackData() {
   const InsuranceCode = 13;
@@ -33,30 +33,37 @@ export default function chackData() {
   const [toValue, setToValue] = useState(null);
   const [massError, setMassError] = useState("");
   const [showFormError, setShowFormError] = useState("");
+  const [billList, setBillList] = useState("");
   const [showModal, setShowModal] = useState(false);
   const router = useRouter();
-
+  const [statusNew, setStatusNew] = useState({});
   const [ file , setFile ] = useState(null);
   const [ progress , setProgress ] = useState({ started: false, pc: 0 });
   const [ msg , setMsg ] = useState(null);
+  const [refIdL, setRefIdL] = useState("");
+  const [transactionNoL, setTransactionNoL] = useState("");
+  const [hNL, setHNL] = useState("");
+  const [vNL, setVNL] = useState("");
+  const [showbutton, setShowbutton] = useState(null);
 
 
 /////////////////ปุ่ม ย่อย 3 อัน/////////////////////////////
-const [anchorEl, setAnchorEl] = useState(null);
+// const [anchorEl, setAnchorEl] = useState(null);
 
-const handleClick = (event) => {
-  setAnchorEl(event.currentTarget);
-};
-const handleClose = () => {
-  setAnchorEl(null);
-};
+// const handleClick = (event) => {
+//   setAnchorEl(event.currentTarget);
+// };
+// const handleClose = () => {
+//   setAnchorEl(null);
+// };
 ///////////////////////////////////////////
 const handleUpload = async () => {
   if (!file){
     setMsg("No file selected");
     return;
   }
-
+  setMsg();
+  setProgress({ started: false, pc: 0 });
   const formData = new FormData();
   formData.append('file', file);
   formData.append('VN', 'O477382-67'); 
@@ -65,7 +72,7 @@ const handleUpload = async () => {
    formData.append('HN', '66-021995');
    formData.append('DocumentName', file.name);
   // console.log(file)
-setMsg("Upload...")
+setMsg(<span className="loading loading-spinner text-info loading-lg"></span>);
 setProgress(prevState => {
   return { ...prevState, started: true }
 })
@@ -78,13 +85,36 @@ const response = await axios.post('http://10.80.1.130:3480/api/v1/utils/upload',
         "Content-Type": "multipart/form-data",
       }
     })
-
+    setMsg(<div role="alert" className="alert alert-success text-base-100">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="h-6 w-6 shrink-0 stroke-current "
+        fill="none"
+        viewBox="0 0 24 24">
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="2"
+          d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>Upload Successful</div>)
 console.log("server response",response.data)
 
 } catch (error){
-
+  setProgress({ started: false, pc: 0 });
   console.log(error)
-  alert("something wrong when upload")
+  setMsg(<div role="alert" className="alert alert-error text-base-100">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className="h-6 w-6 shrink-0 stroke-current "
+      fill="none"
+      viewBox="0 0 24 24">
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+        d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>{error.message}</div>)
+  // alert("something wrong when upload")
 }
 
 //   // axios.post('http://httpbin.org/post', formData, {
@@ -108,12 +138,78 @@ console.log("server response",response.data)
 }
 
 const Refresh = (data) => {
+  setShowFormError()
   console.log("-Refresh-")
-  const [RefId, TransactionNo , HN] = data.split(' | ');
-  console.log(RefId)
-  console.log(TransactionNo)
-  console.log(HN)
+  const [RefId, TransactionNo , HN , VN] = data.split(' | ');
+  console.log({
+    RefId : RefId,
+    TransactionNo : TransactionNo,
+    HN : HN,
+  })
+
+
+  axios
+  .post(process.env.NEXT_PUBLIC_URL_PD + "v1/aia-checkclaimstatus/checkclaimstatus",
+    {
+      "PatientInfo": {
+    InsurerCode: InsuranceCode, 
+     RefId: RefId,
+	TransactionNo: TransactionNo,
+    PID: "",
+    HN: HN,
+    PassportNumber: "",
+    IdType:"HOSPITAL_ID",
+    VN: VN,
+    ClaimNo:""
+//   "InsurerCode": 13, 
+//   "RefId": "oljhnklefhbilubsEFJKLb651",
+// "TransactionNo": "70816a0d-107a-4772-9838-4578e874a172",
+//  "PID": "66-021995",
+//  "HN": "66-021995",
+//  "PassportNumber":"",
+//  "IdType":"HOSPITAL_ID",
+//  "VN":"O477382-67",
+//  "ClaimNo":""
+          }
+        }
+  )
+  .then((response) => {
+    console.log(response.data)
+
+    if(response.data.HTTPStatus.statusCode === 200){
+      setStatusNew((prevData) => ({
+      ...prevData,
+      ClaimstatusName : response.data.Result.Data.ClaimstatusName, 
+      RefId : response.data.Result.Data.RefId,
+      TransactionNo : response.data.Result.Data.transactionNo,
+      HN : response.data.Result.Data.HN,     
+      VN : response.data.Result.Data.VN,
+    }));
+  }else{
+    setShowFormError("Error");
+    setMassError(response.data.HTTPStatus.error);
+  }
+    
+  })
+    // setShowModal(true)
+    // setTimeout(() => {
+    //   setShowModal(false)
+    //   //router.push('/aia/opd/submitBilling');
+    // }, 5000);
+  // })
+  .catch((err) => {
+   // console.error("Error", err)
+    console.log(err)
+    //  if (err.response.request.status === 500) {
+             setShowFormError("Error");
+             setMassError(err.response.data.HTTPStatus.message);
+         })  
 };
+
+const Clickbutton = (RefId) => {
+  setShowbutton(showbutton === RefId ? null : RefId);
+};
+
 
 const Document = (data) => {
   console.log("-Document-")
@@ -403,40 +499,68 @@ console.log(error)
 //console.log(post)
    const submitbilling = (event) => {
     event.preventDefault();
-    document.getElementById("my_modal_3").close()
-    const File = {
-      InsuranceCode: InsuranceCode,
-    };
-    console.log(File);
-    setShowModal(true)
+    let filenames = {};
+    // document.getElementById("my_modal_3").close()
+    filenames = billList.map(Bll => ({ DocName: Bll.filename }));
 
-
-    setTimeout(() => {
-      setShowModal(false)
-      //router.push('/aia/opd/submitBilling');
-    }, 5000);
+    axios
+      .post(process.env.NEXT_PUBLIC_URL_PD + "v1/aia-billing-submission/getbilling-submission",{
+        InsurerCode: InsuranceCode, 
+        RefId: refIdL,
+      TransactionNo: transactionNoL,
+        PID: "",
+        HN: hNL,
+        PassportNumber:"",
+        IdType:"",
+        VN: vNL,
+        ClaimNo:"",
+        Invoicenumber: "",
+        AttachDocList: [
+                          filenames,
+                        ]
+    })
+      .then((response) => {
+        console.log(response.data)
+        // setShowModal(true)
+        // setTimeout(() => {
+        //   setShowModal(false)
+        //   //router.push('/aia/opd/submitBilling');
+        // }, 5000);
+      })
+      .catch((err) => {
+       // console.error("Error", err)
+        console.log(err)
+        //  if (err.response.request.status === 500) {
+                 setShowFormError("Error");
+               //  setMassError(err.response.data.HTTPStatus.message);
+             })  
   }
-   const handleButtonClick = (data) => {
-    const [RefId, TransactionNo , HN] = data.split(' | ');
-    console.log(RefId)
-    console.log(TransactionNo)
-    console.log(HN)
 
-    //ส่ง Tran + RefID + VN ให้พี่โดม
-    // axios
-    //   .post(process.env.NEXT_PUBLIC_URL + "v1/aia-submitBilling/selectbilling",{
-    //     search
-    //   })
-    //   .then((response) => {
-    //     setPost(response.data);
-    //   })
-    //   .catch((err) => {
-    //    // console.error("Error", err)
-    //     console.log(err)
-    //     //  if (err.response.request.status === 500) {
-    //             setShowFormError("Error");
-    //             setMassError(err.response.data.HTTPStatus.message);
-    //         //  }  
+
+   const handleButtonClick = (data) => {
+    const [RefIdL, TransactionNoL , HNL , VNL] = data.split(' | ');
+    setRefIdL(RefIdL)
+    setTransactionNoL(TransactionNoL)
+    setHNL(HNL)
+    setVNL(VNL)
+    setMsg(null)
+    axios
+      .post(process.env.NEXT_PUBLIC_URL_SV + "v1/utils/getlistDocumentName",{
+        RefId : RefIdL,
+        TransactionNo : TransactionNoL,
+        HN : HNL,
+        VN : VNL,
+      })
+      .then((response) => {
+        setBillList(response.data);
+      })
+      .catch((err) => {
+       // console.error("Error", err)
+        console.log(err)
+        //  if (err.response.request.status === 500) {
+                // setShowFormError("Error");
+                // setMassError(err.response.data.HTTPStatus.message);
+             })  
 
 document.getElementById("my_modal_3").showModal()
 
@@ -713,6 +837,25 @@ document.getElementById("my_modal_3").showModal()
     (post.Result.Data.map((bill, index) => (
 <tr className="hover text-center" key={index}>
    <th>{index+1}
+   </th>
+   <td>{bill.VisitDateTime}</td>
+      <td>{bill.TitleTH} {bill.GivenNameTH} {bill.SurnameTH}</td>
+      <td>{bill.VN}</td>
+      <td>{bill.ClaimNo}</td>
+      <td>{bill.invoicenumber}</td>
+      {/* <td>{bill.IllnessType}</td> */}
+        {/* <td><div className="bg-success text-base-100 rounded-full px-3 py-2">{bill.status}</div></td> */}
+        <td ><a className="bg-success text-base-100 rounded-full px-3 py-2">{statusNew ? (bill.RefId === statusNew.RefId ? (statusNew.ClaimstatusName) : bill.ClaimstatusName) : "Loading..."}</a></td>
+        <th>{bill.TotalAmount}</th>
+        <td>
+
+
+
+          
+          
+          <button className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100"
+        onClick={() => handleButtonClick(`${bill.RefId} | ${bill.TransactionNo} | ${bill.HN} | ${bill.VN}`)}
+        >วางบิล</button>
    {/* <Button
         id="basic-button"
         aria-controls={open ? 'basic-menu' : undefined}
@@ -732,34 +875,19 @@ document.getElementById("my_modal_3").showModal()
         //   'aria-labelledby': 'basic-button',
         // }}
       > */}
+      
+         <button onClick={() => Clickbutton(bill.RefId)} className="ml-2 border-none hover:base-100">
+        {showbutton ? <button className="btn bg-base-100 text-primary"><AiOutlineUnorderedList /></button> : <button className="btn bg-base-100 text-primary"><AiOutlineUnorderedList /></button>}
+      </button>
+{showbutton === bill.RefId && (
+    <form className="absolute top-12 bg-white p-4 shadow-lg rounded">
+        <MenuItem onClick={() => Refresh(`${bill.RefId} | ${bill.TransactionNo} | ${bill.HN} | ${bill.VN}`)}><LuRefreshCw />&nbsp;Refresh</MenuItem>
+        <MenuItem onClick={() => Document(`${bill.RefId} | ${bill.TransactionNo} | ${bill.HN} | ${bill.VN}`)}><IoDocumentText />&nbsp;Document</MenuItem>
+        <MenuItem onClick={() =>Delect(`${bill.RefId} | ${bill.TransactionNo} | ${bill.HN} | ${bill.VN}`)}><ImBin />&nbsp;Cancel</MenuItem>
+    </form>
+      ) }
 
-               <MenuItem onClick={() => Refresh(bill.RefId)}><LuRefreshCw />&nbsp;Refresh {bill.RefId}</MenuItem>
-        <MenuItem onClick={() => Document(`${bill.RefId}`)}><IoDocumentText />&nbsp;Document {bill.RefId}</MenuItem>
-        <MenuItem onClick={Delect}><ImBin />&nbsp;Cancel</MenuItem>
-        {/* <MenuItem onClick={() => Refresh(`${bill.RefId} | ${bill.TransactionNo} | ${bill.HN}`)}><LuRefreshCw />&nbsp;Refresh {bill.RefId}</MenuItem> */}
-{/* 
-      </Menu> */}
-
-   </th>
-   <td>{bill.VisitDateTime}</td>
-      <td>{bill.TitleTH} {bill.GivenNameTH} {bill.SurnameTH}</td>
-      <td>{bill.VN}</td>
-      <td>{bill.ClaimNo}</td>
-      <td>{bill.invoicenumber}</td>
-      {/* <td>{bill.IllnessType}</td> */}
-        {/* <td><div className="bg-success text-base-100 rounded-full px-3 py-2">{bill.status}</div></td> */}
-        <td ><a className="bg-success text-base-100 rounded-full px-3 py-2">{bill.ClaimstatusName}</a></td>
-        <th>{bill.TotalAmount}</th>
-        <td>
-
-      {/* {bill.RefId} */}
-
-          
-          
-          <button className="btn btn-primary bg-base-100 text-info hover:text-base-100"
-        onClick={() => handleButtonClick(`${bill.RefId} | ${bill.TransactionNo} | ${bill.HN}`)}
-        >วางบิล</button>
-
+      {/* </Menu>  */}
         </td>
        
       </tr>
@@ -777,7 +905,6 @@ document.getElementById("my_modal_3").showModal()
       <td></td>
       <td></td>
       <th></th>
-      <td></td>
       </tr>
   
     ): (
@@ -791,7 +918,6 @@ document.getElementById("my_modal_3").showModal()
       <td></td>
       <td></td>
       <th></th>
-      <td></td>
       </tr>
     )}
     </tbody>
@@ -818,14 +944,19 @@ document.getElementById("my_modal_3").showModal()
           rows={6}
         />
               </div> */}
-                            <input type="file" className="file-input file-input-bordered file-input-info w-full mt-2" /> 
-
-
-
-
-
-
-
+          <div className="grid gap-2 w-full mt-2">
+            <div className="px-2 rounded-md">
+              <div className="flex items-center ">
+                            <input type="file" className="file-input file-input-bordered file-input-info w-full w-5/6" onChange={ (e) => { setFile(e.target.files[0]) } } /> 
+                            <div className="btn btn-success text-base-100 hover:text-success hover:bg-base-100 w-1/6 ml-2" onClick={ handleUpload }>
+                                <FaCloudUploadAlt className="size-6"/>
+                            </div>
+              </div>
+            </div>
+          </div>
+{ progress.started && <progress max="100" value={progress.pc} className="mt-2 w-full"></progress> }
+<br /> 
+<h1 className="text-center">{ msg }</h1>
 
 
 
@@ -841,43 +972,49 @@ document.getElementById("my_modal_3").showModal()
                     </tr>
                 </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {/* {billing
-                      ? billing.Result.Billing.map((bill, index) => ( */}
+                   {billList
+                      ? billList.map((list, index) => (
                           <tr
-                            // key={index}
+                             key={index}
                             className=" bg-neutral text-sm"
                           >
-                            <td className="px-6 py-4 whitespace-nowrap">123456789ำกไดำๆ21กๆ.pdf</td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                            <button className="btn btn-warning  mr-2" type="submit"><IoIosDocument /></button>
-                            <button className="btn btn-error " type="submit"><ImBin /></button>
+                              {list.filename}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="btn btn-warning  mr-2" type="submit"><IoIosDocument /></div>
+                              <div className="btn btn-error " type="submit"><ImBin /></div>
                             </td>
                           </tr>
-                        {/* ))
-                      : ""} */}
+                    ))
+                      : (
+                        <tr>
+                          <td></td>
+                        </tr>
+                      )} 
                   </tbody>
               </table>
                               </div>
                                 <div className="modal-action">
-                                    <button className="btn btn-primary text-base-100"
-                                    // onClick={submitbilling}
+                                    <div className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100"
+                                  onClick={submitbilling}
                                     >
-                                      วางบิล
-                                    </button>
+                                      ส่งบิล
+                                    </div>
                                 </div>
                               </form>
                             </div>
                           </dialog>
 
+<dialog id="loading" className="modal">
+  <div className="modal-box">
+    <h3 className="font-bold text-lg">Hello!</h3>
+    <p className="py-4">Press ESC key or click on ✕ button to close</p>
+  </div>
+</dialog>
 
 
 
-                          <input onChange={ (e) => { setFile(e.target.files[0]) } } type="file" multiple/>
-<button className="btn" onClick={ handleUpload }>Upload</button>
-<br />
-{ progress.started && <progress max="100" value={progress.pc}></progress> }
-<br />
-<spen>{ msg }</spen>
 </div>
 </div>
 
@@ -901,6 +1038,7 @@ document.getElementById("my_modal_3").showModal()
         </div>
   </>
 ) : ""}
+
     </>
   );
 }

@@ -42,10 +42,10 @@ export async function POST(request) {
                     MessageList: [
                         {
                             PolicyNo: '',
-      PlanName: null,
-      MessageTh: 'สัญญาเพิ่มเติมมีสิทธิ์ใช้บริการเรียกร้องสินไหม',
-      MessageEn: null,
-      RuleNo: 'success'
+                            PlanName: null,
+                            MessageTh: 'สัญญาเพิ่มเติมมีสิทธิ์ใช้บริการเรียกร้องสินไหม',
+                            MessageEn: null,
+                            RuleNo: 'success'
                         }
                     ]
                 },

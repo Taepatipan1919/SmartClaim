@@ -479,89 +479,7 @@ router.push('/aia/opd/checkeilgible');
           </div>
           <div className="px-2 rounded-md"></div>
         </div>
-        {/* <details className="collapse -mt-3">
-          <summary className="collapse-title font-medium">More</summary>
-          <div className="collapse-content"> 
-
-          <div className="grid gap-1 sm:grid-cols-3 w-full">
-
-          <div className="rounded-md">
-        <div className="grid gap-1 sm:grid-cols-2 w-full">
-          <div className="px-2 rounded-md">
-
-
-<LocalizationProvider dateAdapter={AdapterDayjs}>
-
-<DatePicker
-            label="Date From"
-            value={fromValue}
-            onChange={(newDate) => setFromValue(newDate)}
-            format="YYYY-MM-DD"
-          />
-      
-    </LocalizationProvider>
-
-            </div>
-            <div className="px-2 rounded-md">
-           <LocalizationProvider dateAdapter={AdapterDayjs}>
-
-<DatePicker
-            label="Date To"
-            value={toValue}
-            format="YYYY-MM-DD"
-            onChange={(newDate) => setToValue(newDate)}
-           
-          />
-      
-    </LocalizationProvider> 
-             </div>
-            </div>
-
-
-            
-          </div>
-          <div className="grid gap-1 sm:grid-cols-2 w-full">
-          <div className="px-2 rounded-md">
-     <FormControl fullWidth>
-        <InputLabel id="demo-simple-select-label">Claim Status</InputLabel>
-        <Select
-          labelId="demo-simple-select-label"
-          id="demo-simple-select"
-          value={statusValue}
-          label="Age"
-          onChange={Status}
-        >
-          {claimStatus
-                ? claimStatus.map((status, index) => (
-                    <MenuItem key={index} value={status.statusCode}>{status.StatusDescTH}</MenuItem>
-                  ))
-                : ""}
-
-        </Select>
-      </FormControl>
-          </div>
-          <div className="px-2 rounded-md">
-          </div>
-        </div>
-          </div>
-
-
-          </div>
-        </details> */}
-       
-        {/* <div className="grid gap-1 sm:grid-cols-3 w-full"> */}
-
-          {/* <div className="px-2 rounded-md"> */}
-
-            
-      {/* </div> */}
-
-
-       
-
-      {/* </div> */}
     </form>
-      {/* </div> */}
       {showFormError === "Err" ? (
               <div role="alert" className="alert alert-error mt-2 text-base-100">
                 <svg
@@ -584,24 +502,6 @@ router.push('/aia/opd/checkeilgible');
             )}
             {showFormError === "" ? (
       <div className="justify-center border-solid w-full m-auto border-2 border-warning rounded-lg p-4 mt-6">
-      {/* {massError === "Error" ? (
-        <>
-        <div role="alert" className="alert alert-error">
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    className="h-6 w-6 shrink-0 stroke-current"
-    fill="none"
-    viewBox="0 0 24 24">
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth="2"
-      d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-  </svg>
-  <span>กรุณากรอกวันที่ให้ครบ!!</span>
-</div>
-        </>
-      ) : ""}  */}
         <div className="overflow-x-auto mt-2">
           <table className="table">
             <thead className="bg-info text-base-100 text-center text-lg">
@@ -812,13 +712,6 @@ router.push('/aia/opd/checkeilgible');
                 </div>
                 <div className="rounded-md ">
                   <div className="relative">
-                    {/* <input
-                    type="text"
-                    name="id"
-                    //value="1103900068701"
-                    className="input input-bordered input-info w-full rounded-full px-3 py-2"
-                    required
-                  /> */}
                     <input
                       type="text"
                       name="PID"
@@ -832,14 +725,6 @@ router.push('/aia/opd/checkeilgible');
                     </button>
                   </div>
                 </div>
-                {/* <div className="rounded-md">
-                <button
-                  type="submit"
-                  className="btn btn-accent text-base-100 text-lg w-full rounded-full px-3 py-2"
-                >
-                  <FaSearch /> ค้นหา
-                </button>
-              </div> */}
                 <div className="rounded-md ">
                   <p className="text-left">PID</p>
                 </div>
