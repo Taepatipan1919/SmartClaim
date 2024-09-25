@@ -7,10 +7,12 @@ import { FaSearch } from "react-icons/fa";
 import { LuRefreshCw } from "react-icons/lu";
 import { IoDocumentText } from "react-icons/io5";
 import TextField from '@mui/material/TextField';
-// import { useDispatch } from "react-redux";
+ import { useDispatch } from "react-redux";
+ import { save } from "../../../../store/counterSlice";
+ import { save2 } from "../../../../store/patientSlice";
 // import { save } from "../../../../store/counterSlice";
 // import { useSelector } from "react-redux";
-import { ImBin } from "react-icons/im";
+import { MdCancel } from "react-icons/md";
 import { IoIosDocument } from "react-icons/io";
 import { AiOutlineUnorderedList } from "react-icons/ai";
 import { Button ,Menu, MenuItem } from '@mui/material';
@@ -21,11 +23,16 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { FaCloudUploadAlt } from "react-icons/fa";
+import  DetailDischarge  from "../submitBilling/detailDischarge";
+
+
+
 
 export default function chackData() {
   const InsuranceCode = 13;
   // const  ReDux  = useSelector((state) => ({ ...state }));
   //console.log(ReDux)
+  const dispatch = useDispatch();
   const [post, setPost] = useState("");
   const [selectedIdType, setSelectedIdType] = useState("");
   const [numberValue, setNumberValue] = useState("");
@@ -44,19 +51,8 @@ export default function chackData() {
   const [transactionNoL, setTransactionNoL] = useState("");
   const [hNL, setHNL] = useState("");
   const [vNL, setVNL] = useState("");
-  const [showbutton, setShowbutton] = useState(null);
+  const [detailData , setDetailData] = useState("");
 
-
-/////////////////ปุ่ม ย่อย 3 อัน/////////////////////////////
-// const [anchorEl, setAnchorEl] = useState(null);
-
-// const handleClick = (event) => {
-//   setAnchorEl(event.currentTarget);
-// };
-// const handleClose = () => {
-//   setAnchorEl(null);
-// };
-///////////////////////////////////////////
 const handleUpload = async () => {
   if (!file){
     setMsg("No file selected");
@@ -114,27 +110,7 @@ console.log("server response",response.data)
         strokeWidth="2"
         d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
     </svg>{error.message}</div>)
-  // alert("something wrong when upload")
 }
-
-//   // axios.post('http://httpbin.org/post', formData, {
-//     axios.post('http://10.80.1.130:3480/api/v1/utils/upload', formData, {
-//     onUploadProgress: (progressEvent) => {  setProgress(prevState => {
-//       return { ...prevState, pc: progressEvent.progress*100 }
-//     })},
-//     headers: {
-//       // "Custom-Header": "value",
-//       "Content-Type": "multipart/form-data",
-//     }
-//   })
-//   .then(res => {
-//     setMsg("Upload successful");
-//     console.log(res.data)
-// })
-//   .catch(err => {
-//     setMsg("Upload Error");
-//     console.log(err)
-//   });
 }
 
 const Refresh = (data) => {
@@ -145,6 +121,7 @@ const Refresh = (data) => {
     RefId : RefId,
     TransactionNo : TransactionNo,
     HN : HN,
+    VN : VN,
   })
 
 
@@ -161,15 +138,6 @@ const Refresh = (data) => {
     IdType:"HOSPITAL_ID",
     VN: VN,
     ClaimNo:""
-//   "InsurerCode": 13, 
-//   "RefId": "oljhnklefhbilubsEFJKLb651",
-// "TransactionNo": "70816a0d-107a-4772-9838-4578e874a172",
-//  "PID": "66-021995",
-//  "HN": "66-021995",
-//  "PassportNumber":"",
-//  "IdType":"HOSPITAL_ID",
-//  "VN":"O477382-67",
-//  "ClaimNo":""
           }
         }
   )
@@ -206,21 +174,106 @@ const Refresh = (data) => {
          })  
 };
 
-const Clickbutton = (RefId) => {
-  setShowbutton(showbutton === RefId ? null : RefId);
-};
+const Detail = (data) => {
+  //console.log("-Detail-")
+  setShowFormError()
+  const [RefId, TransactionNo , HN , VN , GivenNameEN , GivenNameTH , IllnessType , SurnameEN , SurnameTH , TitleEN , TitleTH , VisitDateTime , PID , PassportNumber , SurgeryTypeCode , FurtherClaimNo , FurtherClaimId , DateOfBirth] = data.split(' | ');
+  setDetailData({
+    RefId : RefId,
+    TransactionNo : TransactionNo,
+    HN : HN,
+    VN : VN,
+    GivenNameEN : GivenNameEN,
+    GivenNameTH : GivenNameTH,
+    IllnessType : IllnessType,
+    SurnameEN : SurnameEN,
+    SurnameTH : SurnameTH,
+    TitleEN : TitleEN,
+    TitleTH : TitleTH,
+    VisitDateTime : VisitDateTime,
+    PID : PID,
+    PassportNumber : PassportNumber,
+    SurgeryTypeCode : SurgeryTypeCode,
+    FurtherClaimNo : FurtherClaimNo,
+    FurtherClaimId : FurtherClaimId,
+    DateOfBirth : DateOfBirth,
+  })
+
+//   dispatch(save2({
+//     value: "มีรายชื่อ2",
+//     Data: 
+//   {
+//     // "IdType": selectedOption,
+//     "InsurerCode": InsuranceCode,
+//      "DateOfBirth": DateOfBirth,
+//     // "Gender": patient.Gender,
+//     "GivenNameEN": GivenNameEN,
+//     "GivenNameTH": GivenNameTH,
+//     "HN": HN,
+//     // "MobilePhone": patient.MobilePhone,
+//      "PID": PID,
+//     "PassportNumber": PassportNumber,
+//     "SurnameEN": SurnameEN,
+//     "SurnameTH": SurnameTH,
+//     "TitleEN": TitleEN,
+//     "TitleTH": TitleTH,
+//   },
+// }));
+
+// dispatch(
+//   save({
+//     value: "มีข้อมูล2",
+//     Data: {
+//       RefId: RefId,
+//       TransactionNo: TransactionNo,
+//       VN: VN,
+//       InsurerCode: InsuranceCode,
+//       //ServiceSettingCode: statusValue, 
+//       IllnessTypeCode: IllnessType,
+//       SurgeryTypeCode:  SurgeryTypeCode,
+//       //PolicyTypeCode: policyTypeValue,
+//       //AccidentDate: accidentDate,
+//       VisitDateTime: VisitDateTime,
+//       FurtherClaimNo : FurtherClaimNo,
+//       FurtherClaimId : FurtherClaimId,
+//     },
+//   })
+// );
 
 
-const Document = (data) => {
-  console.log("-Document-")
-  console.log(data)
+  // axios
+  // .post(process.env.NEXT_PUBLIC_URL_SV + "v1/utils/detailDocment",
+  //   {
+  //     "PatientInfo": {
+  //   InsurerCode: InsuranceCode, 
+  //    RefId: RefId,
+	// TransactionNo: TransactionNo,
+  //   PID: "",
+  //   HN: HN,
+  //   PassportNumber: "",
+  //   IdType:"HOSPITAL_ID",
+  //   VN: VN,
+  //   ClaimNo:""
+  //         }
+  //       }
+  // )
+  // .then((response) => {
+  //   console.log(response.data)
+  // })
+  // .catch((err) => {
+  //   console.log(err)
+  //            setShowFormError("Error");
+  //            setMassError(err.response.data.HTTPStatus.message);
+  //        })  
 };
 
 const Delect = () => {
-  console.log("-Delect-")
+  // console.log("-Delect-")
+  const isConfirmed = window.confirm('แน่ใจแล้วที่จะยกเลิกการเคลมใช่ไหม');
+  if (isConfirmed) {
+    console.log('Item deleted');
+  }
 };
-
-
 
 
   const handleOptionChange = (e) => {
@@ -496,7 +549,6 @@ console.log(error)
 
 }
 }
-//console.log(post)
    const submitbilling = (event) => {
     event.preventDefault();
     let filenames = {};
@@ -521,11 +573,12 @@ console.log(error)
     })
       .then((response) => {
         console.log(response.data)
-        // setShowModal(true)
-        // setTimeout(() => {
-        //   setShowModal(false)
-        //   //router.push('/aia/opd/submitBilling');
-        // }, 5000);
+        document.getElementById("my_modal_3").close()
+        setShowModal(true)
+        setTimeout(() => {
+          setShowModal(false)
+          //router.push('/aia/opd/submitBilling');
+        }, 2000);
       })
       .catch((err) => {
        // console.error("Error", err)
@@ -635,7 +688,7 @@ document.getElementById("my_modal_3").showModal()
             </div>
             <TextField
           id="standard-multiline-flexible"
-          label="VN / Invoice"
+          label="กรอกข้อความ"
           multiline
           maxRows={4}
           variant="standard"
@@ -746,7 +799,7 @@ document.getElementById("my_modal_3").showModal()
             </div>
             <TextField
           id="standard-multiline-flexible"
-          label="VN / Invoice"
+          label="กรอกข้อความ"
           multiline
           maxRows={4}
           variant="standard"
@@ -826,9 +879,9 @@ document.getElementById("my_modal_3").showModal()
         <th>VN</th>
         <th>ClaimNo</th>
         <th>Invoicenumber</th>
-        {/* <th>Illness</th> */}
         <th>Status</th>
         <th>ยอดเงิน</th>
+        <th></th>
         <th></th>
       </tr>
     </thead>
@@ -843,52 +896,25 @@ document.getElementById("my_modal_3").showModal()
       <td>{bill.VN}</td>
       <td>{bill.ClaimNo}</td>
       <td>{bill.invoicenumber}</td>
-      {/* <td>{bill.IllnessType}</td> */}
-        {/* <td><div className="bg-success text-base-100 rounded-full px-3 py-2">{bill.status}</div></td> */}
         <td ><a className="bg-success text-base-100 rounded-full px-3 py-2">{statusNew ? (bill.RefId === statusNew.RefId ? (statusNew.ClaimstatusName) : bill.ClaimstatusName) : "Loading..."}</a></td>
         <th>{bill.TotalAmount}</th>
         <td>
-
-
-
-          
-          
-          <button className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100"
+    <div className="tooltip" data-tip="Refresh">
+        <h1 className="text-primary text-2xl" onClick={() => Refresh(`${bill.RefId} | ${bill.TransactionNo} | ${bill.HN} | ${bill.VN}`)}><LuRefreshCw /></h1>
+    </div>
+    <div className="tooltip ml-4" data-tip="Detail">
+        <h1 className="text-primary text-2xl" onClick={() => Detail(`${bill.RefId} | ${bill.TransactionNo} | ${bill.HN} | ${bill.VN} | ${bill.GivenNameEN} | ${bill.GivenNameTH} | ${bill.IllnessType} | ${bill.SurnameEN} | ${bill.SurnameTH} | ${bill.TitleEN} | ${bill.TitleTH} | ${bill.VisitDateTime} | ${bill.PID} | ${bill.PassportNumber} | ${bill.SurgeryTypeCode} | ${bill.FurtherClaimNo} | ${bill.FurtherClaimId} | ${bill.DateOfBirth}`)}><IoDocumentText /></h1>
+    </div>
+    <div className="tooltip ml-4" data-tip="Cancel Claim">
+        <h1 className="text-primary text-2xl" onClick={() =>Delect(`${bill.RefId} | ${bill.TransactionNo} | ${bill.HN} | ${bill.VN}`)}><MdCancel /></h1>
+    </div>
+   
+</td>
+<td>
+    <button className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100"
         onClick={() => handleButtonClick(`${bill.RefId} | ${bill.TransactionNo} | ${bill.HN} | ${bill.VN}`)}
         >วางบิล</button>
-   {/* <Button
-        id="basic-button"
-        aria-controls={open ? 'basic-menu' : undefined}
-        aria-haspopup="true"
-        aria-expanded={open ? 'true' : undefined}
-        onClick={handleClick}
-      >
-        <AiOutlineUnorderedList />{bill.RefId}
-      </Button>
-      <Menu
-        id="basic-menu"
-        anchorEl={anchorEl}
-        keepMounted
-        open={Boolean(anchorEl)}
-        onClose={handleClose}
-        // MenuListProps={{
-        //   'aria-labelledby': 'basic-button',
-        // }}
-      > */}
-      
-         <button onClick={() => Clickbutton(bill.RefId)} className="ml-2 border-none hover:base-100">
-        {showbutton ? <button className="btn bg-base-100 text-primary"><AiOutlineUnorderedList /></button> : <button className="btn bg-base-100 text-primary"><AiOutlineUnorderedList /></button>}
-      </button>
-{showbutton === bill.RefId && (
-    <form className="absolute top-12 bg-white p-4 shadow-lg rounded">
-        <MenuItem onClick={() => Refresh(`${bill.RefId} | ${bill.TransactionNo} | ${bill.HN} | ${bill.VN}`)}><LuRefreshCw />&nbsp;Refresh</MenuItem>
-        <MenuItem onClick={() => Document(`${bill.RefId} | ${bill.TransactionNo} | ${bill.HN} | ${bill.VN}`)}><IoDocumentText />&nbsp;Document</MenuItem>
-        <MenuItem onClick={() =>Delect(`${bill.RefId} | ${bill.TransactionNo} | ${bill.HN} | ${bill.VN}`)}><ImBin />&nbsp;Cancel</MenuItem>
-    </form>
-      ) }
-
-      {/* </Menu>  */}
-        </td>
+    </td>
        
       </tr>
 
@@ -947,7 +973,7 @@ document.getElementById("my_modal_3").showModal()
           <div className="grid gap-2 w-full mt-2">
             <div className="px-2 rounded-md">
               <div className="flex items-center ">
-                            <input type="file" className="file-input file-input-bordered file-input-info w-full w-5/6" onChange={ (e) => { setFile(e.target.files[0]) } } /> 
+                            <input type="file" className="file-input file-input-bordered file-input-info w-5/6" onChange={ (e) => { setFile(e.target.files[0]) } } /> 
                             <div className="btn btn-success text-base-100 hover:text-success hover:bg-base-100 w-1/6 ml-2" onClick={ handleUpload }>
                                 <FaCloudUploadAlt className="size-6"/>
                             </div>
@@ -982,8 +1008,12 @@ document.getElementById("my_modal_3").showModal()
                               {list.filename}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="tooltip" data-tip="Document">
                               <div className="btn btn-warning  mr-2" type="submit"><IoIosDocument /></div>
-                              <div className="btn btn-error " type="submit"><ImBin /></div>
+                              </div>
+                              <div className="tooltip" data-tip="Cancel Claim">
+                              <div className="btn btn-error " type="submit"><MdCancel /></div>
+                              </div>
                             </td>
                           </tr>
                     ))
@@ -1006,14 +1036,9 @@ document.getElementById("my_modal_3").showModal()
                             </div>
                           </dialog>
 
-<dialog id="loading" className="modal">
-  <div className="modal-box">
-    <h3 className="font-bold text-lg">Hello!</h3>
-    <p className="py-4">Press ESC key or click on ✕ button to close</p>
-  </div>
-</dialog>
 
 
+{detailData ? <DetailDischarge data={detailData}/>: ""}
 
 </div>
 </div>
