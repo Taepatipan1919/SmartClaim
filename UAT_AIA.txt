@@ -1,0 +1,10 @@
+OPD
+    - OPD มี Pre-Au PreAuthorization ไหม
+
+
+
+
+IPD
+    - ให้อธิบายเรื่อง flow IPD และ Pre-authorization
+    - ipdAdmission กับ ipdAdmission(Concurrent) คืออะไร และต่างกันยังไง
+    - ตอนส่ง ipdAdmission แล้วต้องส่ง  ipdDischarge อีกครั้งด้วยใช่ไหม
