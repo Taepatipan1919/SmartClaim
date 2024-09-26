@@ -32,12 +32,12 @@ export default function Home() {
   </ul>
 </div>
                <OpdDischarge data={DataTran}/>
-            value : {DataTran.DataTran.value}
+            {/* value : {DataTran.DataTran.value}
           <hr />
           VN : {DataTran.DataTran.Data.VN}
           <br />
           RefId : {DataTran.DataTran.Data.RefId}
-          <br />
+          <br /> */}
     </>
     ) : (
          <>
@@ -56,14 +56,14 @@ export default function Home() {
   </ul>
 </div>
 <ChackData />
-    value : {DataTran.DataTran.value}
+    {/* value : {DataTran.DataTran.value}
       <hr />
       VN : {DataTran.DataTran.Data.VN}
       <br />
       RefId : {DataTran.DataTran.Data.RefId}
       <br />
       TransactionNo : {DataTran.DataTran.Data.TransactionNo}
-      <br /> 
+      <br />  */}
           </>
     )}
 

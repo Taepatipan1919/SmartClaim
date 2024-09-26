@@ -207,24 +207,37 @@ router.push('/aia/opd/checkeilgible');
   }
 
   const PatientB = (patient) => {
-    //console.log(patient)
+    console.log(patient)
     axios
       .post(
-        process.env.NEXT_PUBLIC_URL_SV + "v1/aia-patient-info/PatientFindforUpdate",
+        process.env.NEXT_PUBLIC_URL_PD + "v1/aia-patient-info/PatientFindforUpdate",
         {
-          PatientInfo: {
-            "Insurerid": 13, 
-            "RefID":"O61-028993-ppp-ooo-o1",
-            "TransactionNo":"XXXXX",
-            "PID": "1160100078831",
-            "HN": "61-022781",
-            "PassportNumber":"ABC12345",
-            "IdType":"PASSPORT_NO",
-            "VN":"O61-028993",
-            "StatusClaimCode": "01", 
-            "VisitDatefrom": "2024-08-15",
-             "VisitDateto":  "2024-08-06"
-          },
+          // PatientInfo: {
+          //   "Insurerid": InsurerCode, 
+          //   "RefID": "",
+          //   "TransactionNo": "",
+          //   "PID": patient.PID,
+          //   "HN": patient.HN,
+          //   "PassportNumber": patient.PassportNumber,
+          //   "IdType": "HOSPITAL_ID",
+          //   "VN": "",
+          //   "StatusClaimCode": "01", 
+          //   "VisitDatefrom": "",
+          //    "VisitDateto":  ""
+          // },
+          "PatientInfo": {
+    "InsurerCode": InsurerCode, 
+    "RefID":"",
+    "TransactionNo":"",
+    "PID": patient.PID,
+    "HN": patient.HN,
+    "PassportNumber": patient.PassportNumber,
+    "IdType":"HOSPITAL_ID",
+    "VN":"",
+    "StatusClaimCode": "01", 
+    "VisitDatefrom": "2024-08-15",
+     "VisitDateto":  "2024-08-06"
+  }
         }
       )
       .then(function (response) {

@@ -45,7 +45,7 @@ setPatientInfo({
   return (
     <>
       <dialog id="my_modal_4" className="modal">
-  <div className="modal-box w-11/12 max-w-5xl">
+          <div className="modal-box w-11/12 max-w-5xl">
             <div className="justify-center border-solid w-4/5 m-auto border-2 border-warning rounded-lg p-4">
               <h1 className="font-black text-accent text-3xl ">
                 Patient Info
@@ -90,10 +90,9 @@ setPatientInfo({
            </Box>
                 </div>
                 <div className="rounded-md">
-                <Box sx={{backgroundColor: '#e5e7eb', padding: 0, borderRadius: 0,}}>
-                {/* <TextField id="standard-basic" disabled className="text-black bg-gray-200 border border-gray-300 rounded p-2 disabled:text-black" label="Sex" variant="standard" value={Gender} /> */}
+                {/* <Box sx={{backgroundColor: '#e5e7eb', padding: 0, borderRadius: 0,}}>
                 <TextField disabled id="outlined-disabled" label="Sex" defaultValue={"Gender"} className="w-full  text-black border border-black rounded disabled:text-black"/>
-           </Box>
+                </Box> */}
                 </div>
               </div>
             </div>

@@ -7,10 +7,10 @@ import { FaSearch } from "react-icons/fa";
 import { LuRefreshCw } from "react-icons/lu";
 import { IoDocumentText } from "react-icons/io5";
 import TextField from '@mui/material/TextField';
- import { useDispatch } from "react-redux";
  import { save } from "../../../../store/counterSlice";
  import { save2 } from "../../../../store/patientSlice";
 // import { save } from "../../../../store/counterSlice";
+import { useDispatch } from "react-redux";
 // import { useSelector } from "react-redux";
 import { MdCancel } from "react-icons/md";
 import { IoIosDocument } from "react-icons/io";
@@ -52,8 +52,13 @@ export default function chackData() {
   const [hNL, setHNL] = useState("");
   const [vNL, setVNL] = useState("");
   const [detailData , setDetailData] = useState("");
+  const [base64 , setBase64] = useState("");
+
+
+
 
 const handleUpload = async () => {
+
   if (!file){
     setMsg("No file selected");
     return;
@@ -111,6 +116,23 @@ console.log("server response",response.data)
         d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
     </svg>{error.message}</div>)
 }
+// axios
+// .post(process.env.NEXT_PUBLIC_URL_PD2 + "v1/utils/getlistDocumentName",{
+//   RefId : RefIdL,
+//   TransactionNo : TransactionNoL,
+//   HN : HNL,
+//   VN : VNL,
+// })
+// .then((response) => {
+//   setBillList(response.data);
+// })
+// .catch((err) => {
+//  // console.error("Error", err)
+//   console.log(err)
+//   //  if (err.response.request.status === 500) {
+//           // setShowFormError("Error");
+//           // setMassError(err.response.data.HTTPStatus.message);
+//        })  
 }
 
 const Refresh = (data) => {
@@ -267,8 +289,8 @@ const Detail = (data) => {
   //        })  
 };
 
-const Delect = () => {
-  // console.log("-Delect-")
+const Cancel = () => {
+  // console.log("-Cancel-")
   const isConfirmed = window.confirm('แน่ใจแล้วที่จะยกเลิกการเคลมใช่ไหม');
   if (isConfirmed) {
     console.log('Item deleted');
@@ -310,7 +332,7 @@ const Delect = () => {
         Invoice: "",
         VN: "",
         PID : numberValue,
-        Passport : "",
+        PassportNumber : "",
         HN : "",
         DateVisitFrom : dateFromValue,
         ToValue : dateToValue,
@@ -324,7 +346,7 @@ const Delect = () => {
       Invoice: "",
       VN: "",
       PID : "",
-      Passport : numberValue,
+      PassportNumber : numberValue,
       HN : "",
       DateVisitFrom : dateFromValue,
       ToValue : dateToValue,
@@ -338,7 +360,7 @@ const Delect = () => {
         Invoice: "",
         VN: "",
         PID : "",
-        Passport : "",
+        PassportNumber : "",
         HN : numberValue,
         DateVisitFrom : dateFromValue,
         ToValue : dateToValue,
@@ -352,7 +374,7 @@ const Delect = () => {
     Invoice: "",
     VN: numberValue,
     PID : "",
-    Passport : "",
+    PassportNumber : "",
     HN : "",
     DateVisitFrom : dateFromValue,
     ToValue : dateToValue,
@@ -365,13 +387,14 @@ const Delect = () => {
     Invoice: numberValue,
     VN: "",
     PID : "",
-    Passport : "",
+    PassportNumber : "",
     HN : "",
     DateVisitFrom : dateFromValue,
     ToValue : dateToValue,
     };
 }else if (fromValue && toValue){
   data = {
+    PassportNumber : "",
     PID : "",
     HN : "",
       Insurerid: InsuranceCode,
@@ -448,7 +471,7 @@ if(selectedIdType === "PID" && numberValue){
       Invoice: "",
       VN: "",
       PID : numberValue,
-      Passport : "",
+      PassportNumber : "",
       HN : "",
       DateVisitFrom : dateFromValue,
       DateVisitTo : dateToValue,
@@ -462,7 +485,7 @@ if(selectedIdType === "PID" && numberValue){
     Invoice: "",
     VN: "",
     PID : "",
-    Passport : numberValue,
+    PassportNumber : numberValue,
     HN : "",
     DateVisitFrom : dateFromValue,
     DateVisitTo : dateToValue,
@@ -476,7 +499,7 @@ if(selectedIdType === "PID" && numberValue){
       Invoice: "",
       VN: "",
       PID : "",
-      Passport : "",
+      PassportNumber : "",
       HN : numberValue,
       DateVisitFrom : dateFromValue,
       DateVisitTo : dateToValue,
@@ -490,7 +513,7 @@ data = {
   Invoice: "",
   VN: numberValue,
   PID : "",
-  Passport : "",
+  PassportNumber : "",
   HN : "",
   DateVisitFrom : dateFromValue,
   DateVisitTo : dateToValue,
@@ -503,7 +526,7 @@ data = {
   Invoice: numberValue,
   VN: "",
   PID : "",
-  Passport : "",
+  PassportNumber : "",
   HN : "",
   DateVisitFrom : dateFromValue,
   DateVisitTo : dateToValue,
@@ -588,17 +611,50 @@ console.log(error)
                //  setMassError(err.response.data.HTTPStatus.message);
              })  
   }
+  const DocumentBase64 = () => {
+    axios
+      .get(process.env.NEXT_PUBLIC_URL_PD2 + "v1/utils/upload/1"
+      //   ,{
+      //   RefId : RefIdL,
+      //   TransactionNo : TransactionNoL,
+      //   HN : HNL,
+      //   VN : VNL,
+      // }
+    )
+      .then((response) => {
+       setBase64(response.data);
+       
+          console.log(response.data)
+          const base64String = response.data.base64;
 
+        const linkSource = `data:application/pdf;base64,${base64String}`;
+          const pdfWindow = window.open();
+          pdfWindow.document.write(
+              `<iframe width='100%' height='99%' src='${linkSource}'></iframe>`
+          );
+      })
+      .catch((err) => {
+       // console.error("Error", err)
+        console.log(err)
+        //  if (err.response.request.status === 500) {
+                // setShowFormError("Error");
+                // setMassError(err.response.data.HTTPStatus.message);
+             })  
+
+  }
 
    const handleButtonClick = (data) => {
+    
+    setProgress({ started: false, pc: 0 });
     const [RefIdL, TransactionNoL , HNL , VNL] = data.split(' | ');
     setRefIdL(RefIdL)
     setTransactionNoL(TransactionNoL)
     setHNL(HNL)
     setVNL(VNL)
     setMsg(null)
+    setBillList();
     axios
-      .post(process.env.NEXT_PUBLIC_URL_SV + "v1/utils/getlistDocumentName",{
+      .post(process.env.NEXT_PUBLIC_URL_PD2 + "v1/utils/getlistDocumentName",{
         RefId : RefIdL,
         TransactionNo : TransactionNoL,
         HN : HNL,
@@ -906,7 +962,7 @@ document.getElementById("my_modal_3").showModal()
         <h1 className="text-primary text-2xl" onClick={() => Detail(`${bill.RefId} | ${bill.TransactionNo} | ${bill.HN} | ${bill.VN} | ${bill.GivenNameEN} | ${bill.GivenNameTH} | ${bill.IllnessType} | ${bill.SurnameEN} | ${bill.SurnameTH} | ${bill.TitleEN} | ${bill.TitleTH} | ${bill.VisitDateTime} | ${bill.PID} | ${bill.PassportNumber} | ${bill.SurgeryTypeCode} | ${bill.FurtherClaimNo} | ${bill.FurtherClaimId} | ${bill.DateOfBirth}`)}><IoDocumentText /></h1>
     </div>
     <div className="tooltip ml-4" data-tip="Cancel Claim">
-        <h1 className="text-primary text-2xl" onClick={() =>Delect(`${bill.RefId} | ${bill.TransactionNo} | ${bill.HN} | ${bill.VN}`)}><MdCancel /></h1>
+        <h1 className="text-primary text-2xl" onClick={() =>Cancel(`${bill.RefId} | ${bill.TransactionNo} | ${bill.HN} | ${bill.VN}`)}><MdCancel /></h1>
     </div>
    
 </td>
@@ -1009,7 +1065,7 @@ document.getElementById("my_modal_3").showModal()
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                             <div className="tooltip" data-tip="Document">
-                              <div className="btn btn-warning  mr-2" type="submit"><IoIosDocument /></div>
+                              <div className="btn btn-warning  mr-2" type="submit" onClick={DocumentBase64}><IoIosDocument /></div>
                               </div>
                               <div className="tooltip" data-tip="Cancel Claim">
                               <div className="btn btn-error " type="submit"><MdCancel /></div>
@@ -1024,6 +1080,7 @@ document.getElementById("my_modal_3").showModal()
                       )} 
                   </tbody>
               </table>
+            
                               </div>
                                 <div className="modal-action">
                                     <div className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100"
