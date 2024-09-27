@@ -1,7 +1,6 @@
 "use client";
-import React from "react";
 import axios from "axios";
-import { useState, useEffect, createContext } from "react";
+import { useState, useEffect, createContext , useRef  , React } from "react";
 import Link from "next/link";
 import { FaSearch } from "react-icons/fa";
 import { LuRefreshCw } from "react-icons/lu";
@@ -32,6 +31,7 @@ export default function chackData() {
   const InsuranceCode = 13;
   // const  ReDux  = useSelector((state) => ({ ...state }));
   //console.log(ReDux)
+  const InsurerCode = 13;
   const dispatch = useDispatch();
   const [post, setPost] = useState("");
   const [selectedIdType, setSelectedIdType] = useState("");
@@ -40,6 +40,9 @@ export default function chackData() {
   const [toValue, setToValue] = useState(null);
   const [massError, setMassError] = useState("");
   const [showFormError, setShowFormError] = useState("");
+  const inputRef = useRef(null);
+  const [massDocError, setMassDocError] = useState("");
+  const [showDocError, setShowDocError] = useState("");
   const [billList, setBillList] = useState("");
   const [showModal, setShowModal] = useState(false);
   const router = useRouter();
@@ -64,21 +67,23 @@ const handleUpload = async () => {
     return;
   }
   setMsg();
+  setShowDocError();
   setProgress({ started: false, pc: 0 });
+
   const formData = new FormData();
   formData.append('file', file);
-  formData.append('VN', 'O477382-67'); 
-   formData.append('RefId', 'oljhnklefhbilubsEFJKLb651');
-   formData.append('TransactionNo', '70816a0d-107a-4772-9838-4578e874a172');
-   formData.append('HN', '66-021995');
-   formData.append('DocumentName', file.name);
+   formData.append('RefId', refIdL);
+   formData.append('TransactionNo', transactionNoL);
+   formData.append('HN', hNL);
+   formData.append('VN', vNL); 
+   formData.append('DocumenttypeCode', "003");
   // console.log(file)
 setMsg(<span className="loading loading-spinner text-info loading-lg"></span>);
 setProgress(prevState => {
   return { ...prevState, started: true }
 })
 try{
-const response = await axios.post('http://10.80.1.130:3480/api/v1/utils/upload', formData, {
+const response = await axios.post(process.env.NEXT_PUBLIC_URL_PD2 +  "v1/utils/uploadDocuments", formData, {
       onUploadProgress: (progressEvent) => {  setProgress(prevState => {
         return { ...prevState, pc: progressEvent.progress*100 }
       })},
@@ -86,19 +91,22 @@ const response = await axios.post('http://10.80.1.130:3480/api/v1/utils/upload',
         "Content-Type": "multipart/form-data",
       }
     })
-    setMsg(<div role="alert" className="alert alert-success text-base-100">
+    setProgress({ started: false, pc: 0 });
+    setMsg(<div role="alert" className="alert alert-success">
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        className="h-6 w-6 shrink-0 stroke-current "
+        className="h-6 w-6 shrink-0 stroke-current"
         fill="none"
         viewBox="0 0 24 24">
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
           strokeWidth="2"
-          d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>Upload Successful</div>)
-console.log("server response",response.data)
+          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      Upload Successful
+      </div>)
+// console.log("server response",response.data)
 
 } catch (error){
   setProgress({ started: false, pc: 0 });
@@ -114,7 +122,9 @@ console.log("server response",response.data)
         strokeLinejoin="round"
         strokeWidth="2"
         d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-    </svg>{error.message}</div>)
+    </svg>
+    {error.message}
+    </div>)
 }
 // axios
 // .post(process.env.NEXT_PUBLIC_URL_PD2 + "v1/utils/getlistDocumentName",{
@@ -201,6 +211,7 @@ const Detail = (data) => {
   setShowFormError()
   const [RefId, TransactionNo , HN , VN , GivenNameEN , GivenNameTH , IllnessType , SurnameEN , SurnameTH , TitleEN , TitleTH , VisitDateTime , PID , PassportNumber , SurgeryTypeCode , FurtherClaimNo , FurtherClaimId , DateOfBirth] = data.split(' | ');
   setDetailData({
+    InsurerCode : InsurerCode,
     RefId : RefId,
     TransactionNo : TransactionNo,
     HN : HN,
@@ -579,7 +590,7 @@ console.log(error)
     filenames = billList.map(Bll => ({ DocName: Bll.filename }));
 
     axios
-      .post(process.env.NEXT_PUBLIC_URL_PD + "v1/aia-billing-submission/getbilling-submission",{
+      .post(process.env.NEXT_PUBLIC_URL_PD2 + "v1/aia-billing-submission/getbilling-submission",{
         InsurerCode: InsuranceCode, 
         RefId: refIdL,
       TransactionNo: transactionNoL,
@@ -595,36 +606,41 @@ console.log(error)
                         ]
     })
       .then((response) => {
-        console.log(response.data)
+        //console.log(response.data)
+        setShowDocError();
+        setMassDocError();
         document.getElementById("my_modal_3").close()
         setShowModal(true)
         setTimeout(() => {
           setShowModal(false)
-          //router.push('/aia/opd/submitBilling');
         }, 2000);
       })
       .catch((err) => {
        // console.error("Error", err)
         console.log(err)
         //  if (err.response.request.status === 500) {
-                 setShowFormError("Error");
-               //  setMassError(err.response.data.HTTPStatus.message);
+                 setShowDocError("Error");
+                 setMassDocError("Error");
              })  
   }
-  const DocumentBase64 = () => {
+  const DocumentBase64 = (data) => {
+    setMsg();
+    setProgress({ started: false, pc: 0 });
+
     axios
-      .get(process.env.NEXT_PUBLIC_URL_PD2 + "v1/utils/upload/1"
-      //   ,{
-      //   RefId : RefIdL,
-      //   TransactionNo : TransactionNoL,
-      //   HN : HNL,
-      //   VN : VNL,
-      // }
+      .post(process.env.NEXT_PUBLIC_URL_PD2 + "v1/utils/getDocumentByDocname"
+         ,{
+        RefId : refIdL,
+        TransactionNo : transactionNoL,
+        HN : hNL,
+        VN : vNL,
+        DocumentName : data,
+       }
     )
       .then((response) => {
        setBase64(response.data);
        
-          console.log(response.data)
+         // console.log(response.data)
           const base64String = response.data.base64;
 
         const linkSource = `data:application/pdf;base64,${base64String}`;
@@ -637,14 +653,16 @@ console.log(error)
        // console.error("Error", err)
         console.log(err)
         //  if (err.response.request.status === 500) {
-                // setShowFormError("Error");
-                // setMassError(err.response.data.HTTPStatus.message);
+                 setShowDocError("Error");
+                 setMassDocError(err.response.data.HTTPStatus.message);
              })  
 
   }
 
    const handleButtonClick = (data) => {
-    
+    if (inputRef.current) {
+      inputRef.current.value = '';
+    }
     setProgress({ started: false, pc: 0 });
     const [RefIdL, TransactionNoL , HNL , VNL] = data.split(' | ');
     setRefIdL(RefIdL)
@@ -964,6 +982,7 @@ document.getElementById("my_modal_3").showModal()
     <div className="tooltip ml-4" data-tip="Cancel Claim">
         <h1 className="text-primary text-2xl" onClick={() =>Cancel(`${bill.RefId} | ${bill.TransactionNo} | ${bill.HN} | ${bill.VN}`)}><MdCancel /></h1>
     </div>
+
    
 </td>
 <td>
@@ -1029,18 +1048,36 @@ document.getElementById("my_modal_3").showModal()
           <div className="grid gap-2 w-full mt-2">
             <div className="px-2 rounded-md">
               <div className="flex items-center ">
-                            <input type="file" className="file-input file-input-bordered file-input-info w-5/6" onChange={ (e) => { setFile(e.target.files[0]) } } /> 
+                            <input type="file" className="file-input file-input-bordered file-input-info w-5/6" onChange={ (e) => { setFile(e.target.files[0]) } } ref={inputRef}/> 
                             <div className="btn btn-success text-base-100 hover:text-success hover:bg-base-100 w-1/6 ml-2" onClick={ handleUpload }>
                                 <FaCloudUploadAlt className="size-6"/>
                             </div>
               </div>
             </div>
           </div>
-{ progress.started && <progress max="100" value={progress.pc} className="mt-2 w-full"></progress> }
+{ progress.started && <progress max="100" value={progress.pc} className="progress progress-info mt-2 w-full"></progress> }
 <br /> 
 <h1 className="text-center">{ msg }</h1>
 
-
+{showDocError === "Error" ? (
+            <div role="alert" className="alert alert-error mt-2 text-base-100">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6 shrink-0 stroke-current"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <span>{massDocError}</span>
+            </div>
+            ) : ""
+            }
 
 
 
@@ -1065,7 +1102,7 @@ document.getElementById("my_modal_3").showModal()
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                             <div className="tooltip" data-tip="Document">
-                              <div className="btn btn-warning  mr-2" type="submit" onClick={DocumentBase64}><IoIosDocument /></div>
+                              <div className="btn btn-warning  mr-2" type="submit" onClick={() => DocumentBase64(list.filename)}><IoIosDocument /></div>
                               </div>
                               <div className="tooltip" data-tip="Cancel Claim">
                               <div className="btn btn-error " type="submit"><MdCancel /></div>

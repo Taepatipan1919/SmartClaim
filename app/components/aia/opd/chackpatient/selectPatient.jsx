@@ -72,7 +72,7 @@ const PatientA = (patient) => {
   },
 }));
 
-router.push('/aia/opd/checkeilgible');
+router.push('/aia/opd/checkeligible');
 };
 /////////////////////////////////////////
 
@@ -547,11 +547,11 @@ router.push('/aia/opd/checkeilgible');
                           </td>
                           <td>
                             <div className="grid gap-1 sm:grid-cols-2 w-full text-accent ">
-                              {/* <Link href={`/aia/opd/checkeilgible`}> */}
+                              {/* <Link href={`/aia/opd/checkeligible`}> */}
                                 <button className="btn bg-white text-primary w-full hover:text-base-100 hover:bg-primary"
                                 onClick={() => PatientA(patient)}
                                 >
-                                  Chack Eilgible
+                                  Chack eligible
                                 </button>
                               {/* </Link> */}
                               <button
@@ -835,7 +835,7 @@ router.push('/aia/opd/checkeilgible');
 
             <div className="grid gap-2 sm:grid-cols-3 w-full">
               <div className="rounded-md "></div>
-              <div className="rounded-md text-center">DataBase</div>
+              <div className="rounded-md text-center"></div>
               <div className="rounded-md text-center">Trakcere</div>
               <div className="rounded-md ">
                 <p className="text-left">Personal ID</p>

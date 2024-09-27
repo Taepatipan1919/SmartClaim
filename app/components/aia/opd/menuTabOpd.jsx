@@ -19,7 +19,7 @@ function MenuTabopd() {
         </li>
         <li>
           <Link
-            href={`/aia/opd/checkeilgible`}
+            href={`/aia/opd/checkeligible`}
             className="btn bg-white text-accent w-full"
           >
             ตรวจสอบสิทธิ์
@@ -27,7 +27,7 @@ function MenuTabopd() {
         </li>
         <li>
           <Link
-            href={`/aia/opd/eilgible`}
+            href={`/aia/opd/eligible`}
             className="btn bg-white text-accent w-full"
           >
             ส่งยอดเคลม

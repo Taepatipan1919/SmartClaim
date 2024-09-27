@@ -60,32 +60,31 @@ export default function Page({data}) {
     setWoundType(event.target.value);
   }
 const PatientInfo = {
-  InsurerCode: data.DataTran.Data.InsurerCode, 
-  RefId: data.DataTran.Data.RefId,
-  TransactionNo: data.DataTran.Data.TransactionNo,
-  PID: data.Patient.Data.PID,
-  HN: data.Patient.Data.HN,
-  GivenNameTH: data.Patient.Data.GivenNameTH,
-  SurnameTH: data.Patient.Data.SurnameTH,
-  DateOfBirth: data.Patient.Data.DateOfBirth,
-  PassportNumber: data.Patient.Data.PassportNumber,
-  IdType: data.Patient.Data.IdType,
-  VN: data.DataTran.Data.VN,
-  VisitDateTime: data.DataTran.Data.VisitDateTime,
-  FurtherClaimId: "",
-  ChiefComplaint:"",
-  PresentIllness:"",
-  AccidentDate: "",
-  AccidentPlaceCode: "",
-  WoundDetails: "",
-  AccidentInjurySideCode: "",
-  AccidentInjuryWoundtypeCode: "",
-  PolicyTypeCode: data.DataTran.Data.PolicyTypeCode,
-  ServiceSettingCode: data.DataTran.Data.ServiceSettingCode, 
-  IllnessTypeCode: data.DataTran.Data.IllnessTypeCode,
-  SurgeryTypeCode:  data.DataTran.Data.SurgeryTypeCode,
-  FurtherClaimNo : data.DataTran.Data.FurtherClaimNo,
-  FurtherClaimId : data.DataTran.Data.FurtherClaimId,
+    InsurerCode: data.DataTran.Data.InsurerCode, 
+    RefId: data.DataTran.Data.RefId,
+    TransactionNo: data.DataTran.Data.TransactionNo,
+    PID: data.Patient.Data.PID,
+    HN: data.Patient.Data.HN,
+    GivenNameTH: data.Patient.Data.GivenNameTH,
+    SurnameTH: data.Patient.Data.SurnameTH,
+    DateOfBirth: data.Patient.Data.DateOfBirth,
+    PassportNumber: data.Patient.Data.PassportNumber,
+    IdType: data.Patient.Data.IdType,
+    VN: data.DataTran.Data.VN,
+    VisitDateTime: data.DataTran.Data.VisitDateTime,
+    ChiefComplaint:"",
+    PresentIllness:"",
+    AccidentDate: "",
+    AccidentPlaceCode: "",
+    WoundDetails: "",
+    AccidentInjurySideCode: "",
+    AccidentInjuryWoundtypeCode: "",
+    PolicyTypeCode: data.DataTran.Data.PolicyTypeCode,
+    ServiceSettingCode: data.DataTran.Data.ServiceSettingCode, 
+    IllnessTypeCode: data.DataTran.Data.IllnessTypeCode,
+    SurgeryTypeCode:  data.DataTran.Data.SurgeryTypeCode,
+    FurtherClaimNo : data.DataTran.Data.FurtherClaimNo,
+    FurtherClaimId : data.DataTran.Data.FurtherClaimId,
   }
  // console.log(PatientInfo)
   useEffect(() => {
@@ -205,7 +204,7 @@ const PatientInfo = {
 
   useEffect(() => {
     axios
-    .post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-opddischarge/getOPDDischargeVitalSign",{
+    .post(process.env.NEXT_PUBLIC_URL_PD2 + "v1/aia-opddischarge/getOPDDischargeVitalSign",{
       PatientInfo
     })
     .then((response) => {
@@ -220,7 +219,7 @@ const PatientInfo = {
 
   useEffect(() => {
     axios
-    .post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-opddischarge/getOPDDischargeDoctor",{
+    .post(process.env.NEXT_PUBLIC_URL_PD2 + "v1/aia-opddischarge/getOPDDischargeDoctor",{
       PatientInfo
     })
     .then((response) => {
@@ -236,7 +235,7 @@ const PatientInfo = {
 
   useEffect(() => {
     axios
-     .post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-opddischarge/getOPDDischargeDiagnosis",{
+     .post(process.env.NEXT_PUBLIC_URL_PD2 + "v1/aia-opddischarge/getOPDDischargeDiagnosis",{
         PatientInfo
       })
       .then((response) => {
@@ -249,7 +248,7 @@ const PatientInfo = {
 }, []);
   useEffect(() => {
     axios
-      .post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-opddischarge/getOPDDischargeProcedure",{
+      .post(process.env.NEXT_PUBLIC_URL_PD2 + "v1/aia-opddischarge/getOPDDischargeProcedure",{
         PatientInfo
       })
       .then((response) => {
@@ -262,7 +261,7 @@ const PatientInfo = {
 }, []);
 useEffect(() => {
   axios
-    .post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-opddischarge/getOPDDischargeInvestigation",{
+    .post(process.env.NEXT_PUBLIC_URL_PD2 + "v1/aia-opddischarge/getOPDDischargeInvestigation",{
       PatientInfo
     })
     .then((response) => {

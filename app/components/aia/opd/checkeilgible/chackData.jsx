@@ -148,7 +148,7 @@ const [ furtherClaim , setFurtherClaim ]= useState("")
 
   }
   
-     router.push('/aia/opd/eilgible');
+     router.push('/aia/opd/eligible');
   }
   
 
@@ -279,8 +279,8 @@ const [ furtherClaim , setFurtherClaim ]= useState("")
       PassportNumber: ReDux.Patient.Data.PassportNumber,
       IdType: ReDux.Patient.Data.IdType,
       VN: VNselectVN,
-      VisitDateTime: VisitDateselectVN,
-      // AccidentDate: AccidentDateselectVN,      
+      // VisitDateTime: VisitDateselectVN,
+      VisitDateTime : "2024-09-01 00:00",  
       AccidentDate: Acc[0],       
       PolicyTypeCode: policyTypeValue,
       ServiceSettingCode: statusValue, 
@@ -645,7 +645,7 @@ type="submit"
                   <th>PolicyNo</th>
                   <th>PlanName</th>
                   <th>MessageTh</th>
-                  <th>Chack Eilgible</th>
+                  <th>Chack eligible</th>
                 </tr>
               </thead>
               <tbody>

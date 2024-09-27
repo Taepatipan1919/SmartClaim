@@ -2,8 +2,8 @@
 import { useState, createContext } from "react";
 import { useSelector } from "react-redux";
 import SelectPatient from "../../../../components/aia/opd/chackpatient/selectPatient";
-import Eilgible from "../../../../components/aia/opd/eilgible/eilgible";
-import OpdDischarge from "../../../../components/aia/opd/eilgible/opdDischarge";
+import eligible from "../../../../components/aia/opd/eligible/eligible";
+import OpdDischarge from "../../../../components/aia/opd/eligible/opdDischarge";
 import ChackData from "../../../../components/aia/opd/checkeilgible/chackData";
 
 export default function Home() {
@@ -41,7 +41,7 @@ export default function Home() {
     </>
     ) : (
          <>
-          {/* <Eilgible /> */}
+          {/* <eligible /> */}
                    <h1
         className="font-black text-accent text-3xl "
         data-theme="mytheme"
