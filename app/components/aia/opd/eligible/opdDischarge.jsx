@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect , useRef } from "react";
 import axios from "axios";
 import { Box , TextField } from '@mui/material';
 import { ImBin } from "react-icons/im";
@@ -18,6 +18,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
+import { FaCloudUploadAlt } from "react-icons/fa";
 
 export default function Page({data}) {
   //console.log(data)
@@ -43,8 +44,13 @@ export default function Page({data}) {
   const [showModal, setShowModal] = useState(false);
   const router = useRouter();
   const [bmi, setBmi] = useState("");
-
-
+  const inputRef = useRef(null);
+  const [ file , setFile ] = useState(null);
+  const [ progress , setProgress ] = useState({ started: false, pc: 0 });
+  const [ msg , setMsg ] = useState(null);
+  const [massDocError, setMassDocError] = useState("");
+  const [showDocError, setShowDocError] = useState("");
+  const [billList, setBillList] = useState("");
 
 
 
@@ -74,7 +80,7 @@ const PatientInfo = {
     VisitDateTime: data.DataTran.Data.VisitDateTime,
     ChiefComplaint:"",
     PresentIllness:"",
-    AccidentDate: "",
+    AccidentDate: data.DataTran.Data.AccidentDate,
     AccidentPlaceCode: "",
     WoundDetails: "",
     AccidentInjurySideCode: "",
@@ -86,7 +92,39 @@ const PatientInfo = {
     FurtherClaimNo : data.DataTran.Data.FurtherClaimNo,
     FurtherClaimId : data.DataTran.Data.FurtherClaimId,
   }
- // console.log(PatientInfo)
+  useEffect(() => {
+  console.log(PatientInfo)
+
+  if (inputRef.current) {
+    inputRef.current.value = '';
+  }
+  setProgress({ started: false, pc: 0 });
+  setMsg(null)
+  setBillList();
+  axios
+    .post(process.env.NEXT_PUBLIC_URL_PD + "v1/utils/getlistDocumentName",{
+      RefId : PatientInfo.RefId,
+      TransactionNo : PatientInfo.TransactionNo,
+      HN : PatientInfo.HN,
+      VN : PatientInfo.VN,
+    })
+    .then((response) => {
+      setBillList(response.data);
+      //console.log(response.data)
+    })
+    .catch((err) => {
+     // console.error("Error", err)
+      console.log(err)
+      //  if (err.response.request.status === 500) {
+              // setShowFormError("Error");
+              // setMassError(err.response.data.HTTPStatus.message);
+           })  
+
+
+
+
+
+}, []);
   useEffect(() => {
         axios
       .post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-opddischarge/getOPDDischargePatient",{
@@ -136,14 +174,14 @@ const PatientInfo = {
 
   useEffect(() => {
     axios
-    .post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-opddischarge/getOPDDischargeAccidentDetail",{
+    .post(process.env.NEXT_PUBLIC_URL_PD + "v1/aia-opddischarge/getOPDDischargeAccident",{
       PatientInfo
     })
     .then((response) => {
       //  console.log(response.data.Result.AccidentDetail.AccidentDate)
       setAccidentDetail(response.data);
-      const dateValue = dayjs(response.data.Result.AccidentDetailInfo.AccidentDate);
-    
+      const dateValue = dayjs(PatientInfo.AccidentDate);
+
       setValue(dateValue);
 
     })
@@ -156,7 +194,7 @@ const PatientInfo = {
 
   useEffect(() => {
     axios
-    .get(process.env.NEXT_PUBLIC_URL_SV + "v1/utils/accidentPlace/" + InsuranceCode,{
+    .get(process.env.NEXT_PUBLIC_URL_PD + "v1/utils/accidentPlace/" + InsuranceCode,{
       PatientInfo
     })
     .then((response) => {
@@ -171,7 +209,7 @@ const PatientInfo = {
   }, []);
   useEffect(() => {
     axios
-    .get(process.env.NEXT_PUBLIC_URL_SV + "v1/utils/injurySide/" + InsuranceCode,{
+    .get(process.env.NEXT_PUBLIC_URL_PD + "v1/utils/injurySide/" + InsuranceCode,{
       PatientInfo
     })
     .then((response) => {
@@ -187,7 +225,7 @@ const PatientInfo = {
 
   useEffect(() => {
     axios
-    .get(process.env.NEXT_PUBLIC_URL_SV + "v1/utils/InjuryWoundtype/" + InsuranceCode,{
+    .get(process.env.NEXT_PUBLIC_URL_PD + "v1/utils/InjuryWoundtype/" + InsuranceCode,{
       PatientInfo
     })
     .then((response) => {
@@ -204,7 +242,7 @@ const PatientInfo = {
 
   useEffect(() => {
     axios
-    .post(process.env.NEXT_PUBLIC_URL_PD2 + "v1/aia-opddischarge/getOPDDischargeVitalSign",{
+    .post(process.env.NEXT_PUBLIC_URL_PD + "v1/aia-opddischarge/getOPDDischargeVitalSign",{
       PatientInfo
     })
     .then((response) => {
@@ -219,7 +257,7 @@ const PatientInfo = {
 
   useEffect(() => {
     axios
-    .post(process.env.NEXT_PUBLIC_URL_PD2 + "v1/aia-opddischarge/getOPDDischargeDoctor",{
+    .post(process.env.NEXT_PUBLIC_URL_PD + "v1/aia-opddischarge/getOPDDischargeDoctor",{
       PatientInfo
     })
     .then((response) => {
@@ -235,7 +273,7 @@ const PatientInfo = {
 
   useEffect(() => {
     axios
-     .post(process.env.NEXT_PUBLIC_URL_PD2 + "v1/aia-opddischarge/getOPDDischargeDiagnosis",{
+     .post(process.env.NEXT_PUBLIC_URL_PD + "v1/aia-opddischarge/getOPDDischargeDiagnosis",{
         PatientInfo
       })
       .then((response) => {
@@ -248,7 +286,7 @@ const PatientInfo = {
 }, []);
   useEffect(() => {
     axios
-      .post(process.env.NEXT_PUBLIC_URL_PD2 + "v1/aia-opddischarge/getOPDDischargeProcedure",{
+      .post(process.env.NEXT_PUBLIC_URL_PD + "v1/aia-opddischarge/getOPDDischargeProcedure",{
         PatientInfo
       })
       .then((response) => {
@@ -259,9 +297,10 @@ const PatientInfo = {
         console.log(err)
   });
 }, []);
+//console.log(procedure)
 useEffect(() => {
   axios
-    .post(process.env.NEXT_PUBLIC_URL_PD2 + "v1/aia-opddischarge/getOPDDischargeInvestigation",{
+    .post(process.env.NEXT_PUBLIC_URL_PD + "v1/aia-opddischarge/getOPDDischargeInvestigation",{
       PatientInfo
     })
     .then((response) => {
@@ -361,14 +400,101 @@ if(PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER"
   };
 
 
-  const savefile = (event) => {
-    event.preventDefault();
-    
-    const File = {
-      InsurerCode: PatientInfo.InsurerCode,
-      // Namefile: event.target.file.value,
-    };20
-    console.log(File);
+  const handleUpload = async () => {
+    if (!file){
+      setMsg(<div role="alert" className="alert alert-error text-base-100">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="h-6 w-6 shrink-0 stroke-current "
+        fill="none"
+        viewBox="0 0 24 24">
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="2"
+          d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>กรุณา เลือก Upload File</div>);
+      return;
+    }
+    setMsg();
+    setShowDocError();
+    setProgress({ started: false, pc: 0 });
+    const formData = new FormData();
+    formData.append('file', file);
+     formData.append('RefId', PatientInfo.RefId);
+     formData.append('TransactionNo', PatientInfo.TransactionNo);
+     formData.append('HN', PatientInfo.HN);
+     formData.append('VN', PatientInfo.VN); 
+     formData.append('DocumenttypeCode', "001");  
+     setMsg(<span className="loading loading-spinner text-info loading-lg"></span>);
+     setProgress(prevState => {
+       return { ...prevState, started: true }
+     })
+     try{
+     const response = await axios.post(process.env.NEXT_PUBLIC_URL_PD +  "v1/utils/uploadDocuments", formData, {
+           onUploadProgress: (progressEvent) => {  setProgress(prevState => {
+             return { ...prevState, pc: progressEvent.progress*100 }
+           })},
+           headers: {
+             "Content-Type": "multipart/form-data",
+           }
+         })
+         setProgress({ started: false, pc: 0 });
+         setMsg(<div role="alert" className="alert alert-success">
+           <svg
+             xmlns="http://www.w3.org/2000/svg"
+             className="h-6 w-6 shrink-0 stroke-current"
+             fill="none"
+             viewBox="0 0 24 24">
+             <path
+               strokeLinecap="round"
+               strokeLinejoin="round"
+               strokeWidth="2"
+               d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+           </svg>
+           Upload Successful
+           </div>)
+   axios
+   .post(process.env.NEXT_PUBLIC_URL_PD + "v1/utils/getlistDocumentName",{
+     RefId : PatientInfo.RefId,
+     TransactionNo : PatientInfo.TransactionNo,
+     HN : PatientInfo.HN,
+     VN : PatientInfo.VN,
+   })
+   .then((response) => {
+     setBillList(response.data);
+     //console.log(response.data)
+   })
+   .catch((err) => {
+    // console.error("Error", err)
+     console.log(err)
+     //  if (err.response.request.status === 500) {
+             // setShowFormError("Error");
+             // setMassError(err.response.data.HTTPStatus.message);
+          })  
+     
+     } catch (error){
+       setProgress({ started: false, pc: 0 });
+       console.log(error)
+       setMsg(<div role="alert" className="alert alert-error text-base-100">
+         <svg
+           xmlns="http://www.w3.org/2000/svg"
+           className="h-6 w-6 shrink-0 stroke-current "
+           fill="none"
+           viewBox="0 0 24 24">
+           <path
+             strokeLinecap="round"
+             strokeLinejoin="round"
+             strokeWidth="2"
+             d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+         </svg>
+         {error.message}
+         </div>)
+     }
+
+
+
+
 
   }
 
@@ -389,45 +515,45 @@ if(PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER"
                 <div className="rounded-md">
           <Box sx={{backgroundColor: '#e5e7eb', padding: 0, borderRadius: 0}}>
                   {/* <TextField id="standard-basic" className="text-black bg-gray-200 border border-gray-300 rounded p-2 disabled:text-black"    label="FirstName (TH)" variant="standard" value={patien.Result.PatientInfo.FirstName} /> */}
-                  <TextField disabled id="outlined-disabled" label="FirstName (TH)" defaultValue={patien.Result.PatientInfo.FirstName} className="w-full text-black border border-black rounded disabled:text-black" InputProps={{style: { color: 'black' } }}/>
+                  <TextField  id="outlined-disabled" label="FirstName (TH)" defaultValue={patien.Result.PatientInfo.FirstName} className="w-full text-black border border-black rounded disabled:text-black" InputProps={{style: { color: 'black' } }}/>
         </Box>
                 </div>
                 <div className="rounded-md">
          <Box sx={{backgroundColor: '#e5e7eb', padding: 0, borderRadius: 0,}}>
                   {/* <TextField id="standard-basic" className="text-black bg-gray-200 border border-gray-300 rounded p-2 disabled:text-black" label="LastName (TH)" variant="standard" value={patien.Result.PatientInfo.LastName} /> */}
-                  <TextField disabled id="outlined-disabled" label="LastName (TH)" defaultValue={patien.Result.PatientInfo.LastName} className="w-full  text-black border border-black rounded disabled:text-black"/>
+                  <TextField  id="outlined-disabled" label="LastName (TH)" defaultValue={patien.Result.PatientInfo.LastName} className="w-full  text-black border border-black rounded disabled:text-black"/>
         </Box>
                 </div>
                 <div className="rounded-md">
                 <Box sx={{backgroundColor: '#e5e7eb', padding: 0, borderRadius: 0,}}>
                 {/* <TextField id="standard-basic" className="text-black bg-gray-200 border border-gray-300 rounded p-2 disabled:text-black" label="PID" variant="standard" value={PatientInfo.PID} /> */}
-                <TextField disabled id="outlined-disabled" label="PID" defaultValue={PatientInfo.PID} className="w-full  text-black border border-black rounded disabled:text-black"/>
+                <TextField  id="outlined-disabled" label="PID" defaultValue={PatientInfo.PID} className="w-full  text-black border border-black rounded disabled:text-black"/>
         </Box>
                 </div>
               {PatientInfo.PassportNumber ? (
                   <div className="rounded-md">
                <Box sx={{backgroundColor: '#e5e7eb', padding: 0, borderRadius: 0,}}>
                     {/* <TextField id="standard-basic" className="text-black bg-gray-200 border border-gray-300 rounded p-2 disabled:text-black" label="Passport" variant="standard" value={PatientInfo.PassportNumber} /> */}
-                    <TextField disabled id="outlined-disabled" label="Passport" defaultValue={PatientInfo.PassportNumber} className="w-full  text-black border border-black rounded disabled:text-black"/>
+                    <TextField  id="outlined-disabled" label="Passport" defaultValue={PatientInfo.PassportNumber} className="w-full  text-black border border-black rounded disabled:text-black"/>
         </Box>
                   </div>
                 ) : ""} 
                 <div className="rounded-md">
                 <Box sx={{backgroundColor: '#e5e7eb', padding: 0, borderRadius: 0,}}>
                 {/* <TextField id="standard-basic"  className="text-black bg-gray-200 border border-gray-300 rounded p-2 disabled:text-black" label="Date of Birth (YYYY-MM-DD)" variant="standard" value={patien.Result.PatientInfo.DOB} /> */}
-                <TextField disabled id="outlined-disabled" label="Date of Birth (YYYY-MM-DD)" defaultValue={patien.Result.PatientInfo.DOB} className="w-full  text-black border border-black rounded disabled:text-black"/>
+                <TextField  id="outlined-disabled" label="Date of Birth (YYYY-MM-DD)" defaultValue={patien.Result.PatientInfo.DOB} className="w-full  text-black border border-black rounded disabled:text-black"/>
         </Box>
                 </div>
                 <div className="rounded-md">
                 <Box sx={{backgroundColor: '#e5e7eb', padding: 0, borderRadius: 0,}}>
                 {/* <TextField id="standard-basic" className="text-black bg-gray-200 border border-gray-300 rounded p-2 disabled:text-black" label="HN" variant="standard" value={PatientInfo.HN} /> */}
-                <TextField disabled id="outlined-disabled" label="HN" defaultValue={PatientInfo.HN} className="w-full  text-black border border-black rounded disabled:text-black"/>
+                <TextField  id="outlined-disabled" label="HN" defaultValue={PatientInfo.HN} className="w-full  text-black border border-black rounded disabled:text-black"/>
            </Box>
                 </div>
                 <div className="rounded-md">
                 <Box sx={{backgroundColor: '#e5e7eb', padding: 0, borderRadius: 0,}}>
                 {/* <TextField id="standard-basic" disabled className="text-black bg-gray-200 border border-gray-300 rounded p-2 disabled:text-black" label="Sex" variant="standard" value={patien.Result.PatientInfo.Gender} /> */}
-                <TextField disabled id="outlined-disabled" label="Sex" defaultValue={patien.Result.PatientInfo.Gender} className="w-full  text-black border border-black rounded disabled:text-black"/>
+                <TextField  id="outlined-disabled" label="Sex" defaultValue={patien.Result.PatientInfo.Gender} className="w-full  text-black border border-black rounded disabled:text-black"/>
            </Box>
                 </div>
               </div>
@@ -435,7 +561,7 @@ if(PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER"
             ) : ""}
             {/* //////////////////////////////////////////////////////////////////////////// */}
             {visit ? (
-             <div className="container mx-auto p-4 justify-center border-solid w-4/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
+             <div className="container mx-auto justify-center border-solid w-4/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
               <h1 className="font-black text-accent text-3xl ">
               Visit
               </h1>
@@ -443,32 +569,32 @@ if(PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER"
                 <div className="rounded-md">
               <Box sx={{backgroundColor: '#e5e7eb', padding: 0, borderRadius: 0,}}>
                 {/* <TextField id="standard-basic" className="text-black bg-gray-200 border border-gray-300 rounded p-2 disabled:text-black" label="VN" variant="standard" value={visit.Result.VisitInfo.VN} /> */}
-                <TextField disabled id="outlined-disabled" label="VN"  className="w-full text-black rounded disabled:text-black disabled:bg-gray-300" defaultValue={visit.Result.VisitInfo.VN} />
+                <TextField  id="outlined-disabled" label="VN"  className="w-full text-black rounded disabled:text-black disabled:bg-gray-300" defaultValue={visit.Result.VisitInfo.VN} />
            </Box>
                 </div>
                 <div className="rounded-md">
                 <Box sx={{backgroundColor: '#e5e7eb', padding: 0, borderRadius: 0,}}>
                 {/* <TextField id="standard-basic" className="text-black bg-gray-200 border border-gray-300 rounded p-2 disabled:text-black" label="VisitDateTime" variant="standard" value={visit.Result.VisitInfo.VisitDateTime} /> */}
-                <TextField disabled id="outlined-disabled"   className="w-full text-black rounded disabled:text-black disabled:bg-gray-300" label="VisitDateTime" defaultValue={visit.Result.VisitInfo.VisitDateTime} />
+                <TextField  id="outlined-disabled"   className="w-full text-black rounded disabled:text-black disabled:bg-gray-300" label="VisitDateTime" defaultValue={visit.Result.VisitInfo.VisitDateTime} />
                 </Box>
                 </div>
                 <div className="rounded-md">
                 <Box sx={{backgroundColor: '#e5e7eb', padding: 0, borderRadius: 0,}}>
                 {/* <TextField id="standard-basic" className="text-black bg-gray-200 border border-gray-300 rounded p-2 disabled:text-black" label="อาการสำคัญที่มาโรงพยาบาล" variant="standard" value={visit.Result.VisitInfo.ChiefComplaint} /> */}
-                <TextField disabled id="outlined-disabled"   className="w-full text-black rounded disabled:text-black disabled:bg-gray-300" label="อาการสำคัญที่มาโรงพยาบาล" defaultValue={visit.Result.VisitInfo.ChiefComplaint} />
+                <TextField  id="outlined-disabled"   className="w-full text-black rounded disabled:text-black disabled:bg-gray-300" label="อาการสำคัญที่มาโรงพยาบาล" defaultValue={visit.Result.VisitInfo.ChiefComplaint} />
                 </Box>
                 </div>
                 <div className="rounded-md text-black">
                 <Box sx={{backgroundColor: '#e5e7eb', padding: 0, borderRadius: 0,}}>
                 {/* <TextField id="standard-basic" className="text-black bg-gray-200 border border-gray-300 rounded p-2 disabled:text-black w-1/2" label="ส่วนสูง" variant="standard" value={visit.Result.VisitInfo.Height} />
                 <TextField id="standard-basic" className="text-black bg-gray-200 border border-gray-300 rounded p-2 disabled:text-black w-1/2" label="น้ำหนัก" variant="standard" value={visit.Result.VisitInfo.Weight} /> */}
-                <TextField disabled id="outlined-disabled"   className="w-full text-black rounded disabled:text-black disabled:bg-gray-300" label="น้ำหนัก / ส่วนสูง" defaultValue={combinedString} />
+                <TextField  id="outlined-disabled"   className="w-full text-black rounded disabled:text-black disabled:bg-gray-300" label="น้ำหนัก / ส่วนสูง" defaultValue={combinedString} />
                 </Box>
                 </div>
                 {PatientInfo.FurtherClaimNo ? (
                 <div className="rounded-md text-black">
                 <Box sx={{backgroundColor: '#e5e7eb', padding: 0, borderRadius: 0,}}>
-                <TextField disabled id="outlined-disabled"   className="w-full text-black rounded disabled:text-black disabled:bg-gray-300" label="ประวัติการรักษาครั้งก่อนหน้า เลขที่อ้างอิง" defaultValue={PatientInfo.FurtherClaimNo} />
+                <TextField  id="outlined-disabled"   className="w-full text-black rounded disabled:text-black disabled:bg-gray-300" label="ประวัติการรักษาครั้งก่อนหน้า เลขที่อ้างอิง" defaultValue={PatientInfo.FurtherClaimNo} />
                 </Box>
                 </div>
                 ) : ""}
@@ -612,7 +738,7 @@ if(PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER"
             </div> 
             ) : ""  ) : ""}
               {/* //////////////////////////////////////////////////////////////////////////// */}
-              <div className="container mx-auto p-4 justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
+              <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
                 <h1 className="font-black text-accent text-3xl ">VitalSign</h1>
                 <div className="overflow-x-auto">
   <table className="table table-zebra mt-2">
@@ -688,7 +814,7 @@ if(PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER"
               </div> 
              </div>
              {/* //////////////////////////////////////////////////////////////////////////// */}
-              <div className="container mx-auto p-4 justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
+              <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
                 <h1 className="font-black text-accent text-3xl ">Doctor</h1>
                 <div className="overflow-x-auto">
   <table className="table table-zebra mt-2">
@@ -731,7 +857,7 @@ if(PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER"
               </div> 
              </div>
                           {/* //////////////////////////////////////////////////////////////////////////// */}
-                           <div className="container mx-auto p-4 justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
+                           <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
                 <h1 className="font-black text-accent text-3xl ">Diagnosis</h1>
                 <div className="overflow-x-auto">
   <table className="table table-zebra mt-2">
@@ -782,8 +908,8 @@ if(PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER"
               </div> 
              </div>
              {/* //////////////////////////////////////////////////////////////////////////// */}
-             {PatientInfo.SurgeryTypeCode === "Y" ? (
-               <div className="container mx-auto p-4 justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
+             {procedure ? (PatientInfo.SurgeryTypeCode === "Y" ? (
+               <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
               <h1 className="font-black text-accent text-3xl ">Procedure</h1>
               <div className="overflow-x-auto">
   <table className="table table-zebra mt-2">
@@ -796,25 +922,17 @@ if(PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER"
                   </tr>
                 </thead>
                 <tbody>
-                  {procedure
-                      ? procedure.Result.ProcedureInfo.map((pcr, index) => (
-                          <tr
-                            key={index}
-                            className=" bg-neutral text-sm"
-                          >
-                            <td>{pcr.ProcedureDate ? index + 1 : ""}</td>
-                            <td>{pcr.ProcedureDate}</td>
+                          <tr >
+                            <td>{procedure.Result.ProcedureInfo.ProcedureDate ? "1" : ""}</td>
+                            <td>{procedure.Result.ProcedureInfo.ProcedureDate}</td>
                             <td>
-                              {pcr.ProcedureName}
+                              {procedure.Result.ProcedureInfo.ProcedureName}
                             </td>
                             <td>
-                              {pcr.Icd9}
+                              {procedure.Result.ProcedureInfo.Icd9}
                             </td>
                             
                           </tr>
-                        ))
-                      : <tr><td></td></tr>
-                    }
                 </tbody>
               </table> 
               </div>
@@ -825,9 +943,9 @@ if(PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER"
                 <div className="rounded-md ">&nbsp;</div> 
             </div> 
            </div>
-            ) : ""}
+            ) : "") : ""}
                     {/* //////////////////////////////////////////////////////////////////////////// */}
-                     <div className="container mx-auto p-4 justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
+                     <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
               <h1 className="font-black text-accent text-3xl ">Investigation</h1>
               <div className="overflow-x-auto">
               <table className="table table-zebra mt-2">
@@ -842,31 +960,23 @@ if(PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER"
                   </tr>
                 </thead>
                 <tbody>
-                  {investigation
-                      ? investigation.Result.InvestigationInfo.map((inves, index) => (
-                          <tr
-                            key={index}
-                            className=" bg-neutral text-sm"
-                          >
-                            <td>{inves.InvestigationCode ? index + 1 : ""}</td>
-                            <td>{inves.InvestigationCode}</td>
+                          <tr>
+                            <td>{investigation.Result.InvestigationInfo.InvestigationCode ? "1" : ""}</td>
+                            <td>{investigation.Result.InvestigationInfo.InvestigationCode}</td>
                             <td>
-                              {inves.InvestigationGroup}
+                              {investigation.Result.InvestigationInfo.InvestigationGroup}
                             </td>
                             <td>
-                              {inves.InvestigationName}
+                              {investigation.Result.InvestigationInfo.InvestigationName}
                             </td>
                             <td>
-                              {inves.InvestigationResult}
+                              {investigation.Result.InvestigationInfo.InvestigationResult}
                             </td>
                             <td>
-                              {inves.ResultDateTime}
+                              {investigation.Result.InvestigationInfo.ResultDateTime}
                             </td>
                             
                           </tr>
-                        ))
-                      : <tr><td></td></tr>
-                    }
                 </tbody>
               </table> 
               </div>
@@ -878,7 +988,7 @@ if(PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER"
             </div> 
            </div>
  {/* //////////////////////////////////////////////////////////////////////////// */}
- <div className="container mx-auto p-4 justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
+ <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
               <h1 className="font-black text-accent text-3xl ">OrderItem</h1>
               <div className="overflow-x-auto">
               <table className="table table-zebra mt-2">
@@ -981,7 +1091,7 @@ if(PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER"
             </div> 
             </div> 
                             {/* //////////////////////////////////////////////////////////////////////////// */}
-                            <div className="container mx-auto p-4 justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
+                            <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
               <h1 className="font-black text-accent text-3xl ">รายละเอียดค่ารักษาพยาบาล</h1>
               <div className="overflow-x-auto">
               <table className="table table-zebra mt-2">
@@ -1022,63 +1132,70 @@ if(PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER"
             </div> 
             </div> 
                   {/* //////////////////////////////////////////////////////////////////////////// */}
-        <div className="container mx-auto p-4 justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
+        <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
               <h1 className="font-black text-accent text-3xl ">Upload File</h1>
           <div className="overflow-x-auto mt-6">
-            <form>
-          <FormControl className="w-80 ">
-        <InputLabel id="demo-error-select-label">Type file</InputLabel>
-        <Select
-        error
-        
-          labelId="demo-error-select-label"
-          id="demo-error-select"
-          value={injurySide}
-          label="Type file"
-          onChange={InjurySide}
-        >
-          {dataaccidentPlace
-                ? dataaccidentPlace.map((acc, index) => (
-                    <MenuItem key={index} value={acc.Code}>{acc.Desc}</MenuItem>
-                  ))
-                : ""}
-        </Select>
-      </FormControl>
-          <input type="file" name="file" className="file-input file-input-bordered file-input-info w-full max-w-xs ml-2" />
-          <button
-                  className="btn btn-success text-base-100 hover:bg-base-100 hover:text-success ml-2"
-                  type="submit"
-                  onClick={savefile}
-                >
-                  Upload
-                </button>
-                </form>
+                <div className="flex items-center ">
+                            <input type="file" className="file-input file-input-bordered file-input-info w-5/6" onChange={ (e) => { setFile(e.target.files[0]) } } ref={inputRef}/> 
+                            <div className="btn btn-success text-base-100 hover:text-success hover:bg-base-100 w-1/6 ml-2" onClick={ handleUpload }>
+                                <FaCloudUploadAlt className="size-6"/>
+                            </div>
+              </div>
+              { progress.started && <progress max="100" value={progress.pc} className="progress progress-info mt-2 w-full"></progress> }
+<br /> 
+<h1 className="text-center">{ msg }</h1>
+{showDocError === "Error" ? (
+            <div role="alert" className="alert alert-error mt-2 text-base-100">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6 shrink-0 stroke-current"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <span>{massDocError}</span>
+            </div>
+            ) : ""
+            }
               <table className="table table-zebra mt-2">
                 <thead >
                   <tr className="text-base-100 bg-primary py-8 text-sm w-full text-center">
                       <th className="w-1/5"></th>
-                      <th className="w-1/5">Type File</th>
                       <th className="w-2/5">ชื่อไฟล์</th>
                       <th className="w-1/5"></th>
                     </tr>
                   </thead>
                   <tbody class="bg-white divide-y divide-gray-200">
-                    {/* {billing
-                      ? billing.Result.BillingInfo.map((bill, index) => ( */}
+                  {billList
+                      ? billList.map((list, index) => (
                           <tr
-                            // key={index}
+                             key={index}
                             className=" bg-neutral text-sm"
                           >
-                            <td class="px-6 py-4 whitespace-nowrap">1</td>
-                            <td class="px-6 py-4 whitespace-nowrap">บัตรประชาชน</td>
-                            <td class="px-6 py-4 whitespace-nowrap">123456789ำกไดำๆ21กๆ.pdf</td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                            <button className="btn btn-secondary text-base-100 hover:bg-base-100 hover:text-secondary  mr-2" type="submit"><IoIosDocument /></button>
-                            <button className="btn btn-error text-base-100 hover:bg-base-100 hover:text-error" type="submit"><ImBin /></button>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              {list.filename}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="tooltip" data-tip="Document">
+                              <div className="btn btn-warning  mr-2" type="submit" onClick={() => DocumentBase64(list.filename)}><IoIosDocument /></div>
+                              </div>
+                              <div className="tooltip" data-tip="Cancel Claim">
+                              <div className="btn btn-error " type="submit"><MdCancel /></div>
+                              </div>
                             </td>
                           </tr>
-                        {/* ))
-                      : ""} */}
+                    ))
+                      : (
+                        <tr>
+                          <td></td>
+                        </tr>
+                      )} 
                   </tbody>
               </table>
               <div className="grid gap-2 sm:grid-cols-4 text-base-100 bg-primary w-full whitespace-normal text-center">
@@ -1087,9 +1204,11 @@ if(PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER"
                 <div className="rounded-md "></div>
                 <div className="rounded-md ">&nbsp;</div> 
             </div> 
-              
+                            {/* {billList
+                      ? ( */}
             <div className="py-2">
               <div className="text-right">
+                
              <button
                   className="btn btn-primary text-base-100 hover:bg-base-100 hover:text-primary"
                   type="submit"
@@ -1098,6 +1217,7 @@ if(PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER"
                 </button>
                 </div>
               </div>
+              {/* ) : ""} */}
           </div>
         </div>
          

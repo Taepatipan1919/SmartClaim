@@ -81,7 +81,7 @@ export async function POST(request) {
                 ClaimNo: "C45103495",
                 IllnessType: "ILL",
                 Claimstatuscode: "03",
-                ClaimstatusName: "ได้รับเอกสารแล้ว",
+                ClaimstatusName: "จ่ายค่าสินไหมทดแทนแล้ว",
                 TotalAmount: "1960",
                 VisitDateTime: "2024-09-07",
                 batchnumber: "025-240807-02",

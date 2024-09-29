@@ -17,10 +17,10 @@ export async function POST(request) {
         IdType: "PASSPORT_NO",
         StatusClaimCode: "01",
         InsurerCode: null,
-        HN: "61-024057",
-        VN: "O61-028993",
-        VisitDatefrom: "2024-08-15",
-        VisitDateto: "2024-08-06"
+        HN: "437536-45",
+        VN: "O477382-67",
+        VisitDatefrom: "2024-09-15",
+        VisitDateto: "2024-09-06"
     },
     Result: {
         InsuranceResult: {
@@ -29,10 +29,10 @@ export async function POST(request) {
             MessageTh: "ทำรายการสำเร็จ"
         },
         InsuranceData: {
-            RefId: "RefIdxxxxxxxxx",
-            TransactionNo: "TransactionNoxxxxxxxxx",
+            RefId: "oljhnklefhbilubsEFJKLb651",
+            TransactionNo: "70816a0d-107a-4772-9838-4578e874a172",
             InsurerCode: "13",
-            CoverageClaimStatus: false,
+            CoverageClaimStatus: true,
             RemarkList: [],
             PolicyCoverageDesc: [],
             CoverageList: [

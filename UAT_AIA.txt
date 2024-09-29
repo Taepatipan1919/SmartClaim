@@ -10,9 +10,3 @@ IPD
      Pre- PreAuthorization ถ้าคนไข้มาหาที่โรงบาล แล้ว สั่งจองสิทธิ์ เลย ได้ไหม แล้วพรุ่งนี้ ถึง มารักษา IPD
      ipdAdmission กับ ipdAdmission(Concurrent) คืออะไร และต่างกันยังไง              เส้นเดียวกัน       Concurrent updateการนอนipd
     - ตอนส่ง ipdAdmission แล้วต้องส่ง  ipdDischarge อีกครั้งด้วยใช่ไหม
-
-
-
-
-https://hch-vc7.hc-hospital.com/websso/SAML2/SSO/vsphere.local?SAMLRequest=zVRba9swFH7frzB6t6U4bpOKJiVrVlboJauzMfYyVPmkFsiSpyPb6b%2Bf7CRrKKPr48BP4pzvfDd8frGtdNSCQ2XNjIwSRiIw0hbKPM3I1%2FVVPCUX8w%2FnKCpd80XjS%2FMAvxpAHy0QwfmwdmkNNhW4HFyrJFybArYzEoCWYUwZ4Qfo0vsaOaWlLONWTpJSxqXFWnmhE2kr2sEjoqX54vYmpXl%2BT1usS3CQaCuFJtGVdRIGAjOyERqBRNfLGfnJADJ5eiozOc4205OT0XjKCjFhIIBNxUSGMVwJRNXCyyJiE3iiF8bPSMrSLGZncTpZjxgPXzZOzkbjHyRaOeuttPqjMjtDGme4FaiQG1EBci95T5inCeOPuyHkn9frVby6z9cDQKsKcHdhOrjLkv6bJGc8y8Yk%2BnawPe1tD0EY5IPRbx%2Bq96zIfB%2FLIMe9H0AckiPzQyov1GijaI9xCKQCLwrhxTk9PrY7nda8V3a9XFmt5HO00Np2lw6ED2q9a2CIrRL%2BbT79iyrizTDK694V9GA8ifJVj%2F%2BlEVptFLiXFv2b77Gh6XsdpXtdPHS6UL1FeAzzbltfo%2BxB2rCy0xAktFUnQr377qMsoRJIhfcuHoBpykYpZRn9tA1O9C3Bg6Atqj8YXdcl3Tix7ikssBH9fnuTD1ixGtotQwJhnvvnOiTSn%2BcPYKATjxrW4e0vgv8jqkvQ8HRMlb4OZ35o5fGfaf4b&RelayState=9ad5d7df-3b98-42c3-a334-17ff85fa0d83&SigAlg=http%3A%2F%2Fwww.w3.org%2F2001%2F04%2Fxmldsig-more%23rsa-sha256&Signature=UdmGQWc0lh%2F8E6JS0sCkGOu1V9jPZi%2BcD4aR9n3i9%2BbSTxuUqkDLilwxHT7YuIdGEhAPmIxxXf59Wdjhe5BOo1p4NRM1a8WV3ZfTTPNz0uksatXaIFoNb95X3ztixQAY0dvIbanz53F9KvGGWlCkb0ijsrE1tMmho%2FjTeI6gefolgHjY5Fb0Qe7ptSTnYaJEvfLCkH91qeZfDE%2FfiTQqrr8eyBLmWvmtsmX0vdii9N%2FaP%2BL%2F2XFsQWvaXQs%2FmzrdjviBvmJa009KhAHaiOTPGhrAJ%2FvnNON4XomvOIBzV1B1iG6TAgAWOVnoWnd1cl7rtbleI3NwrzvqwCg6Gi5jQQ%3D%3D
-

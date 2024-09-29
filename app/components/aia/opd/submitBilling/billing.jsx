@@ -71,7 +71,7 @@ setProgress(prevState => {
   return { ...prevState, started: true }
 })
 try{
-const response = await axios.post('http://10.80.1.130:3480/api/v1/utils/upload', formData, {
+  const response = await axios.post(process.env.NEXT_PUBLIC_URL_PD +  "v1/utils/uploadDocuments", formData, {
       onUploadProgress: (progressEvent) => {  setProgress(prevState => {
         return { ...prevState, pc: progressEvent.progress*100 }
       })},
@@ -92,8 +92,25 @@ const response = await axios.post('http://10.80.1.130:3480/api/v1/utils/upload',
       d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
   </svg>
   Upload Successful</div>)
-console.log("server response",response.data)
-
+// console.log("server response",response.data)
+axios
+.post(process.env.NEXT_PUBLIC_URL_PD + "v1/utils/getlistDocumentName",{
+  RefId : RefIdL,
+  TransactionNo : TransactionNoL,
+  HN : HNL,
+  VN : VNL,
+})
+.then((response) => {
+  setBillList(response.data);
+  //console.log(response.data)
+})
+.catch((err) => {
+ // console.error("Error", err)
+  console.log(err)
+  //  if (err.response.request.status === 500) {
+          // setShowFormError("Error");
+          // setMassError(err.response.data.HTTPStatus.message);
+       })  
 } catch (error){
   setProgress({ started: false, pc: 0 });
   console.log(error)
@@ -507,7 +524,38 @@ console.log(error)
   }
   const DocumentBase64 = () => {
 
+    setMsg();
+    setProgress({ started: false, pc: 0 });
 
+    axios
+      .post(process.env.NEXT_PUBLIC_URL_PD + "v1/utils/getDocumentByDocname"
+         ,{
+        RefId : refIdL,
+        TransactionNo : transactionNoL,
+        HN : hNL,
+        VN : vNL,
+        DocumentName : data,
+       }
+    )
+      .then((response) => {
+       setBase64(response.data);
+       
+         // console.log(response.data)
+          const base64String = response.data.base64;
+
+        const linkSource = `data:application/pdf;base64,${base64String}`;
+          const pdfWindow = window.open();
+          pdfWindow.document.write(
+              `<iframe width='100%' height='99%' src='${linkSource}'></iframe>`
+          );
+      })
+      .catch((err) => {
+       // console.error("Error", err)
+        console.log(err)
+        //  if (err.response.request.status === 500) {
+                 setShowDocError("Error");
+                 setMassDocError(err.response.data.HTTPStatus.message);
+             })  
   }
 
    const handleButtonClick = (data) => {
@@ -518,7 +566,7 @@ console.log(error)
     setVNL(VNL)
     setMsg(null)
     axios
-      .post(process.env.NEXT_PUBLIC_URL_PD2 + "v1/utils/getlistDocumentName",{
+      .post(process.env.NEXT_PUBLIC_URL_PD + "v1/utils/getlistDocumentName",{
         RefId : RefIdL,
         TransactionNo : TransactionNoL,
         HN : HNL,

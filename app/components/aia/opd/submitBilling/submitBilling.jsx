@@ -83,7 +83,7 @@ setProgress(prevState => {
   return { ...prevState, started: true }
 })
 try{
-const response = await axios.post(process.env.NEXT_PUBLIC_URL_PD2 +  "v1/utils/uploadDocuments", formData, {
+const response = await axios.post(process.env.NEXT_PUBLIC_URL_PD +  "v1/utils/uploadDocuments", formData, {
       onUploadProgress: (progressEvent) => {  setProgress(prevState => {
         return { ...prevState, pc: progressEvent.progress*100 }
       })},
@@ -106,8 +106,24 @@ const response = await axios.post(process.env.NEXT_PUBLIC_URL_PD2 +  "v1/utils/u
       </svg>
       Upload Successful
       </div>)
-// console.log("server response",response.data)
-
+axios
+.post(process.env.NEXT_PUBLIC_URL_PD + "v1/utils/getlistDocumentName",{
+  RefId : RefIdL,
+  TransactionNo : TransactionNoL,
+  HN : HNL,
+  VN : VNL,
+})
+.then((response) => {
+  setBillList(response.data);
+  //console.log(response.data)
+})
+.catch((err) => {
+ // console.error("Error", err)
+  console.log(err)
+  //  if (err.response.request.status === 500) {
+          // setShowFormError("Error");
+          // setMassError(err.response.data.HTTPStatus.message);
+       })  
 } catch (error){
   setProgress({ started: false, pc: 0 });
   console.log(error)
@@ -126,23 +142,6 @@ const response = await axios.post(process.env.NEXT_PUBLIC_URL_PD2 +  "v1/utils/u
     {error.message}
     </div>)
 }
-// axios
-// .post(process.env.NEXT_PUBLIC_URL_PD2 + "v1/utils/getlistDocumentName",{
-//   RefId : RefIdL,
-//   TransactionNo : TransactionNoL,
-//   HN : HNL,
-//   VN : VNL,
-// })
-// .then((response) => {
-//   setBillList(response.data);
-// })
-// .catch((err) => {
-//  // console.error("Error", err)
-//   console.log(err)
-//   //  if (err.response.request.status === 500) {
-//           // setShowFormError("Error");
-//           // setMassError(err.response.data.HTTPStatus.message);
-//        })  
 }
 
 const Refresh = (data) => {
@@ -590,7 +589,7 @@ console.log(error)
     filenames = billList.map(Bll => ({ DocName: Bll.filename }));
 
     axios
-      .post(process.env.NEXT_PUBLIC_URL_PD2 + "v1/aia-billing-submission/getbilling-submission",{
+      .post(process.env.NEXT_PUBLIC_URL_PD + "v1/aia-billing-submission/getbilling-submission",{
         InsurerCode: InsuranceCode, 
         RefId: refIdL,
       TransactionNo: transactionNoL,
@@ -628,7 +627,7 @@ console.log(error)
     setProgress({ started: false, pc: 0 });
 
     axios
-      .post(process.env.NEXT_PUBLIC_URL_PD2 + "v1/utils/getDocumentByDocname"
+      .post(process.env.NEXT_PUBLIC_URL_PD + "v1/utils/getDocumentByDocname"
          ,{
         RefId : refIdL,
         TransactionNo : transactionNoL,
@@ -672,7 +671,7 @@ console.log(error)
     setMsg(null)
     setBillList();
     axios
-      .post(process.env.NEXT_PUBLIC_URL_PD2 + "v1/utils/getlistDocumentName",{
+      .post(process.env.NEXT_PUBLIC_URL_PD + "v1/utils/getlistDocumentName",{
         RefId : RefIdL,
         TransactionNo : TransactionNoL,
         HN : HNL,

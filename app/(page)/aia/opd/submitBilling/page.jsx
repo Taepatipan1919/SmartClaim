@@ -32,12 +32,12 @@ export default function Home() {
   </ul>
 </div>
   <Billing />
-  value : {DataTran.DataTran.value}
+  {/* value : {DataTran.DataTran.value}
           <hr />
           VN : {DataTran.DataTran.Data.VN}
           <br />
           RefId : {DataTran.DataTran.Data.RefId}
-          <br />
+          <br /> */}
     </>
     ) : (
       <>

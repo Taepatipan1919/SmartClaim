@@ -235,8 +235,8 @@ router.push('/aia/opd/checkeligible');
     "IdType":"HOSPITAL_ID",
     "VN":"",
     "StatusClaimCode": "01", 
-    "VisitDatefrom": "2024-08-15",
-     "VisitDateto":  "2024-08-06"
+    "VisitDatefrom": "",
+     "VisitDateto":  ""
   }
         }
       )
@@ -256,20 +256,20 @@ router.push('/aia/opd/checkeligible');
         process.env.NEXT_PUBLIC_URL_PD + "v1/aia-patient-info/PatientUpdate",
         {
           "PatientInfo": {
-            "InsurerCode": 13, // ควรเป็น integer ไม่ใช่ string
-            "PatientID": "183090", // ควรเป็น integer ไม่ใช่ string
-            "PID": "7161710129213",
-            "PassportNumber": "ABC12345",
-            "HN": "61-028993",
-            "TitleTH": "นาย",
-            "GivenNameTH": "กฤษณ์",
-            "SurnameTH": "จันทรวงศ์",
-            "TitleEN": "MR.",
-            "GivenNameEN": "KRIT",
-            "SurnameEN": "CHANTARAWONG",
-            "DateOfBirth": "1985-07-15",
-            "Gender": "ชาย",
-            "MobilePhone": "0989923557"
+            "InsurerCode": 13, 
+            "PatientID": patientFindforUpdate.Result.PatientInfo.PatientTrakcare.PatientID, 
+            "PID": patientFindforUpdate.Result.PatientInfo.PatientTrakcare.PID,
+            "PassportNumber": patientFindforUpdate.Result.PatientInfo.PatientTrakcare.PassportNumber,
+            "HN": patientFindforUpdate.Result.PatientInfo.PatientTrakcare.HN,
+            "TitleTH": patientFindforUpdate.Result.PatientInfo.PatientTrakcare.TitleTH,
+            "GivenNameTH": patientFindforUpdate.Result.PatientInfo.PatientTrakcare.GivenNameTH,,
+            "SurnameTH": patientFindforUpdate.Result.PatientInfo.PatientTrakcare.SurnameTH,
+            "TitleEN": patientFindforUpdate.Result.PatientInfo.PatientTrakcare.TitleEN,
+            "GivenNameEN": patientFindforUpdate.Result.PatientInfo.PatientTrakcare.GivenNameEN,
+            "SurnameEN": patientFindforUpdate.Result.PatientInfo.PatientTrakcare.SurnameEN,
+            "DateOfBirth": patientFindforUpdate.Result.PatientInfo.PatientTrakcare.DateOfBirth,
+            "Gender": patientFindforUpdate.Result.PatientInfo.PatientTrakcare.Gender,
+            "MobilePhone": patientFindforUpdate.Result.PatientInfo.PatientTrakcare.MobilePhone
           }
         }
       )

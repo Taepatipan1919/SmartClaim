@@ -5,7 +5,7 @@ export async function POST(request) {
     console.log("ดึงข้อมูลเช็คสำเร็จ");
     return NextResponse.json({
     Result: {
-      InvestigationInfo: [
+      InvestigationInfo: {
         {
           InvestigationCode: "",
           InvestigationGroup: "",
@@ -13,7 +13,7 @@ export async function POST(request) {
           InvestigationResult: "",
           ResultDateTime: ""
         }
-    ],
+      },
   },
   });
 }

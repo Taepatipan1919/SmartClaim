@@ -288,15 +288,16 @@ const [ furtherClaim , setFurtherClaim ]= useState("")
       SurgeryTypeCode:  surgeryTypeValue,
     }
    // console.log(PatientInfo)
+   try{
    document.getElementById("my_modal_3").showModal();
     // try {
-      const response = await axios.post(process.env.NEXT_PUBLIC_URL_PD + "v1/aia-checkeligible/checkeligible", {
+      const response = await axios.post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-checkeligible/checkeligible", {
         PatientInfo
        });
 
       if  (response.data.HTTPStatus.statusCode < 400){
-      //  console.log(response.data)
       setResult(response.data);
+
       setShowFormError()
 
       }else{
@@ -304,23 +305,12 @@ const [ furtherClaim , setFurtherClaim ]= useState("")
      //   console.log(response);
        setMassError(response.data.HTTPStatus.message);
       }
-    //  } catch (error) {
-
-    // //    console.log("555");
-    //     console.log(error)
-    // //   //console.log(response)
-    //      setShowFormError("Err");
-    //      //setMassError(error.response.data.HTTPStatus.message);
-    // //   //setMassError("xxxxxxxxxxxx");
-    //  }
-
-
-
-
-    // setShowForm(!showForm);
-    //console.log(result)
-
-
+    }
+    catch (error) {
+        console.log(error)
+         setShowFormError("Err");
+         setMassError(error.response.data.HTTPStatus.message);
+     }
   };
  
 
