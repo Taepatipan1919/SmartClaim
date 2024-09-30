@@ -83,7 +83,7 @@ setProgress(prevState => {
   return { ...prevState, started: true }
 })
 try{
-const response = await axios.post(process.env.NEXT_PUBLIC_URL_PD +  "v1/utils/uploadDocuments", formData, {
+const response = await axios.post(process.env.NEXT_PUBLIC_URL_PD2 +  "v1/utils/uploadDocuments", formData, {
       onUploadProgress: (progressEvent) => {  setProgress(prevState => {
         return { ...prevState, pc: progressEvent.progress*100 }
       })},
@@ -107,11 +107,11 @@ const response = await axios.post(process.env.NEXT_PUBLIC_URL_PD +  "v1/utils/up
       Upload Successful
       </div>)
 axios
-.post(process.env.NEXT_PUBLIC_URL_PD + "v1/utils/getlistDocumentName",{
-  RefId : RefIdL,
-  TransactionNo : TransactionNoL,
-  HN : HNL,
-  VN : VNL,
+.post(process.env.NEXT_PUBLIC_URL_PD2 + "v1/utils/getlistDocumentName",{
+  RefId : refIdL,
+  TransactionNo : transactionNoL,
+  HN : hNL,
+  VN : vNL,
 })
 .then((response) => {
   setBillList(response.data);
@@ -157,7 +157,7 @@ const Refresh = (data) => {
 
 
   axios
-  .post(process.env.NEXT_PUBLIC_URL_PD + "v1/aia-checkclaimstatus/checkclaimstatus",
+  .post(process.env.NEXT_PUBLIC_URL_PD2 + "v1/aia-checkclaimstatus/checkclaimstatus",
     {
       "PatientInfo": {
     InsurerCode: InsuranceCode, 
@@ -589,7 +589,7 @@ console.log(error)
     filenames = billList.map(Bll => ({ DocName: Bll.filename }));
 
     axios
-      .post(process.env.NEXT_PUBLIC_URL_PD + "v1/aia-billing-submission/getbilling-submission",{
+      .post(process.env.NEXT_PUBLIC_URL_PD2 + "v1/aia-billing-submission/getbilling-submission",{
         InsurerCode: InsuranceCode, 
         RefId: refIdL,
       TransactionNo: transactionNoL,
@@ -627,7 +627,7 @@ console.log(error)
     setProgress({ started: false, pc: 0 });
 
     axios
-      .post(process.env.NEXT_PUBLIC_URL_PD + "v1/utils/getDocumentByDocname"
+      .post(process.env.NEXT_PUBLIC_URL_PD2 + "v1/utils/getDocumentByDocname"
          ,{
         RefId : refIdL,
         TransactionNo : transactionNoL,
@@ -639,14 +639,28 @@ console.log(error)
       .then((response) => {
        setBase64(response.data);
        
-         // console.log(response.data)
-          const base64String = response.data.base64;
 
-        const linkSource = `data:application/pdf;base64,${base64String}`;
-          const pdfWindow = window.open();
-          pdfWindow.document.write(
-              `<iframe width='100%' height='99%' src='${linkSource}'></iframe>`
-          );
+
+       const base64ToBlob = (base64, type = 'application/pdf') => {
+        const byteCharacters = atob(base64);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        return new Blob([byteArray], { type });
+    };
+    const blob = base64ToBlob(response.data.base64);
+    const url = URL.createObjectURL(blob);
+    window.open(url);
+        //  // console.log(response.data)
+        //   const base64String = response.data.base64;
+
+        // const linkSource = `data:application/pdf;base64,${base64String}`;
+        //   const pdfWindow = window.open();
+        //   pdfWindow.document.write(
+        //       `<iframe width='100%' height='99%' src='${linkSource}'></iframe>`
+        //   );
       })
       .catch((err) => {
        // console.error("Error", err)
@@ -671,7 +685,7 @@ console.log(error)
     setMsg(null)
     setBillList();
     axios
-      .post(process.env.NEXT_PUBLIC_URL_PD + "v1/utils/getlistDocumentName",{
+      .post(process.env.NEXT_PUBLIC_URL_PD2 + "v1/utils/getlistDocumentName",{
         RefId : RefIdL,
         TransactionNo : TransactionNoL,
         HN : HNL,
@@ -1047,7 +1061,7 @@ document.getElementById("my_modal_3").showModal()
           <div className="grid gap-2 w-full mt-2">
             <div className="px-2 rounded-md">
               <div className="flex items-center ">
-                            <input type="file" className="file-input file-input-bordered file-input-info w-5/6" onChange={ (e) => { setFile(e.target.files[0]) } } ref={inputRef}/> 
+                            <input type="file" accept=".pdf" className="file-input file-input-bordered file-input-info w-5/6" onChange={ (e) => { setFile(e.target.files[0]) } } ref={inputRef}/> 
                             <div className="btn btn-success text-base-100 hover:text-success hover:bg-base-100 w-1/6 ml-2" onClick={ handleUpload }>
                                 <FaCloudUploadAlt className="size-6"/>
                             </div>

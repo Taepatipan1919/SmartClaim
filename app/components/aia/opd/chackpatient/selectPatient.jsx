@@ -44,7 +44,9 @@ export default function SelectPatient() {
   const [statusValue, setStatusValue] = useState("");
   const [massError, setMassError] = useState("");
   const [showFormError, setShowFormError] = useState("");
-  
+  const [showSuccUpdate, setShowSuccUpdate] = useState("");
+
+
 ////////////////Create Redux Patient /////////////////////////
 const { Patient } = useSelector((state) => ({ ...state }));
 // console.log(Patient)
@@ -212,19 +214,6 @@ router.push('/aia/opd/checkeligible');
       .post(
         process.env.NEXT_PUBLIC_URL_PD + "v1/aia-patient-info/PatientFindforUpdate",
         {
-          // PatientInfo: {
-          //   "Insurerid": InsurerCode, 
-          //   "RefID": "",
-          //   "TransactionNo": "",
-          //   "PID": patient.PID,
-          //   "HN": patient.HN,
-          //   "PassportNumber": patient.PassportNumber,
-          //   "IdType": "HOSPITAL_ID",
-          //   "VN": "",
-          //   "StatusClaimCode": "01", 
-          //   "VisitDatefrom": "",
-          //    "VisitDateto":  ""
-          // },
           "PatientInfo": {
     "InsurerCode": InsurerCode, 
     "RefID":"",
@@ -262,7 +251,7 @@ router.push('/aia/opd/checkeligible');
             "PassportNumber": patientFindforUpdate.Result.PatientInfo.PatientTrakcare.PassportNumber,
             "HN": patientFindforUpdate.Result.PatientInfo.PatientTrakcare.HN,
             "TitleTH": patientFindforUpdate.Result.PatientInfo.PatientTrakcare.TitleTH,
-            "GivenNameTH": patientFindforUpdate.Result.PatientInfo.PatientTrakcare.GivenNameTH,,
+            "GivenNameTH": patientFindforUpdate.Result.PatientInfo.PatientTrakcare.GivenNameTH,
             "SurnameTH": patientFindforUpdate.Result.PatientInfo.PatientTrakcare.SurnameTH,
             "TitleEN": patientFindforUpdate.Result.PatientInfo.PatientTrakcare.TitleEN,
             "GivenNameEN": patientFindforUpdate.Result.PatientInfo.PatientTrakcare.GivenNameEN,
@@ -275,6 +264,7 @@ router.push('/aia/opd/checkeligible');
       )
       .then(function (response) {
         console.log(response.data);
+        setShowSuccUpdate("Succ")
       })
       .catch(function (error) {
         console.log(error.response.request.status);
@@ -831,8 +821,27 @@ router.push('/aia/opd/checkeligible');
           </form>
 
           <div className="justify-center border-solid ">
-            <h1 className="font-black text-accent text-3xl ">Update Data</h1>
-
+            <h1 className="font-black text-accent text-3xl">Update Data</h1>
+            {showSuccUpdate === "Succ" ? (
+              <div role="alert" className="alert alert-success text-base-100">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6 shrink-0 stroke-current"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                <span>Update Successfully</span>
+              </div>
+            ) : (
+              ""
+            )}
             <div className="grid gap-2 sm:grid-cols-3 w-full">
               <div className="rounded-md "></div>
               <div className="rounded-md text-center"></div>

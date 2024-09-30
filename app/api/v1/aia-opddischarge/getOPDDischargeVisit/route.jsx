@@ -7,7 +7,6 @@ export async function POST(request) {
     Result : {
       VisitInfo:{
         FurtherClaimId: "",
-        AccidentCauseOver45Days: "",
         AdditionalNote: "",
         AlcoholRelated: true,
         ChiefComplaint: "fall",

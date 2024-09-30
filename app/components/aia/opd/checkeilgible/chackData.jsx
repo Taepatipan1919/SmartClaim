@@ -14,7 +14,7 @@ import dayjs from 'dayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-
+import { Box , TextField } from '@mui/material';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
@@ -76,7 +76,7 @@ const [ furtherClaim , setFurtherClaim ]= useState("")
         } )
         .then((response) => {
           setFurtherClaim(response.data);
-        console.log(response.data)
+        //console.log(response.data)
         })
         .catch((err) => {
          // console.error("Error", err)
@@ -291,7 +291,7 @@ const [ furtherClaim , setFurtherClaim ]= useState("")
    try{
    document.getElementById("my_modal_3").showModal();
     // try {
-      const response = await axios.post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-checkeligible/checkeligible", {
+      const response = await axios.post(process.env.NEXT_PUBLIC_URL_PD + "v1/aia-checkeligible/checkeligible", {
         PatientInfo
        });
 

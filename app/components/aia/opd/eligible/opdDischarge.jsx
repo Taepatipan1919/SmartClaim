@@ -5,7 +5,7 @@ import { Box , TextField } from '@mui/material';
 import { ImBin } from "react-icons/im";
 import { IoIosDocument } from "react-icons/io";
 import { useRouter } from 'next/navigation';
-
+import { MdCancel } from "react-icons/md";
 import dayjs from 'dayjs';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -27,6 +27,8 @@ export default function Page({data}) {
   const [visit, setVisit] = useState();
   const [accidentDetail, setAccidentDetail] = useState();
   const [accidentPlaceValue, setAccidentPlaceValue] = useState("");
+  const [over45Days, setOver45Days] = useState("");
+  const [over45, setOver45] = useState("");
   const [dataaccidentPlace, setDataaccidentPlace] = useState("");
   const [datainjurySide, setDatainjurySide] = useState("");
   const [injurySide, setInjurySide] = useState("");
@@ -51,8 +53,11 @@ export default function Page({data}) {
   const [massDocError, setMassDocError] = useState("");
   const [showDocError, setShowDocError] = useState("");
   const [billList, setBillList] = useState("");
-
-
+  const [base64 , setBase64] = useState("");
+  const [massSummitError, setMassSummitError] = useState("");
+  const [showSummitError, setShowSummitError] = useState("");
+  const [massSummit, setMassSummit] = useState("");
+  const [otherInsurer, setOtherInsurer] = useState("false");
 
 
   const [freetext , setFreeText] = useState();
@@ -64,6 +69,9 @@ export default function Page({data}) {
   }
   const WoundType = (event) => {
     setWoundType(event.target.value);
+  }
+  const Over45 = (event) => {
+    setOver45(event.target.value);
   }
 const PatientInfo = {
     InsurerCode: data.DataTran.Data.InsurerCode, 
@@ -93,16 +101,16 @@ const PatientInfo = {
     FurtherClaimId : data.DataTran.Data.FurtherClaimId,
   }
   useEffect(() => {
-  console.log(PatientInfo)
+ // console.log(PatientInfo)
 
   if (inputRef.current) {
     inputRef.current.value = '';
   }
   setProgress({ started: false, pc: 0 });
   setMsg(null)
-  setBillList();
+  setBillList("");
   axios
-    .post(process.env.NEXT_PUBLIC_URL_PD + "v1/utils/getlistDocumentName",{
+    .post(process.env.NEXT_PUBLIC_URL_PD2 + "v1/utils/getlistDocumentName",{
       RefId : PatientInfo.RefId,
       TransactionNo : PatientInfo.TransactionNo,
       HN : PatientInfo.HN,
@@ -110,7 +118,7 @@ const PatientInfo = {
     })
     .then((response) => {
       setBillList(response.data);
-      //console.log(response.data)
+     // console.log(response.data)
     })
     .catch((err) => {
      // console.error("Error", err)
@@ -139,19 +147,20 @@ const PatientInfo = {
   });
   }, []);
 
-//   useEffect(() => {
-//     axios
-//   .post(process.env.NEXT_PUBLIC_URL_PD + "v1/aia-retrieve-further-claim-list/getRetrieveFurtherClaim",{
-//     PatientInfo
-//   })
-//   .then((response) => {
-//     //console.log(response.data);
-//   })
-//   .catch((err) => {
-//    // console.error("Error", err)
-//     console.log(err)
-// });
-// }, []);
+  useEffect(() => {
+    axios
+    .get(process.env.NEXT_PUBLIC_URL_PD2 + "v1/utils/AccidentCauseOver45Day/" + InsuranceCode,{
+      PatientInfo
+    })
+    .then((response) => {
+      setOver45Days(response.data);
+
+    })
+    .catch((err) => {
+     // console.error("Error", err)
+      console.log(err)
+    });
+  }, []);
 
   useEffect(() => {
     axios
@@ -209,7 +218,7 @@ const PatientInfo = {
   }, []);
   useEffect(() => {
     axios
-    .get(process.env.NEXT_PUBLIC_URL_PD + "v1/utils/injurySide/" + InsuranceCode,{
+    .get(process.env.NEXT_PUBLIC_URL_PD + "v1/utils/InjurySide/" + InsuranceCode,{
       PatientInfo
     })
     .then((response) => {
@@ -340,7 +349,62 @@ useEffect(() => {
 });
 }, []);
 
+const DocumentBase64 = (data) => {
 
+  setMsg();
+  setProgress({ started: false, pc: 0 });
+
+
+  // console.log(PatientInfo.RefId)
+  // console.log(PatientInfo.TransactionNo)
+  // console.log(PatientInfo.HN)
+  // console.log(PatientInfo.VN)
+
+  axios
+    .post(process.env.NEXT_PUBLIC_URL_PD2 + "v1/utils/getDocumentByDocname"
+       ,{
+      RefId : PatientInfo.RefId,
+      TransactionNo : PatientInfo.TransactionNo,
+      HN : PatientInfo.HN,
+      VN : PatientInfo.VN,
+      DocumentName : data,
+     }
+  )
+    .then((response) => {
+     setBase64(response.data);
+     
+ 
+
+     const base64ToBlob = (base64, type = 'application/pdf') => {
+      const byteCharacters = atob(base64);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      return new Blob([byteArray], { type });
+  };
+  const blob = base64ToBlob(response.data.base64);
+  const url = URL.createObjectURL(blob);
+  window.open(url);
+
+//         const base64String = response.data.base64;
+// console.log(base64String)
+//       const linkSource = `data:application/pdf;base64,${base64String}`;
+//         const pdfWindow = window.open();
+//         pdfWindow.document.write(
+//             `<iframe width='100%' height='99%' src='${linkSource}'></iframe>`
+//        );
+
+    })
+    .catch((err) => {
+     // console.error("Error", err)
+      console.log(err)
+      //  if (err.response.request.status === 500) {
+               setShowDocError("Error");
+               setMassDocError("Error ในการเปิดไฟล์");
+           })  
+}
 
 
 // กดปุ่มส่งเคลม
@@ -351,51 +415,154 @@ useEffect(() => {
     const Datevalue = dayjs(value.$d).format('YYYY-MM-DD');
 
 if(PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER"){
-  const datasave = {
-    DataJson: {
-      InsurerCode: PatientInfo.InsurerCode,
-      DxFreeText : event.target.DxFreeTextText.value,
-      AccidentDate : Datevalue,
-      AccidentPlace : accidentPlaceValue,
-      PresentIllness :  event.target.PresentIllnessText.value,
+ // console.log(PatientInfo)
 
-      InjurySide : injurySide,
-      WoundType : woundType,
-      CommentOfInjury : event.target.commentOfInjuryText.value,
+ document.getElementById("my_modal_3").showModal();
+
+  const Data = {
+    "PatientInfo" : {
+      InsurerCode: PatientInfo.InsurerCode,
+      RefId: PatientInfo.RefId,
+      TransactionNo : PatientInfo.TransactionNo,
+      PID : PatientInfo.PID,
+      HN : PatientInfo.HN,
+      GivenNameTH : PatientInfo.GivenNameTH,
+      SurnameTH: PatientInfo.SurnameTH,
+      DateOfBirth: PatientInfo.DateOfBirth,
+      PassportNumber: PatientInfo.PassportNumber,
+      IdType: PatientInfo.IdType,
+      VN:  PatientInfo.VN,
+      VisitDateTime: PatientInfo.VisitDateTime,
+      AccidentDate: Datevalue,
+      AccidentPlaceCode:  accidentPlaceValue,
+      AccidentInjuryWoundtypeCode:  woundType,
+      AccidentInjurySideCode: injurySide,
+      WoundDetails: event.target.commentOfInjuryText.value,
+      PolicyTypeCode: PatientInfo.PolicyTypeCode,
+      ServiceSettingCode: PatientInfo.ServiceSettingCode, 
+      IllnessTypeCode: PatientInfo.IllnessTypeCode,
+      SurgeryTypeCode:  PatientInfo.SurgeryTypeCode,
+      ChiefComplaint: visit.Result.VisitInfo.ChiefComplaint,
+      PresentIllness: event.target.PresentIllnessText.value,
+      AccidentCauseOver45Days : over45,
+      DxFreeText : event.target.DxFreeTextText.value,
       FurtherClaimId : PatientInfo.FurtherClaimId,
       FurtherClaimNo : PatientInfo.FurtherClaimNo,
+      OtherInsurer : otherInsurer
     },
   };
-  console.log(datasave)
+
+  console.log(Data.PatientInfo)
+
+
+
+
+
+  axios
+    .post(process.env.NEXT_PUBLIC_URL_PD2 + "v1/aia-opddischarge/sentOPDDischarge",
+      Data
+  
+    )
+    .then((response) => {
+      //setOrderItemz(response.data);
+
+
+
+      console.log(response.data.Message)
+      setMassSummit(response.data.Message)
+
+
+
+    })
+    .catch((err) => {
+     // console.error("Error", err)
+      console.log(err)
+
+      setshowSummitError("Err")
+      setMassSummitError("Error")
+});
+
+
+
+
 }else{
-  const datasave = {
-    DataJson: {
-      InsurerCode: PatientInfo.InsurerCode,
-      DxFreeText : event.target.DxFreeTextText.value,
-      AccidentDate : Datevalue,
-      AccidentPlaceCode : accidentPlaceValue,
-      PresentIllness :  event.target.PresentIllnessText.value,
 
-      AccidentInjurySideCode : injurySide,
-      AccidentInjuryWoundtypeCode : woundType,
+  document.getElementById("my_modal_3").showModal();
+
+  const Data = {
+    "PatientInfo" : {
+      InsurerCode: PatientInfo.InsurerCode,
+      RefId: PatientInfo.RefId,
+      TransactionNo : PatientInfo.TransactionNo,
+      PID : PatientInfo.PID,
+      HN : PatientInfo.HN,
+      GivenNameTH : PatientInfo.GivenNameTH,
+      SurnameTH: PatientInfo.SurnameTH,
+      DateOfBirth: PatientInfo.DateOfBirth,
+      PassportNumber: PatientInfo.PassportNumber,
+      IdType: PatientInfo.IdType,
+      VN:  PatientInfo.VN,
+      VisitDateTime: PatientInfo.VisitDateTime,
+      AccidentDate: Datevalue,
+      AccidentPlaceCode:  accidentPlaceValue,
+      AccidentInjuryWoundtypeCode:  woundType,
+      AccidentInjurySideCode: injurySide,
+      WoundDetails: "",
+      PolicyTypeCode: PatientInfo.PolicyTypeCode,
+      ServiceSettingCode: PatientInfo.ServiceSettingCode, 
+      IllnessTypeCode: PatientInfo.IllnessTypeCode,
+      SurgeryTypeCode:  PatientInfo.SurgeryTypeCode,
+      ChiefComplaint: visit.Result.VisitInfo.ChiefComplaint,
+      PresentIllness: event.target.PresentIllnessText.value,
+      AccidentCauseOver45Days : over45,
+      DxFreeText : event.target.DxFreeTextText.value,
       FurtherClaimId : PatientInfo.FurtherClaimId,
       FurtherClaimNo : PatientInfo.FurtherClaimNo,
-      CommentOfInjury : "",
-
+      OtherInsurer : otherInsurer
     },
-
   };
-  console.log(datasave)
+
+  console.log(Data.PatientInfo)
+
+
+
+
+
+  axios
+    .post(process.env.NEXT_PUBLIC_URL_PD2 + "v1/aia-opddischarge/sentOPDDischarge",
+      Data
+  
+    )
+    .then((response) => {
+      //setOrderItemz(response.data);
+
+
+
+      console.log(response.data.Message)
+      setMassSummit(response.data.Message)
+
+
+
+    })
+    .catch((err) => {
+     // console.error("Error", err)
+      console.log(err)
+
+      setshowSummitError("Err")
+      setMassSummitError("Error")
+});
+
+
 }
  
-  //console.log(data)
-    setShowModal(true)
+
+    // setShowModal(true)
 
 
-    setTimeout(() => {
-      setShowModal(false)
-      router.push('/aia/opd/checkClaimStatus');
-    }, 5000);
+    // setTimeout(() => {
+    //   setShowModal(false)
+    //   router.push('/aia/opd/checkClaimStatus');
+    // }, 5000);
 
   };
 
@@ -431,7 +598,7 @@ if(PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER"
        return { ...prevState, started: true }
      })
      try{
-     const response = await axios.post(process.env.NEXT_PUBLIC_URL_PD +  "v1/utils/uploadDocuments", formData, {
+     const response = await axios.post(process.env.NEXT_PUBLIC_URL_PD2 +  "v1/utils/uploadDocuments", formData, {
            onUploadProgress: (progressEvent) => {  setProgress(prevState => {
              return { ...prevState, pc: progressEvent.progress*100 }
            })},
@@ -440,7 +607,7 @@ if(PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER"
            }
          })
          setProgress({ started: false, pc: 0 });
-         setMsg(<div role="alert" className="alert alert-success">
+         setMsg(<div role="alert" className="alert alert-success text-base-100">
            <svg
              xmlns="http://www.w3.org/2000/svg"
              className="h-6 w-6 shrink-0 stroke-current"
@@ -455,7 +622,7 @@ if(PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER"
            Upload Successful
            </div>)
    axios
-   .post(process.env.NEXT_PUBLIC_URL_PD + "v1/utils/getlistDocumentName",{
+   .post(process.env.NEXT_PUBLIC_URL_PD2 + "v1/utils/getlistDocumentName",{
      RefId : PatientInfo.RefId,
      TransactionNo : PatientInfo.TransactionNo,
      HN : PatientInfo.HN,
@@ -497,7 +664,9 @@ if(PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER"
 
 
   }
-
+  const handleOtherInsurer = (e) => {
+    setOtherInsurer(e.target.value);
+  };
 
 
 
@@ -565,6 +734,17 @@ if(PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER"
               <h1 className="font-black text-accent text-3xl ">
               Visit
               </h1>
+              <div className="flex items-center ">
+              <input
+                        type="radio"
+                        id="OtherInsurer"
+                        name="OtherInsurer"
+                        value="true"
+                        className="checkbox checkbox-info"
+                        onChange={handleOtherInsurer}
+              />
+              <p className="text-left">&nbsp;ค่าส่วนเกินจากประกันอื่นๆ</p>
+              </div>
               <div className="grid gap-2 sm:grid-cols-4 w-full mt-2">
                 <div className="rounded-md">
               <Box sx={{backgroundColor: '#e5e7eb', padding: 0, borderRadius: 0,}}>
@@ -615,14 +795,6 @@ if(PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER"
           required
         />
                 </div>
-                {/* <div className="rounded-md">
-             
-                </div>
-                <div className="rounded-md">
-                </div>
-                <div className="rounded-md">
-                </div> */}
-               
                 <div className="rounded-md mt-3">
                 <TextField
                 error
@@ -706,7 +878,7 @@ if(PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER"
         >
           {datainjurySide
                 ? datainjurySide.map((inj, index) => (
-                    <MenuItem key={index} value={inj.DescEN}>{inj.DescTH} - {inj.DescEN}</MenuItem>
+                    <MenuItem key={index} value={inj.injurysidecode}>{inj.injurysidename} - {inj.injurysidecode}</MenuItem>
                   ))
                 : ""}
         </Select>
@@ -733,6 +905,28 @@ if(PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER"
                 : ""}
         </Select>
       </FormControl>
+                </div>
+                <div className="w-2/5">
+              <FormControl fullWidth>
+        <InputLabel id="demo-error-select-label">สาเหตุของการมารับการรักษาเกิน 45 วัน จากการเกิดอุบัติเหตุ</InputLabel>
+        <Select
+        error
+        className="w-full mx-2"
+          labelId="demo-error-select-label"
+          id="demo-error-select"
+          //name="woundTypeText"
+          value={over45}
+          label="สาเหตุของการมารับการรักษาเกิน 45 วัน จากการเกิดอุบัติเหตุ"
+          onChange={Over45}
+          required
+        >
+          {over45Days
+                ? over45Days.map((over, index) => (
+                    <MenuItem key={index} value={over.CauseOverCode}>{over.CauseOverDesc}</MenuItem>
+                  ))
+                : ""}
+        </Select>
+      </FormControl> 
                 </div>
               </div>
             </div> 
@@ -1005,34 +1199,34 @@ if(PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER"
                     <th >จำนวนเงินหลังหักส่วนลดของรายการค่าใช้จ่าย</th>
                   </tr>
                 </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
+                <tbody className="bg-white divide-y divide-gray-200">
                   {orderItemz
                       ? orderItemz.Result.OrderItemInfo.map((order, index) => (
                           <tr
                             key={index}
                             className=" bg-neutral text-sm"
                           >
-                            <td class="px-6 py-4 whitespace-nowrap">{order.ItemId ? index + 1 : ""}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">{order.ItemId}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">
+                            <td className="px-6 py-4 whitespace-nowrap">{order.ItemId ? index + 1 : ""}</td>
+                            <td className="px-6 py-4 whitespace-nowrap">{order.ItemId}</td>
+                            <td className="px-6 py-4 whitespace-nowrap">
                               {order.ItemName}
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
+                            <td className="px-6 py-4 whitespace-nowrap">
                               {order.LocalBillingCode}
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
+                            <td className="px-6 py-4 whitespace-nowrap">
                               {order.LocalBillingName}
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
+                            <td className="px-6 py-4 whitespace-nowrap">
                               {order.ItemAmount}
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
+                            <td className="px-6 py-4 whitespace-nowrap">
                               {order.Initial}
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
+                            <td className="px-6 py-4 whitespace-nowrap">
                               {order.Discount}
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
+                            <td className="px-6 py-4 whitespace-nowrap">
                               {order.NetAmount}
                             </td>
                           </tr>
@@ -1064,19 +1258,19 @@ if(PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER"
                       <th>จำนวนเงิน (หลังหักส่วนลด)</th>
                     </tr>
                   </thead>
-                  <tbody class="bg-white divide-y divide-gray-200">
+                  <tbody className="bg-white divide-y divide-gray-200">
                     {billing
                       ? billing.Result.BillingInfo.map((bill, index) => (
                           <tr
                             key={index}
                             className=" bg-neutral text-sm"
                           >
-                            <td class="px-6 py-4 whitespace-nowrap">{bill.SimbBillingCode ? index + 1 : ""}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">{bill.SimbBillingCode}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">{bill.LocalBillingName}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">{bill.BillingInitial}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">{bill.BillingDiscount}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">{bill.BillingNetAmount}</td>
+                            <td className="px-6 py-4 whitespace-nowrap">{bill.SimbBillingCode ? index + 1 : ""}</td>
+                            <td className="px-6 py-4 whitespace-nowrap">{bill.SimbBillingCode}</td>
+                            <td className="px-6 py-4 whitespace-nowrap">{bill.LocalBillingName}</td>
+                            <td className="px-6 py-4 whitespace-nowrap">{bill.BillingInitial}</td>
+                            <td className="px-6 py-4 whitespace-nowrap">{bill.BillingDiscount}</td>
+                            <td className="px-6 py-4 whitespace-nowrap">{bill.BillingNetAmount}</td>
                           </tr>
                         ))
                       : <tr><td></td></tr>}
@@ -1105,19 +1299,19 @@ if(PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER"
                       <th>จำนวนเงิน (หลังหักส่วนลด)</th>
                     </tr>
                   </thead>
-                  <tbody class="bg-white divide-y divide-gray-200">
+                  <tbody className="bg-white divide-y divide-gray-200">
                     {billing
                       ? billing.Result.BillingInfo.map((bill, index) => (
                           <tr
                             key={index}
                             className=" bg-neutral text-sm"
                           >
-                            <td class="px-6 py-4 whitespace-nowrap">{bill.SimbBillingCode ? index + 1 : ""}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">{bill.SimbBillingCode}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">{bill.LocalBillingName}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">{bill.BillingInitial}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">{bill.BillingDiscount}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">{bill.BillingNetAmount}</td>
+                            <td className="px-6 py-4 whitespace-nowrap">{bill.SimbBillingCode ? index + 1 : ""}</td>
+                            <td className="px-6 py-4 whitespace-nowrap">{bill.SimbBillingCode}</td>
+                            <td className="px-6 py-4 whitespace-nowrap">{bill.LocalBillingName}</td>
+                            <td className="px-6 py-4 whitespace-nowrap">{bill.BillingInitial}</td>
+                            <td className="px-6 py-4 whitespace-nowrap">{bill.BillingDiscount}</td>
+                            <td className="px-6 py-4 whitespace-nowrap">{bill.BillingNetAmount}</td>
                           </tr>
                         ))
                       : <tr><td></td></tr>}
@@ -1136,11 +1330,14 @@ if(PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER"
               <h1 className="font-black text-accent text-3xl ">Upload File</h1>
           <div className="overflow-x-auto mt-6">
                 <div className="flex items-center ">
-                            <input type="file" className="file-input file-input-bordered file-input-info w-5/6" onChange={ (e) => { setFile(e.target.files[0]) } } ref={inputRef}/> 
+                            <input type="file" accept=".pdf" className="file-input file-input-bordered file-input-info w-5/6" onChange={ (e) => { setFile(e.target.files[0]) } } ref={inputRef}/> 
                             <div className="btn btn-success text-base-100 hover:text-success hover:bg-base-100 w-1/6 ml-2" onClick={ handleUpload }>
                                 <FaCloudUploadAlt className="size-6"/>
                             </div>
               </div>
+              <div className="label">
+    <span className="label-text-alt text-error text-sm">** Upload เฉพาะไฟล์ .PDF เท่านั้น ( ไม่เกิน 20 MB )**</span>
+  </div>
               { progress.started && <progress max="100" value={progress.pc} className="progress progress-info mt-2 w-full"></progress> }
 <br /> 
 <h1 className="text-center">{ msg }</h1>
@@ -1166,12 +1363,11 @@ if(PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER"
               <table className="table table-zebra mt-2">
                 <thead >
                   <tr className="text-base-100 bg-primary py-8 text-sm w-full text-center">
-                      <th className="w-1/5"></th>
                       <th className="w-2/5">ชื่อไฟล์</th>
                       <th className="w-1/5"></th>
                     </tr>
                   </thead>
-                  <tbody class="bg-white divide-y divide-gray-200">
+                  <tbody className="bg-white divide-y divide-gray-200">
                   {billList
                       ? billList.map((list, index) => (
                           <tr
@@ -1194,6 +1390,7 @@ if(PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER"
                       : (
                         <tr>
                           <td></td>
+                          <td></td>
                         </tr>
                       )} 
                   </tbody>
@@ -1204,8 +1401,8 @@ if(PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER"
                 <div className="rounded-md "></div>
                 <div className="rounded-md ">&nbsp;</div> 
             </div> 
-                            {/* {billList
-                      ? ( */}
+                            {billList.length === 0
+                      ? null :  (
             <div className="py-2">
               <div className="text-right">
                 
@@ -1217,15 +1414,11 @@ if(PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER"
                 </button>
                 </div>
               </div>
-              {/* ) : ""} */}
+        ) } 
           </div>
         </div>
          
-             
-       
 
-
-            
     </form>
         </>
       ) : (
@@ -1238,6 +1431,44 @@ if(PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER"
           </div>
         </div>
       )}
+
+
+<dialog id="my_modal_3" className="modal text-xl	">
+        <div className="modal-box w-11/12 max-w-5xl">
+          <form method="dialog">
+            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
+              ✕
+            </button>
+            {showSummitError === "Err" ? (
+            <div role="alert" className="alert alert-error mt-2 text-base-100">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6 shrink-0 stroke-current"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <span>{massSummitError}</span>
+            </div>
+            ) : (
+              <>
+         {massSummit ? (massSummit) : <center><span className="loading loading-spinner text-error size-10 "></span></center>}
+
+
+          </>
+            )}
+          </form>
+        </div>
+        </dialog>
+
+
+
 
 {showModal ? (
   <>
