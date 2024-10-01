@@ -29,13 +29,25 @@ import { useSelector } from "react-redux";
 
 
 export default function SelectPatient() {
+  const error = {
+    response : {
+      data : {
+          "HTTPStatus": {
+                "statusCode": "",
+                "message": "",
+                "error": ""
+     },
+      },
+    },
+  }  
   const InsurerCode = 13;
   // const [claimStatus, setClaimStatus] = useState();
   const [post, setPost] = useState("");
   const [create, setCreate] = useState("");
   const [showFormCreate, setShowFormCreate] = useState("");
+  const [showMassCreate, setShowMassCreate] = useState("");
   const [input, setInput] = useState("");
-  const [ patientFindforUpdate , setPatientFindforUpdate ]= useState("");
+  const [patientFindforUpdate , setPatientFindforUpdate ]= useState("");
   const router = useRouter();
   const [selectedOption, setSelectedOption] = useState("NATIONAL_ID");
   const [pidValue, setPidValue] = useState("");
@@ -45,6 +57,7 @@ export default function SelectPatient() {
   const [massError, setMassError] = useState("");
   const [showFormError, setShowFormError] = useState("");
   const [showSuccUpdate, setShowSuccUpdate] = useState("");
+  const [patientupdate, setPatientUpdate] = useState({});
 
 
 ////////////////Create Redux Patient /////////////////////////
@@ -116,7 +129,8 @@ router.push('/aia/opd/checkeligible');
         })
         .catch(function (error) {
           console.log(error);
-          setShowFormCreate("Err");
+          setShowFormCreate("Error");
+          setShowMassCreate(error.message)
         });
     } else if (event.target.exampleRadios.value === "HOSPITAL_ID") {
       const PatientInfo = {
@@ -140,7 +154,8 @@ router.push('/aia/opd/checkeligible');
         })
         .catch(function (error) {
           //console.log(error);
-          setShowFormCreate("Err");
+          setShowFormCreate("Error");
+          setShowMassCreate(error.message)
         });
     } else if (event.target.exampleRadios.value === "PASSPORT_NO") {
       //console.log("PASSPORT_NO");
@@ -165,11 +180,13 @@ router.push('/aia/opd/checkeligible');
         })
         .catch(function (error) {
           //console.log(error);
-          setShowFormCreate("Err");
+          setShowFormCreate("Error");
+          setShowMassCreate(error.message)
         });
     }
   };
   function saveCreate() {
+    setShowFormCreate("");
     axios
       .post(
         process.env.NEXT_PUBLIC_URL_PD + "v1/aia-patient-info/CreatePatient",
@@ -197,11 +214,14 @@ router.push('/aia/opd/checkeligible');
         setShowFormCreate("Succ");
       })
       .catch(function (error) {
+        console.log(error.message)
         console.log(error.response.data.HTTPStatus.message);
         if (error.response.request.status === 500) {
-          setShowFormCreate("Again");
+          setShowFormCreate("Error");
+          setShowMassCreate(error.message)
         } else {
-          setShowFormCreate("Err");
+
+          setShowFormCreate("Again");
         }
       });
 
@@ -209,7 +229,15 @@ router.push('/aia/opd/checkeligible');
   }
 
   const PatientB = (patient) => {
-    console.log(patient)
+  setPatientUpdate({
+  PID : patient.PID,
+  HN : patient.HN,
+  PassportNumber : patient.PassportNumber
+  },)
+
+
+    setShowSuccUpdate()
+    //console.log(patient)
     axios
       .post(
         process.env.NEXT_PUBLIC_URL_PD + "v1/aia-patient-info/PatientFindforUpdate",
@@ -235,11 +263,13 @@ router.push('/aia/opd/checkeligible');
          document.getElementById("my_modal_1").showModal()
       })
       .catch(function (error) {
-        console.log(error.response.request.status);
+        // console.log(error.response.request.status);
+        setMassError(response.data.HTTPStatus.message);
+        setShowFormError("Error")
       });
   }
   function saveUpdate() {
-
+    setPatientFindforUpdate()
     axios
       .patch(
         process.env.NEXT_PUBLIC_URL_PD + "v1/aia-patient-info/PatientUpdate",
@@ -265,12 +295,37 @@ router.push('/aia/opd/checkeligible');
       .then(function (response) {
         console.log(response.data);
         setShowSuccUpdate("Succ")
+        
+        axios
+        .post(
+          process.env.NEXT_PUBLIC_URL_PD + "v1/aia-patient-info/PatientFindforUpdate",
+          {
+            "PatientInfo": {
+      "InsurerCode": InsurerCode, 
+      "RefID":"",
+      "TransactionNo":"",
+      "PID": patientupdate.PID,
+      "HN": patientupdate.HN,
+      "PassportNumber": patientupdate.PassportNumber,
+      "IdType":"HOSPITAL_ID",
+      "VN":"",
+      "StatusClaimCode": "01", 
+      "VisitDatefrom": "",
+       "VisitDateto":  ""
+    }
+          }
+        )
+        .then(function (response) {
+         // console.log(response.data);
+          setPatientFindforUpdate(response.data)
+        })
+        .catch(function (error) {
+          console.log(error.response.request.status);
+        });
       })
       .catch(function (error) {
         console.log(error.response.request.status);
       });
-
-    //console.log(dataCreate);
   }
 
 
@@ -315,14 +370,22 @@ router.push('/aia/opd/checkeligible');
                   setPost(response.data);
                 }else{
                 setMassError(response.data.HTTPStatus.message);
-                setShowFormError("Err")
+                setShowFormError("Error")
                 }
-                
-            
               })
               .catch(function (error) {
-                console.log(error.data);
-                //console.log("5555555555555555555555555555555555555555");
+                console.log(error)
+                try{
+                  const ErrorMass = error.config.url
+                  const [ErrorMass1, ErrorMass2] = ErrorMass.split('v1/');
+                  setMassError(error.code +" - "+error.message +" - "+ErrorMass2);
+                  setShowFormError("Error")
+                }
+                catch (error) {
+   
+                  setShowFormError("Error");
+                   setMassError(error.response.data.HTTPStatus.message);
+               }
               });
             } else if (selectedOption === "HOSPITAL_ID") {
               //console.log("HN")
@@ -350,13 +413,22 @@ router.push('/aia/opd/checkeligible');
                   setPost(response.data);
                 }else{
                 setMassError(response.data.HTTPStatus.message);
-                setShowFormError("Err")
+                setShowFormError("Error")
                 }
                })
               .catch(function (error) {
-                setMassError(error.message);
-                setShowFormError("Err")
-                //console.log("5555555555555555555555555555555555555555");
+                console.log(error)
+                try{
+                  const ErrorMass = error.config.url
+                  const [ErrorMass1, ErrorMass2] = ErrorMass.split('v1/');
+                  setMassError(error.code +" - "+error.message +" - "+ErrorMass2);
+                  setShowFormError("Error")
+                }
+                catch (error) {
+   
+                  setShowFormError("Error");
+                   setMassError(error.response.data.HTTPStatus.message);
+               }
               });
             } else if (selectedOption === "PASSPORT_NO") {
               //console.log("PASSPORT_NO");
@@ -384,12 +456,22 @@ router.push('/aia/opd/checkeligible');
                   setPost(response.data);
                 }else{
                 setMassError(response.data.HTTPStatus.message);
-                setShowFormError("Err")
+                setShowFormError("Error")
                 }
               })
               .catch(function (error) {
-                console.log(error.data);
-                setShowFormError("Err");
+                console.log(error)
+                try{
+                  const ErrorMass = error.config.url
+                  const [ErrorMass1, ErrorMass2] = ErrorMass.split('v1/');
+                  setMassError(error.code +" - "+error.message +" - "+ErrorMass2);
+                  setShowFormError("Error")
+                }
+                catch (error) {
+   
+                  setShowFormError("Error");
+                   setMassError(error.response.data.HTTPStatus.message);
+               }
               });
           };
 
@@ -483,7 +565,7 @@ router.push('/aia/opd/checkeligible');
           <div className="px-2 rounded-md"></div>
         </div>
     </form>
-      {showFormError === "Err" ? (
+      {showFormError === "Error" ? (
               <div role="alert" className="alert alert-error mt-2 text-base-100">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -595,7 +677,7 @@ router.push('/aia/opd/checkeligible');
           <div className="justify-center border-solid ">
             <h1 className="font-black text-accent text-3xl ">Create Patient</h1>
             {showFormCreate === "Succ" ? (
-              <div role="alert" className="alert alert-success">
+              <div role="alert" className="alert alert-success text-base-100">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-6 w-6 shrink-0 stroke-current"
@@ -614,8 +696,8 @@ router.push('/aia/opd/checkeligible');
             ) : (
               ""
             )}
-            {showFormCreate === "Err" ? (
-              <div role="alert" className="alert alert-error">
+            {showFormCreate === "Error" ? (
+              <div role="alert" className="alert alert-error text-base-100">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-6 w-6 shrink-0 stroke-current"
@@ -629,13 +711,13 @@ router.push('/aia/opd/checkeligible');
                     d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
                   />
                 </svg>
-                <span>Error!!</span>
+                <span>{showMassCreate}</span>
               </div>
             ) : (
               ""
             )}
             {showFormCreate === "Again" ? (
-              <div role="alert" className="alert alert-warning">
+              <div role="alert" className="alert alert-warning text-base-100">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-6 w-6 shrink-0 stroke-current"

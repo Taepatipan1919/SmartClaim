@@ -20,6 +20,17 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 export  default  function chackData() {
+  const error = {
+    response : {
+      data : {
+          "HTTPStatus": {
+                "statusCode": "",
+                "message": "",
+                "error": ""
+     },
+      },
+    },
+  }  
   const InsurerCode = 13;
   const [post, setPost] = useState("");
   const [serviceSetting, setServiceSetting] = useState();
@@ -32,7 +43,6 @@ export  default  function chackData() {
   const [fromValue, setFromValue] = useState(null);
   const [statusValue, setStatusValue] = useState("OPD");
   const [policyTypeValue, setPolicyTypeValue] = useState("");
-  const [furtherClaimValue, setFurtherClaimValue] = useState("");
   const [surgeryTypeValue, setSurgeryTypeValue] = useState("");
   const [illnessTypeValue, setIllnessTypeValue] = useState("");
   const router = useRouter();
@@ -45,16 +55,12 @@ const [ furtherClaim , setFurtherClaim ]= useState("")
   const  ReDux  = useSelector((state) => ({ ...state }));
   const dispatch = useDispatch();
   const [selectedValue, setSelectedValue] = useState('');
-
   const handleSelectChange = (event) => {
     setSelectedValue(event.target.value);
   };
   // const router = useRouter();
   const confirmButton = () => {
    // console.log(ReDux)
-
-
-
         axios
         .post(process.env.NEXT_PUBLIC_URL_PD + "v1/aia-retrieve-further-claim-list/getRetrieveFurther-claim",{
           //  PatientInfo
@@ -78,31 +84,22 @@ const [ furtherClaim , setFurtherClaim ]= useState("")
           setFurtherClaim(response.data);
         //console.log(response.data)
         })
-        .catch((err) => {
-         // console.error("Error", err)
-          console.log(err)
-          //  if (err.response.request.status === 500) {
-                  setShowFormError("Error");
-                  setMassError(err.response.data.HTTPStatus.message);
-              //  } 
-          
+        .catch((error) => {
+              console.log(error)
+              try{
+                const ErrorMass = error.config.url
+                const [ErrorMass1, ErrorMass2] = ErrorMass.split('v1/');
+                setMassError(error.code +" - "+error.message +" - "+ErrorMass2);
+                setShowFormError("Error")
+              }
+              catch (error) {
+                 setMassError(error.response.data.HTTPStatus.message);
+                 setShowFormError("Error");
+             }
     });
-
-
-
-
-
-
-
-
      document.getElementById("my_modal_2").showModal()
-    
   };
   const gourl = () => {
-  // console.log(selectedValue)
-
- // console.log(FurtherClaimNo)
-  //console.log(FurtherClaimId)
   if(selectedValue){
     const [FurtherClaimNo, FurtherClaimId] = selectedValue.split(' | ');
     dispatch(
@@ -150,11 +147,6 @@ const [ furtherClaim , setFurtherClaim ]= useState("")
   
      router.push('/aia/opd/eligible');
   }
-  
-
-  const further = (event) => {
-    setFurtherClaimValue(event.target.value);
-  }
 
   const policy = (event) => {
     setPolicyTypeValue(event.target.value);
@@ -169,45 +161,88 @@ const [ furtherClaim , setFurtherClaim ]= useState("")
   //   setPolicyTypeValue(event.target.value);
   // }
   useEffect(() => {
-    const getSurgery = async () => {
-      const response = await fetch(
-        process.env.NEXT_PUBLIC_URL_PD + "v1/utils/IllnessSurgery/" + InsurerCode
-      );
-      const data = await response.json();
-      setSurgeryType(data);
-    };
-    getSurgery();
-  }, []);
-    //console.log(surgeryType)
-  useEffect(() => {
-    const getIllnessType = async () => {
-      const response = await fetch(
-        process.env.NEXT_PUBLIC_URL_PD + "v1/utils/IllnessType/" + InsurerCode
-      );
-      const data = await response.json();
-      setIllnessType(data);
-    };
-    getIllnessType();
-  }, []);
-  useEffect(() => {
-    const getPolicyType = async () => {
-      const response = await fetch(
-        process.env.NEXT_PUBLIC_URL_PD + "v1/utils/policyType/" + InsurerCode
-      );
-      const data = await response.json();
-      setPolicyType(data);
-    };
-    getPolicyType();
+      axios
+      .get(process.env.NEXT_PUBLIC_URL_PD + "v1/utils/IllnessSurgery/" + InsurerCode)
+      .then((response) => {
+       // console.log(response.data)
+        setSurgeryType(response.data);
+      })
+      .catch((error) => {
+        console.log(error)
+        try{
+          const ErrorMass = error.config.url
+          const [ErrorMass1, ErrorMass2] = ErrorMass.split('v1/');
+          setMassError(error.code +" - "+error.message +" - "+ErrorMass2);
+          setShowFormError("Error")
+        }
+        catch (error) {
+          setMassError(error.response.data.HTTPStatus.message);
+          setShowFormError("Error");
+       }
+  });
   }, []);
   useEffect(() => {
-    const getServiceSetting = async () => {
-      const response = await fetch(
-        process.env.NEXT_PUBLIC_URL_PD + "v1/utils/serviceSetting/" + InsurerCode
-      );
-      const data = await response.json();
-      setServiceSetting(data);
-    };
-    getServiceSetting();
+    axios
+    .get(process.env.NEXT_PUBLIC_URL_PD + "v1/utils/IllnessType/" + InsurerCode)
+    .then((response) => {
+     // console.log(response.data)
+     setIllnessType(response.data);
+    })
+    .catch((error) => {
+      console.log(error)
+      try{
+        const ErrorMass = error.config.url
+        const [ErrorMass1, ErrorMass2] = ErrorMass.split('v1/');
+        setMassError(error.code +" - "+error.message +" - "+ErrorMass2);
+        setShowFormError("Error")
+      }
+      catch (error) {
+        setMassError(error.response.data.HTTPStatus.message);
+        setShowFormError("Error");
+     }
+});
+  }, []);
+  useEffect(() => {
+    axios
+    .get(process.env.NEXT_PUBLIC_URL_PD + "v1/utils/policyType/" + InsurerCode)
+    .then((response) => {
+     // console.log(response.data)
+     setPolicyType(response.data);
+    })
+    .catch((error) => {
+      console.log(error)
+      try{
+        const ErrorMass = error.config.url
+        const [ErrorMass1, ErrorMass2] = ErrorMass.split('v1/');
+        setMassError(error.code +" - "+error.message +" - "+ErrorMass2);
+        setShowFormError("Error")
+      }
+      catch (error) {
+        setMassError(error.response.data.HTTPStatus.message);
+        setShowFormError("Error");
+     }
+  });
+  }, []);
+  useEffect(() => {
+    axios
+    .get(process.env.NEXT_PUBLIC_URL_PD + "v1/utils/serviceSetting/" + InsurerCode)
+    .then((response) => {
+     // console.log(response.data)
+     setServiceSetting(response.data);
+    })
+    .catch((error) => {
+      console.log(error)
+      try{
+        const ErrorMass = error.config.url
+        const [ErrorMass1, ErrorMass2] = ErrorMass.split('v1/');
+        setMassError(error.code +" - "+error.message +" - "+ErrorMass2);
+        setShowFormError("Error")
+      }
+      catch (error) {
+        setMassError(error.response.data.HTTPStatus.message);
+        setShowFormError("Error");
+     }
+  });
   }, []);
 
   const handleSubmit = (event) => {
@@ -234,12 +269,12 @@ const [ furtherClaim , setFurtherClaim ]= useState("")
       .then((response) => {
         setPost(response.data);
       })
-      .catch((err) => {
+      .catch((error) => {
        // console.error("Error", err)
-        console.log(err)
+        console.log(error)
         //  if (err.response.request.status === 500) {
                 setShowFormError("Error");
-                setMassError(err.response.data.HTTPStatus.message);
+                setMassError(error.response.data.HTTPStatus.message);
             //  } 
         
   });
@@ -301,14 +336,13 @@ const [ furtherClaim , setFurtherClaim ]= useState("")
       setShowFormError()
 
       }else{
-        setShowFormError("Err");
-     //   console.log(response);
+        setShowFormError("Error");
        setMassError(response.data.HTTPStatus.message);
       }
     }
     catch (error) {
         console.log(error)
-         setShowFormError("Err");
+         setShowFormError("Error");
          setMassError(error.response.data.HTTPStatus.message);
      }
   };
@@ -607,7 +641,7 @@ type="submit"
             <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
               ✕
             </button>
-            {showFormError === "Err" ? (
+            {showFormError === "Error" ? (
             <div role="alert" className="alert alert-error mt-2 text-base-100">
               <svg
                 xmlns="http://www.w3.org/2000/svg"

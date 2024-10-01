@@ -11,18 +11,32 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
-
-import { DemoContainer, DemoItem } from '@mui/x-date-pickers/internals/demo';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
+import { FaEdit } from "react-icons/fa";
+import { FaCirclePlus , FaCircleMinus  } from "react-icons/fa6";
+ import { DemoContainer, DemoItem } from '@mui/x-date-pickers/internals/demo';
+ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+ import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
 import { FaCloudUploadAlt } from "react-icons/fa";
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button } from '@mui/material';
+import { styled } from '@mui/material/styles';
 
 export default function Page({data}) {
-  //console.log(data)
+  const error = {
+    response : {
+      data : {
+          "HTTPStatus": {
+                "statusCode": "",
+                "message": "",
+                "error": ""
+     },
+      },
+    },
+  }  
   const InsuranceCode = 13;
+  const [showFormError, setShowFormError] = useState("");
   const [patien, setPatien] = useState();
   const [visit, setVisit] = useState();
   const [accidentDetail, setAccidentDetail] = useState();
@@ -58,7 +72,8 @@ export default function Page({data}) {
   const [showSummitError, setShowSummitError] = useState("");
   const [massSummit, setMassSummit] = useState("");
   const [otherInsurer, setOtherInsurer] = useState("false");
-
+  const [rows, setRows] = useState([]);
+  const [newRow, setNewRow] = useState({ Icd9: '', ProcedureName: '', ProcedureDate: '' });
 
   const [freetext , setFreeText] = useState();
   const AccidentPlace = (event) => {
@@ -101,8 +116,6 @@ const PatientInfo = {
     FurtherClaimId : data.DataTran.Data.FurtherClaimId,
   }
   useEffect(() => {
- // console.log(PatientInfo)
-
   if (inputRef.current) {
     inputRef.current.value = '';
   }
@@ -118,20 +131,20 @@ const PatientInfo = {
     })
     .then((response) => {
       setBillList(response.data);
-     // console.log(response.data)
     })
-    .catch((err) => {
-     // console.error("Error", err)
-      console.log(err)
-      //  if (err.response.request.status === 500) {
-              // setShowFormError("Error");
-              // setMassError(err.response.data.HTTPStatus.message);
+    .catch((error) => {
+              console.log(error)
+              try{
+                const ErrorMass = error.config.url
+                const [ErrorMass1, ErrorMass2] = ErrorMass.split('v1/');
+                setMassError(error.code +" - "+error.message +" - "+ErrorMass2);
+                setShowFormError("Error")
+              }
+              catch (error) {
+                 setMassError(error.response.data.HTTPStatus.message);
+                 setShowFormError("Error");
+             }
            })  
-
-
-
-
-
 }, []);
   useEffect(() => {
         axios
@@ -141,9 +154,18 @@ const PatientInfo = {
       .then((response) => {
         setPatien(response.data);
       })
-      .catch((err) => {
-       // console.error("Error", err)
-        console.log(err)
+      .catch((error) => {
+        console.log(error)
+        try{
+          const ErrorMass = error.config.url
+          const [ErrorMass1, ErrorMass2] = ErrorMass.split('v1/');
+          setMassError(error.code +" - "+error.message +" - "+ErrorMass2);
+          setShowFormError("Error")
+        }
+        catch (error) {
+           setMassError(error.response.data.HTTPStatus.message);
+           setShowFormError("Error");
+       }
   });
   }, []);
 
@@ -156,9 +178,18 @@ const PatientInfo = {
       setOver45Days(response.data);
 
     })
-    .catch((err) => {
-     // console.error("Error", err)
-      console.log(err)
+    .catch((error) => {
+      console.log(error)
+      try{
+        const ErrorMass = error.config.url
+        const [ErrorMass1, ErrorMass2] = ErrorMass.split('v1/');
+        setMassError(error.code +" - "+error.message +" - "+ErrorMass2);
+        setShowFormError("Error")
+      }
+      catch (error) {
+         setMassError(error.response.data.HTTPStatus.message);
+         setShowFormError("Error");
+     }
     });
   }, []);
 
@@ -171,9 +202,18 @@ const PatientInfo = {
       setVisit(response.data);
 
     })
-    .catch((err) => {
-     // console.error("Error", err)
-      console.log(err)
+    .catch((error) => {
+      console.log(error)
+      try{
+        const ErrorMass = error.config.url
+        const [ErrorMass1, ErrorMass2] = ErrorMass.split('v1/');
+        setMassError(error.code +" - "+error.message +" - "+ErrorMass2);
+        setShowFormError("Error")
+      }
+      catch (error) {
+         setMassError(error.response.data.HTTPStatus.message);
+         setShowFormError("Error");
+     }
     });
 
   }, []);
@@ -194,9 +234,18 @@ const PatientInfo = {
       setValue(dateValue);
 
     })
-    .catch((err) => {
-     // console.error("Error", err)
-      console.log(err)
+    .catch((error) => {
+      console.log(error)
+      try{
+        const ErrorMass = error.config.url
+        const [ErrorMass1, ErrorMass2] = ErrorMass.split('v1/');
+        setMassError(error.code +" - "+error.message +" - "+ErrorMass2);
+        setShowFormError("Error")
+      }
+      catch (error) {
+         setMassError(error.response.data.HTTPStatus.message);
+         setShowFormError("Error");
+     }
     });
 
   }, []);
@@ -210,9 +259,18 @@ const PatientInfo = {
       setDataaccidentPlace(response.data);
 
     })
-    .catch((err) => {
-     // console.error("Error", err)
-      console.log(err)
+    .catch((error) => {
+      console.log(error)
+      try{
+        const ErrorMass = error.config.url
+        const [ErrorMass1, ErrorMass2] = ErrorMass.split('v1/');
+        setMassError(error.code +" - "+error.message +" - "+ErrorMass2);
+        setShowFormError("Error")
+      }
+      catch (error) {
+         setMassError(error.response.data.HTTPStatus.message);
+         setShowFormError("Error");
+     }
     });
 
   }, []);
@@ -225,9 +283,18 @@ const PatientInfo = {
       setDatainjurySide(response.data);
 
     })
-    .catch((err) => {
-     // console.error("Error", err)
-      console.log(err)
+    .catch((error) => {
+      console.log(error)
+      try{
+        const ErrorMass = error.config.url
+        const [ErrorMass1, ErrorMass2] = ErrorMass.split('v1/');
+        setMassError(error.code +" - "+error.message +" - "+ErrorMass2);
+        setShowFormError("Error")
+      }
+      catch (error) {
+         setMassError(error.response.data.HTTPStatus.message);
+         setShowFormError("Error");
+     }
     });
 
   }, []);
@@ -242,9 +309,18 @@ const PatientInfo = {
 
 
     })
-    .catch((err) => {
-     // console.error("Error", err)
-      console.log(err)
+    .catch((error) => {
+      console.log(error)
+      try{
+        const ErrorMass = error.config.url
+        const [ErrorMass1, ErrorMass2] = ErrorMass.split('v1/');
+        setMassError(error.code +" - "+error.message +" - "+ErrorMass2);
+        setShowFormError("Error")
+      }
+      catch (error) {
+         setMassError(error.response.data.HTTPStatus.message);
+         setShowFormError("Error");
+     }
     });
 
   }, []);
@@ -258,9 +334,18 @@ const PatientInfo = {
       setVitalsign(response.data);
 
     })
-    .catch((err) => {
-     // console.error("Error", err)
-      console.log(err)
+    .catch((error) => {
+      console.log(error)
+      try{
+        const ErrorMass = error.config.url
+        const [ErrorMass1, ErrorMass2] = ErrorMass.split('v1/');
+        setMassError(error.code +" - "+error.message +" - "+ErrorMass2);
+        setShowFormError("Error")
+      }
+      catch (error) {
+         setMassError(error.response.data.HTTPStatus.message);
+         setShowFormError("Error");
+     }
     });
   }, []);
 
@@ -273,9 +358,18 @@ const PatientInfo = {
       setDoctor(response.data);
 
     })
-    .catch((err) => {
-     // console.error("Error", err)
-      console.log(err)
+    .catch((error) => {
+      console.log(error)
+      try{
+        const ErrorMass = error.config.url
+        const [ErrorMass1, ErrorMass2] = ErrorMass.split('v1/');
+        setMassError(error.code +" - "+error.message +" - "+ErrorMass2);
+        setShowFormError("Error")
+      }
+      catch (error) {
+         setMassError(error.response.data.HTTPStatus.message);
+         setShowFormError("Error");
+     }
     });
   }, []);
 
@@ -288,9 +382,18 @@ const PatientInfo = {
       .then((response) => {
         setDiagnosis(response.data);
       })
-      .catch((err) => {
-       // console.error("Error", err)
-        console.log(err)
+      .catch((error) => {
+        console.log(error)
+        try{
+          const ErrorMass = error.config.url
+          const [ErrorMass1, ErrorMass2] = ErrorMass.split('v1/');
+          setMassError(error.code +" - "+error.message +" - "+ErrorMass2);
+          setShowFormError("Error")
+        }
+        catch (error) {
+           setMassError(error.response.data.HTTPStatus.message);
+           setShowFormError("Error");
+       }
   });
 }, []);
   useEffect(() => {
@@ -301,11 +404,30 @@ const PatientInfo = {
       .then((response) => {
         setProcedure(response.data);
       })
-      .catch((err) => {
-       // console.error("Error", err)
-        console.log(err)
+      .catch((error) => {
+        console.log(error)
+        try{
+          const ErrorMass = error.config.url
+          const [ErrorMass1, ErrorMass2] = ErrorMass.split('v1/');
+          setMassError(error.code +" - "+error.message +" - "+ErrorMass2);
+          setShowFormError("Error")
+        }
+        catch (error) {
+           setMassError(error.response.data.HTTPStatus.message);
+           setShowFormError("Error");
+       }
   });
 }, []);
+const handleAddRow = () => {
+  setRows([...rows, newRow]);
+  setNewRow({ Icd9: '', ProcedureName: '', ProcedureDate: '' });
+};
+
+const handleDeleteRow = (index) => {
+  const newRows = rows.filter((_, i) => i !== index);
+  setRows(newRows);
+};
+
 //console.log(procedure)
 useEffect(() => {
   axios
@@ -315,9 +437,18 @@ useEffect(() => {
     .then((response) => {
       setInvestigation(response.data);
     })
-    .catch((err) => {
-     // console.error("Error", err)
-      console.log(err)
+    .catch((error) => {
+      console.log(error)
+      try{
+        const ErrorMass = error.config.url
+        const [ErrorMass1, ErrorMass2] = ErrorMass.split('v1/');
+        setMassError(error.code +" - "+error.message +" - "+ErrorMass2);
+        setShowFormError("Error")
+      }
+      catch (error) {
+         setMassError(error.response.data.HTTPStatus.message);
+         setShowFormError("Error");
+     }
 });
 }, []);
 
@@ -329,9 +460,18 @@ useEffect(() => {
     .then((response) => {
       setOrderItemz(response.data);
     })
-    .catch((err) => {
-     // console.error("Error", err)
-      console.log(err)
+    .catch((error) => {
+      console.log(error)
+      try{
+        const ErrorMass = error.config.url
+        const [ErrorMass1, ErrorMass2] = ErrorMass.split('v1/');
+        setMassError(error.code +" - "+error.message +" - "+ErrorMass2);
+        setShowFormError("Error")
+      }
+      catch (error) {
+         setMassError(error.response.data.HTTPStatus.message);
+         setShowFormError("Error");
+     }
 });
 }, []);
 
@@ -343,9 +483,18 @@ useEffect(() => {
     .then((response) => {
       setBilling(response.data);
     })
-    .catch((err) => {
-     // console.error("Error", err)
-      console.log(err)
+    .catch((error) => {
+      console.log(error)
+      try{
+        const ErrorMass = error.config.url
+        const [ErrorMass1, ErrorMass2] = ErrorMass.split('v1/');
+        setMassError(error.code +" - "+error.message +" - "+ErrorMass2);
+        setShowFormError("Error")
+      }
+      catch (error) {
+         setMassError(error.response.data.HTTPStatus.message);
+         setShowFormError("Error");
+     }
 });
 }, []);
 
@@ -397,12 +546,19 @@ const DocumentBase64 = (data) => {
 //        );
 
     })
-    .catch((err) => {
-     // console.error("Error", err)
-      console.log(err)
-      //  if (err.response.request.status === 500) {
-               setShowDocError("Error");
-               setMassDocError("Error ในการเปิดไฟล์");
+    .catch((error) => {
+        console.log(error)
+        try{
+          const ErrorMass = error.config.url
+          const [ErrorMass1, ErrorMass2] = ErrorMass.split('v1/');
+          setMassDocError(error.code +" - "+error.message +" - "+ErrorMass2);
+          setShowDocError("Error")
+        }
+        catch (error) {
+          setMassDocError("Error ในการเปิดไฟล์");
+           setShowDocError("Error");
+       }
+
            })  
 }
 
@@ -410,150 +566,139 @@ const DocumentBase64 = (data) => {
 // กดปุ่มส่งเคลม
   const Claim = (event) => {
     event.preventDefault();
+    if (rows.length > 0) {
+      const firstRow = rows;
+      console.log(firstRow);
+    } else {
+      console.log('No rows to save');
+    }
 
+//     const Datevalue = dayjs(value.$d).format('YYYY-MM-DD');
 
-    const Datevalue = dayjs(value.$d).format('YYYY-MM-DD');
+// if(PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER"){
+//  // console.log(PatientInfo)
 
-if(PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER"){
- // console.log(PatientInfo)
+//  document.getElementById("my_modal_3").showModal();
 
- document.getElementById("my_modal_3").showModal();
+//   const Data = {
+//     "PatientInfo" : {
+//       InsurerCode: PatientInfo.InsurerCode,
+//       RefId: PatientInfo.RefId,
+//       TransactionNo : PatientInfo.TransactionNo,
+//       PID : PatientInfo.PID,
+//       HN : PatientInfo.HN,
+//       GivenNameTH : PatientInfo.GivenNameTH,
+//       SurnameTH: PatientInfo.SurnameTH,
+//       DateOfBirth: PatientInfo.DateOfBirth,
+//       PassportNumber: PatientInfo.PassportNumber,
+//       IdType: PatientInfo.IdType,
+//       VN:  PatientInfo.VN,
+//       VisitDateTime: PatientInfo.VisitDateTime,
+//       AccidentDate: Datevalue,
+//       AccidentPlaceCode:  accidentPlaceValue,
+//       AccidentInjuryWoundtypeCode:  woundType,
+//       AccidentInjurySideCode: injurySide,
+//       WoundDetails: event.target.commentOfInjuryText.value,
+//       PolicyTypeCode: PatientInfo.PolicyTypeCode,
+//       ServiceSettingCode: PatientInfo.ServiceSettingCode, 
+//       IllnessTypeCode: PatientInfo.IllnessTypeCode,
+//       SurgeryTypeCode:  PatientInfo.SurgeryTypeCode,
+//       ChiefComplaint: visit.Result.VisitInfo.ChiefComplaint,
+//       PresentIllness: event.target.PresentIllnessText.value,
+//       AccidentCauseOver45Days : over45,
+//       DxFreeText : event.target.DxFreeTextText.value,
+//       FurtherClaimId : PatientInfo.FurtherClaimId,
+//       FurtherClaimNo : PatientInfo.FurtherClaimNo,
+//       OtherInsurer : otherInsurer
+//     },
+//   };
 
-  const Data = {
-    "PatientInfo" : {
-      InsurerCode: PatientInfo.InsurerCode,
-      RefId: PatientInfo.RefId,
-      TransactionNo : PatientInfo.TransactionNo,
-      PID : PatientInfo.PID,
-      HN : PatientInfo.HN,
-      GivenNameTH : PatientInfo.GivenNameTH,
-      SurnameTH: PatientInfo.SurnameTH,
-      DateOfBirth: PatientInfo.DateOfBirth,
-      PassportNumber: PatientInfo.PassportNumber,
-      IdType: PatientInfo.IdType,
-      VN:  PatientInfo.VN,
-      VisitDateTime: PatientInfo.VisitDateTime,
-      AccidentDate: Datevalue,
-      AccidentPlaceCode:  accidentPlaceValue,
-      AccidentInjuryWoundtypeCode:  woundType,
-      AccidentInjurySideCode: injurySide,
-      WoundDetails: event.target.commentOfInjuryText.value,
-      PolicyTypeCode: PatientInfo.PolicyTypeCode,
-      ServiceSettingCode: PatientInfo.ServiceSettingCode, 
-      IllnessTypeCode: PatientInfo.IllnessTypeCode,
-      SurgeryTypeCode:  PatientInfo.SurgeryTypeCode,
-      ChiefComplaint: visit.Result.VisitInfo.ChiefComplaint,
-      PresentIllness: event.target.PresentIllnessText.value,
-      AccidentCauseOver45Days : over45,
-      DxFreeText : event.target.DxFreeTextText.value,
-      FurtherClaimId : PatientInfo.FurtherClaimId,
-      FurtherClaimNo : PatientInfo.FurtherClaimNo,
-      OtherInsurer : otherInsurer
-    },
-  };
-
-  console.log(Data.PatientInfo)
-
-
-
-
-
-  axios
-    .post(process.env.NEXT_PUBLIC_URL_PD2 + "v1/aia-opddischarge/sentOPDDischarge",
-      Data
+//   console.log(Data.PatientInfo)
+//   axios
+//     .post(process.env.NEXT_PUBLIC_URL_PD2 + "v1/aia-opddischarge/sentOPDDischarge",
+//       Data
   
-    )
-    .then((response) => {
-      //setOrderItemz(response.data);
+//     )
+//     .then((response) => {
+//       //setOrderItemz(response.data);
+//       console.log(response.data.Message)
+//       setMassSummit(response.data.Message)
+
+//     })
+//     .catch((err) => {
+//      // console.error("Error", err)
+//       console.log(err)
+
+//       setshowSummitError("Error")
+//       setMassSummitError("Error")
+// });
 
 
+// }else{
 
-      console.log(response.data.Message)
-      setMassSummit(response.data.Message)
+//   document.getElementById("my_modal_3").showModal();
 
+//   const Data = {
+//     "PatientInfo" : {
+//       InsurerCode: PatientInfo.InsurerCode,
+//       RefId: PatientInfo.RefId,
+//       TransactionNo : PatientInfo.TransactionNo,
+//       PID : PatientInfo.PID,
+//       HN : PatientInfo.HN,
+//       GivenNameTH : PatientInfo.GivenNameTH,
+//       SurnameTH: PatientInfo.SurnameTH,
+//       DateOfBirth: PatientInfo.DateOfBirth,
+//       PassportNumber: PatientInfo.PassportNumber,
+//       IdType: PatientInfo.IdType,
+//       VN:  PatientInfo.VN,
+//       VisitDateTime: PatientInfo.VisitDateTime,
+//       AccidentDate: Datevalue,
+//       AccidentPlaceCode:  accidentPlaceValue,
+//       AccidentInjuryWoundtypeCode:  woundType,
+//       AccidentInjurySideCode: injurySide,
+//       WoundDetails: "",
+//       PolicyTypeCode: PatientInfo.PolicyTypeCode,
+//       ServiceSettingCode: PatientInfo.ServiceSettingCode, 
+//       IllnessTypeCode: PatientInfo.IllnessTypeCode,
+//       SurgeryTypeCode:  PatientInfo.SurgeryTypeCode,
+//       ChiefComplaint: visit.Result.VisitInfo.ChiefComplaint,
+//       PresentIllness: event.target.PresentIllnessText.value,
+//       AccidentCauseOver45Days : over45,
+//       DxFreeText : event.target.DxFreeTextText.value,
+//       FurtherClaimId : PatientInfo.FurtherClaimId,
+//       FurtherClaimNo : PatientInfo.FurtherClaimNo,
+//       OtherInsurer : otherInsurer
+//     },
+//   };
 
+//   console.log(Data.PatientInfo)
 
-    })
-    .catch((err) => {
-     // console.error("Error", err)
-      console.log(err)
-
-      setshowSummitError("Err")
-      setMassSummitError("Error")
-});
-
-
-
-
-}else{
-
-  document.getElementById("my_modal_3").showModal();
-
-  const Data = {
-    "PatientInfo" : {
-      InsurerCode: PatientInfo.InsurerCode,
-      RefId: PatientInfo.RefId,
-      TransactionNo : PatientInfo.TransactionNo,
-      PID : PatientInfo.PID,
-      HN : PatientInfo.HN,
-      GivenNameTH : PatientInfo.GivenNameTH,
-      SurnameTH: PatientInfo.SurnameTH,
-      DateOfBirth: PatientInfo.DateOfBirth,
-      PassportNumber: PatientInfo.PassportNumber,
-      IdType: PatientInfo.IdType,
-      VN:  PatientInfo.VN,
-      VisitDateTime: PatientInfo.VisitDateTime,
-      AccidentDate: Datevalue,
-      AccidentPlaceCode:  accidentPlaceValue,
-      AccidentInjuryWoundtypeCode:  woundType,
-      AccidentInjurySideCode: injurySide,
-      WoundDetails: "",
-      PolicyTypeCode: PatientInfo.PolicyTypeCode,
-      ServiceSettingCode: PatientInfo.ServiceSettingCode, 
-      IllnessTypeCode: PatientInfo.IllnessTypeCode,
-      SurgeryTypeCode:  PatientInfo.SurgeryTypeCode,
-      ChiefComplaint: visit.Result.VisitInfo.ChiefComplaint,
-      PresentIllness: event.target.PresentIllnessText.value,
-      AccidentCauseOver45Days : over45,
-      DxFreeText : event.target.DxFreeTextText.value,
-      FurtherClaimId : PatientInfo.FurtherClaimId,
-      FurtherClaimNo : PatientInfo.FurtherClaimNo,
-      OtherInsurer : otherInsurer
-    },
-  };
-
-  console.log(Data.PatientInfo)
-
-
-
-
-
-  axios
-    .post(process.env.NEXT_PUBLIC_URL_PD2 + "v1/aia-opddischarge/sentOPDDischarge",
-      Data
+//   axios
+//     .post(process.env.NEXT_PUBLIC_URL_PD2 + "v1/aia-opddischarge/sentOPDDischarge",
+//       Data
   
-    )
-    .then((response) => {
-      //setOrderItemz(response.data);
+//     )
+//     .then((response) => {
+//       //setOrderItemz(response.data);
 
 
 
-      console.log(response.data.Message)
-      setMassSummit(response.data.Message)
+//       console.log(response.data.Message)
+//       setMassSummit(response.data.Message)
 
 
 
-    })
-    .catch((err) => {
-     // console.error("Error", err)
-      console.log(err)
+//     })
+//     .catch((err) => {
+//      // console.error("Error", err)
+//       console.log(err)
 
-      setshowSummitError("Err")
-      setMassSummitError("Error")
-});
+//       setshowSummitError("Error")
+//       setMassSummitError("Error")
+// });
 
 
-}
+// }
  
 
     // setShowModal(true)
@@ -632,12 +777,18 @@ if(PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER"
      setBillList(response.data);
      //console.log(response.data)
    })
-   .catch((err) => {
-    // console.error("Error", err)
-     console.log(err)
-     //  if (err.response.request.status === 500) {
-             // setShowFormError("Error");
-             // setMassError(err.response.data.HTTPStatus.message);
+   .catch((error) => {
+    console.log(error)
+    try{
+      const ErrorMass = error.config.url
+      const [ErrorMass1, ErrorMass2] = ErrorMass.split('v1/');
+      setMassDocError(error.code +" - "+error.message +" - "+ErrorMass2);
+      setShowDocError("Error")
+    }
+    catch (error) {
+       setMassDocError(error.response.data.HTTPStatus.message);
+       setShowDocError("Error");
+   }
           })  
      
      } catch (error){
@@ -669,9 +820,33 @@ if(PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER"
   };
 
 
-
+  const CustomTextField = styled(TextField)({
+    '& .MuiInputBase-input.Mui-disabled': {
+      color: 'black', // เปลี่ยนสีข้อความเป็นสีดำ
+      cursor: 'default', // เปลี่ยนเคอร์เซอร์เป็นแบบปกติ
+    },
+   });
   return (
     <>
+          {showFormError === "Error" ? (
+            <div role="alert" className="alert alert-error mt-2 text-base-100">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6 shrink-0 stroke-current"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <span>{massError}</span>
+            </div>
+            ) : ""
+            }
       {patien ? (
         <>
           <form onSubmit={Claim}>
@@ -683,46 +858,39 @@ if(PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER"
               <div className="grid gap-2 sm:grid-cols-4 w-full mt-2">
                 <div className="rounded-md">
           <Box sx={{backgroundColor: '#e5e7eb', padding: 0, borderRadius: 0}}>
-                  {/* <TextField id="standard-basic" className="text-black bg-gray-200 border border-gray-300 rounded p-2 disabled:text-black"    label="FirstName (TH)" variant="standard" value={patien.Result.PatientInfo.FirstName} /> */}
-                  <TextField  id="outlined-disabled" label="FirstName (TH)" defaultValue={patien.Result.PatientInfo.FirstName} className="w-full text-black border border-black rounded disabled:text-black" InputProps={{style: { color: 'black' } }}/>
+                  <CustomTextField  id="disabledInput" label="FirstName (TH)" defaultValue={patien.Result.PatientInfo.FirstName} className="w-full text-black rounded disabled:text-black disabled:bg-gray-300 cursor-not-allowed"  InputProps={{readOnly: true,}}/>
         </Box>
                 </div>
                 <div className="rounded-md">
          <Box sx={{backgroundColor: '#e5e7eb', padding: 0, borderRadius: 0,}}>
-                  {/* <TextField id="standard-basic" className="text-black bg-gray-200 border border-gray-300 rounded p-2 disabled:text-black" label="LastName (TH)" variant="standard" value={patien.Result.PatientInfo.LastName} /> */}
-                  <TextField  id="outlined-disabled" label="LastName (TH)" defaultValue={patien.Result.PatientInfo.LastName} className="w-full  text-black border border-black rounded disabled:text-black"/>
+                  <CustomTextField  id="disabledInput" label="LastName (TH)" defaultValue={patien.Result.PatientInfo.LastName} className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"  InputProps={{readOnly: true,}}/>
         </Box>
                 </div>
                 <div className="rounded-md">
                 <Box sx={{backgroundColor: '#e5e7eb', padding: 0, borderRadius: 0,}}>
-                {/* <TextField id="standard-basic" className="text-black bg-gray-200 border border-gray-300 rounded p-2 disabled:text-black" label="PID" variant="standard" value={PatientInfo.PID} /> */}
-                <TextField  id="outlined-disabled" label="PID" defaultValue={PatientInfo.PID} className="w-full  text-black border border-black rounded disabled:text-black"/>
+                <CustomTextField  id="disabledInput" label="PID" defaultValue={PatientInfo.PID} className="w-full text-black rounded disabled:text-black disabled:bg-gray-300" InputProps={{readOnly: true,}}/>
         </Box>
                 </div>
               {PatientInfo.PassportNumber ? (
                   <div className="rounded-md">
                <Box sx={{backgroundColor: '#e5e7eb', padding: 0, borderRadius: 0,}}>
-                    {/* <TextField id="standard-basic" className="text-black bg-gray-200 border border-gray-300 rounded p-2 disabled:text-black" label="Passport" variant="standard" value={PatientInfo.PassportNumber} /> */}
-                    <TextField  id="outlined-disabled" label="Passport" defaultValue={PatientInfo.PassportNumber} className="w-full  text-black border border-black rounded disabled:text-black"/>
+                    <CustomTextField  id="disabledInput" label="Passport" defaultValue={PatientInfo.PassportNumber} className="w-full text-black rounded disabled:text-black disabled:bg-gray-300" InputProps={{readOnly: true,}}/>
         </Box>
                   </div>
                 ) : ""} 
                 <div className="rounded-md">
                 <Box sx={{backgroundColor: '#e5e7eb', padding: 0, borderRadius: 0,}}>
-                {/* <TextField id="standard-basic"  className="text-black bg-gray-200 border border-gray-300 rounded p-2 disabled:text-black" label="Date of Birth (YYYY-MM-DD)" variant="standard" value={patien.Result.PatientInfo.DOB} /> */}
-                <TextField  id="outlined-disabled" label="Date of Birth (YYYY-MM-DD)" defaultValue={patien.Result.PatientInfo.DOB} className="w-full  text-black border border-black rounded disabled:text-black"/>
+                <CustomTextField  id="disabledInput" label="Date of Birth (YYYY-MM-DD)" defaultValue={patien.Result.PatientInfo.DOB} className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"  InputProps={{readOnly: true,}}/>
         </Box>
                 </div>
                 <div className="rounded-md">
                 <Box sx={{backgroundColor: '#e5e7eb', padding: 0, borderRadius: 0,}}>
-                {/* <TextField id="standard-basic" className="text-black bg-gray-200 border border-gray-300 rounded p-2 disabled:text-black" label="HN" variant="standard" value={PatientInfo.HN} /> */}
-                <TextField  id="outlined-disabled" label="HN" defaultValue={PatientInfo.HN} className="w-full  text-black border border-black rounded disabled:text-black"/>
+                <CustomTextField  id="disabledInput" label="HN" defaultValue={PatientInfo.HN} className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"  InputProps={{readOnly: true,}}/>
            </Box>
                 </div>
                 <div className="rounded-md">
                 <Box sx={{backgroundColor: '#e5e7eb', padding: 0, borderRadius: 0,}}>
-                {/* <TextField id="standard-basic" disabled className="text-black bg-gray-200 border border-gray-300 rounded p-2 disabled:text-black" label="Sex" variant="standard" value={patien.Result.PatientInfo.Gender} /> */}
-                <TextField  id="outlined-disabled" label="Sex" defaultValue={patien.Result.PatientInfo.Gender} className="w-full  text-black border border-black rounded disabled:text-black"/>
+                <CustomTextField  id="disabledInput" label="Sex" defaultValue={patien.Result.PatientInfo.Gender} className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"  InputProps={{readOnly: true,}}/>
            </Box>
                 </div>
               </div>
@@ -734,47 +902,101 @@ if(PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER"
               <h1 className="font-black text-accent text-3xl ">
               Visit
               </h1>
-              <div className="flex items-center ">
-              <input
-                        type="radio"
+              <div className="grid gap-2 sm:grid-cols-4 w-full mt-2">
+              <div className="rounded-md"> 
+               <div className="flex items-center ">
+              {PatientInfo.FurtherClaimNo ? <>  
+                                      <input
+                                      type="radio"
+                                      id="OtherInsurer"
+                                      name="OtherInsurer"
+                                      value={otherInsurer}
+                                      className="checkbox "
+                                      onChange={handleOtherInsurer}
+                                      disabled 
+                               />
+                            <p className="text-left ml-2">รักษาครั้งแรก</p>
+                            <input
+                                      type="radio"
+                                      id="OtherInsurer"
+                                      name="OtherInsurer"
+                                      value={otherInsurer}
+                                      className="checkbox ml-2"
+                                      onChange={handleOtherInsurer}
+                                      defaultChecked
+                                      disabled 
+                               />
+                            <p className="text-left ml-2">รักษาแบบต่อเนื่อง</p>
+                         
+                        </> : <>
+                          <input
+                          type="radio"
+                          id="OtherInsurer"
+                          name="OtherInsurer"
+                          value={otherInsurer}
+                          className="checkbox"
+                          onChange={handleOtherInsurer}
+                          defaultChecked 
+                          disabled 
+                   />
+                <p className="text-left ml-2">รักษาครั้งแรก</p>
+                <input
+                          type="radio"
+                          id="OtherInsurer"
+                          name="OtherInsurer"
+                          value={otherInsurer}
+                          className="checkbox  ml-2"
+                          onChange={handleOtherInsurer}
+                          disabled 
+                   />
+                <p className="text-left ml-2">รักษาแบบต่อเนื่อง</p>
+                        </>}
+                   </div> 
+              </div>
+              <div className="rounded-md">
+                <div className="flex items-center ">
+                 <input
+                        type="checkbox"
                         id="OtherInsurer"
                         name="OtherInsurer"
-                        value="true"
+                        value={otherInsurer}
                         className="checkbox checkbox-info"
                         onChange={handleOtherInsurer}
-              />
+                 />
               <p className="text-left">&nbsp;ค่าส่วนเกินจากประกันอื่นๆ</p>
+                </div>
               </div>
-              <div className="grid gap-2 sm:grid-cols-4 w-full mt-2">
+              <div className="rounded-md"> </div>
+              <div className="rounded-md"> </div>
                 <div className="rounded-md">
               <Box sx={{backgroundColor: '#e5e7eb', padding: 0, borderRadius: 0,}}>
                 {/* <TextField id="standard-basic" className="text-black bg-gray-200 border border-gray-300 rounded p-2 disabled:text-black" label="VN" variant="standard" value={visit.Result.VisitInfo.VN} /> */}
-                <TextField  id="outlined-disabled" label="VN"  className="w-full text-black rounded disabled:text-black disabled:bg-gray-300" defaultValue={visit.Result.VisitInfo.VN} />
+                <CustomTextField  id="disabledInput" label="VN"  className="w-full text-black rounded disabled:text-black disabled:bg-gray-300" defaultValue={visit.Result.VisitInfo.VN} InputProps={{readOnly: true,}}/>
            </Box>
                 </div>
                 <div className="rounded-md">
                 <Box sx={{backgroundColor: '#e5e7eb', padding: 0, borderRadius: 0,}}>
                 {/* <TextField id="standard-basic" className="text-black bg-gray-200 border border-gray-300 rounded p-2 disabled:text-black" label="VisitDateTime" variant="standard" value={visit.Result.VisitInfo.VisitDateTime} /> */}
-                <TextField  id="outlined-disabled"   className="w-full text-black rounded disabled:text-black disabled:bg-gray-300" label="VisitDateTime" defaultValue={visit.Result.VisitInfo.VisitDateTime} />
+                <CustomTextField  id="disabledInput"   className="w-full text-black rounded disabled:text-black disabled:bg-gray-300" label="VisitDateTime" defaultValue={visit.Result.VisitInfo.VisitDateTime} InputProps={{readOnly: true,}}/>
                 </Box>
                 </div>
                 <div className="rounded-md">
                 <Box sx={{backgroundColor: '#e5e7eb', padding: 0, borderRadius: 0,}}>
                 {/* <TextField id="standard-basic" className="text-black bg-gray-200 border border-gray-300 rounded p-2 disabled:text-black" label="อาการสำคัญที่มาโรงพยาบาล" variant="standard" value={visit.Result.VisitInfo.ChiefComplaint} /> */}
-                <TextField  id="outlined-disabled"   className="w-full text-black rounded disabled:text-black disabled:bg-gray-300" label="อาการสำคัญที่มาโรงพยาบาล" defaultValue={visit.Result.VisitInfo.ChiefComplaint} />
+                <CustomTextField  id="disabledInput"   className="w-full text-black rounded disabled:text-black disabled:bg-gray-300" label="อาการสำคัญที่มาโรงพยาบาล" defaultValue={visit.Result.VisitInfo.ChiefComplaint} InputProps={{readOnly: true,}}/>
                 </Box>
                 </div>
                 <div className="rounded-md text-black">
                 <Box sx={{backgroundColor: '#e5e7eb', padding: 0, borderRadius: 0,}}>
                 {/* <TextField id="standard-basic" className="text-black bg-gray-200 border border-gray-300 rounded p-2 disabled:text-black w-1/2" label="ส่วนสูง" variant="standard" value={visit.Result.VisitInfo.Height} />
                 <TextField id="standard-basic" className="text-black bg-gray-200 border border-gray-300 rounded p-2 disabled:text-black w-1/2" label="น้ำหนัก" variant="standard" value={visit.Result.VisitInfo.Weight} /> */}
-                <TextField  id="outlined-disabled"   className="w-full text-black rounded disabled:text-black disabled:bg-gray-300" label="น้ำหนัก / ส่วนสูง" defaultValue={combinedString} />
+                <CustomTextField  id="disabledInput"   className="w-full text-black rounded disabled:text-black disabled:bg-gray-300" label="น้ำหนัก / ส่วนสูง" defaultValue={combinedString} InputProps={{readOnly: true,}}/>
                 </Box>
                 </div>
                 {PatientInfo.FurtherClaimNo ? (
                 <div className="rounded-md text-black">
                 <Box sx={{backgroundColor: '#e5e7eb', padding: 0, borderRadius: 0,}}>
-                <TextField  id="outlined-disabled"   className="w-full text-black rounded disabled:text-black disabled:bg-gray-300" label="ประวัติการรักษาครั้งก่อนหน้า เลขที่อ้างอิง" defaultValue={PatientInfo.FurtherClaimNo} />
+                <CustomTextField  id="disabledInput"   className="w-full text-black rounded disabled:text-black disabled:bg-gray-300" label="ประวัติการรักษาครั้งก่อนหน้า เลขที่อ้างอิง" defaultValue={PatientInfo.FurtherClaimNo} InputProps={{readOnly: true,}}/>
                 </Box>
                 </div>
                 ) : ""}
@@ -1104,38 +1326,71 @@ if(PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER"
              {/* //////////////////////////////////////////////////////////////////////////// */}
              {procedure ? (PatientInfo.SurgeryTypeCode === "Y" ? (
                <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
-              <h1 className="font-black text-accent text-3xl ">Procedure</h1>
-              <div className="overflow-x-auto">
-  <table className="table table-zebra mt-2">
-                <thead>
-                  <tr className="text-base-100 bg-primary py-8 text-sm w-full text-center">
-                    <th></th>
-                    <th className="">วันที่ทำหัตถการหรือทำการผ่าตัด</th>
-                    <th>ชื่อของหัตถการหรือการผ่าตัด</th>
-                    <th>ICD 9 code ของหัตถการหรือการผ่าตัด</th>
-                  </tr>
-                </thead>
-                <tbody>
-                          <tr >
-                            <td>{procedure.Result.ProcedureInfo.ProcedureDate ? "1" : ""}</td>
-                            <td>{procedure.Result.ProcedureInfo.ProcedureDate}</td>
-                            <td>
-                              {procedure.Result.ProcedureInfo.ProcedureName}
-                            </td>
-                            <td>
-                              {procedure.Result.ProcedureInfo.Icd9}
-                            </td>
-                            
-                          </tr>
-                </tbody>
-              </table> 
-              </div>
-            <div className="grid gap-2 sm:grid-cols-4 text-base-100 bg-primary w-full whitespace-normal text-center">
-                <div className="rounded-md"></div>
-                <div className="rounded-md"></div>
-                <div className="rounded-md "></div>
-                <div className="rounded-md ">&nbsp;</div> 
-            </div> 
+              <h1 className="font-black text-accent text-3xl ">Procedure <Button className="btn btn-secondary text-base-100 text-xl"><FaEdit /></Button></h1>
+              
+                <TableContainer component={Paper} className="mt-2">
+      <Table className="table">
+        <TableHead>
+          <TableRow className="bg-primary">
+          <TableCell className="w-2"></TableCell>
+            <TableCell className="text-base-100  text-sm w-1/5 text-center">Icd 9 Code ของหัตถการหรือการผ่าตัด</TableCell>
+            <TableCell className="text-base-100  text-sm w-3/5 text-center">ชื่อของหัตถการหรือการผ่าตัด</TableCell>
+            <TableCell className="text-base-100  text-sm w-1/5 text-center">วันที่ทำหัตถการหรือทำการผ่าตัด</TableCell>
+            <TableCell></TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {rows.map((row, index) => (
+            <TableRow key={index}>
+              <TableCell>{index+1}</TableCell>
+              <TableCell ><div className="rounded-full px-3 py-2 border-2 bg-neutral break-all ">{row.Icd9}</div></TableCell>
+              <TableCell><div className="rounded-full px-3 py-2 border-2 bg-neutral break-all">{row.ProcedureName}</div></TableCell>
+              <TableCell><div className="rounded-full px-3 py-2 border-2 bg-neutral break-all">{row.ProcedureDate}</div></TableCell>
+              <TableCell>
+                <Button onClick={() => handleDeleteRow(index)} className="btn btn-error text-base-100 text-xl"><FaCircleMinus /></Button>
+              </TableCell>
+            </TableRow>
+          ))}
+          <TableRow>
+            <TableCell >
+            </TableCell>
+            <TableCell>
+              <TextField
+                className="bg-base-100 w-full"
+                value={newRow.Icd9}
+                onChange={(e) => setNewRow({ ...newRow, Icd9: e.target.value })}
+                placeholder="Icd9"
+               // required
+              />
+            </TableCell>
+            <TableCell>
+              <TextField
+              className="bg-base-100 w-full"
+               type="number"
+                value={newRow.ProcedureName}
+                onChange={(e) => setNewRow({ ...newRow, ProcedureName: e.target.value })}
+                placeholder="ProcedureName"
+             //   required
+              />
+            </TableCell>
+            <TableCell>
+              <TextField
+              className="bg-base-100 w-full"
+                type="date"
+                value={newRow.ProcedureDate}
+                onChange={(e) => setNewRow({ ...newRow, ProcedureDate: e.target.value })}
+                placeholder="ProcedureDate"
+             //   required
+              />
+            </TableCell>
+            <TableCell>
+              <Button onClick={handleAddRow} className="btn btn-success text-base-100 text-xl"><FaCirclePlus /></Button>
+            </TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+
+    </TableContainer>
            </div>
             ) : "") : ""}
                     {/* //////////////////////////////////////////////////////////////////////////// */}
@@ -1439,7 +1694,7 @@ if(PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER"
             <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
               ✕
             </button>
-            {showSummitError === "Err" ? (
+            {showSummitError === "Error" ? (
             <div role="alert" className="alert alert-error mt-2 text-base-100">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -1490,3 +1745,7 @@ if(PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER"
     </>
   );
 }
+
+
+
+
