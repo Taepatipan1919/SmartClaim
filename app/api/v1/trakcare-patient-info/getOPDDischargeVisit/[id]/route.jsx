@@ -1,9 +1,5 @@
-import { NextRequest, NextResponse } from "next/server";
-
-export async function POST(request) {
-    const date = await request.json();
-    console.log("ดึงข้อมูลเช็คสำเร็จ");
-    return NextResponse.json({
+export async function GET() {
+  return Response.json({
     Result : {
       VisitInfo:{
         FurtherClaimId: "",
@@ -11,7 +7,7 @@ export async function POST(request) {
         AlcoholRelated: true,
         ChiefComplaint: "fall",
         ComaScore: "15",
-        DxFreeText: "fall with contusion",
+        DxFreeText: "Type 2 diabetes mellitus, without complications   ,Essential (primary) hypertension   ,Mixed hyperlipidaemia   ,Acute nasopharyngitis [common cold]",
         ExpectedDayOfRecovery: "45",
         Height: "180",
         PhysicalExam: "contusion",
@@ -25,7 +21,7 @@ export async function POST(request) {
         SignSymptomsDate: "2024-09-01",
         UnderlyingCondition: "DM",
         VisitDateTime: "2024-09-01 00:00",
-        VN: "VN2024OPD",
+        VN: "O415202-67",
         Weight: "60"
     },
   },

@@ -106,6 +106,7 @@ router.push('/aia/opd/checkeligible');
   // }, []);
 
   const createPatientInfo = (event) => {
+    setShowFormCreate("")
     event.preventDefault();
 
     if (event.target.exampleRadios.value === "NATIONAL_ID") {
@@ -189,7 +190,7 @@ router.push('/aia/opd/checkeligible');
     setShowFormCreate("");
     axios
       .post(
-        process.env.NEXT_PUBLIC_URL_PD + "v1/aia-patient-info/CreatePatient",
+        process.env.NEXT_PUBLIC_URL_PD2 + "v1/aia-patient-info/CreatePatient",
         {
           PatientInfo: {
             InsurerCode: InsurerCode, // ควรเป็น integer ไม่ใช่ string
@@ -214,15 +215,33 @@ router.push('/aia/opd/checkeligible');
         setShowFormCreate("Succ");
       })
       .catch(function (error) {
-        console.log(error.message)
-        console.log(error.response.data.HTTPStatus.message);
-        if (error.response.request.status === 500) {
-          setShowFormCreate("Error");
-          setShowMassCreate(error.message)
-        } else {
 
-          setShowFormCreate("Again");
-        }
+         console.log(error)
+          if(error.status !== 500){
+        const ErrorMass = error.config.url
+          const [ErrorMass1, ErrorMass2] = ErrorMass.split('v1/');
+          setShowMassCreate(error.code +" - "+error.message +" - "+ErrorMass2);
+          setShowFormCreate("Error")
+
+          }else{
+            setShowFormCreate("Again");
+            setShowMassCreate(error.response.data.HTTPStatus.message);
+          }
+
+
+
+        // console.log(error.response.data.HTTPStatus.statusCode)
+        // console.log(error.response.data.HTTPStatus.message);
+        // console.log(error.response)
+        // if (error.response.request.status === 500) {
+        //   setShowFormCreate("Error");
+        //   setShowMassCreate(error.response.data.HTTPStatus.message)
+        // } else {
+
+        //   setShowFormCreate("Again");
+        // }
+
+
       });
 
     //console.log(dataCreate);

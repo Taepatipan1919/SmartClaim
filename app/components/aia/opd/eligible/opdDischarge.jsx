@@ -36,6 +36,7 @@ export default function Page({data}) {
     },
   }  
   const InsuranceCode = 13;
+  const [massError, setMassError] = useState("");
   const [showFormError, setShowFormError] = useState("");
   const [patien, setPatien] = useState();
   const [visit, setVisit] = useState();
@@ -52,7 +53,6 @@ export default function Page({data}) {
   const [value, setValue] = useState(null);
   const [doctor, setDoctor] = useState();
   const [diagnosis, setDiagnosis] = useState();
-  const [procedure, setProcedure] = useState();
   const [investigation, setInvestigation] = useState();
  const [billing, setBilling] = useState();
   const [orderItemz, setOrderItemz] = useState();
@@ -72,8 +72,11 @@ export default function Page({data}) {
   const [showSummitError, setShowSummitError] = useState("");
   const [massSummit, setMassSummit] = useState("");
   const [otherInsurer, setOtherInsurer] = useState("false");
-  const [rows, setRows] = useState([]);
+  const [rows, setRows] = useState("");
+  const [procedure, setProcedure] = useState("");
   const [newRow, setNewRow] = useState({ Icd9: '', ProcedureName: '', ProcedureDate: '' });
+  const [summitEditProcedure, setSummitEditProcedure] = useState("false");
+  // const [editProcedure, setEditProcedure] = useState("false");
 
   const [freetext , setFreeText] = useState();
   const AccidentPlace = (event) => {
@@ -148,11 +151,10 @@ const PatientInfo = {
 }, []);
   useEffect(() => {
         axios
-      .post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-opddischarge/getOPDDischargePatient",{
-        PatientInfo
-      })
+      .get(process.env.NEXT_PUBLIC_URL_SV + "v1/trakcare-patient-info/PatientInfoByPID/"+PatientInfo.PID)
       .then((response) => {
         setPatien(response.data);
+        console.log(response.data)
       })
       .catch((error) => {
         console.log(error)
@@ -171,9 +173,7 @@ const PatientInfo = {
 
   useEffect(() => {
     axios
-    .get(process.env.NEXT_PUBLIC_URL_PD2 + "v1/utils/AccidentCauseOver45Day/" + InsuranceCode,{
-      PatientInfo
-    })
+    .get(process.env.NEXT_PUBLIC_URL_PD2 + "v1/utils/AccidentCauseOver45Day/" + InsuranceCode)
     .then((response) => {
       setOver45Days(response.data);
 
@@ -195,9 +195,7 @@ const PatientInfo = {
 
   useEffect(() => {
     axios
-    .post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-opddischarge/getOPDDischargeVisit",{
-      PatientInfo
-    })
+    .get(process.env.NEXT_PUBLIC_URL_SV + "v1/trakcare-patient-info/getOPDDischargeVisit/"+ PatientInfo.VN )
     .then((response) => {
       setVisit(response.data);
 
@@ -398,11 +396,12 @@ const PatientInfo = {
 }, []);
   useEffect(() => {
     axios
-      .post(process.env.NEXT_PUBLIC_URL_PD + "v1/aia-opddischarge/getOPDDischargeProcedure",{
+      .post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-opddischarge/getOPDDischargeProcedure",{
         PatientInfo
       })
       .then((response) => {
-        setProcedure(response.data);
+        setRows(response.data.Result.ProcedureInfo)
+        setProcedure(response.data.Result.ProcedureInfo)
       })
       .catch((error) => {
         console.log(error)
@@ -428,6 +427,14 @@ const handleDeleteRow = (index) => {
   setRows(newRows);
 };
 
+ const SummitEditProce = () => {
+  if(summitEditProcedure === "false"){
+    setSummitEditProcedure("true")
+  }else{
+    setSummitEditProcedure("false")
+  }
+
+ }
 //console.log(procedure)
 useEffect(() => {
   axios
@@ -566,12 +573,40 @@ const DocumentBase64 = (data) => {
 // กดปุ่มส่งเคลม
   const Claim = (event) => {
     event.preventDefault();
-    if (rows.length > 0) {
-      const firstRow = rows;
-      console.log(firstRow);
+
+    const Proold = JSON.stringify(procedure);
+    const Pronew = JSON.stringify(rows);
+
+
+
+    if (Proold === Pronew) {
+      console.log("Not Edit")
     } else {
-      console.log('No rows to save');
+      console.log("Edit")
     }
+
+
+
+
+
+//     if (rows.length > 0) {
+//       const firstRow = rows;
+//       console.log(firstRow);
+//       console.log(procedure)
+
+// if(procedure === firstRow){
+// console.log("Not Edit")
+// }else{
+//   console.log("Edit")
+// }
+    // } else {
+    //   console.log("");
+    // }
+
+
+
+
+
 
 //     const Datevalue = dayjs(value.$d).format('YYYY-MM-DD');
 
@@ -855,15 +890,20 @@ const DocumentBase64 = (data) => {
               <h1 className="font-black text-accent text-3xl ">
                 Patient Info
               </h1>
-              <div className="grid gap-2 sm:grid-cols-4 w-full mt-2">
+              <div className="grid gap-2 sm:grid-cols-4 w-full mt-2">               
+                 <div className="rounded-md">
+          <Box sx={{backgroundColor: '#e5e7eb', padding: 0, borderRadius: 0}}>
+                  <CustomTextField  id="disabledInput" label="คำนำหน้าชื่อ" defaultValue={patien.Result.PatientInfo.TitleTH} className="w-full text-black rounded disabled:text-black disabled:bg-gray-300 cursor-not-allowed"  InputProps={{readOnly: true,}}/>
+        </Box>
+                </div>
                 <div className="rounded-md">
           <Box sx={{backgroundColor: '#e5e7eb', padding: 0, borderRadius: 0}}>
-                  <CustomTextField  id="disabledInput" label="FirstName (TH)" defaultValue={patien.Result.PatientInfo.FirstName} className="w-full text-black rounded disabled:text-black disabled:bg-gray-300 cursor-not-allowed"  InputProps={{readOnly: true,}}/>
+                  <CustomTextField  id="disabledInput" label="FirstName (TH)" defaultValue={patien.Result.PatientInfo.GivenNameTH} className="w-full text-black rounded disabled:text-black disabled:bg-gray-300 cursor-not-allowed"  InputProps={{readOnly: true,}}/>
         </Box>
                 </div>
                 <div className="rounded-md">
          <Box sx={{backgroundColor: '#e5e7eb', padding: 0, borderRadius: 0,}}>
-                  <CustomTextField  id="disabledInput" label="LastName (TH)" defaultValue={patien.Result.PatientInfo.LastName} className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"  InputProps={{readOnly: true,}}/>
+                  <CustomTextField  id="disabledInput" label="LastName (TH)" defaultValue={patien.Result.PatientInfo.SurnameTH} className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"  InputProps={{readOnly: true,}}/>
         </Box>
                 </div>
                 <div className="rounded-md">
@@ -880,7 +920,7 @@ const DocumentBase64 = (data) => {
                 ) : ""} 
                 <div className="rounded-md">
                 <Box sx={{backgroundColor: '#e5e7eb', padding: 0, borderRadius: 0,}}>
-                <CustomTextField  id="disabledInput" label="Date of Birth (YYYY-MM-DD)" defaultValue={patien.Result.PatientInfo.DOB} className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"  InputProps={{readOnly: true,}}/>
+                <CustomTextField  id="disabledInput" label="Date of Birth (YYYY-MM-DD)" defaultValue={patien.Result.PatientInfo.DateOfBirth} className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"  InputProps={{readOnly: true,}}/>
         </Box>
                 </div>
                 <div className="rounded-md">
@@ -890,7 +930,7 @@ const DocumentBase64 = (data) => {
                 </div>
                 <div className="rounded-md">
                 <Box sx={{backgroundColor: '#e5e7eb', padding: 0, borderRadius: 0,}}>
-                <CustomTextField  id="disabledInput" label="Sex" defaultValue={patien.Result.PatientInfo.Gender} className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"  InputProps={{readOnly: true,}}/>
+                <CustomTextField  id="disabledInput" label="Gender" defaultValue={patien.Result.PatientInfo.Gender} className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"  InputProps={{readOnly: true,}}/>
            </Box>
                 </div>
               </div>
@@ -1157,7 +1197,7 @@ const DocumentBase64 = (data) => {
               <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
                 <h1 className="font-black text-accent text-3xl ">VitalSign</h1>
                 <div className="overflow-x-auto">
-  <table className="table table-zebra mt-2">
+  <table className="table mt-2">
                   <thead>
                     <tr className="text-base-100 bg-primary py-8 text-sm w-full text-center">
                       <th></th>
@@ -1179,41 +1219,41 @@ const DocumentBase64 = (data) => {
                               className=" bg-neutral text-sm"
                             >
                               <td>{vts.VitalSignEntryDateTime ? index + 1 : ""}</td>
-                              <td>{vts.VitalSignEntryDateTime}</td>
+                              <td><div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">{vts.VitalSignEntryDateTime}</div></td>
                               <td>
-                                {vts.DiastolicBp +
-                                  " " +
-                                  (vts.DiastolicBp === "" ? "" : "mmHg")}
+                              <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                                   {vts.DiastolicBp === "" ? (<>&nbsp;</>) : vts.DiastolicBp + " mmHg"}
+                                  </div>
                               </td>
                               <td>
-                                {vts.HeartRate +
-                                  " " +
-                                  (vts.HeartRate === "" ? "" : "bpm")}
+                              <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                                  {vts.HeartRate === "" ? (<>&nbsp;</>) : vts.HeartRate + " bpm"}
+                                  </div>
                               </td>
                               <td>
-                                {vts.OxygenSaturation +
-                                  " " +
-                                  (vts.OxygenSaturation === "" ? "" : "%")}
+                              <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                                  {vts.OxygenSaturation === "" ? (<>&nbsp;</>) : vts.OxygenSaturation + " %"}
+                                  </div>
                               </td>
                               <td>
-                                {vts.PainScore +
-                                  " " +
-                                  (vts.PainScore === "" ? "" : "")}
+                              <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                                    {vts.PainScore === "" ? (<>&nbsp;</>) : vts.PainScore}
+                                  </div>
                               </td>
                               <td>
-                                {vts.RespiratoryRate +
-                                  " " +
-                                  (vts.RespiratoryRate === "" ? "" : "bt/min")}
+                              <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                                    {vts.RespiratoryRate === "" ? (<>&nbsp;</>) : vts.RespiratoryRate + " bt/min"}
+                                  </div>
                               </td>
                               <td>
-                                {vts.SystolicBp +
-                                  " " +
-                                  (vts.SystolicBp === "" ? "" : "mmHg")}
+                              <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                                  {vts.SystolicBp === "" ? (<>&nbsp;</>) : vts.SystolicBp + " mmHg"}
+                                  </div>
                               </td>
                               <td>
-                                {vts.Temperature +
-                                  " " +
-                                  (vts.Temperature === "" ? "" : "℃")}
+                              <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                                   {vts.Temperature === "" ? (<>&nbsp;</>) : vts.Temperature + " °C"}
+                                  </div>
                               </td>
                             </tr>
                           ))
@@ -1233,7 +1273,7 @@ const DocumentBase64 = (data) => {
               <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
                 <h1 className="font-black text-accent text-3xl ">Doctor</h1>
                 <div className="overflow-x-auto">
-  <table className="table table-zebra mt-2">
+  <table className="table  mt-2">
                   <thead>
                     <tr className="text-base-100 bg-primary py-8 text-sm w-full text-center">
                       <th></th>
@@ -1250,12 +1290,12 @@ const DocumentBase64 = (data) => {
                               className=" bg-neutral text-sm"
                             >
                               <td>{dc.DoctorLicense ? index + 1 : ""}</td>
-                              <td>{dc.DoctorLicense}</td>
+                              <td> <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">{dc.DoctorLicense}</div></td>
                               <td>
-                                {dc.DoctorFirstName}
+                              <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">{dc.DoctorFirstName}</div>
                               </td>
                               <td>
-                                {dc.DoctorRole}
+                              <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all"> {dc.DoctorRole}</div>
                               </td>
                               
                             </tr>
@@ -1276,7 +1316,7 @@ const DocumentBase64 = (data) => {
                            <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
                 <h1 className="font-black text-accent text-3xl ">Diagnosis</h1>
                 <div className="overflow-x-auto">
-  <table className="table table-zebra mt-2">
+  <table className="table  mt-2">
                   <thead>
                     <tr className="text-base-100 bg-primary py-8 text-sm w-full text-center">
                       <th></th>
@@ -1295,11 +1335,19 @@ const DocumentBase64 = (data) => {
                             >
                               <td>{dns.DxCode ? index + 1 : ""}</td>
                               <td>
+                              <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
                                 {dns.DxCode}
+                                </div>
                               </td>
-                              <td>{dns.DxName}</td>
                               <td>
+                              <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                                {dns.DxName}
+                                </div>
+                                </td>
+                              <td>
+                              <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
                                 {dns.Dxtypenameinsurance}
+                                </div>
                               </td>
                        
                             </tr>
@@ -1324,9 +1372,9 @@ const DocumentBase64 = (data) => {
               </div> 
              </div>
              {/* //////////////////////////////////////////////////////////////////////////// */}
-             {procedure ? (PatientInfo.SurgeryTypeCode === "Y" ? (
+             {rows ? (PatientInfo.SurgeryTypeCode === "Y" ? (
                <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
-              <h1 className="font-black text-accent text-3xl ">Procedure <Button className="btn btn-secondary text-base-100 text-xl"><FaEdit /></Button></h1>
+              <h1 className="font-black text-accent text-3xl ">Procedure <Button className="btn btn-secondary text-base-100 text-xl" onClick={SummitEditProce}><FaEdit /></Button></h1>
               
                 <TableContainer component={Paper} className="mt-2">
       <Table className="table">
@@ -1341,32 +1389,38 @@ const DocumentBase64 = (data) => {
         </TableHead>
         <TableBody>
           {rows.map((row, index) => (
-            <TableRow key={index}>
+            <TableRow key={index} className=" bg-neutral text-sm">
               <TableCell>{index+1}</TableCell>
-              <TableCell ><div className="rounded-full px-3 py-2 border-2 bg-neutral break-all ">{row.Icd9}</div></TableCell>
-              <TableCell><div className="rounded-full px-3 py-2 border-2 bg-neutral break-all">{row.ProcedureName}</div></TableCell>
-              <TableCell><div className="rounded-full px-3 py-2 border-2 bg-neutral break-all">{row.ProcedureDate}</div></TableCell>
+              <TableCell ><div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">{row.Icd9 ? row.Icd9 : (<>&nbsp;</>)}</div></TableCell>
+              <TableCell><div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">{row.ProcedureName ? row.ProcedureName : (<>&nbsp;</>)}</div></TableCell>
+              <TableCell><div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">{row.ProcedureDate ? row.ProcedureDate : (<>&nbsp;</>)}</div></TableCell>
               <TableCell>
+                {summitEditProcedure === "true" ?
                 <Button onClick={() => handleDeleteRow(index)} className="btn btn-error text-base-100 text-xl"><FaCircleMinus /></Button>
+               : "" }
               </TableCell>
             </TableRow>
           ))}
-          <TableRow>
+           {summitEditProcedure === "true" ? (
+            <>
+          
+          <TableRow> 
             <TableCell >
+            <FaCirclePlus className="text-xl" />
             </TableCell>
+           
             <TableCell>
               <TextField
                 className="bg-base-100 w-full"
                 value={newRow.Icd9}
                 onChange={(e) => setNewRow({ ...newRow, Icd9: e.target.value })}
                 placeholder="Icd9"
-               // required
+              //  required
               />
             </TableCell>
             <TableCell>
               <TextField
               className="bg-base-100 w-full"
-               type="number"
                 value={newRow.ProcedureName}
                 onChange={(e) => setNewRow({ ...newRow, ProcedureName: e.target.value })}
                 placeholder="ProcedureName"
@@ -1380,16 +1434,32 @@ const DocumentBase64 = (data) => {
                 value={newRow.ProcedureDate}
                 onChange={(e) => setNewRow({ ...newRow, ProcedureDate: e.target.value })}
                 placeholder="ProcedureDate"
-             //   required
+              //  required
               />
             </TableCell>
-            <TableCell>
+            {(newRow.Icd9 && newRow.ProcedureName && newRow.ProcedureDate)  ? (
+              <>
+              <TableCell>
               <Button onClick={handleAddRow} className="btn btn-success text-base-100 text-xl"><FaCirclePlus /></Button>
             </TableCell>
+              </>
+            ) : ""
+            }
+            
+
           </TableRow>
+      
+          </>  )
+               : "" }
+        
         </TableBody>
       </Table>
-
+      <div className="grid gap-2 sm:grid-cols-4 text-base-100 bg-primary w-full whitespace-normal text-center">
+                <div className="rounded-md"></div>
+                <div className="rounded-md"></div>
+                <div className="rounded-md "></div>
+                <div className="rounded-md ">&nbsp;</div> 
+            </div> 
     </TableContainer>
            </div>
             ) : "") : ""}
@@ -1397,7 +1467,7 @@ const DocumentBase64 = (data) => {
                      <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
               <h1 className="font-black text-accent text-3xl ">Investigation</h1>
               <div className="overflow-x-auto">
-              <table className="table table-zebra mt-2">
+              <table className="table  mt-2">
                 <thead>
                   <tr className="text-base-100 bg-primary py-8 text-sm w-full text-center">
                     <th></th>
@@ -1409,23 +1479,44 @@ const DocumentBase64 = (data) => {
                   </tr>
                 </thead>
                 <tbody>
-                          <tr>
-                            <td>{investigation.Result.InvestigationInfo.InvestigationCode ? "1" : ""}</td>
-                            <td>{investigation.Result.InvestigationInfo.InvestigationCode}</td>
+                  {investigation.Result.InvestigationInfo.InvestigationCode ? (
+                    <tr className=" bg-neutral text-sm">
+                            <td>{investigation.Result.InvestigationInfo.InvestigationCode ? "1" : (<>&nbsp;</>)}</td>
                             <td>
-                              {investigation.Result.InvestigationInfo.InvestigationGroup}
+                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                              {investigation.Result.InvestigationInfo.InvestigationCode === "" ? (<>&nbsp;</>) : investigation.Result.InvestigationInfo.InvestigationCode}
+                              </div>
+                              </td>
+                            <td>
+                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                              {investigation.Result.InvestigationInfo.InvestigationGroup === "" ? (<>&nbsp;</>) : investigation.Result.InvestigationInfo.InvestigationGroup}
+                              </div>
                             </td>
                             <td>
-                              {investigation.Result.InvestigationInfo.InvestigationName}
+                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                              {investigation.Result.InvestigationInfo.InvestigationName === "" ? (<>&nbsp;</>) : investigation.Result.InvestigationInfo.InvestigationName}
+                              </div>
                             </td>
                             <td>
-                              {investigation.Result.InvestigationInfo.InvestigationResult}
+                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                              {investigation.Result.InvestigationInfo.InvestigationResult === "" ? (<>&nbsp;</>) : investigation.Result.InvestigationInfo.InvestigationResult}
+                              </div>
                             </td>
                             <td>
-                              {investigation.Result.InvestigationInfo.ResultDateTime}
+                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                              {investigation.Result.InvestigationInfo.ResultDateTime === "" ? (<>&nbsp;</>) : investigation.Result.InvestigationInfo.ResultDateTime}
+                              </div>
                             </td>
                             
                           </tr>
+                  )
+                  : (
+                          <tr>
+                            <td></td>
+                          </tr>
+                  )
+                  }
+                          
                 </tbody>
               </table> 
               </div>
@@ -1440,7 +1531,7 @@ const DocumentBase64 = (data) => {
  <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
               <h1 className="font-black text-accent text-3xl ">OrderItem</h1>
               <div className="overflow-x-auto">
-              <table className="table table-zebra mt-2">
+              <table className="table  mt-2">
                 <thead >
                   <tr className="text-base-100 bg-primary py-8 text-sm w-full text-center">
                     <th ></th>
@@ -1462,27 +1553,45 @@ const DocumentBase64 = (data) => {
                             className=" bg-neutral text-sm"
                           >
                             <td className="px-6 py-4 whitespace-nowrap">{order.ItemId ? index + 1 : ""}</td>
-                            <td className="px-6 py-4 whitespace-nowrap">{order.ItemId}</td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              {order.ItemName}
+                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                              {order.ItemId ? order.ItemId : (<>&nbsp;</>)}
+                              </div>
+                              </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                              {order.ItemName ? order.ItemName : (<>&nbsp;</>)}
+                              </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              {order.LocalBillingCode}
+                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                              {order.LocalBillingCode ? order.LocalBillingCode : (<>&nbsp;</>)}
+                              </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              {order.LocalBillingName}
+                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                              {order.LocalBillingName ? order.LocalBillingName : (<>&nbsp;</>)}
+                              </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              {order.ItemAmount}
+                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                              {order.ItemAmount ? order.ItemAmount : (<>&nbsp;</>)}
+                              </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              {order.Initial}
+                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                              {order.Initial ? order.Initial : (<>&nbsp;</>)}
+                              </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              {order.Discount}
+                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                              {order.Discount ? order.Discount : (<>&nbsp;</>)}
+                              </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              {order.NetAmount}
+                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                              {order.NetAmount ? order.NetAmount : (<>&nbsp;</>)}
+                              </div>
                             </td>
                           </tr>
                         ))
@@ -1498,52 +1607,12 @@ const DocumentBase64 = (data) => {
                 <div className="rounded-md ">&nbsp;</div> 
             </div> 
            </div>
-                  {/* //////////////////////////////////////////////////////////////////////////// */}
-            <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
-              <h1 className="font-black text-accent text-3xl ">รายละเอียดค่ารักษาพยาบาล</h1>
-              <div className="overflow-x-auto">
-              <table className="table table-zebra mt-2">
-                <thead >
-                  <tr className="text-base-100 bg-primary py-8 text-sm w-full text-center">
-                      <th></th>
-                      <th>SIMB</th>
-                      <th>รายละเอียดค่ารักษาพยาบาล</th>
-                      <th>จำนวนเงิน (ก่อนหักส่วนลด)</th>
-                      <th>ส่วนลด</th>
-                      <th>จำนวนเงิน (หลังหักส่วนลด)</th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {billing
-                      ? billing.Result.BillingInfo.map((bill, index) => (
-                          <tr
-                            key={index}
-                            className=" bg-neutral text-sm"
-                          >
-                            <td className="px-6 py-4 whitespace-nowrap">{bill.SimbBillingCode ? index + 1 : ""}</td>
-                            <td className="px-6 py-4 whitespace-nowrap">{bill.SimbBillingCode}</td>
-                            <td className="px-6 py-4 whitespace-nowrap">{bill.LocalBillingName}</td>
-                            <td className="px-6 py-4 whitespace-nowrap">{bill.BillingInitial}</td>
-                            <td className="px-6 py-4 whitespace-nowrap">{bill.BillingDiscount}</td>
-                            <td className="px-6 py-4 whitespace-nowrap">{bill.BillingNetAmount}</td>
-                          </tr>
-                        ))
-                      : <tr><td></td></tr>}
-                  </tbody>
-                </table>
-              </div> 
-              <div className="grid gap-2 sm:grid-cols-4 text-base-100 bg-primary w-full whitespace-normal text-center">
-                <div className="rounded-md"></div>
-                <div className="rounded-md"></div>
-                <div className="rounded-md "></div>
-                <div className="rounded-md ">&nbsp;</div> 
-            </div> 
-            </div> 
+
                             {/* //////////////////////////////////////////////////////////////////////////// */}
                             <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
               <h1 className="font-black text-accent text-3xl ">รายละเอียดค่ารักษาพยาบาล</h1>
               <div className="overflow-x-auto">
-              <table className="table table-zebra mt-2">
+              <table className="table  mt-2">
                 <thead >
                   <tr className="text-base-100 bg-primary py-8 text-sm w-full text-center">
                       <th></th>
@@ -1562,11 +1631,11 @@ const DocumentBase64 = (data) => {
                             className=" bg-neutral text-sm"
                           >
                             <td className="px-6 py-4 whitespace-nowrap">{bill.SimbBillingCode ? index + 1 : ""}</td>
-                            <td className="px-6 py-4 whitespace-nowrap">{bill.SimbBillingCode}</td>
-                            <td className="px-6 py-4 whitespace-nowrap">{bill.LocalBillingName}</td>
-                            <td className="px-6 py-4 whitespace-nowrap">{bill.BillingInitial}</td>
-                            <td className="px-6 py-4 whitespace-nowrap">{bill.BillingDiscount}</td>
-                            <td className="px-6 py-4 whitespace-nowrap">{bill.BillingNetAmount}</td>
+                            <td className="px-6 py-4 whitespace-nowrap"><div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">{bill.SimbBillingCode ? bill.SimbBillingCode : (<>&nbsp;</>)}</div></td>
+                            <td className="px-6 py-4 whitespace-nowrap"><div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">{bill.LocalBillingName ? bill.LocalBillingName : (<>&nbsp;</>)}</div></td>
+                            <td className="px-6 py-4 whitespace-nowrap"><div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">{bill.BillingInitial ? bill.BillingInitial : (<>&nbsp;</>)}</div></td>
+                            <td className="px-6 py-4 whitespace-nowrap"><div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">{bill.BillingDiscount ? bill.BillingDiscount : (<>&nbsp;</>)}</div></td>
+                            <td className="px-6 py-4 whitespace-nowrap"><div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">{bill.BillingNetAmount ? bill.BillingNetAmount : (<>&nbsp;</>)}</div></td>
                           </tr>
                         ))
                       : <tr><td></td></tr>}
@@ -1615,7 +1684,7 @@ const DocumentBase64 = (data) => {
             </div>
             ) : ""
             }
-              <table className="table table-zebra mt-2">
+              <table className="table  mt-2">
                 <thead >
                   <tr className="text-base-100 bg-primary py-8 text-sm w-full text-center">
                       <th className="w-2/5">ชื่อไฟล์</th>

@@ -315,7 +315,7 @@ const [ furtherClaim , setFurtherClaim ]= useState("")
       IdType: ReDux.Patient.Data.IdType,
       VN: VNselectVN,
       // VisitDateTime: VisitDateselectVN,
-      VisitDateTime : "2024-09-01 00:00",  
+      VisitDateTime : "2024-10-01 00:00",  
       AccidentDate: Acc[0],       
       PolicyTypeCode: policyTypeValue,
       ServiceSettingCode: statusValue, 
