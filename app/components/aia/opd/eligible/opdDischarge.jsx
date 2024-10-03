@@ -12,6 +12,8 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import { FaEdit } from "react-icons/fa";
+import OutlinedInput from '@mui/material/OutlinedInput';
+import InputAdornment from '@mui/material/InputAdornment';
 import { FaCirclePlus , FaCircleMinus  } from "react-icons/fa6";
  import { DemoContainer, DemoItem } from '@mui/x-date-pickers/internals/demo';
  import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -50,7 +52,7 @@ export default function Page({data}) {
   const [DataWoundType, setDataWoundType] = useState("");
   const [woundType, setWoundType] = useState("");
   const [vitalsign, setVitalsign] = useState();
-  const [value, setValue] = useState(null);
+  const [accidentDate, setAccidentDate] = useState(null);
   const [doctor, setDoctor] = useState();
   const [diagnosis, setDiagnosis] = useState();
   const [investigation, setInvestigation] = useState();
@@ -76,6 +78,17 @@ export default function Page({data}) {
   const [procedure, setProcedure] = useState("");
   const [newRow, setNewRow] = useState({ Icd9: '', ProcedureName: '', ProcedureDate: '' });
   const [summitEditProcedure, setSummitEditProcedure] = useState("false");
+  const [comaScore, setComaScore] = useState('');
+  const [expectedDayOfRecovery, setExpectedDayOfRecovery] = useState('');
+  const [signSymptomsDate, setSignSymptomsDate] = useState(null);
+  const [privateCase, setPrivateCase] = useState(false);
+  const [pregnant, setPregnant] = useState(false);
+  const [alcoholRelated, setAlcoholRelated] = useState(false);
+  const [previousTreatment, setPreviousTreatment] = useState(false);
+  const [previousTreatmentDetail, setPreviousTreatmentDetail] = useState("");
+  const [previousTreatmentDate, setPreviousTreatmentDate] = useState(null);
+  
+   // console.log(previousTreatmentDetail.target.value)
   // const [editProcedure, setEditProcedure] = useState("false");
 
   const [freetext , setFreeText] = useState();
@@ -154,7 +167,7 @@ const PatientInfo = {
       .get(process.env.NEXT_PUBLIC_URL_SV + "v1/trakcare-patient-info/PatientInfoByPID/"+PatientInfo.PID)
       .then((response) => {
         setPatien(response.data);
-        console.log(response.data)
+        //console.log(response.data)
       })
       .catch((error) => {
         console.log(error)
@@ -199,6 +212,10 @@ const PatientInfo = {
     .then((response) => {
       setVisit(response.data);
 
+      const dateValue = dayjs(response.data.Result.VisitInfo.SignSymptomsDate);
+     // console.log(response.data.Result.VisitInfo.SignSymptomsDate)
+      setSignSymptomsDate(dateValue);
+      setComaScore(response.data.Result.VisitInfo.ComaScore)
     })
     .catch((error) => {
       console.log(error)
@@ -209,8 +226,11 @@ const PatientInfo = {
         setShowFormError("Error")
       }
       catch (error) {
+
+        console.log(error)
          setMassError(error.response.data.HTTPStatus.message);
          setShowFormError("Error");
+
      }
     });
 
@@ -577,163 +597,354 @@ const DocumentBase64 = (data) => {
     const Proold = JSON.stringify(procedure);
     const Pronew = JSON.stringify(rows);
 
-
+// console.log(rows)
 
     if (Proold === Pronew) {
       console.log("Not Edit")
+
+
+      const Datevalue = dayjs(accidentDate.$d).format('YYYY-MM-DD');
+      const signDate = dayjs(signSymptomsDate.$d).format('YYYY-MM-DD');
+      
+      if(PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER"){
+       // console.log(PatientInfo)
+      
+       document.getElementById("my_modal_3").showModal();
+      
+        const Data = {
+          "PatientInfo" : {
+            InsurerCode: PatientInfo.InsurerCode,
+            RefId: PatientInfo.RefId,
+            TransactionNo : PatientInfo.TransactionNo,
+            PID : PatientInfo.PID,
+            HN : PatientInfo.HN,
+            GivenNameTH : PatientInfo.GivenNameTH,
+            SurnameTH: PatientInfo.SurnameTH,
+            DateOfBirth: PatientInfo.DateOfBirth,
+            PassportNumber: PatientInfo.PassportNumber,
+            IdType: PatientInfo.IdType,
+            VN:  PatientInfo.VN,
+            VisitDateTime: PatientInfo.VisitDateTime,
+            AccidentDate: Datevalue,
+            AccidentPlaceCode:  accidentPlaceValue,
+            AccidentInjuryWoundtypeCode:  woundType,
+            AccidentInjurySideCode: injurySide,
+            WoundDetails: event.target.commentOfInjuryText.value,
+            PolicyTypeCode: PatientInfo.PolicyTypeCode,
+            ServiceSettingCode: PatientInfo.ServiceSettingCode, 
+            IllnessTypeCode: PatientInfo.IllnessTypeCode,
+            SurgeryTypeCode:  PatientInfo.SurgeryTypeCode,
+            ChiefComplaint: event.target.ChiefComplaint.value,
+            PresentIllness: event.target.PresentIllness.value,
+            AccidentCauseOver45Days : over45,
+            DxFreeText : event.target.DxFreeTextText.value,
+            FurtherClaimId : PatientInfo.FurtherClaimId,
+            FurtherClaimNo : PatientInfo.FurtherClaimNo,
+      
+            OtherInsurer : otherInsurer,
+            UnderlyingCondition : event.target.UnderlyingCondition.value,
+            PhysicalExam : event.target.PhysicalExam.value,
+            PlanOfTreatment : event.target.PlanOfTreatment.value,
+            ProcedureFreeText : event.target.ProcedureFreeText.value,
+            AdditionalNote :  event.target.AdditionalNote.value,
+            SignSymptomsDate : signSymptomsDate,
+            ComaScore : comaScore,
+            ExpectedDayOfRecovery : expectedDayOfRecovery,
+            AlcoholRelated : alcoholRelated,
+            Pregnant : pregnant,
+            PrivateCase : privateCase,
+            ProcedureInfo : {
+                      ProcedureEdit : true,
+                      Procedure : 
+                           procedure,
+                      
+                    }
+      
+          },
+        };
+      
+        console.log(Data.PatientInfo)
+        axios
+          .post(process.env.NEXT_PUBLIC_URL_PD2 + "v1/aia-opddischarge/sentOPDDischarge",
+            Data
+        
+          )
+          .then((response) => {
+            //setOrderItemz(response.data);
+            console.log(response.data.Message)
+            setMassSummit(response.data.Message)
+      
+          })
+          .catch((err) => {
+           // console.error("Error", err)
+            console.log(err)
+      
+            setshowSummitError("Error")
+            setMassSummitError("Error")
+      });
+      
+      
+      }else{
+      
+        document.getElementById("my_modal_3").showModal();
+      
+        const Data = {
+          "PatientInfo" : {
+            InsurerCode: PatientInfo.InsurerCode,
+            RefId: PatientInfo.RefId,
+            TransactionNo : PatientInfo.TransactionNo,
+            PID : PatientInfo.PID,
+            HN : PatientInfo.HN,
+            GivenNameTH : PatientInfo.GivenNameTH,
+            SurnameTH: PatientInfo.SurnameTH,
+            DateOfBirth: PatientInfo.DateOfBirth,
+            PassportNumber: PatientInfo.PassportNumber,
+            IdType: PatientInfo.IdType,
+            VN:  PatientInfo.VN,
+            VisitDateTime: PatientInfo.VisitDateTime,
+            AccidentDate: Datevalue,
+            AccidentPlaceCode:  accidentPlaceValue,
+            AccidentInjuryWoundtypeCode:  woundType,
+            AccidentInjurySideCode: injurySide,
+            WoundDetails: "",
+            PolicyTypeCode: PatientInfo.PolicyTypeCode,
+            ServiceSettingCode: PatientInfo.ServiceSettingCode, 
+            IllnessTypeCode: PatientInfo.IllnessTypeCode,
+            SurgeryTypeCode:  PatientInfo.SurgeryTypeCode,
+            ChiefComplaint: event.target.ChiefComplaint.value,
+            PresentIllness: event.target.PresentIllness.value,
+            AccidentCauseOver45Days : over45,
+            DxFreeText : event.target.DxFreeTextText.value,
+            FurtherClaimId : PatientInfo.FurtherClaimId,
+            FurtherClaimNo : PatientInfo.FurtherClaimNo,
+      
+            OtherInsurer : otherInsurer,
+            UnderlyingCondition : event.target.UnderlyingCondition.value,
+            PhysicalExam : event.target.PhysicalExam.value,
+            PlanOfTreatment : event.target.PlanOfTreatment.value,
+            ProcedureFreeText : event.target.ProcedureFreeText.value,
+            AdditionalNote :  event.target.AdditionalNote.value,
+            SignSymptomsDate : signDate,
+            ComaScore : comaScore,
+            ExpectedDayOfRecovery : expectedDayOfRecovery,
+            AlcoholRelated : alcoholRelated,
+            Pregnant : pregnant,
+            PrivateCase : privateCase,
+            ProcedureInfo : {
+                      ProcedureEdit : true,
+                      Procedure : 
+                      rows,
+                      
+                    }
+      
+          },
+        };
+      
+        console.log(Data.PatientInfo)
+      
+        axios
+          .post(process.env.NEXT_PUBLIC_URL_PD2 + "v1/aia-opddischarge/sentOPDDischarge",
+            Data
+        
+          )
+          .then((response) => {
+            //setOrderItemz(response.data);
+      
+      
+      
+            console.log(response.data.Message)
+            setMassSummit(response.data.Message)
+      
+      
+      
+          })
+          .catch((err) => {
+           // console.error("Error", err)
+            console.log(err)
+      
+            setshowSummitError("Error")
+            setMassSummitError("Error")
+      });
+      
+      
+      }
+
+
+console.log(ProcedureInfo)
+
     } else {
       console.log("Edit")
+
+
+      const Datevalue = dayjs(accidentDate.$d).format('YYYY-MM-DD');
+      const signDate = dayjs(signSymptomsDate.$d).format('YYYY-MM-DD');
+
+      if(PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER"){
+       // console.log(PatientInfo)
+      
+       document.getElementById("my_modal_3").showModal();
+      
+        const Data = {
+          "PatientInfo" : {
+            InsurerCode: PatientInfo.InsurerCode,
+            RefId: PatientInfo.RefId,
+            TransactionNo : PatientInfo.TransactionNo,
+            PID : PatientInfo.PID,
+            HN : PatientInfo.HN,
+            GivenNameTH : PatientInfo.GivenNameTH,
+            SurnameTH: PatientInfo.SurnameTH,
+            DateOfBirth: PatientInfo.DateOfBirth,
+            PassportNumber: PatientInfo.PassportNumber,
+            IdType: PatientInfo.IdType,
+            VN:  PatientInfo.VN,
+            VisitDateTime: PatientInfo.VisitDateTime,
+            AccidentDate: Datevalue,
+            AccidentPlaceCode:  accidentPlaceValue,
+            AccidentInjuryWoundtypeCode:  woundType,
+            AccidentInjurySideCode: injurySide,
+            WoundDetails: event.target.commentOfInjuryText.value,
+            PolicyTypeCode: PatientInfo.PolicyTypeCode,
+            ServiceSettingCode: PatientInfo.ServiceSettingCode, 
+            IllnessTypeCode: PatientInfo.IllnessTypeCode,
+            SurgeryTypeCode:  PatientInfo.SurgeryTypeCode,
+            ChiefComplaint: event.target.ChiefComplaint.value,
+            PresentIllness: event.target.PresentIllness.value,
+            AccidentCauseOver45Days : over45,
+            DxFreeText : event.target.DxFreeTextText.value,
+            FurtherClaimId : PatientInfo.FurtherClaimId,
+            FurtherClaimNo : PatientInfo.FurtherClaimNo,
+      
+            OtherInsurer : otherInsurer,
+            UnderlyingCondition : event.target.UnderlyingCondition.value,
+            PhysicalExam : event.target.PhysicalExam.value,
+            PlanOfTreatment : event.target.PlanOfTreatment.value,
+            ProcedureFreeText : event.target.ProcedureFreeText.value,
+            AdditionalNote :  event.target.AdditionalNote.value,
+            SignSymptomsDate : signDate,
+            ComaScore : comaScore,
+            ExpectedDayOfRecovery : expectedDayOfRecovery,
+            AlcoholRelated : alcoholRelated,
+            Pregnant : pregnant,
+            PrivateCase : privateCase,
+            ProcedureInfo : {
+                      ProcedureEdit : false,
+                      Procedure : 
+                           procedure,
+                      
+                    }
+      
+          },
+        };
+      
+        console.log(Data.PatientInfo)
+        axios
+          .post(process.env.NEXT_PUBLIC_URL_PD2 + "v1/aia-opddischarge/sentOPDDischarge",
+            Data
+        
+          )
+          .then((response) => {
+            //setOrderItemz(response.data);
+            console.log(response.data.Message)
+            setMassSummit(response.data.Message)
+      
+          })
+          .catch((err) => {
+           // console.error("Error", err)
+            console.log(err)
+      
+            setshowSummitError("Error")
+            setMassSummitError("Error")
+      });
+      
+      
+      }else{
+      
+        document.getElementById("my_modal_3").showModal();
+      
+        const Data = {
+          "PatientInfo" : {
+            InsurerCode: PatientInfo.InsurerCode,
+            RefId: PatientInfo.RefId,
+            TransactionNo : PatientInfo.TransactionNo,
+            PID : PatientInfo.PID,
+            HN : PatientInfo.HN,
+            GivenNameTH : PatientInfo.GivenNameTH,
+            SurnameTH: PatientInfo.SurnameTH,
+            DateOfBirth: PatientInfo.DateOfBirth,
+            PassportNumber: PatientInfo.PassportNumber,
+            IdType: PatientInfo.IdType,
+            VN:  PatientInfo.VN,
+            VisitDateTime: PatientInfo.VisitDateTime,
+            AccidentDate: Datevalue,
+            AccidentPlaceCode:  accidentPlaceValue,
+            AccidentInjuryWoundtypeCode:  woundType,
+            AccidentInjurySideCode: injurySide,
+            WoundDetails: "",
+            PolicyTypeCode: PatientInfo.PolicyTypeCode,
+            ServiceSettingCode: PatientInfo.ServiceSettingCode, 
+            IllnessTypeCode: PatientInfo.IllnessTypeCode,
+            SurgeryTypeCode:  PatientInfo.SurgeryTypeCode,
+            ChiefComplaint: event.target.ChiefComplaint.value,
+            PresentIllness: event.target.PresentIllness.value,
+            AccidentCauseOver45Days : over45,
+            DxFreeText : event.target.DxFreeTextText.value,
+            FurtherClaimId : PatientInfo.FurtherClaimId,
+            FurtherClaimNo : PatientInfo.FurtherClaimNo,
+      
+            OtherInsurer : otherInsurer,
+            UnderlyingCondition : event.target.UnderlyingCondition.value,
+            PhysicalExam : event.target.PhysicalExam.value,
+            PlanOfTreatment : event.target.PlanOfTreatment.value,
+            ProcedureFreeText : event.target.ProcedureFreeText.value,
+            AdditionalNote :  event.target.AdditionalNote.value,
+            SignSymptomsDate : signSymptomsDate,
+            ComaScore : comaScore,
+            ExpectedDayOfRecovery : expectedDayOfRecovery,
+            AlcoholRelated : alcoholRelated,
+            Pregnant : pregnant,
+            PrivateCase : privateCase,
+            ProcedureInfo : {
+                      ProcedureEdit : false,
+                      Procedure : 
+                      rows,
+                      
+                    }
+      
+          },
+        };
+      
+        console.log(Data.PatientInfo)
+      
+        axios
+          .post(process.env.NEXT_PUBLIC_URL_PD2 + "v1/aia-opddischarge/sentOPDDischarge",
+            Data
+        
+          )
+          .then((response) => {
+            //setOrderItemz(response.data);
+      
+      
+      
+            console.log(response.data.Message)
+            setMassSummit(response.data.Message)
+      
+      
+      
+          })
+          .catch((err) => {
+           // console.error("Error", err)
+            console.log(err)
+      
+            setshowSummitError("Error")
+            setMassSummitError("Error")
+      });
+      
+      
+      }
     }
 
 
 
-
-
-//     if (rows.length > 0) {
-//       const firstRow = rows;
-//       console.log(firstRow);
-//       console.log(procedure)
-
-// if(procedure === firstRow){
-// console.log("Not Edit")
-// }else{
-//   console.log("Edit")
-// }
-    // } else {
-    //   console.log("");
-    // }
-
-
-
-
-
-
-//     const Datevalue = dayjs(value.$d).format('YYYY-MM-DD');
-
-// if(PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER"){
-//  // console.log(PatientInfo)
-
-//  document.getElementById("my_modal_3").showModal();
-
-//   const Data = {
-//     "PatientInfo" : {
-//       InsurerCode: PatientInfo.InsurerCode,
-//       RefId: PatientInfo.RefId,
-//       TransactionNo : PatientInfo.TransactionNo,
-//       PID : PatientInfo.PID,
-//       HN : PatientInfo.HN,
-//       GivenNameTH : PatientInfo.GivenNameTH,
-//       SurnameTH: PatientInfo.SurnameTH,
-//       DateOfBirth: PatientInfo.DateOfBirth,
-//       PassportNumber: PatientInfo.PassportNumber,
-//       IdType: PatientInfo.IdType,
-//       VN:  PatientInfo.VN,
-//       VisitDateTime: PatientInfo.VisitDateTime,
-//       AccidentDate: Datevalue,
-//       AccidentPlaceCode:  accidentPlaceValue,
-//       AccidentInjuryWoundtypeCode:  woundType,
-//       AccidentInjurySideCode: injurySide,
-//       WoundDetails: event.target.commentOfInjuryText.value,
-//       PolicyTypeCode: PatientInfo.PolicyTypeCode,
-//       ServiceSettingCode: PatientInfo.ServiceSettingCode, 
-//       IllnessTypeCode: PatientInfo.IllnessTypeCode,
-//       SurgeryTypeCode:  PatientInfo.SurgeryTypeCode,
-//       ChiefComplaint: visit.Result.VisitInfo.ChiefComplaint,
-//       PresentIllness: event.target.PresentIllnessText.value,
-//       AccidentCauseOver45Days : over45,
-//       DxFreeText : event.target.DxFreeTextText.value,
-//       FurtherClaimId : PatientInfo.FurtherClaimId,
-//       FurtherClaimNo : PatientInfo.FurtherClaimNo,
-//       OtherInsurer : otherInsurer
-//     },
-//   };
-
-//   console.log(Data.PatientInfo)
-//   axios
-//     .post(process.env.NEXT_PUBLIC_URL_PD2 + "v1/aia-opddischarge/sentOPDDischarge",
-//       Data
-  
-//     )
-//     .then((response) => {
-//       //setOrderItemz(response.data);
-//       console.log(response.data.Message)
-//       setMassSummit(response.data.Message)
-
-//     })
-//     .catch((err) => {
-//      // console.error("Error", err)
-//       console.log(err)
-
-//       setshowSummitError("Error")
-//       setMassSummitError("Error")
-// });
-
-
-// }else{
-
-//   document.getElementById("my_modal_3").showModal();
-
-//   const Data = {
-//     "PatientInfo" : {
-//       InsurerCode: PatientInfo.InsurerCode,
-//       RefId: PatientInfo.RefId,
-//       TransactionNo : PatientInfo.TransactionNo,
-//       PID : PatientInfo.PID,
-//       HN : PatientInfo.HN,
-//       GivenNameTH : PatientInfo.GivenNameTH,
-//       SurnameTH: PatientInfo.SurnameTH,
-//       DateOfBirth: PatientInfo.DateOfBirth,
-//       PassportNumber: PatientInfo.PassportNumber,
-//       IdType: PatientInfo.IdType,
-//       VN:  PatientInfo.VN,
-//       VisitDateTime: PatientInfo.VisitDateTime,
-//       AccidentDate: Datevalue,
-//       AccidentPlaceCode:  accidentPlaceValue,
-//       AccidentInjuryWoundtypeCode:  woundType,
-//       AccidentInjurySideCode: injurySide,
-//       WoundDetails: "",
-//       PolicyTypeCode: PatientInfo.PolicyTypeCode,
-//       ServiceSettingCode: PatientInfo.ServiceSettingCode, 
-//       IllnessTypeCode: PatientInfo.IllnessTypeCode,
-//       SurgeryTypeCode:  PatientInfo.SurgeryTypeCode,
-//       ChiefComplaint: visit.Result.VisitInfo.ChiefComplaint,
-//       PresentIllness: event.target.PresentIllnessText.value,
-//       AccidentCauseOver45Days : over45,
-//       DxFreeText : event.target.DxFreeTextText.value,
-//       FurtherClaimId : PatientInfo.FurtherClaimId,
-//       FurtherClaimNo : PatientInfo.FurtherClaimNo,
-//       OtherInsurer : otherInsurer
-//     },
-//   };
-
-//   console.log(Data.PatientInfo)
-
-//   axios
-//     .post(process.env.NEXT_PUBLIC_URL_PD2 + "v1/aia-opddischarge/sentOPDDischarge",
-//       Data
-  
-//     )
-//     .then((response) => {
-//       //setOrderItemz(response.data);
-
-
-
-//       console.log(response.data.Message)
-//       setMassSummit(response.data.Message)
-
-
-
-//     })
-//     .catch((err) => {
-//      // console.error("Error", err)
-//       console.log(err)
-
-//       setshowSummitError("Error")
-//       setMassSummitError("Error")
-// });
-
-
-// }
  
 
     // setShowModal(true)
@@ -845,14 +1056,38 @@ const DocumentBase64 = (data) => {
          </div>)
      }
 
-
-
-
-
   }
   const handleOtherInsurer = (e) => {
     setOtherInsurer(e.target.value);
   };
+
+  const handleAlcoholRelated = () => {
+    if(alcoholRelated === "false"){
+      setAlcoholRelated("true");
+    }else{
+      setAlcoholRelated("false");
+    }
+  };
+  const handlePregnant = () => {
+    if(pregnant === "false"){
+      setPregnant("true");
+    }else{
+      setPregnant("false");
+    }
+   };
+   const handlePrivateCase = () => {
+    if(privateCase === "false"){
+      setPrivateCase("true");
+    }else{
+      setPrivateCase("false");
+    }
+   };
+   const handlePreviousTreatment = () => {
+    setPreviousTreatmentDetail("");
+    setPreviousTreatmentDate(null);
+      setPreviousTreatment(!previousTreatment);
+
+   };
 
 
   const CustomTextField = styled(TextField)({
@@ -861,6 +1096,8 @@ const DocumentBase64 = (data) => {
       cursor: 'default', // เปลี่ยนเคอร์เซอร์เป็นแบบปกติ
     },
    });
+
+
   return (
     <>
           {showFormError === "Error" ? (
@@ -1008,28 +1245,18 @@ const DocumentBase64 = (data) => {
               </div>
               <div className="rounded-md"> </div>
               <div className="rounded-md"> </div>
-                <div className="rounded-md">
+                <div className="rounded-md mt-2">
               <Box sx={{backgroundColor: '#e5e7eb', padding: 0, borderRadius: 0,}}>
-                {/* <TextField id="standard-basic" className="text-black bg-gray-200 border border-gray-300 rounded p-2 disabled:text-black" label="VN" variant="standard" value={visit.Result.VisitInfo.VN} /> */}
                 <CustomTextField  id="disabledInput" label="VN"  className="w-full text-black rounded disabled:text-black disabled:bg-gray-300" defaultValue={visit.Result.VisitInfo.VN} InputProps={{readOnly: true,}}/>
            </Box>
                 </div>
-                <div className="rounded-md">
+                <div className="rounded-md mt-2">
                 <Box sx={{backgroundColor: '#e5e7eb', padding: 0, borderRadius: 0,}}>
-                {/* <TextField id="standard-basic" className="text-black bg-gray-200 border border-gray-300 rounded p-2 disabled:text-black" label="VisitDateTime" variant="standard" value={visit.Result.VisitInfo.VisitDateTime} /> */}
                 <CustomTextField  id="disabledInput"   className="w-full text-black rounded disabled:text-black disabled:bg-gray-300" label="VisitDateTime" defaultValue={visit.Result.VisitInfo.VisitDateTime} InputProps={{readOnly: true,}}/>
                 </Box>
                 </div>
-                <div className="rounded-md">
+                <div className="rounded-md mt-2">
                 <Box sx={{backgroundColor: '#e5e7eb', padding: 0, borderRadius: 0,}}>
-                {/* <TextField id="standard-basic" className="text-black bg-gray-200 border border-gray-300 rounded p-2 disabled:text-black" label="อาการสำคัญที่มาโรงพยาบาล" variant="standard" value={visit.Result.VisitInfo.ChiefComplaint} /> */}
-                <CustomTextField  id="disabledInput"   className="w-full text-black rounded disabled:text-black disabled:bg-gray-300" label="อาการสำคัญที่มาโรงพยาบาล" defaultValue={visit.Result.VisitInfo.ChiefComplaint} InputProps={{readOnly: true,}}/>
-                </Box>
-                </div>
-                <div className="rounded-md text-black">
-                <Box sx={{backgroundColor: '#e5e7eb', padding: 0, borderRadius: 0,}}>
-                {/* <TextField id="standard-basic" className="text-black bg-gray-200 border border-gray-300 rounded p-2 disabled:text-black w-1/2" label="ส่วนสูง" variant="standard" value={visit.Result.VisitInfo.Height} />
-                <TextField id="standard-basic" className="text-black bg-gray-200 border border-gray-300 rounded p-2 disabled:text-black w-1/2" label="น้ำหนัก" variant="standard" value={visit.Result.VisitInfo.Weight} /> */}
                 <CustomTextField  id="disabledInput"   className="w-full text-black rounded disabled:text-black disabled:bg-gray-300" label="น้ำหนัก / ส่วนสูง" defaultValue={combinedString} InputProps={{readOnly: true,}}/>
                 </Box>
                 </div>
@@ -1041,10 +1268,39 @@ const DocumentBase64 = (data) => {
                 </div>
                 ) : ""}
                 </div>
-                <div className="rounded-md w-full border-2 mt-3">
+
                 
-                {/* <TextField id="standard-basic" className="w-full" label="ข้อวินิจฉัยโรค" variant="standard" value={visit.Result.Visit.DxFreeText} /> */}
-                <TextField
+                <div className="grid gap-2 sm:grid-cols-2 w-full mt-4">
+                <div className="rounded-md mt-2"> 
+                       <TextField
+            //    error
+                className="w-full"
+          id="outlined-multiline-static"
+          label="อาการสำคัญที่มาโรงพยาบาล"
+          name="ChiefComplaint"
+          multiline
+          rows={4}
+          defaultValue={visit.Result.VisitInfo.ChiefComplaint}
+          inputProps={{ maxLength: 200 }}
+       //   required
+        />
+                </div>
+                <div className="rounded-md mt-2">
+                               <TextField
+             //   error
+                className="w-full"
+          id="outlined-multiline-static"
+          label="โรคประจำตัว"
+          name="UnderlyingCondition"
+          multiline
+          rows={4}
+          defaultValue={visit.Result.VisitInfo.UnderlyingCondition}
+          inputProps={{ maxLength: 500 }}
+      //    required
+        />
+                </div>
+                <div className="rounded-md mt-2">
+            <TextField
                 error
                 className="w-full"
           id="outlined-multiline-static"
@@ -1055,23 +1311,193 @@ const DocumentBase64 = (data) => {
           defaultValue={visit.Result.VisitInfo.DxFreeText}
           inputProps={{ maxLength: 200 }}
           required
-        />
-                </div>
-                <div className="rounded-md mt-3">
-                <TextField
-                error
+        /> 
+                  </div>
+                  <div className="rounded-md mt-2">
+                                  <TextField
+           //     error
                 className="w-full"
-                name="PresentIllnessText"
+                name="PresentIllness"
           id="outlined-multiline-static"
           label="ประวัติเจ็บป่วยปัจจุบัน รายละเอียดอาการ และประวัติที่เกี่ยวข้อง"
           multiline
           rows={4}
           defaultValue={visit.Result.VisitInfo.PresentIllness}
           inputProps={{ maxLength: 500 }}
-          required
+       //   required
+        /> 
+                     </div>
+                  <div className="rounded-md mt-2"> 
+                  <TextField
+             //   error
+                className="w-full"
+                name="PhysicalExam"
+          id="outlined-multiline-static"
+          label="รายละเอียด หรือ ความผิดปกติของการตรวจร่างกาย"
+          multiline
+          rows={4}
+          defaultValue={visit.Result.VisitInfo.PhysicalExam}
+       //   required
+        /> 
+                  </div>
+                  <div className="rounded-md mt-2">
+                  <TextField
+               // error
+                className="w-full"
+                name="PlanOfTreatment"
+          id="outlined-multiline-static"
+          label="แผนการรักษา"
+          multiline
+          rows={4}
+          defaultValue={visit.Result.VisitInfo.PlanOfTreatment}
+          inputProps={{ maxLength: 500 }}
+       //   required
+        />  
+                     </div>
+                     <div className="rounded-md mt-2">
+                     <TextField
+              //  error
+                className="w-full"
+                name="ProcedureFreeText"
+          id="outlined-multiline-static"
+          label="หัตถการ/หรือการผ่าตัด (ที่เกี่ยวข้องกับการจ่ายผลประโยชน์ตาม % การพิจารณาสินไหมตามปะเภทของหัตถการ/การผ่าตัด)"
+          multiline
+          rows={4}
+          defaultValue={visit.Result.VisitInfo.ProcedureFreeText}
+          inputProps={{ maxLength: 500 }}
+       //   required
+        />  
+                      </div> 
+                     <div className="rounded-md mt-2">
+                     <TextField
+              //  error
+                className="w-full"
+                name="AdditionalNote"
+          id="outlined-multiline-static"
+          label="ข้อมูลเพิ่มเติมอื่น ๆ"
+          multiline
+          rows={4}
+          defaultValue={visit.Result.VisitInfo.AdditionalNote}
+          inputProps={{ maxLength: 500 }}
+       //   required
+        />  
+                      </div> 
+                </div> 
+
+                <div className="flex  w-full mt-4">
+                      <div className="w-1/5">
+                      <LocalizationProvider dateAdapter={AdapterDayjs} >
+      <DemoItem  >
+        <DesktopDatePicker label="วันที่เริ่มมีอาการ" value={signSymptomsDate} onChange={(newSignSymptomsDate) => setSignSymptomsDate(newSignSymptomsDate)} format="YYYY-MM-DD"/>
+      </DemoItem>
+    </LocalizationProvider>
+                        </div>
+                        <div className="w-1/4 ml-2">
+                        <TextField
+      label="ระดับความรู้สึกตัว (วัดแบบ Glascow Coma Score 3-15)"
+      type="number"
+      defaultValue={comaScore}
+      onChange={(newComaScore) => setComaScore(newComaScore)}
+      inputProps={{ min: 3, max: 15 }}
+      variant="outlined"
+      fullWidth
+    />
+                        </div>
+
+                        <div className="w-1/4 ml-2">
+                        <TextField
+                          type="number"
+          label="จำนวนวันพักฟื้นหลังการผ่าตัด"
+          id="outlined-start-adornment"
+          // sx={{ m: 1 }}
+          defaultValue={expectedDayOfRecovery}
+          onChange={(newExpectedDayOfRecovery) => setExpectedDayOfRecovery(newExpectedDayOfRecovery)}
+          inputProps={{ min: 0 }}
+          slotProps={{
+            input: {
+              startAdornment: <InputAdornment position="start">Days</InputAdornment>,
+            },
+          }}
         />
-                </div>
-            
+                      </div>
+
+              </div> 
+
+       <div className="border-solid border-2 border-none mt-2">
+       <h1 className="mt-2 ml-2 text-accent text-lg">การเจ็บป่วยนี่เกี่ยวข้องกับสิ่งแวดล้อมอื่นๆ ( กรณีไม่ได้เลือก ไม่เกี่ยวข้องกับปัจจัยแวดล้อมอื่นๆ สามารถเลือกได้มากกว่า 1 ข้อ )</h1>
+              <div className="flex items-center mt-2 ml-2">
+              <input
+                                      type="checkbox"
+                                      id="alcoholRelated"
+                                      name="alcoholRelated"
+                                      value={alcoholRelated}
+                                      className="checkbox"
+                                      onChange={handleAlcoholRelated}
+                                
+                               />
+                            <p className="text-left ml-2">การเจ็บป่วยครั้งนี้เกี่ยวข้องกับแอลกอฮอล์ หรือ ยาเสพติด</p>
+                            </div>
+                            <div className="flex items-center mt-2 ml-2">
+                            <input
+                                      type="checkbox"
+                                      id="pregnant"
+                                      name="pregnant"
+                                      value={pregnant}
+                                      className="checkbox "
+                                      onChange={handlePregnant}
+                                    
+                               />
+                            <p className="text-left ml-2">ตั้งครรภ์</p>
+                            </div>
+                            <div className="flex items-center mt-2 ml-2">
+                            <input
+                                      type="checkbox"
+                                      id="privateCase"
+                                      name="privateCase"
+                                      value={privateCase}
+                                      className="checkbox "
+                                      onChange={handlePrivateCase}
+                                    
+                               />
+                            <p className="text-left ml-2 ml-2">เป็นเคสพิเศษ</p>
+                            </div>
+                            <div className="flex items-center mt-2 ml-2">
+                            <input
+                                      type="checkbox"
+                                      id="previousTreatment"
+                                      name="previousTreatment"
+                                      //value={previousTreatment}
+                                      className="checkbox "
+                                      onChange={handlePreviousTreatment}
+                                   
+                               />
+                            <p className="text-left ml-2 pb-2">เคยเข้ารับการรักษาก่อนการรักษาครั้งนี้</p>
+                            </div>
+                           {previousTreatment  && (<>
+
+                            <div className="flex  w-full mt-2">
+
+                      <div className="w-1/4">
+                      <LocalizationProvider dateAdapter={AdapterDayjs} >
+      <DemoItem >
+        <DesktopDatePicker  slotProps={{ openPickerButton: { color: 'error' },textField: { focused: true, color: 'error'},}}  label="วันที่เข้ารับการรักษาก่อนการรักษาครั้งนี้" value={previousTreatmentDate} onChange={(newPreviousTreatmentDate) => setPreviousTreatmentDate(newPreviousTreatmentDate)} format="YYYY-MM-DD"/>
+      </DemoItem>
+    </LocalizationProvider>
+                        </div>
+                        <div className="w-2/5 ml-2">
+                <TextField error  id="disabledInput" label="ชื่อโรงพยาบาลที่เข้ารับการรักษาก่อนการรักษาครั้งนี้ (ไม่เกิน 20 ตัวอักษร)" inputProps={{ maxLength: 20 }}  className="w-full" defaultValue={previousTreatmentDetail} onChange={(newPreviousTreatmentDetail) => setPreviousTreatmentDetail(newPreviousTreatmentDetail)}  />
+                        </div>
+
+
+
+
+                        </div>
+
+                           </>) } 
+       </div> 
+
+
+          
             </div> 
             ) : ""}
               {/* //////////////////////////////////////////////////////////////////////////// */}
@@ -1084,7 +1510,7 @@ const DocumentBase64 = (data) => {
                 <div className="w-1/5 ">
                 <LocalizationProvider dateAdapter={AdapterDayjs} >
       <DemoItem  >
-        <DesktopDatePicker   value={value} onChange={(newValue) => setValue(newValue)} format="YYYY-MM-DD"/>
+        <DesktopDatePicker   value={accidentDate} onChange={(newAccidentDate) => setAccidentDate(newAccidentDate)} format="YYYY-MM-DD"/>
       </DemoItem>
     </LocalizationProvider>
     
