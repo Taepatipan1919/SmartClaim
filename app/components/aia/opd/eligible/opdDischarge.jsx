@@ -29,10 +29,10 @@ export default function Page({data}) {
   const error = {
     response : {
       data : {
-          "HTTPStatus": {
-                "statusCode": "",
-                "message": "",
-                "error": ""
+          HTTPStatus: {
+                statusCode: "",
+                message: "",
+                error: ""
      },
       },
     },
@@ -242,14 +242,32 @@ const PatientInfo = {
   useEffect(() => {
     axios
     .post(process.env.NEXT_PUBLIC_URL_PD + "v1/aia-opddischarge/getOPDDischargeAccident",{
-      PatientInfo
+       PatientInfo
+    //  "PatientInfo": {
+    // "InsurerCode": 13, 
+    // "RefId":"oljhnklefhbilubsEFJKLb651",
+    // "TransactionNo":"",
+    // "PID": "3000000580044",
+    // "HN": "437536-45",
+    // "GivenNameTH": "วนิดา",
+    // "SurnameTH": "แจ้งสกุลชัย",
+
+    // "WoundDetails":"บาดเจ็บจากโดนสารเคมีหกใส่",
+    // "PolicyTypeCode":"IB",
+    // "ServiceSettingCode": "OPD", 
+    // "IllnessTypeCode": "ACC",
+    // "SurgeryTypeCode":  "N",
+    // "ChiefComplaint":"CC",
+    // "PresentIllness":"PI"
+    
+    // }
     })
     .then((response) => {
-      //  console.log(response.data.Result.AccidentDetail.AccidentDate)
+//      console.log(PatientInfo.AccidentDate)
       setAccidentDetail(response.data);
       const dateValue = dayjs(PatientInfo.AccidentDate);
 
-      setValue(dateValue);
+    setAccidentDate(dateValue);
 
     })
     .catch((error) => {
@@ -261,8 +279,9 @@ const PatientInfo = {
         setShowFormError("Error")
       }
       catch (error) {
-         setMassError(error.response.data.HTTPStatus.message);
-         setShowFormError("Error");
+      //  console.log(error)
+       setMassError(error.response.data.HTTPStatus.message);
+       setShowFormError("Error");
      }
     });
 
@@ -602,10 +621,12 @@ const DocumentBase64 = (data) => {
     if (Proold === Pronew) {
       console.log("Not Edit")
 
-
+    setShowSummitError();
+    setMassSummitError();
+    setMassSummit();
       const Datevalue = dayjs(accidentDate.$d).format('YYYY-MM-DD');
       const signDate = dayjs(signSymptomsDate.$d).format('YYYY-MM-DD');
-      
+
       if(PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER"){
        // console.log(PatientInfo)
       
@@ -616,6 +637,8 @@ const DocumentBase64 = (data) => {
             InsurerCode: PatientInfo.InsurerCode,
             RefId: PatientInfo.RefId,
             TransactionNo : PatientInfo.TransactionNo,
+            // "RefId": "O422113-67-13-OPD-005",
+            // "TransactionNo": "bbd750ab-fded-4c74-9ecd-2f1058373a75",
             PID : PatientInfo.PID,
             HN : PatientInfo.HN,
             GivenNameTH : PatientInfo.GivenNameTH,
@@ -624,8 +647,10 @@ const DocumentBase64 = (data) => {
             PassportNumber: PatientInfo.PassportNumber,
             IdType: PatientInfo.IdType,
             VN:  PatientInfo.VN,
-            VisitDateTime: PatientInfo.VisitDateTime,
+            VisitDateTime: PatientInfo.VisitDateTime,    
+            // "VisitDateTime":"2024-07-01 13:17",
             AccidentDate: Datevalue,
+            // "AccidentDate":"2024-07-01",
             AccidentPlaceCode:  accidentPlaceValue,
             AccidentInjuryWoundtypeCode:  woundType,
             AccidentInjurySideCode: injurySide,
@@ -647,12 +672,15 @@ const DocumentBase64 = (data) => {
             PlanOfTreatment : event.target.PlanOfTreatment.value,
             ProcedureFreeText : event.target.ProcedureFreeText.value,
             AdditionalNote :  event.target.AdditionalNote.value,
-            SignSymptomsDate : signSymptomsDate,
+            SignSymptomsDate : signDate,
             ComaScore : comaScore,
             ExpectedDayOfRecovery : expectedDayOfRecovery,
             AlcoholRelated : alcoholRelated,
             Pregnant : pregnant,
             PrivateCase : privateCase,
+            // PreviousTreatmentInfo : {
+            //   PreviousTreatment : previousTreatment
+            // }
             ProcedureInfo : {
                       ProcedureEdit : true,
                       Procedure : 
@@ -671,16 +699,23 @@ const DocumentBase64 = (data) => {
           )
           .then((response) => {
             //setOrderItemz(response.data);
-            console.log(response.data.Message)
-            setMassSummit(response.data.Message)
+            console.log(response)
+      //      console.log(response.data.MessageTh)
+     //       setMassSummit(response.data.MessageTh)
       
           })
-          .catch((err) => {
-           // console.error("Error", err)
-            console.log(err)
-      
-            setshowSummitError("Error")
-            setMassSummitError("Error")
+          .catch((error) => {
+            console.log(error)
+            try{
+              const ErrorMass = error.config.url
+              const [ErrorMass1, ErrorMass2] = ErrorMass.split('v1/');
+              setMassSummitError(error.code +" - "+error.message +" - "+ErrorMass2);
+              setShowSummitError("Error")
+            }
+            catch (error) {
+              setMassSummitError(error.response.data.HTTPStatus.message);
+              setShowSummitError("Error");
+           }
       });
       
       
@@ -752,25 +787,32 @@ const DocumentBase64 = (data) => {
       
       
       
-            console.log(response.data.Message)
-            setMassSummit(response.data.Message)
+            console.log(response)
+       //     console.log(response.data.MessageTh)
+            setMassSummit(response.data.MessageTh)
       
       
       
           })
-          .catch((err) => {
-           // console.error("Error", err)
-            console.log(err)
-      
-            setshowSummitError("Error")
-            setMassSummitError("Error")
+          .catch((error) => {
+            console.log(error)
+            try{
+              const ErrorMass = error.config.url
+              const [ErrorMass1, ErrorMass2] = ErrorMass.split('v1/');
+              setMassSummitError(error.code +" - "+error.message +" - "+ErrorMass2);
+              setShowSummitError("Error")
+            }
+            catch (error) {
+              setMassSummitError(error.response.data.HTTPStatus.message);
+              setShowSummitError("Error");
+           }
       });
       
       
       }
 
 
-console.log(ProcedureInfo)
+// console.log(ProcedureInfo)
 
     } else {
       console.log("Edit")
@@ -848,12 +890,18 @@ console.log(ProcedureInfo)
             setMassSummit(response.data.Message)
       
           })
-          .catch((err) => {
-           // console.error("Error", err)
-            console.log(err)
-      
-            setshowSummitError("Error")
-            setMassSummitError("Error")
+          .catch((error) => {
+            console.log(error)
+            try{
+              const ErrorMass = error.config.url
+              const [ErrorMass1, ErrorMass2] = ErrorMass.split('v1/');
+              setMassSummitError(error.code +" - "+error.message +" - "+ErrorMass2);
+              setShowSummitError("Error")
+            }
+            catch (error) {
+              setMassSummitError(error.response.data.HTTPStatus.message);
+              setShowSummitError("Error");
+           }
       });
       
       
@@ -931,12 +979,18 @@ console.log(ProcedureInfo)
       
       
           })
-          .catch((err) => {
-           // console.error("Error", err)
-            console.log(err)
-      
-            setshowSummitError("Error")
-            setMassSummitError("Error")
+          .catch((error) => {
+            console.log(error)
+            try{
+              const ErrorMass = error.config.url
+              const [ErrorMass1, ErrorMass2] = ErrorMass.split('v1/');
+              setMassSummitError(error.code +" - "+error.message +" - "+ErrorMass2);
+              setShowSummitError("Error")
+            }
+            catch (error) {
+              setMassSummitError(error.response.data.HTTPStatus.message);
+              setShowSummitError("Error");
+           }
       });
       
       
@@ -1123,7 +1177,7 @@ console.log(ProcedureInfo)
         <>
           <form onSubmit={Claim}>
             {patien ? (
-            <div className="justify-center border-solid w-4/5 m-auto border-2 border-warning rounded-lg p-4">
+            <div className="justify-center border-solid w-4/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
               <h1 className="font-black text-accent text-3xl ">
                 Patient Info
               </h1>

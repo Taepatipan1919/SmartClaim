@@ -66,6 +66,7 @@ const { Patient } = useSelector((state) => ({ ...state }));
 const dispatch = useDispatch();
 
 const PatientA = (patient) => {
+ // console.log(patient)
   dispatch(save2({
     value: "มีรายชื่อ",
     Data: 
@@ -89,24 +90,11 @@ const PatientA = (patient) => {
 
 router.push('/aia/opd/checkeligible');
 };
-/////////////////////////////////////////
 
-
-
-  // useEffect(() => {
-  //   const getClaimStatus = async () => {
-  //     const response = await fetch(
-  //       process.env.NEXT_PUBLIC_URL_PD + "v1/utils/claimStatus/" + InsurerCode
-  //     );
-
-  //     const data = await response.json();
-  //     setClaimStatus(data);
-  //   };
-  //   getClaimStatus();
-  // }, []);
 
   const createPatientInfo = (event) => {
-    setShowFormCreate("")
+    setShowFormCreate()
+    setCreate();
     event.preventDefault();
 
     if (event.target.exampleRadios.value === "NATIONAL_ID") {
@@ -119,14 +107,14 @@ router.push('/aia/opd/checkeligible');
       };
       axios
         .post(
-          process.env.NEXT_PUBLIC_URL_PD + "v1/aia-patient-info/FindPatient/",
+          process.env.NEXT_PUBLIC_URL_PD + process.env.NEXT_PUBLIC_URL_FindPatientTrakcare,
           {
             PatientInfo,
           }
         )
         .then(function (response) {
           setCreate(response.data);
-          setShowFormCreate("");
+
         })
         .catch(function (error) {
           console.log(error);
@@ -143,14 +131,13 @@ router.push('/aia/opd/checkeligible');
       };
       axios
         .post(
-          process.env.NEXT_PUBLIC_URL_PD + "v1/aia-patient-info/FindPatient/",
+          process.env.NEXT_PUBLIC_URL_PD + process.env.NEXT_PUBLIC_URL_FindPatientTrakcare,
           {
             PatientInfo,
           }
         )
         .then(function (response) {
           setCreate(response.data);
-          setShowFormCreate("");
           //console.log(response.data);
         })
         .catch(function (error) {
@@ -169,14 +156,13 @@ router.push('/aia/opd/checkeligible');
       };
       axios
         .post(
-          process.env.NEXT_PUBLIC_URL_PD + "v1/aia-patient-info/FindPatient/",
+          process.env.NEXT_PUBLIC_URL_PD + process.env.NEXT_PUBLIC_URL_FindPatientTrakcare,
           {
             PatientInfo,
           }
         )
         .then(function (response) {
           setCreate(response.data);
-          setShowFormCreate("");
           //console.log(response.data);
         })
         .catch(function (error) {
@@ -187,10 +173,11 @@ router.push('/aia/opd/checkeligible');
     }
   };
   function saveCreate() {
-    setShowFormCreate("");
+    setShowFormCreate();
+    setShowMassCreate();
     axios
       .post(
-        process.env.NEXT_PUBLIC_URL_PD2 + "v1/aia-patient-info/CreatePatient",
+        process.env.NEXT_PUBLIC_URL_PD2 + process.env.NEXT_PUBLIC_URL_CreatePatient,
         {
           PatientInfo: {
             InsurerCode: InsurerCode, // ควรเป็น integer ไม่ใช่ string
@@ -259,7 +246,7 @@ router.push('/aia/opd/checkeligible');
     //console.log(patient)
     axios
       .post(
-        process.env.NEXT_PUBLIC_URL_PD + "v1/aia-patient-info/PatientFindforUpdate",
+        process.env.NEXT_PUBLIC_URL_PD + process.env.NEXT_PUBLIC_URL_PatientFindforUpdate,
         {
           "PatientInfo": {
     "InsurerCode": InsurerCode, 
@@ -291,7 +278,7 @@ router.push('/aia/opd/checkeligible');
     setPatientFindforUpdate()
     axios
       .patch(
-        process.env.NEXT_PUBLIC_URL_PD + "v1/aia-patient-info/PatientUpdate",
+        process.env.NEXT_PUBLIC_URL_PD + process.env.NEXT_PUBLIC_URL_PatientUpdate,
         {
           "PatientInfo": {
             "InsurerCode": 13, 
@@ -312,12 +299,12 @@ router.push('/aia/opd/checkeligible');
         }
       )
       .then(function (response) {
-        console.log(response.data);
+      //  console.log(response.data);
         setShowSuccUpdate("Succ")
         
         axios
         .post(
-          process.env.NEXT_PUBLIC_URL_PD + "v1/aia-patient-info/PatientFindforUpdate",
+          process.env.NEXT_PUBLIC_URL_PD + process.env.NEXT_PUBLIC_URL_PatientFindforUpdate,
           {
             "PatientInfo": {
       "InsurerCode": InsurerCode, 
@@ -377,13 +364,13 @@ router.push('/aia/opd/checkeligible');
         
               axios
               .post(
-                process.env.NEXT_PUBLIC_URL_PD + "v1/aia-patient-info/PatientSearch",
+                process.env.NEXT_PUBLIC_URL_PD + process.env.NEXT_PUBLIC_URL_PatientSearch,
                 {
                   PatientInfo,
                 }
               )
               .then(function (response) {
-              //    console.log(response.data);
+                  //console.log(response.data);
                 if (response.data.HTTPStatus.statusCode === 200){
                   setShowFormError("")
                   setPost(response.data);
@@ -420,7 +407,7 @@ router.push('/aia/opd/checkeligible');
               };
               axios
               .post(
-                process.env.NEXT_PUBLIC_URL_PD + "v1/aia-patient-info/PatientSearch",
+                process.env.NEXT_PUBLIC_URL_PD + process.env.NEXT_PUBLIC_URL_PatientSearch,
                 {
                   PatientInfo,
                 }
@@ -463,7 +450,7 @@ router.push('/aia/opd/checkeligible');
               };
               axios
               .post(
-                process.env.NEXT_PUBLIC_URL_PD + "v1/aia-patient-info/PatientSearch",
+                process.env.NEXT_PUBLIC_URL_PD + process.env.NEXT_PUBLIC_URL_PatientSearch,
                 {
                   PatientInfo,
                 }
@@ -503,6 +490,10 @@ router.push('/aia/opd/checkeligible');
     // }
   };
   const createpatient = (e) => {
+     //    setShowFormCreate();
+     setShowMassCreate();
+     setCreate();
+     setShowFormCreate();
     e.preventDefault();
       document.getElementById("my_modal_3").showModal()
 }
@@ -736,7 +727,7 @@ router.push('/aia/opd/checkeligible');
               ""
             )}
             {showFormCreate === "Again" ? (
-              <div role="alert" className="alert alert-warning text-base-100">
+              <div role="alert" className="alert alert-error text-base-100">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-6 w-6 shrink-0 stroke-current"
