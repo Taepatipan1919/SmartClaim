@@ -78,6 +78,7 @@ export default function Page({data}) {
   const [procedure, setProcedure] = useState("");
   const [newRow, setNewRow] = useState({ Icd9: '', ProcedureName: '', ProcedureDate: '' });
   const [summitEditProcedure, setSummitEditProcedure] = useState("false");
+  const [summitEditAcc, setSummitEditAcc] = useState("false");
   const [comaScore, setComaScore] = useState('');
   const [expectedDayOfRecovery, setExpectedDayOfRecovery] = useState('');
   const [signSymptomsDate, setSignSymptomsDate] = useState(null);
@@ -184,27 +185,7 @@ const PatientInfo = {
   });
   }, []);
 
-  useEffect(() => {
-    axios
-    .get(process.env.NEXT_PUBLIC_URL_PD2 + "v1/utils/AccidentCauseOver45Day/" + InsuranceCode)
-    .then((response) => {
-      setOver45Days(response.data);
 
-    })
-    .catch((error) => {
-      console.log(error)
-      try{
-        const ErrorMass = error.config.url
-        const [ErrorMass1, ErrorMass2] = ErrorMass.split('v1/');
-        setMassError(error.code +" - "+error.message +" - "+ErrorMass2);
-        setShowFormError("Error")
-      }
-      catch (error) {
-         setMassError(error.response.data.HTTPStatus.message);
-         setShowFormError("Error");
-     }
-    });
-  }, []);
 
   useEffect(() => {
     axios
@@ -286,7 +267,27 @@ const PatientInfo = {
     });
 
   }, []);
+useEffect(() => {
+  axios
+  .get(process.env.NEXT_PUBLIC_URL_PD2 + "v1/utils/accidentCauseOver45Day/" + InsuranceCode)
+  .then((response) => {
+    setOver45Days(response.data);
 
+  })
+  .catch((error) => {
+    console.log(error)
+    try{
+      const ErrorMass = error.config.url
+      const [ErrorMass1, ErrorMass2] = ErrorMass.split('v1/');
+      setMassError(error.code +" - "+error.message +" - "+ErrorMass2);
+      setShowFormError("Error")
+    }
+    catch (error) {
+       setMassError(error.response.data.HTTPStatus.message);
+       setShowFormError("Error");
+   }
+  });
+}, []);
   useEffect(() => {
     axios
     .get(process.env.NEXT_PUBLIC_URL_PD + "v1/utils/accidentPlace/" + InsuranceCode,{
@@ -474,7 +475,14 @@ const handleDeleteRow = (index) => {
   }
 
  }
-//console.log(procedure)
+ const SummitEditAcc = () => {
+  if(summitEditAcc === "false"){
+    setSummitEditAcc("true")
+  }else{
+    setSummitEditAcc("false")
+  }
+
+ }
 useEffect(() => {
   axios
     .post(process.env.NEXT_PUBLIC_URL_PD + "v1/aia-opddischarge/getOPDDischargeInvestigation",{
@@ -548,13 +556,6 @@ const DocumentBase64 = (data) => {
 
   setMsg();
   setProgress({ started: false, pc: 0 });
-
-
-  // console.log(PatientInfo.RefId)
-  // console.log(PatientInfo.TransactionNo)
-  // console.log(PatientInfo.HN)
-  // console.log(PatientInfo.VN)
-
   axios
     .post(process.env.NEXT_PUBLIC_URL_PD2 + "v1/utils/getDocumentByDocname"
        ,{
@@ -609,7 +610,7 @@ const DocumentBase64 = (data) => {
 }
 
 
-// กดปุ่มส่งเคลม
+กดปุ่มส่งเคลม
   const Claim = (event) => {
     event.preventDefault();
 
@@ -1154,7 +1155,7 @@ const DocumentBase64 = (data) => {
 
   return (
     <>
-          {showFormError === "Error" ? (
+          {/* {showFormError === "Error" ? (
             <div role="alert" className="alert alert-error mt-2 text-base-100">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -1172,11 +1173,12 @@ const DocumentBase64 = (data) => {
               <span>{massError}</span>
             </div>
             ) : ""
-            }
-      {patien ? (
+            } */}
+      {/* {patien ? ( */}
         <>
-          <form onSubmit={Claim}>
-            {patien ? (
+          {/* <form onSubmit={Claim}> */}
+          <form>
+            {/* {patien ? (
             <div className="justify-center border-solid w-4/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
               <h1 className="font-black text-accent text-3xl ">
                 Patient Info
@@ -1226,9 +1228,9 @@ const DocumentBase64 = (data) => {
                 </div>
               </div>
             </div>
-            ) : ""}
+            ) : ""} */}
             {/* //////////////////////////////////////////////////////////////////////////// */}
-            {visit ? (
+            {/* {visit ? (
              <div className="container mx-auto justify-center border-solid w-4/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
               <h1 className="font-black text-accent text-3xl ">
               Visit
@@ -1477,7 +1479,7 @@ const DocumentBase64 = (data) => {
 
               </div> 
 
-       <div className="border-solid border-2 border-none mt-2">
+       <div className="border-solid border-2 mt-2">
        <h1 className="mt-2 ml-2 text-accent text-lg">การเจ็บป่วยนี่เกี่ยวข้องกับสิ่งแวดล้อมอื่นๆ ( กรณีไม่ได้เลือก ไม่เกี่ยวข้องกับปัจจัยแวดล้อมอื่นๆ สามารถเลือกได้มากกว่า 1 ข้อ )</h1>
               <div className="flex items-center mt-2 ml-2">
               <input
@@ -1513,7 +1515,7 @@ const DocumentBase64 = (data) => {
                                       onChange={handlePrivateCase}
                                     
                                />
-                            <p className="text-left ml-2 ml-2">เป็นเคสพิเศษ</p>
+                            <p className="text-left ml-2">เป็นเคสพิเศษ</p>
                             </div>
                             <div className="flex items-center mt-2 ml-2">
                             <input
@@ -1553,9 +1555,140 @@ const DocumentBase64 = (data) => {
 
           
             </div> 
-            ) : ""}
-              {/* //////////////////////////////////////////////////////////////////////////// */}
-              {PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER" ? (accidentDetail ? (
+            ) : ""} */}
+  {/* //////////////////////////////////////////////////////////////////////////// */}
+    {/* //////////////////////////////////////////////////////////////////////////// */}
+      {/* //////////////////////////////////////////////////////////////////////////// */}
+        {/* //////////////////////////////////////////////////////////////////////////// */}
+          {/* //////////////////////////////////////////////////////////////////////////// */}
+              <div className="justify-center border-solid w-4/5 m-auto border-2 border-error rounded-lg p-4 mt-2">
+              <h1 className="font-black text-accent text-3xl ">AccidentDetail <Button className="btn btn-secondary text-base-100 text-xl" onClick={SummitEditAcc}><FaEdit /></Button></h1>
+              
+        
+              <div className="flex  w-full mt-2">
+                <div className="w-1/5 ">
+                <LocalizationProvider dateAdapter={AdapterDayjs} >
+      <DemoItem  >
+        <DesktopDatePicker    format="YYYY-MM-DD"/>
+      </DemoItem>
+    </LocalizationProvider>
+                </div>
+                <div className="w-2/5">
+                <FormControl fullWidth>
+        <InputLabel id="demo-error-select-label">สถานที่เกิดอุบัติเหตุ</InputLabel>
+        <Select
+        error
+        className="mx-2"
+          labelId="demo-error-select-label"
+          id="demo-error-select"
+          //name="accidentPlaceText"
+          value={accidentPlaceValue}
+          label="สถานที่เกิดอุบัติเหตุ"
+          onChange={AccidentPlace}
+          required
+        >
+          {dataaccidentPlace
+                ? dataaccidentPlace.Result.map((acc, index) => (
+                    <MenuItem key={index} value={acc.accidentplacecode}>{acc.accidentplacename}</MenuItem>
+                  ))
+                : ""}
+        </Select>
+      </FormControl>
+                </div>
+                </div>
+
+                <TableContainer component={Paper} className="mt-2">
+      <Table className="table">
+        <TableHead>
+          <TableRow className="bg-primary">
+          <TableCell className="w-2"></TableCell>
+            <TableCell className="text-base-100  text-sm w-1/5 text-center">Icd 9 Code ของหัตถการหรือการผ่าตัด</TableCell>
+            <TableCell className="text-base-100  text-sm w-3/5 text-center">ชื่อของหัตถการหรือการผ่าตัด</TableCell>
+            <TableCell className="text-base-100  text-sm w-1/5 text-center">วันที่ทำหัตถการหรือทำการผ่าตัด</TableCell>
+            <TableCell></TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {rows.map((row, index) => (
+            <TableRow key={index} className=" bg-neutral text-sm">
+              <TableCell>{index+1}</TableCell>
+              <TableCell ><div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">{row.Icd9 ? row.Icd9 : (<>&nbsp;</>)}</div></TableCell>
+              <TableCell><div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">{row.ProcedureName ? row.ProcedureName : (<>&nbsp;</>)}</div></TableCell>
+              <TableCell><div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">{row.ProcedureDate ? row.ProcedureDate : (<>&nbsp;</>)}</div></TableCell>
+              <TableCell>
+                {summitEditAcc === "true" ?
+                <Button onClick={() => handleDeleteRow(index)} className="btn btn-error text-base-100 text-xl"><FaCircleMinus /></Button>
+               : "" }
+              </TableCell>
+            </TableRow>
+          ))}
+           {summitEditAcc === "true" ? (
+            <>
+          
+          <TableRow> 
+            <TableCell >
+            <FaCirclePlus className="text-xl" />
+            </TableCell>
+           
+            <TableCell>
+              <TextField
+                className="bg-base-100 w-full"
+                value={newRow.Icd9}
+                onChange={(e) => setNewRow({ ...newRow, Icd9: e.target.value })}
+                placeholder="Icd9"
+              //  required
+              />
+            </TableCell>
+            <TableCell>
+              <TextField
+              className="bg-base-100 w-full"
+                value={newRow.ProcedureName}
+                onChange={(e) => setNewRow({ ...newRow, ProcedureName: e.target.value })}
+                placeholder="ProcedureName"
+             //   required
+              />
+            </TableCell>
+            <TableCell>
+              <TextField
+              className="bg-base-100 w-full"
+                type="date"
+                value={newRow.ProcedureDate}
+                onChange={(e) => setNewRow({ ...newRow, ProcedureDate: e.target.value })}
+                placeholder="ProcedureDate"
+              //  required
+              />
+            </TableCell>
+            {(newRow.Icd9 && newRow.ProcedureName && newRow.ProcedureDate)  ? (
+              <>
+              <TableCell>
+              <Button onClick={handleAddRow} className="btn btn-success text-base-100 text-xl"><FaCirclePlus /></Button>
+            </TableCell>
+              </>
+            ) : ""
+            }
+            
+
+          </TableRow>
+      
+          </>  )
+               : "" }
+        
+        </TableBody>
+      </Table>
+      <div className="grid gap-2 sm:grid-cols-4 text-base-100 bg-primary w-full whitespace-normal text-center">
+                <div className="rounded-md"></div>
+                <div className="rounded-md"></div>
+                <div className="rounded-md "></div>
+                <div className="rounded-md ">&nbsp;</div> 
+            </div> 
+    </TableContainer>
+            </div> 
+  {/* //////////////////////////////////////////////////////////////////////////// */}
+    {/* //////////////////////////////////////////////////////////////////////////// */}
+      {/* //////////////////////////////////////////////////////////////////////////// */}
+        {/* //////////////////////////////////////////////////////////////////////////// */}
+          {/* //////////////////////////////////////////////////////////////////////////// */}
+              {/* {PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER" ? (accidentDetail ? (
               <div className="justify-center border-solid w-4/5 m-auto border-2 border-error rounded-lg p-4 mt-2">
               <h1 className="font-black text-error text-3xl ">
               AccidentDetail
@@ -1584,7 +1717,7 @@ const DocumentBase64 = (data) => {
           required
         >
           {dataaccidentPlace
-                ? dataaccidentPlace.map((acc, index) => (
+                ? dataaccidentPlace.Result.map((acc, index) => (
                     <MenuItem key={index} value={acc.accidentplacecode}>{acc.accidentplacename}</MenuItem>
                   ))
                 : ""}
@@ -1619,7 +1752,7 @@ const DocumentBase64 = (data) => {
           required
         >
           {datainjurySide
-                ? datainjurySide.map((inj, index) => (
+                ? datainjurySide.Result.map((inj, index) => (
                     <MenuItem key={index} value={inj.injurysidecode}>{inj.injurysidename} - {inj.injurysidecode}</MenuItem>
                   ))
                 : ""}
@@ -1641,7 +1774,7 @@ const DocumentBase64 = (data) => {
           required
         >
           {DataWoundType
-                ? DataWoundType.map((wound, index) => (
+                ? DataWoundType.Result.map((wound, index) => (
                     <MenuItem key={index} value={wound.woundtypecode}>{wound.woundtypename}</MenuItem>
                   ))
                 : ""}
@@ -1663,7 +1796,7 @@ const DocumentBase64 = (data) => {
           required
         >
           {over45Days
-                ? over45Days.map((over, index) => (
+                ? over45Days.Result.map((over, index) => (
                     <MenuItem key={index} value={over.CauseOverCode}>{over.CauseOverDesc}</MenuItem>
                   ))
                 : ""}
@@ -1672,9 +1805,9 @@ const DocumentBase64 = (data) => {
                 </div>
               </div>
             </div> 
-            ) : ""  ) : ""}
+            ) : ""  ) : ""} */}
               {/* //////////////////////////////////////////////////////////////////////////// */}
-              <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
+              {/* <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
                 <h1 className="font-black text-accent text-3xl ">VitalSign</h1>
                 <div className="overflow-x-auto">
   <table className="table mt-2">
@@ -1748,9 +1881,9 @@ const DocumentBase64 = (data) => {
                   <div className="rounded-md "></div>
                   <div className="rounded-md ">&nbsp;</div> 
               </div> 
-             </div>
+             </div> */}
              {/* //////////////////////////////////////////////////////////////////////////// */}
-              <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
+              {/* <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
                 <h1 className="font-black text-accent text-3xl ">Doctor</h1>
                 <div className="overflow-x-auto">
   <table className="table  mt-2">
@@ -1791,9 +1924,9 @@ const DocumentBase64 = (data) => {
                   <div className="rounded-md "></div>
                   <div className="rounded-md ">&nbsp;</div> 
               </div> 
-             </div>
+             </div> */}
                           {/* //////////////////////////////////////////////////////////////////////////// */}
-                           <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
+                           {/* <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
                 <h1 className="font-black text-accent text-3xl ">Diagnosis</h1>
                 <div className="overflow-x-auto">
   <table className="table  mt-2">
@@ -1850,9 +1983,9 @@ const DocumentBase64 = (data) => {
                   <div className="rounded-md "></div>
                   <div className="rounded-md ">&nbsp;</div> 
               </div> 
-             </div>
+             </div> */}
              {/* //////////////////////////////////////////////////////////////////////////// */}
-             {rows ? (PatientInfo.SurgeryTypeCode === "Y" ? (
+             {/* {rows ? (PatientInfo.SurgeryTypeCode === "Y" ? (
                <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
               <h1 className="font-black text-accent text-3xl ">Procedure <Button className="btn btn-secondary text-base-100 text-xl" onClick={SummitEditProce}><FaEdit /></Button></h1>
               
@@ -1942,9 +2075,9 @@ const DocumentBase64 = (data) => {
             </div> 
     </TableContainer>
            </div>
-            ) : "") : ""}
+            ) : "") : ""} */}
                     {/* //////////////////////////////////////////////////////////////////////////// */}
-                     <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
+                     {/* <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
               <h1 className="font-black text-accent text-3xl ">Investigation</h1>
               <div className="overflow-x-auto">
               <table className="table  mt-2">
@@ -2006,9 +2139,9 @@ const DocumentBase64 = (data) => {
                 <div className="rounded-md "></div>
                 <div className="rounded-md ">&nbsp;</div> 
             </div> 
-           </div>
+           </div> */}
  {/* //////////////////////////////////////////////////////////////////////////// */}
- <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
+ {/* <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
               <h1 className="font-black text-accent text-3xl ">OrderItem</h1>
               <div className="overflow-x-auto">
               <table className="table  mt-2">
@@ -2086,10 +2219,10 @@ const DocumentBase64 = (data) => {
                 <div className="rounded-md "></div>
                 <div className="rounded-md ">&nbsp;</div> 
             </div> 
-           </div>
+           </div> */}
 
                             {/* //////////////////////////////////////////////////////////////////////////// */}
-                            <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
+                            {/* <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
               <h1 className="font-black text-accent text-3xl ">รายละเอียดค่ารักษาพยาบาล</h1>
               <div className="overflow-x-auto">
               <table className="table  mt-2">
@@ -2128,9 +2261,9 @@ const DocumentBase64 = (data) => {
                 <div className="rounded-md ">สรุปค่ารักษาพยาบาล</div>
                 <div className="rounded-md ">฿ {billing ? billing.Result.TotalBillAmount : ""}</div> 
             </div> 
-            </div> 
+            </div>  */}
                   {/* //////////////////////////////////////////////////////////////////////////// */}
-        <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
+        {/* <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
               <h1 className="font-black text-accent text-3xl ">Upload File</h1>
           <div className="overflow-x-auto mt-6">
                 <div className="flex items-center ">
@@ -2220,12 +2353,12 @@ const DocumentBase64 = (data) => {
               </div>
         ) } 
           </div>
-        </div>
+        </div> */}
          
 
     </form>
         </>
-      ) : (
+      {/* ) : (
         <div className="pt-6 ">
           <div className="justify-center border-solid w-1/5 m-auto p-8 ">
             <center>
@@ -2234,10 +2367,10 @@ const DocumentBase64 = (data) => {
             <div className="justify-center text-4xl">Loading....</div>
           </div>
         </div>
-      )}
+      )} */}
 
 
-<dialog id="my_modal_3" className="modal text-xl	">
+{/* <dialog id="my_modal_3" className="modal text-xl	">
         <div className="modal-box w-11/12 max-w-5xl">
           <form method="dialog">
             <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
@@ -2269,27 +2402,21 @@ const DocumentBase64 = (data) => {
             )}
           </form>
         </div>
-        </dialog>
+        </dialog> */}
 
 
 
 
-{showModal ? (
+{/* {showModal ? (
   <>
-          {/* <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
-            <div className="bg-white p-4 rounded shadow-lg">
-                <h2 className="text-lg font-bold mb-4">ส่งเคลมเรียบร้อย</h2>
-               
-            </div>
-        </div> */}
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
           <div className="bg-white p-8 rounded shadow-lg">
-            <h2 className="text-4xl font-bold mb-4 text-primary">ส่งเคลมเรียบร้อยแล้ว</h2>
+            <h2 className="text-4xl font-bold mb-4 text-primary">ส่งเคลมเรียบร้อยแล้ว</h2> */}
            {/* <div className="text-center"> <span className="loading loading-bars loading-lg "></span></div> */}
-          </div>
+          {/* </div>
         </div>
   </>
-) : ""}
+) : ""} */}
 
     </>
   );

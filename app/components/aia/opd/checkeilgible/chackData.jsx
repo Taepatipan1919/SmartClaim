@@ -114,6 +114,19 @@ export default function chackData() {
         save({
           value: "มีข้อมูล",
           Data: {
+            // RefId: "ccXwZWYmukJdvzFrWaccN8bNr83caECQjC+vvuEaIKY=",
+            // TransactionNo: "5c5aabb3-b919-4ee8-ac42-848ae4d5f55a",
+            // VN: "O477382-67",
+            // InsurerCode: 13,
+            // ServiceSettingCode: "OPD",
+            // IllnessTypeCode: "ACC",
+            // SurgeryTypeCode: "N",
+            // PolicyTypeCode: "IB",
+            // AccidentDate: "2024-09-08",
+            // VisitDateTime:"2024-09-08 08:22",
+            // FurtherClaimNo: "",
+            // FurtherClaimId: "",
+
             RefId: result.Result.InsuranceData.RefId,
             TransactionNo: result.Result.InsuranceData.TransactionNo,
             VN: detailVN,
@@ -134,6 +147,19 @@ export default function chackData() {
         save({
           value: "มีข้อมูล",
           Data: {
+            // RefId: "ccXwZWYmukJdvzFrWaccN8bNr83caECQjC+vvuEaIKY=",
+            // TransactionNo: "5c5aabb3-b919-4ee8-ac42-848ae4d5f55a",
+            // VN: "O477382-67",
+            // InsurerCode: 13,
+            // ServiceSettingCode: "OPD",
+            // IllnessTypeCode: "ER",
+            // SurgeryTypeCode: "N",
+            // PolicyTypeCode: "IB",
+            // AccidentDate: "2024-09-08",
+            // VisitDateTime:"2024-09-08 08:22",
+            // FurtherClaimNo: "",
+            // FurtherClaimId: "",
+            
             RefId: result.Result.InsuranceData.RefId,
             TransactionNo: result.Result.InsuranceData.TransactionNo,
             VN: detailVN,
@@ -784,8 +810,8 @@ export default function chackData() {
                   <div className="rounded-md "></div>
                   <div className="rounded-md ">&nbsp;</div>
                 </div>
-                {result ? (
-                  result.Result.InsuranceData.CoverageClaimStatus === true ? (
+               {/* {result ? ( */}
+               {/*   result.Result.InsuranceData.CoverageClaimStatus === true ? ( */}
                     <div className="modal-action">
                       <button
                         className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100"
@@ -797,12 +823,12 @@ export default function chackData() {
                         ยืนยันการเคลม
                       </button>
                     </div>
-                  ) : (
+                  {/* ) : (
                     ""
                   )
                 ) : (
                   ""
-                )}
+                )} */}
               </>
             )}
           </form>
@@ -843,7 +869,7 @@ export default function chackData() {
                       onChange={handleSelectChange}
                     >
                       <option></option>
-                      {furtherClaim
+                      {/* {furtherClaim
                         ? furtherClaim.Result.InsuranceData.FurtherClaimList.map(
                             (ftc, index) => (
                               // <option key={index} value={ftc.ClaimNo}>เลขกรมธรรม์: {ftc.ClaimNo}, วันที่เข้ารักษา: {ftc.VisitDateTime.split('T')[0]}</option>
@@ -856,7 +882,7 @@ export default function chackData() {
                               </option>
                             )
                           )
-                        : ""}
+                        : ""} */}
                       <></>
                     </select>
                   </label>
