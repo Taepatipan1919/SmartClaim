@@ -40,8 +40,9 @@ export default function Page({data}) {
   const InsuranceCode = 13;
   const [massError, setMassError] = useState("");
   const [showFormError, setShowFormError] = useState("");
-  const [patien, setPatien] = useState();
+  const [patientInfoByPID, setPatientInfoByPID] = useState();
   const [visit, setVisit] = useState();
+  const [combinedString, setCombinedString] = useState();
   const [accidentDetail, setAccidentDetail] = useState();
   const [accidentPlaceValue, setAccidentPlaceValue] = useState("");
   const [over45Days, setOver45Days] = useState("");
@@ -75,8 +76,12 @@ export default function Page({data}) {
   const [massSummit, setMassSummit] = useState("");
   const [otherInsurer, setOtherInsurer] = useState("false");
   const [rows, setRows] = useState("");
+  const [causeOfInjuryDetails, setCauseOfInjuryDetails] = useState("");
+  const [injuryDetails, setInjuryDetails] = useState("");
   const [procedure, setProcedure] = useState("");
   const [newRow, setNewRow] = useState({ Icd9: '', ProcedureName: '', ProcedureDate: '' });
+  const [newCauseOfInjuryDetail, setNewCauseOfInjuryDetail] = useState({ CauseOfInjury: '', CommentOfInjury: ''});
+  const [newInjuryDetail, setNewInjuryDetail] = useState({ InjuryArea: '', InjurySide: '', WoundType: '' });
   const [summitEditProcedure, setSummitEditProcedure] = useState("false");
   const [summitEditAcc, setSummitEditAcc] = useState("false");
   const [comaScore, setComaScore] = useState('');
@@ -140,7 +145,7 @@ const PatientInfo = {
   setMsg(null)
   setBillList("");
   axios
-    .post(process.env.NEXT_PUBLIC_URL_PD2 + "v1/utils/getlistDocumentName",{
+    .post(process.env.NEXT_PUBLIC_URL_PD2 + process.env.NEXT_PUBLIC_URL_getlistDocumentName,{
       RefId : PatientInfo.RefId,
       TransactionNo : PatientInfo.TransactionNo,
       HN : PatientInfo.HN,
@@ -163,11 +168,12 @@ const PatientInfo = {
              }
            })  
 }, []);
+
   useEffect(() => {
         axios
-      .get(process.env.NEXT_PUBLIC_URL_SV + "v1/trakcare-patient-info/PatientInfoByPID/"+PatientInfo.PID)
+      .get(process.env.NEXT_PUBLIC_URL_SV + process.env.NEXT_PUBLIC_URL_PatientInfoByPID + PatientInfo.PID)
       .then((response) => {
-        setPatien(response.data);
+        setPatientInfoByPID(response.data);
         //console.log(response.data)
       })
       .catch((error) => {
@@ -189,14 +195,21 @@ const PatientInfo = {
 
   useEffect(() => {
     axios
-    .get(process.env.NEXT_PUBLIC_URL_SV + "v1/trakcare-patient-info/getOPDDischargeVisit/"+ PatientInfo.VN )
+    .post(process.env.NEXT_PUBLIC_URL_SV + process.env.NEXT_PUBLIC_URL_getOPDDischargeVisit,{
+      PatientInfo
+    })
     .then((response) => {
       setVisit(response.data);
-
+      //console.log(response.data)
       const dateValue = dayjs(response.data.Result.VisitInfo.SignSymptomsDate);
      // console.log(response.data.Result.VisitInfo.SignSymptomsDate)
       setSignSymptomsDate(dateValue);
       setComaScore(response.data.Result.VisitInfo.ComaScore)
+
+      setCombinedString(response ? `${response.data.Result.VisitInfo.Weight} / ${response.data.Result.VisitInfo.Height}`
+      : "")
+
+
     })
     .catch((error) => {
       console.log(error)
@@ -207,22 +220,19 @@ const PatientInfo = {
         setShowFormError("Error")
       }
       catch (error) {
-
-        console.log(error)
-         setMassError(error.response.data.HTTPStatus.message);
-         setShowFormError("Error");
-
+      setMassError(error.response.data.HTTPStatus.message);
+      setShowFormError("Error");
      }
     });
 
   }, []);
-  const combinedString = visit?.Result?.VisitInfo
-    ? `${visit.Result.VisitInfo.Weight} / ${visit.Result.VisitInfo.Height}`
-    : '';
+ 
 
   useEffect(() => {
+    const dateValue = dayjs(PatientInfo.AccidentDate);
+    setAccidentDate(dateValue);
     axios
-    .post(process.env.NEXT_PUBLIC_URL_PD + "v1/aia-opddischarge/getOPDDischargeAccident",{
+    .post(process.env.NEXT_PUBLIC_URL_PD + process.env.NEXT_PUBLIC_URL_getOPDDischargeAccident,{
        PatientInfo
     //  "PatientInfo": {
     // "InsurerCode": 13, 
@@ -246,9 +256,8 @@ const PatientInfo = {
     .then((response) => {
 //      console.log(PatientInfo.AccidentDate)
       setAccidentDetail(response.data);
-      const dateValue = dayjs(PatientInfo.AccidentDate);
-
-    setAccidentDate(dateValue);
+      setCauseOfInjuryDetails(response.data.Result.AccidentDetailInfo.CauseOfInjuryDetail)
+      setInjuryDetails(response.data.Result.AccidentDetailInfo.InjuryDetail)
 
     })
     .catch((error) => {
@@ -260,7 +269,6 @@ const PatientInfo = {
         setShowFormError("Error")
       }
       catch (error) {
-      //  console.log(error)
        setMassError(error.response.data.HTTPStatus.message);
        setShowFormError("Error");
      }
@@ -269,7 +277,7 @@ const PatientInfo = {
   }, []);
 useEffect(() => {
   axios
-  .get(process.env.NEXT_PUBLIC_URL_PD2 + "v1/utils/accidentCauseOver45Day/" + InsuranceCode)
+  .get(process.env.NEXT_PUBLIC_URL_PD2 + process.env.NEXT_PUBLIC_URL_accidentCauseOver45Day + InsuranceCode)
   .then((response) => {
     setOver45Days(response.data);
 
@@ -290,7 +298,7 @@ useEffect(() => {
 }, []);
   useEffect(() => {
     axios
-    .get(process.env.NEXT_PUBLIC_URL_PD + "v1/utils/accidentPlace/" + InsuranceCode,{
+    .get(process.env.NEXT_PUBLIC_URL_PD + process.env.NEXT_PUBLIC_URL_accidentPlace + InsuranceCode,{
       PatientInfo
     })
     .then((response) => {
@@ -314,7 +322,7 @@ useEffect(() => {
   }, []);
   useEffect(() => {
     axios
-    .get(process.env.NEXT_PUBLIC_URL_PD + "v1/utils/InjurySide/" + InsuranceCode,{
+    .get(process.env.NEXT_PUBLIC_URL_PD + process.env.NEXT_PUBLIC_URL_InjurySide + InsuranceCode,{
       PatientInfo
     })
     .then((response) => {
@@ -339,7 +347,7 @@ useEffect(() => {
 
   useEffect(() => {
     axios
-    .get(process.env.NEXT_PUBLIC_URL_PD + "v1/utils/InjuryWoundtype/" + InsuranceCode,{
+    .get(process.env.NEXT_PUBLIC_URL_PD + process.env.NEXT_PUBLIC_URL_InjuryWoundtype + InsuranceCode,{
       PatientInfo
     })
     .then((response) => {
@@ -365,7 +373,7 @@ useEffect(() => {
 
   useEffect(() => {
     axios
-    .post(process.env.NEXT_PUBLIC_URL_PD + "v1/aia-opddischarge/getOPDDischargeVitalSign",{
+    .post(process.env.NEXT_PUBLIC_URL_PD + process.env.NEXT_PUBLIC_URL_getOPDDischargeVitalSign,{
       PatientInfo
     })
     .then((response) => {
@@ -389,7 +397,7 @@ useEffect(() => {
 
   useEffect(() => {
     axios
-    .post(process.env.NEXT_PUBLIC_URL_PD + "v1/aia-opddischarge/getOPDDischargeDoctor",{
+    .post(process.env.NEXT_PUBLIC_URL_PD + process.env.NEXT_PUBLIC_URL_getOPDDischargeDoctor,{
       PatientInfo
     })
     .then((response) => {
@@ -414,7 +422,7 @@ useEffect(() => {
 
   useEffect(() => {
     axios
-     .post(process.env.NEXT_PUBLIC_URL_PD + "v1/aia-opddischarge/getOPDDischargeDiagnosis",{
+     .post(process.env.NEXT_PUBLIC_URL_PD + process.env.NEXT_PUBLIC_URL_getOPDDischargeDiagnosis,{
         PatientInfo
       })
       .then((response) => {
@@ -436,12 +444,13 @@ useEffect(() => {
 }, []);
   useEffect(() => {
     axios
-      .post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-opddischarge/getOPDDischargeProcedure",{
+      .post(process.env.NEXT_PUBLIC_URL_SV + process.env.NEXT_PUBLIC_URL_getOPDDischargeProcedure,{
         PatientInfo
       })
       .then((response) => {
-        setRows(response.data.Result.ProcedureInfo)
-        setProcedure(response.data.Result.ProcedureInfo)
+        setRows(response.data)
+       console.log(response.data)
+        setProcedure(response.data)
       })
       .catch((error) => {
         console.log(error)
@@ -466,6 +475,52 @@ const handleDeleteRow = (index) => {
   const newRows = rows.filter((_, i) => i !== index);
   setRows(newRows);
 };
+////////////////////////////////
+const handleAddCauseOfInjuryDetail = () => {
+  setCauseOfInjuryDetails([...causeOfInjuryDetails, newCauseOfInjuryDetail]);
+  setNewCauseOfInjuryDetail({ CauseOfInjury: '', CommentOfInjury: ''});
+};
+////////////////////////////////
+////////////////////////////////
+const handleChange = (index2, event) => {
+  const newcauses = causeOfInjuryDetails.map((cause , index) => {
+    if (index === index2) {
+      return { 
+        ...cause, CauseOfInjury: event.target.value
+       };
+    }
+    return cause;
+  });
+   setCauseOfInjuryDetails(newcauses);
+};
+const handleChange2 = (index2, event) => {
+  const newcauses = causeOfInjuryDetails.map((cause , index) => {
+    if (index === index2) {
+      return { 
+        ...cause, CommentOfInjury: event.target.value
+       };
+    }
+    return cause;
+  });
+   setCauseOfInjuryDetails(newcauses);
+};
+////////////////////////////////
+   
+const handleDeleteCauseOfInjuryDetail = (index) => {
+  const newCauseOfInjuryDetails = causeOfInjuryDetails.filter((_, i) => i !== index);
+  setCauseOfInjuryDetails(newCauseOfInjuryDetails);
+};
+
+const handleAddInjuryDetail = () => {
+  setInjuryDetails([...injuryDetails, newInjuryDetail]);
+  setNewInjuryDetail({ InjuryArea: '', InjurySide: '', WoundType: ''});
+};
+
+const handleDeleteInjuryDetail = (index) => {
+  const newInjuryDetails = injuryDetails.filter((_, i) => i !== index);
+  setInjuryDetails(newInjuryDetails);
+};
+
 
  const SummitEditProce = () => {
   if(summitEditProcedure === "false"){
@@ -483,9 +538,13 @@ const handleDeleteRow = (index) => {
   }
 
  }
+
+
+
+
 useEffect(() => {
   axios
-    .post(process.env.NEXT_PUBLIC_URL_PD + "v1/aia-opddischarge/getOPDDischargeInvestigation",{
+    .post(process.env.NEXT_PUBLIC_URL_PD + process.env.NEXT_PUBLIC_URL_getOPDDischargeInvestigation,{
       PatientInfo
     })
     .then((response) => {
@@ -508,7 +567,7 @@ useEffect(() => {
 
 useEffect(() => {
   axios
-    .post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-opddischarge/getOPDDischargeOrderItem",{
+    .post(process.env.NEXT_PUBLIC_URL_SV + process.env.NEXT_PUBLIC_URL_getOPDDischargeOrderItem,{
       PatientInfo
     })
     .then((response) => {
@@ -531,7 +590,7 @@ useEffect(() => {
 
 useEffect(() => {
   axios
-    .post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-opddischarge/getOPDDischargeBilling",{
+    .post(process.env.NEXT_PUBLIC_URL_SV + process.env.NEXT_PUBLIC_URL_getOPDDischargeBilling,{
       PatientInfo
     })
     .then((response) => {
@@ -557,8 +616,7 @@ const DocumentBase64 = (data) => {
   setMsg();
   setProgress({ started: false, pc: 0 });
   axios
-    .post(process.env.NEXT_PUBLIC_URL_PD2 + "v1/utils/getDocumentByDocname"
-       ,{
+    .post(process.env.NEXT_PUBLIC_URL_PD2 + process.env.NEXT_PUBLIC_URL_getDocumentByDocname,{
       RefId : PatientInfo.RefId,
       TransactionNo : PatientInfo.TransactionNo,
       HN : PatientInfo.HN,
@@ -610,17 +668,17 @@ const DocumentBase64 = (data) => {
 }
 
 
-กดปุ่มส่งเคลม
+//    //    //  //กดปุ่มส่งเคลม
   const Claim = (event) => {
     event.preventDefault();
-
+    //console.log(causeOfInjuryDetails)
     const Proold = JSON.stringify(procedure);
     const Pronew = JSON.stringify(rows);
 
-// console.log(rows)
+// // console.log(rows)
 
-    if (Proold === Pronew) {
-      console.log("Not Edit")
+//     if (Proold === Pronew) {
+//       console.log("Not Edit")
 
     setShowSummitError();
     setMassSummitError();
@@ -628,37 +686,36 @@ const DocumentBase64 = (data) => {
       const Datevalue = dayjs(accidentDate.$d).format('YYYY-MM-DD');
       const signDate = dayjs(signSymptomsDate.$d).format('YYYY-MM-DD');
 
-      if(PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER"){
+      // if(PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER"){
        // console.log(PatientInfo)
       
-       document.getElementById("my_modal_3").showModal();
+      // document.getElementById("my_modal_3").showModal();
       
         const Data = {
           "PatientInfo" : {
-            InsurerCode: PatientInfo.InsurerCode,
-            RefId: PatientInfo.RefId,
-            TransactionNo : PatientInfo.TransactionNo,
-            // "RefId": "O422113-67-13-OPD-005",
-            // "TransactionNo": "bbd750ab-fded-4c74-9ecd-2f1058373a75",
+             InsurerCode: PatientInfo.InsurerCode,
+           RefId: PatientInfo.RefId,
+             TransactionNo : PatientInfo.TransactionNo,
             PID : PatientInfo.PID,
-            HN : PatientInfo.HN,
+             HN : PatientInfo.HN,
             GivenNameTH : PatientInfo.GivenNameTH,
             SurnameTH: PatientInfo.SurnameTH,
             DateOfBirth: PatientInfo.DateOfBirth,
             PassportNumber: PatientInfo.PassportNumber,
             IdType: PatientInfo.IdType,
-            VN:  PatientInfo.VN,
-            VisitDateTime: PatientInfo.VisitDateTime,    
-            // "VisitDateTime":"2024-07-01 13:17",
-            AccidentDate: Datevalue,
-            // "AccidentDate":"2024-07-01",
-            AccidentPlaceCode:  accidentPlaceValue,
-            AccidentInjuryWoundtypeCode:  woundType,
-            AccidentInjurySideCode: injurySide,
-            WoundDetails: event.target.commentOfInjuryText.value,
+             VN:  PatientInfo.VN,
+            VisitDateTime: PatientInfo.VisitDateTime,   
+            AccidentEdit: true,
+            AccidentInfo: {
+              AccidentDate: Datevalue,
+              AccidentPlaceCode:  accidentPlaceValue,
+              AccidentInjuryWoundtypeCode:  woundType,
+              AccidentInjurySideCode: injurySide,
+             // WoundDetails: event.target.commentOfInjuryText.value,
+            },
             PolicyTypeCode: PatientInfo.PolicyTypeCode,
             ServiceSettingCode: PatientInfo.ServiceSettingCode, 
-            IllnessTypeCode: PatientInfo.IllnessTypeCode,
+             IllnessTypeCode: PatientInfo.IllnessTypeCode,
             SurgeryTypeCode:  PatientInfo.SurgeryTypeCode,
             ChiefComplaint: event.target.ChiefComplaint.value,
             PresentIllness: event.target.PresentIllness.value,
@@ -682,8 +739,8 @@ const DocumentBase64 = (data) => {
             // PreviousTreatmentInfo : {
             //   PreviousTreatment : previousTreatment
             // }
+            ProcedureEdit : true,
             ProcedureInfo : {
-                      ProcedureEdit : true,
                       Procedure : 
                            procedure,
                       
@@ -693,310 +750,311 @@ const DocumentBase64 = (data) => {
         };
       
         console.log(Data.PatientInfo)
-        axios
-          .post(process.env.NEXT_PUBLIC_URL_PD2 + "v1/aia-opddischarge/sentOPDDischarge",
-            Data
+    //     axios
+    //       .post(process.env.NEXT_PUBLIC_URL_PD2 + process.env.NEXT_PUBLIC_URL_sentOPDDischarge,
+    //         Data
         
-          )
-          .then((response) => {
-            //setOrderItemz(response.data);
-            console.log(response)
-      //      console.log(response.data.MessageTh)
-     //       setMassSummit(response.data.MessageTh)
+    //       )
+    //       .then((response) => {
+    //         //setOrderItemz(response.data);
+    //         console.log(response)
+    //        console.log(response.data.HTTPStatus.message)
+    //        setMassSummit(response.data.HTTPStatus.message)
       
-          })
-          .catch((error) => {
-            console.log(error)
-            try{
-              const ErrorMass = error.config.url
-              const [ErrorMass1, ErrorMass2] = ErrorMass.split('v1/');
-              setMassSummitError(error.code +" - "+error.message +" - "+ErrorMass2);
-              setShowSummitError("Error")
-            }
-            catch (error) {
-              setMassSummitError(error.response.data.HTTPStatus.message);
-              setShowSummitError("Error");
-           }
-      });
+    //       })
+    //       .catch((error) => {
+    //         console.log(error)
+    //         try{
+    //           const ErrorMass = error.config.url
+    //           const [ErrorMass1, ErrorMass2] = ErrorMass.split('v1/');
+    //           setMassSummitError(error.code +" - "+error.message +" - "+ErrorMass2);
+    //           setShowSummitError("Error")
+    //         }
+    //         catch (error) {
+    //           setMassSummitError(error.response.data.HTTPStatus.message);
+    //           setShowSummitError("Error");
+    //        }
+    //   });
+    // }
+  }
+   
+//       }else{
       
+//         document.getElementById("my_modal_3").showModal();
       
-      }else{
+//         const Data = {
+//           "PatientInfo" : {
+//             InsurerCode: PatientInfo.InsurerCode,
+//             RefId: PatientInfo.RefId,
+//             TransactionNo : PatientInfo.TransactionNo,
+//             PID : PatientInfo.PID,
+//             HN : PatientInfo.HN,
+//             GivenNameTH : PatientInfo.GivenNameTH,
+//             SurnameTH: PatientInfo.SurnameTH,
+//             DateOfBirth: PatientInfo.DateOfBirth,
+//             PassportNumber: PatientInfo.PassportNumber,
+//             IdType: PatientInfo.IdType,
+//             VN:  PatientInfo.VN,
+//             VisitDateTime: PatientInfo.VisitDateTime,
+//             AccidentDate: Datevalue,
+//             AccidentPlaceCode:  accidentPlaceValue,
+//             AccidentInjuryWoundtypeCode:  woundType,
+//             AccidentInjurySideCode: injurySide,
+//             WoundDetails: "",
+//             PolicyTypeCode: PatientInfo.PolicyTypeCode,
+//             ServiceSettingCode: PatientInfo.ServiceSettingCode, 
+//             IllnessTypeCode: PatientInfo.IllnessTypeCode,
+//             SurgeryTypeCode:  PatientInfo.SurgeryTypeCode,
+//             ChiefComplaint: event.target.ChiefComplaint.value,
+//             PresentIllness: event.target.PresentIllness.value,
+//             AccidentCauseOver45Days : over45,
+//             DxFreeText : event.target.DxFreeTextText.value,
+//             FurtherClaimId : PatientInfo.FurtherClaimId,
+//             FurtherClaimNo : PatientInfo.FurtherClaimNo,
       
-        document.getElementById("my_modal_3").showModal();
-      
-        const Data = {
-          "PatientInfo" : {
-            InsurerCode: PatientInfo.InsurerCode,
-            RefId: PatientInfo.RefId,
-            TransactionNo : PatientInfo.TransactionNo,
-            PID : PatientInfo.PID,
-            HN : PatientInfo.HN,
-            GivenNameTH : PatientInfo.GivenNameTH,
-            SurnameTH: PatientInfo.SurnameTH,
-            DateOfBirth: PatientInfo.DateOfBirth,
-            PassportNumber: PatientInfo.PassportNumber,
-            IdType: PatientInfo.IdType,
-            VN:  PatientInfo.VN,
-            VisitDateTime: PatientInfo.VisitDateTime,
-            AccidentDate: Datevalue,
-            AccidentPlaceCode:  accidentPlaceValue,
-            AccidentInjuryWoundtypeCode:  woundType,
-            AccidentInjurySideCode: injurySide,
-            WoundDetails: "",
-            PolicyTypeCode: PatientInfo.PolicyTypeCode,
-            ServiceSettingCode: PatientInfo.ServiceSettingCode, 
-            IllnessTypeCode: PatientInfo.IllnessTypeCode,
-            SurgeryTypeCode:  PatientInfo.SurgeryTypeCode,
-            ChiefComplaint: event.target.ChiefComplaint.value,
-            PresentIllness: event.target.PresentIllness.value,
-            AccidentCauseOver45Days : over45,
-            DxFreeText : event.target.DxFreeTextText.value,
-            FurtherClaimId : PatientInfo.FurtherClaimId,
-            FurtherClaimNo : PatientInfo.FurtherClaimNo,
-      
-            OtherInsurer : otherInsurer,
-            UnderlyingCondition : event.target.UnderlyingCondition.value,
-            PhysicalExam : event.target.PhysicalExam.value,
-            PlanOfTreatment : event.target.PlanOfTreatment.value,
-            ProcedureFreeText : event.target.ProcedureFreeText.value,
-            AdditionalNote :  event.target.AdditionalNote.value,
-            SignSymptomsDate : signDate,
-            ComaScore : comaScore,
-            ExpectedDayOfRecovery : expectedDayOfRecovery,
-            AlcoholRelated : alcoholRelated,
-            Pregnant : pregnant,
-            PrivateCase : privateCase,
-            ProcedureInfo : {
-                      ProcedureEdit : true,
-                      Procedure : 
-                      rows,
+//             OtherInsurer : otherInsurer,
+//             UnderlyingCondition : event.target.UnderlyingCondition.value,
+//             PhysicalExam : event.target.PhysicalExam.value,
+//             PlanOfTreatment : event.target.PlanOfTreatment.value,
+//             ProcedureFreeText : event.target.ProcedureFreeText.value,
+//             AdditionalNote :  event.target.AdditionalNote.value,
+//             SignSymptomsDate : signDate,
+//             ComaScore : comaScore,
+//             ExpectedDayOfRecovery : expectedDayOfRecovery,
+//             AlcoholRelated : alcoholRelated,
+//             Pregnant : pregnant,
+//             PrivateCase : privateCase,
+//             ProcedureEdit : true,
+//             ProcedureInfo : {
+//                       Procedure : 
+//                       rows,
                       
-                    }
+//                     }
       
-          },
-        };
+//           },
+//         };
       
-        console.log(Data.PatientInfo)
+//         console.log(Data.PatientInfo)
       
-        axios
-          .post(process.env.NEXT_PUBLIC_URL_PD2 + "v1/aia-opddischarge/sentOPDDischarge",
-            Data
+//         axios
+//           .post(process.env.NEXT_PUBLIC_URL_PD2 + process.env.NEXT_PUBLIC_URL_sentOPDDischarge,
+//             Data
         
-          )
-          .then((response) => {
-            //setOrderItemz(response.data);
+//           )
+//           .then((response) => {
+//             //setOrderItemz(response.data);
       
       
       
-            console.log(response)
-       //     console.log(response.data.MessageTh)
-            setMassSummit(response.data.MessageTh)
+//             console.log(response)
+//        //     console.log(response.data.MessageTh)
+//             setMassSummit(response.data.MessageTh)
       
       
       
-          })
-          .catch((error) => {
-            console.log(error)
-            try{
-              const ErrorMass = error.config.url
-              const [ErrorMass1, ErrorMass2] = ErrorMass.split('v1/');
-              setMassSummitError(error.code +" - "+error.message +" - "+ErrorMass2);
-              setShowSummitError("Error")
-            }
-            catch (error) {
-              setMassSummitError(error.response.data.HTTPStatus.message);
-              setShowSummitError("Error");
-           }
-      });
+//           })
+//           .catch((error) => {
+//             console.log(error)
+//             try{
+//               const ErrorMass = error.config.url
+//               const [ErrorMass1, ErrorMass2] = ErrorMass.split('v1/');
+//               setMassSummitError(error.code +" - "+error.message +" - "+ErrorMass2);
+//               setShowSummitError("Error")
+//             }
+//             catch (error) {
+//               setMassSummitError(error.response.data.HTTPStatus.message);
+//               setShowSummitError("Error");
+//            }
+//       });
       
       
-      }
+//       }
 
 
-// console.log(ProcedureInfo)
+// // console.log(ProcedureInfo)
 
-    } else {
-      console.log("Edit")
+//     } else {
+//       console.log("Edit")
 
 
-      const Datevalue = dayjs(accidentDate.$d).format('YYYY-MM-DD');
-      const signDate = dayjs(signSymptomsDate.$d).format('YYYY-MM-DD');
+//       const Datevalue = dayjs(accidentDate.$d).format('YYYY-MM-DD');
+//       const signDate = dayjs(signSymptomsDate.$d).format('YYYY-MM-DD');
 
-      if(PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER"){
-       // console.log(PatientInfo)
+//       if(PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER"){
+//        // console.log(PatientInfo)
       
-       document.getElementById("my_modal_3").showModal();
+//        document.getElementById("my_modal_3").showModal();
       
-        const Data = {
-          "PatientInfo" : {
-            InsurerCode: PatientInfo.InsurerCode,
-            RefId: PatientInfo.RefId,
-            TransactionNo : PatientInfo.TransactionNo,
-            PID : PatientInfo.PID,
-            HN : PatientInfo.HN,
-            GivenNameTH : PatientInfo.GivenNameTH,
-            SurnameTH: PatientInfo.SurnameTH,
-            DateOfBirth: PatientInfo.DateOfBirth,
-            PassportNumber: PatientInfo.PassportNumber,
-            IdType: PatientInfo.IdType,
-            VN:  PatientInfo.VN,
-            VisitDateTime: PatientInfo.VisitDateTime,
-            AccidentDate: Datevalue,
-            AccidentPlaceCode:  accidentPlaceValue,
-            AccidentInjuryWoundtypeCode:  woundType,
-            AccidentInjurySideCode: injurySide,
-            WoundDetails: event.target.commentOfInjuryText.value,
-            PolicyTypeCode: PatientInfo.PolicyTypeCode,
-            ServiceSettingCode: PatientInfo.ServiceSettingCode, 
-            IllnessTypeCode: PatientInfo.IllnessTypeCode,
-            SurgeryTypeCode:  PatientInfo.SurgeryTypeCode,
-            ChiefComplaint: event.target.ChiefComplaint.value,
-            PresentIllness: event.target.PresentIllness.value,
-            AccidentCauseOver45Days : over45,
-            DxFreeText : event.target.DxFreeTextText.value,
-            FurtherClaimId : PatientInfo.FurtherClaimId,
-            FurtherClaimNo : PatientInfo.FurtherClaimNo,
+//         const Data = {
+//           "PatientInfo" : {
+//             InsurerCode: PatientInfo.InsurerCode,
+//             RefId: PatientInfo.RefId,
+//             TransactionNo : PatientInfo.TransactionNo,
+//             PID : PatientInfo.PID,
+//             HN : PatientInfo.HN,
+//             GivenNameTH : PatientInfo.GivenNameTH,
+//             SurnameTH: PatientInfo.SurnameTH,
+//             DateOfBirth: PatientInfo.DateOfBirth,
+//             PassportNumber: PatientInfo.PassportNumber,
+//             IdType: PatientInfo.IdType,
+//             VN:  PatientInfo.VN,
+//             VisitDateTime: PatientInfo.VisitDateTime,
+//             AccidentDate: Datevalue,
+//             AccidentPlaceCode:  accidentPlaceValue,
+//             AccidentInjuryWoundtypeCode:  woundType,
+//             AccidentInjurySideCode: injurySide,
+//             WoundDetails: event.target.commentOfInjuryText.value,
+//             PolicyTypeCode: PatientInfo.PolicyTypeCode,
+//             ServiceSettingCode: PatientInfo.ServiceSettingCode, 
+//             IllnessTypeCode: PatientInfo.IllnessTypeCode,
+//             SurgeryTypeCode:  PatientInfo.SurgeryTypeCode,
+//             ChiefComplaint: event.target.ChiefComplaint.value,
+//             PresentIllness: event.target.PresentIllness.value,
+//             AccidentCauseOver45Days : over45,
+//             DxFreeText : event.target.DxFreeTextText.value,
+//             FurtherClaimId : PatientInfo.FurtherClaimId,
+//             FurtherClaimNo : PatientInfo.FurtherClaimNo,
       
-            OtherInsurer : otherInsurer,
-            UnderlyingCondition : event.target.UnderlyingCondition.value,
-            PhysicalExam : event.target.PhysicalExam.value,
-            PlanOfTreatment : event.target.PlanOfTreatment.value,
-            ProcedureFreeText : event.target.ProcedureFreeText.value,
-            AdditionalNote :  event.target.AdditionalNote.value,
-            SignSymptomsDate : signDate,
-            ComaScore : comaScore,
-            ExpectedDayOfRecovery : expectedDayOfRecovery,
-            AlcoholRelated : alcoholRelated,
-            Pregnant : pregnant,
-            PrivateCase : privateCase,
-            ProcedureInfo : {
-                      ProcedureEdit : false,
-                      Procedure : 
-                           procedure,
+//             OtherInsurer : otherInsurer,
+//             UnderlyingCondition : event.target.UnderlyingCondition.value,
+//             PhysicalExam : event.target.PhysicalExam.value,
+//             PlanOfTreatment : event.target.PlanOfTreatment.value,
+//             ProcedureFreeText : event.target.ProcedureFreeText.value,
+//             AdditionalNote :  event.target.AdditionalNote.value,
+//             SignSymptomsDate : signDate,
+//             ComaScore : comaScore,
+//             ExpectedDayOfRecovery : expectedDayOfRecovery,
+//             AlcoholRelated : alcoholRelated,
+//             Pregnant : pregnant,
+//             PrivateCase : privateCase,
+//             ProcedureInfo : {
+//                       ProcedureEdit : false,
+//                       Procedure : 
+//                            procedure,
                       
-                    }
+//                     }
       
-          },
-        };
+//           },
+//         };
       
-        console.log(Data.PatientInfo)
-        axios
-          .post(process.env.NEXT_PUBLIC_URL_PD2 + "v1/aia-opddischarge/sentOPDDischarge",
-            Data
+//         console.log(Data.PatientInfo)
+//         axios
+//           .post(process.env.NEXT_PUBLIC_URL_PD2 + process.env.NEXT_PUBLIC_URL_sentOPDDischarge,
+//             Data
         
-          )
-          .then((response) => {
-            //setOrderItemz(response.data);
-            console.log(response.data.Message)
-            setMassSummit(response.data.Message)
+//           )
+//           .then((response) => {
+//             //setOrderItemz(response.data);
+//             console.log(response.data.Message)
+//             setMassSummit(response.data.Message)
       
-          })
-          .catch((error) => {
-            console.log(error)
-            try{
-              const ErrorMass = error.config.url
-              const [ErrorMass1, ErrorMass2] = ErrorMass.split('v1/');
-              setMassSummitError(error.code +" - "+error.message +" - "+ErrorMass2);
-              setShowSummitError("Error")
-            }
-            catch (error) {
-              setMassSummitError(error.response.data.HTTPStatus.message);
-              setShowSummitError("Error");
-           }
-      });
+//           })
+//           .catch((error) => {
+//             console.log(error)
+//             try{
+//               const ErrorMass = error.config.url
+//               const [ErrorMass1, ErrorMass2] = ErrorMass.split('v1/');
+//               setMassSummitError(error.code +" - "+error.message +" - "+ErrorMass2);
+//               setShowSummitError("Error")
+//             }
+//             catch (error) {
+//               setMassSummitError(error.response.data.HTTPStatus.message);
+//               setShowSummitError("Error");
+//            }
+//       });
       
       
-      }else{
+//       }else{
       
-        document.getElementById("my_modal_3").showModal();
+//         document.getElementById("my_modal_3").showModal();
       
-        const Data = {
-          "PatientInfo" : {
-            InsurerCode: PatientInfo.InsurerCode,
-            RefId: PatientInfo.RefId,
-            TransactionNo : PatientInfo.TransactionNo,
-            PID : PatientInfo.PID,
-            HN : PatientInfo.HN,
-            GivenNameTH : PatientInfo.GivenNameTH,
-            SurnameTH: PatientInfo.SurnameTH,
-            DateOfBirth: PatientInfo.DateOfBirth,
-            PassportNumber: PatientInfo.PassportNumber,
-            IdType: PatientInfo.IdType,
-            VN:  PatientInfo.VN,
-            VisitDateTime: PatientInfo.VisitDateTime,
-            AccidentDate: Datevalue,
-            AccidentPlaceCode:  accidentPlaceValue,
-            AccidentInjuryWoundtypeCode:  woundType,
-            AccidentInjurySideCode: injurySide,
-            WoundDetails: "",
-            PolicyTypeCode: PatientInfo.PolicyTypeCode,
-            ServiceSettingCode: PatientInfo.ServiceSettingCode, 
-            IllnessTypeCode: PatientInfo.IllnessTypeCode,
-            SurgeryTypeCode:  PatientInfo.SurgeryTypeCode,
-            ChiefComplaint: event.target.ChiefComplaint.value,
-            PresentIllness: event.target.PresentIllness.value,
-            AccidentCauseOver45Days : over45,
-            DxFreeText : event.target.DxFreeTextText.value,
-            FurtherClaimId : PatientInfo.FurtherClaimId,
-            FurtherClaimNo : PatientInfo.FurtherClaimNo,
+//         const Data = {
+//           "PatientInfo" : {
+//             InsurerCode: PatientInfo.InsurerCode,
+//             RefId: PatientInfo.RefId,
+//             TransactionNo : PatientInfo.TransactionNo,
+//             PID : PatientInfo.PID,
+//             HN : PatientInfo.HN,
+//             GivenNameTH : PatientInfo.GivenNameTH,
+//             SurnameTH: PatientInfo.SurnameTH,
+//             DateOfBirth: PatientInfo.DateOfBirth,
+//             PassportNumber: PatientInfo.PassportNumber,
+//             IdType: PatientInfo.IdType,
+//             VN:  PatientInfo.VN,
+//             VisitDateTime: PatientInfo.VisitDateTime,
+//             AccidentDate: Datevalue,
+//             AccidentPlaceCode:  accidentPlaceValue,
+//             AccidentInjuryWoundtypeCode:  woundType,
+//             AccidentInjurySideCode: injurySide,
+//             WoundDetails: "",
+//             PolicyTypeCode: PatientInfo.PolicyTypeCode,
+//             ServiceSettingCode: PatientInfo.ServiceSettingCode, 
+//             IllnessTypeCode: PatientInfo.IllnessTypeCode,
+//             SurgeryTypeCode:  PatientInfo.SurgeryTypeCode,
+//             ChiefComplaint: event.target.ChiefComplaint.value,
+//             PresentIllness: event.target.PresentIllness.value,
+//             AccidentCauseOver45Days : over45,
+//             DxFreeText : event.target.DxFreeTextText.value,
+//             FurtherClaimId : PatientInfo.FurtherClaimId,
+//             FurtherClaimNo : PatientInfo.FurtherClaimNo,
       
-            OtherInsurer : otherInsurer,
-            UnderlyingCondition : event.target.UnderlyingCondition.value,
-            PhysicalExam : event.target.PhysicalExam.value,
-            PlanOfTreatment : event.target.PlanOfTreatment.value,
-            ProcedureFreeText : event.target.ProcedureFreeText.value,
-            AdditionalNote :  event.target.AdditionalNote.value,
-            SignSymptomsDate : signSymptomsDate,
-            ComaScore : comaScore,
-            ExpectedDayOfRecovery : expectedDayOfRecovery,
-            AlcoholRelated : alcoholRelated,
-            Pregnant : pregnant,
-            PrivateCase : privateCase,
-            ProcedureInfo : {
-                      ProcedureEdit : false,
-                      Procedure : 
-                      rows,
+//             OtherInsurer : otherInsurer,
+//             UnderlyingCondition : event.target.UnderlyingCondition.value,
+//             PhysicalExam : event.target.PhysicalExam.value,
+//             PlanOfTreatment : event.target.PlanOfTreatment.value,
+//             ProcedureFreeText : event.target.ProcedureFreeText.value,
+//             AdditionalNote :  event.target.AdditionalNote.value,
+//             SignSymptomsDate : signSymptomsDate,
+//             ComaScore : comaScore,
+//             ExpectedDayOfRecovery : expectedDayOfRecovery,
+//             AlcoholRelated : alcoholRelated,
+//             Pregnant : pregnant,
+//             PrivateCase : privateCase,
+//             ProcedureInfo : {
+//                       ProcedureEdit : false,
+//                       Procedure : 
+//                       rows,
                       
-                    }
+//                     }
       
-          },
-        };
+//           },
+//         };
       
-        console.log(Data.PatientInfo)
+//         console.log(Data.PatientInfo)
       
-        axios
-          .post(process.env.NEXT_PUBLIC_URL_PD2 + "v1/aia-opddischarge/sentOPDDischarge",
-            Data
+//         axios
+//           .post(process.env.NEXT_PUBLIC_URL_PD2 + process.env.NEXT_PUBLIC_URL_sentOPDDischarge,
+//             Data
         
-          )
-          .then((response) => {
-            //setOrderItemz(response.data);
+//           )
+//           .then((response) => {
+//             //setOrderItemz(response.data);
       
       
       
-            console.log(response.data.Message)
-            setMassSummit(response.data.Message)
+//             console.log(response.data.Message)
+//             setMassSummit(response.data.Message)
       
       
       
-          })
-          .catch((error) => {
-            console.log(error)
-            try{
-              const ErrorMass = error.config.url
-              const [ErrorMass1, ErrorMass2] = ErrorMass.split('v1/');
-              setMassSummitError(error.code +" - "+error.message +" - "+ErrorMass2);
-              setShowSummitError("Error")
-            }
-            catch (error) {
-              setMassSummitError(error.response.data.HTTPStatus.message);
-              setShowSummitError("Error");
-           }
-      });
+//           })
+//           .catch((error) => {
+//             console.log(error)
+//             try{
+//               const ErrorMass = error.config.url
+//               const [ErrorMass1, ErrorMass2] = ErrorMass.split('v1/');
+//               setMassSummitError(error.code +" - "+error.message +" - "+ErrorMass2);
+//               setShowSummitError("Error")
+//             }
+//             catch (error) {
+//               setMassSummitError(error.response.data.HTTPStatus.message);
+//               setShowSummitError("Error");
+//            }
+//       });
       
       
-      }
-    }
+//       }
+//     }
 
 
 
@@ -1010,7 +1068,7 @@ const DocumentBase64 = (data) => {
     //   router.push('/aia/opd/checkClaimStatus');
     // }, 5000);
 
-  };
+  // };
 
 
   const handleUpload = async () => {
@@ -1044,7 +1102,7 @@ const DocumentBase64 = (data) => {
        return { ...prevState, started: true }
      })
      try{
-     const response = await axios.post(process.env.NEXT_PUBLIC_URL_PD2 +  "v1/utils/uploadDocuments", formData, {
+     const response = await axios.post(process.env.NEXT_PUBLIC_URL_PD2 +  process.env.NEXT_PUBLIC_URL_uploadDocuments, formData, {
            onUploadProgress: (progressEvent) => {  setProgress(prevState => {
              return { ...prevState, pc: progressEvent.progress*100 }
            })},
@@ -1068,7 +1126,7 @@ const DocumentBase64 = (data) => {
            Upload Successful
            </div>)
    axios
-   .post(process.env.NEXT_PUBLIC_URL_PD2 + "v1/utils/getlistDocumentName",{
+   .post(process.env.NEXT_PUBLIC_URL_PD2 + process.env.NEXT_PUBLIC_URL_getlistDocumentName,{
      RefId : PatientInfo.RefId,
      TransactionNo : PatientInfo.TransactionNo,
      HN : PatientInfo.HN,
@@ -1155,7 +1213,7 @@ const DocumentBase64 = (data) => {
 
   return (
     <>
-          {/* {showFormError === "Error" ? (
+          {showFormError === "Error" ? (
             <div role="alert" className="alert alert-error mt-2 text-base-100">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -1173,12 +1231,12 @@ const DocumentBase64 = (data) => {
               <span>{massError}</span>
             </div>
             ) : ""
-            } */}
-      {/* {patien ? ( */}
+            } 
+       {patientInfoByPID ? ( 
         <>
-          {/* <form onSubmit={Claim}> */}
-          <form>
-            {/* {patien ? (
+        <form onSubmit={Claim}>
+          {/* <form> */}
+            {patientInfoByPID ? (
             <div className="justify-center border-solid w-4/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
               <h1 className="font-black text-accent text-3xl ">
                 Patient Info
@@ -1186,17 +1244,17 @@ const DocumentBase64 = (data) => {
               <div className="grid gap-2 sm:grid-cols-4 w-full mt-2">               
                  <div className="rounded-md">
           <Box sx={{backgroundColor: '#e5e7eb', padding: 0, borderRadius: 0}}>
-                  <CustomTextField  id="disabledInput" label="คำนำหน้าชื่อ" defaultValue={patien.Result.PatientInfo.TitleTH} className="w-full text-black rounded disabled:text-black disabled:bg-gray-300 cursor-not-allowed"  InputProps={{readOnly: true,}}/>
+                  <CustomTextField  id="disabledInput" label="คำนำหน้าชื่อ" defaultValue={patientInfoByPID.PatientInfo.TitleTH} className="w-full text-black rounded disabled:text-black disabled:bg-gray-300 cursor-not-allowed"  InputProps={{readOnly: true,}}/>
         </Box>
                 </div>
                 <div className="rounded-md">
           <Box sx={{backgroundColor: '#e5e7eb', padding: 0, borderRadius: 0}}>
-                  <CustomTextField  id="disabledInput" label="FirstName (TH)" defaultValue={patien.Result.PatientInfo.GivenNameTH} className="w-full text-black rounded disabled:text-black disabled:bg-gray-300 cursor-not-allowed"  InputProps={{readOnly: true,}}/>
+                  <CustomTextField  id="disabledInput" label="FirstName (TH)" defaultValue={patientInfoByPID.PatientInfo.GivenNameTH} className="w-full text-black rounded disabled:text-black disabled:bg-gray-300 cursor-not-allowed"  InputProps={{readOnly: true,}}/>
         </Box>
                 </div>
                 <div className="rounded-md">
          <Box sx={{backgroundColor: '#e5e7eb', padding: 0, borderRadius: 0,}}>
-                  <CustomTextField  id="disabledInput" label="LastName (TH)" defaultValue={patien.Result.PatientInfo.SurnameTH} className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"  InputProps={{readOnly: true,}}/>
+                  <CustomTextField  id="disabledInput" label="LastName (TH)" defaultValue={patientInfoByPID.PatientInfo.SurnameTH} className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"  InputProps={{readOnly: true,}}/>
         </Box>
                 </div>
                 <div className="rounded-md">
@@ -1213,7 +1271,7 @@ const DocumentBase64 = (data) => {
                 ) : ""} 
                 <div className="rounded-md">
                 <Box sx={{backgroundColor: '#e5e7eb', padding: 0, borderRadius: 0,}}>
-                <CustomTextField  id="disabledInput" label="Date of Birth (YYYY-MM-DD)" defaultValue={patien.Result.PatientInfo.DateOfBirth} className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"  InputProps={{readOnly: true,}}/>
+                <CustomTextField  id="disabledInput" label="Date of Birth (YYYY-MM-DD)" defaultValue={patientInfoByPID.PatientInfo.DateOfBirth} className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"  InputProps={{readOnly: true,}}/>
         </Box>
                 </div>
                 <div className="rounded-md">
@@ -1223,14 +1281,14 @@ const DocumentBase64 = (data) => {
                 </div>
                 <div className="rounded-md">
                 <Box sx={{backgroundColor: '#e5e7eb', padding: 0, borderRadius: 0,}}>
-                <CustomTextField  id="disabledInput" label="Gender" defaultValue={patien.Result.PatientInfo.Gender} className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"  InputProps={{readOnly: true,}}/>
+                <CustomTextField  id="disabledInput" label="Gender" defaultValue={patientInfoByPID.PatientInfo.Gender} className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"  InputProps={{readOnly: true,}}/>
            </Box>
                 </div>
               </div>
             </div>
-            ) : ""} */}
+            ) : ""} 
             {/* //////////////////////////////////////////////////////////////////////////// */}
-            {/* {visit ? (
+         {visit ? (
              <div className="container mx-auto justify-center border-solid w-4/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
               <h1 className="font-black text-accent text-3xl ">
               Visit
@@ -1303,7 +1361,7 @@ const DocumentBase64 = (data) => {
               <div className="rounded-md"> </div>
                 <div className="rounded-md mt-2">
               <Box sx={{backgroundColor: '#e5e7eb', padding: 0, borderRadius: 0,}}>
-                <CustomTextField  id="disabledInput" label="VN"  className="w-full text-black rounded disabled:text-black disabled:bg-gray-300" defaultValue={visit.Result.VisitInfo.VN} InputProps={{readOnly: true,}}/>
+                <CustomTextField  id="disabledInput" label="VN"  className="w-full text-black rounded disabled:text-black disabled:bg-gray-300" defaultValue={visit.Result.VisitInfo.Vn} InputProps={{readOnly: true,}}/>
            </Box>
                 </div>
                 <div className="rounded-md mt-2">
@@ -1442,11 +1500,16 @@ const DocumentBase64 = (data) => {
 
                 <div className="flex  w-full mt-4">
                       <div className="w-1/5">
-                      <LocalizationProvider dateAdapter={AdapterDayjs} >
+                  <LocalizationProvider dateAdapter={AdapterDayjs} >
       <DemoItem  >
         <DesktopDatePicker label="วันที่เริ่มมีอาการ" value={signSymptomsDate} onChange={(newSignSymptomsDate) => setSignSymptomsDate(newSignSymptomsDate)} format="YYYY-MM-DD"/>
       </DemoItem>
-    </LocalizationProvider>
+    </LocalizationProvider> 
+                    {/* <LocalizationProvider dateAdapter={AdapterDayjs} >
+      <DemoItem  >
+        <DesktopDatePicker   value={accidentDate} onChange={(newAccidentDate) => setAccidentDate(newAccidentDate)} format="YYYY-MM-DD"/>
+      </DemoItem>
+    </LocalizationProvider> */}
                         </div>
                         <div className="w-1/4 ml-2">
                         <TextField
@@ -1482,15 +1545,28 @@ const DocumentBase64 = (data) => {
        <div className="border-solid border-2 mt-2">
        <h1 className="mt-2 ml-2 text-accent text-lg">การเจ็บป่วยนี่เกี่ยวข้องกับสิ่งแวดล้อมอื่นๆ ( กรณีไม่ได้เลือก ไม่เกี่ยวข้องกับปัจจัยแวดล้อมอื่นๆ สามารถเลือกได้มากกว่า 1 ข้อ )</h1>
               <div className="flex items-center mt-2 ml-2">
-              <input
-                                      type="checkbox"
-                                      id="alcoholRelated"
-                                      name="alcoholRelated"
-                                      value={alcoholRelated}
-                                      className="checkbox"
-                                      onChange={handleAlcoholRelated}
-                                
-                               />
+                {visit ? (visit.Result.VisitInfo.AlcoholRelated === "true" ? (
+ <input
+ type="checkbox"
+ id="alcoholRelated"
+ name="alcoholRelated"
+ value={alcoholRelated}
+ className="checkbox"
+ onChange={handleAlcoholRelated}
+ defaultChecked
+/>
+                ) : (
+                  <input
+                  type="checkbox"
+                  id="alcoholRelated"
+                  name="alcoholRelated"
+                  value={alcoholRelated}
+                  className="checkbox"
+                  onChange={handleAlcoholRelated}
+           />
+                )): "" 
+                }
+             
                             <p className="text-left ml-2">การเจ็บป่วยครั้งนี้เกี่ยวข้องกับแอลกอฮอล์ หรือ ยาเสพติด</p>
                             </div>
                             <div className="flex items-center mt-2 ml-2">
@@ -1555,14 +1631,12 @@ const DocumentBase64 = (data) => {
 
           
             </div> 
-            ) : ""} */}
+            ) : ""}
   {/* //////////////////////////////////////////////////////////////////////////// */}
-    {/* //////////////////////////////////////////////////////////////////////////// */}
-      {/* //////////////////////////////////////////////////////////////////////////// */}
-        {/* //////////////////////////////////////////////////////////////////////////// */}
-          {/* //////////////////////////////////////////////////////////////////////////// */}
-              <div className="justify-center border-solid w-4/5 m-auto border-2 border-error rounded-lg p-4 mt-2">
-              <h1 className="font-black text-accent text-3xl ">AccidentDetail <Button className="btn btn-secondary text-base-100 text-xl" onClick={SummitEditAcc}><FaEdit /></Button></h1>
+           {PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER" ? (accidentDetail ? (
+            <>
+            <div className="justify-center border-solid w-4/5 m-auto border-2 border-error rounded-lg p-4 mt-2">
+              <h1 className="font-black text-error text-3xl ">AccidentDetail <Button className="btn btn-secondary text-base-100 text-xl" onClick={SummitEditAcc}><FaEdit /></Button></h1>
               
         
               <div className="flex  w-full mt-2">
@@ -1602,24 +1676,45 @@ const DocumentBase64 = (data) => {
         <TableHead>
           <TableRow className="bg-primary">
           <TableCell className="w-2"></TableCell>
-            <TableCell className="text-base-100  text-sm w-1/5 text-center">Icd 9 Code ของหัตถการหรือการผ่าตัด</TableCell>
-            <TableCell className="text-base-100  text-sm w-3/5 text-center">ชื่อของหัตถการหรือการผ่าตัด</TableCell>
-            <TableCell className="text-base-100  text-sm w-1/5 text-center">วันที่ทำหัตถการหรือทำการผ่าตัด</TableCell>
+            <TableCell className="text-base-100  text-sm w-2/5 text-center">สาเหตุของการเกิดอุบัติเหตุ (ICD10 code)</TableCell>
+            <TableCell className="text-base-100  text-sm w-3/5 text-center">คำอธิบายอวัยวะที่ได้รับจากการเกิดอุบัติเหตุว่ามีลักษณะบาดแผลอย่างไร</TableCell>
+            {summitEditAcc === "true" ?
             <TableCell></TableCell>
+            : "" }
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row, index) => (
+          {causeOfInjuryDetails.map((cause, index) => (
             <TableRow key={index} className=" bg-neutral text-sm">
               <TableCell>{index+1}</TableCell>
-              <TableCell ><div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">{row.Icd9 ? row.Icd9 : (<>&nbsp;</>)}</div></TableCell>
-              <TableCell><div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">{row.ProcedureName ? row.ProcedureName : (<>&nbsp;</>)}</div></TableCell>
-              <TableCell><div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">{row.ProcedureDate ? row.ProcedureDate : (<>&nbsp;</>)}</div></TableCell>
+              <TableCell >
+              {summitEditAcc === "true" ? (
+                <>
+                <input type="text" className="rounded-full px-3 py-2 border-2 bg-base-100 break-all w-full" value={cause.CauseOfInjury} onChange={(e) => handleChange(index,e)}  />
+                </>
+              ) : (
+                <>
+                 <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">{cause.CauseOfInjury ? cause.CauseOfInjury : (<>&nbsp;</>)}</div>
+                </>
+              )}
+               
+                </TableCell>
               <TableCell>
-                {summitEditAcc === "true" ?
-                <Button onClick={() => handleDeleteRow(index)} className="btn btn-error text-base-100 text-xl"><FaCircleMinus /></Button>
-               : "" }
+              {summitEditAcc === "true" ? (
+                <>
+                <input type="text" className="rounded-full px-3 py-2 border-2 bg-base-100 break-all w-full" value={cause.CommentOfInjury} onChange={(e) => handleChange2(index,e)}  />
+                </>
+              ) : (
+                <>
+                <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">{cause.CommentOfInjury ? cause.CommentOfInjury : (<>&nbsp;</>)}</div>
+                </>
+              )}
+                </TableCell>
+              {summitEditAcc === "true" ?
+              <TableCell>
+                <Button onClick={() => handleDeleteCauseOfInjuryDetail(index)} className="btn btn-error text-base-100 text-xl"><FaCircleMinus /></Button>
               </TableCell>
+                   : "" }
             </TableRow>
           ))}
            {summitEditAcc === "true" ? (
@@ -1633,35 +1728,29 @@ const DocumentBase64 = (data) => {
             <TableCell>
               <TextField
                 className="bg-base-100 w-full"
-                value={newRow.Icd9}
-                onChange={(e) => setNewRow({ ...newRow, Icd9: e.target.value })}
-                placeholder="Icd9"
+                value={newCauseOfInjuryDetail.CauseOfInjury}
+                onChange={(e) => setNewCauseOfInjuryDetail({ ...newCauseOfInjuryDetail, CauseOfInjury: e.target.value })}
+                placeholder="CauseOfInjury"
               //  required
               />
             </TableCell>
-            <TableCell>
+            {/* <TableCell> */}
               <TextField
-              className="bg-base-100 w-full"
-                value={newRow.ProcedureName}
-                onChange={(e) => setNewRow({ ...newRow, ProcedureName: e.target.value })}
-                placeholder="ProcedureName"
+              type="text"
+              className="bg-base-100 w-full m-2"
+                value={newCauseOfInjuryDetail.CommentOfInjury}
+                onChange={(e) => setNewCauseOfInjuryDetail({ ...newCauseOfInjuryDetail, CommentOfInjury: e.target.value })}
+                inputProps={{ maxLength: 200 }}
+                placeholder="CommentOfInjury"
+                multiline
+                rows={4}
              //   required
               />
-            </TableCell>
-            <TableCell>
-              <TextField
-              className="bg-base-100 w-full"
-                type="date"
-                value={newRow.ProcedureDate}
-                onChange={(e) => setNewRow({ ...newRow, ProcedureDate: e.target.value })}
-                placeholder="ProcedureDate"
-              //  required
-              />
-            </TableCell>
-            {(newRow.Icd9 && newRow.ProcedureName && newRow.ProcedureDate)  ? (
+            {/* </TableCell> */}
+            {(newCauseOfInjuryDetail.CauseOfInjury && newCauseOfInjuryDetail.CommentOfInjury)  ? (
               <>
               <TableCell>
-              <Button onClick={handleAddRow} className="btn btn-success text-base-100 text-xl"><FaCirclePlus /></Button>
+              <Button onClick={handleAddCauseOfInjuryDetail} className="btn btn-success text-base-100 text-xl"><FaCirclePlus /></Button>
             </TableCell>
               </>
             ) : ""
@@ -1682,132 +1771,103 @@ const DocumentBase64 = (data) => {
                 <div className="rounded-md ">&nbsp;</div> 
             </div> 
     </TableContainer>
+
+
+
+
+    <TableContainer component={Paper} className="mt-2">
+      <Table className="table">
+        <TableHead>
+          <TableRow className="bg-primary">
+          <TableCell className="w-2"></TableCell>
+            <TableCell className="text-base-100  text-sm w-1/7 text-center">อวัยวะที่ได้บาดเจ็บจากการเกิดอุบัติเหตุ (ICD10 code)</TableCell>
+            <TableCell className="text-base-100  text-sm w-3/7 text-center">ข้างของอวัยวะที่ได้รับบาดเจ็บจากการเกิดอุบัติเหตุ</TableCell>
+            <TableCell className="text-base-100  text-sm w-3/7 text-center">ลักษณะบาดแผลที่ได้รับจากการเกิดอุบัติเหตุ</TableCell>
+            {summitEditAcc === "true" ?
+            <TableCell></TableCell>
+            : "" }
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {injuryDetails.map((injury, index) => (
+            <TableRow key={index} className=" bg-neutral text-sm">
+              <TableCell>{index+1}</TableCell>
+              <TableCell ><div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">{injury.InjuryArea ? injury.InjuryArea : (<>&nbsp;</>)}</div></TableCell>
+              <TableCell><div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">{injury.InjurySide ? injury.InjurySide : (<>&nbsp;</>)}</div></TableCell>
+              <TableCell><div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">{injury.WoundType ? injury.WoundType : (<>&nbsp;</>)}</div></TableCell>
+              {summitEditAcc === "true" ?
+              <TableCell>
+                <Button onClick={() => handleDeleteInjuryDetail(index)} className="btn btn-error text-base-100 text-xl"><FaCircleMinus /></Button>
+              </TableCell>
+               : "" }
+            </TableRow>
+          ))}
+           {summitEditAcc === "true" ? (
+            <>
+          
+          <TableRow> 
+            <TableCell >
+            <FaCirclePlus className="text-xl" />
+            </TableCell>
+           
+            <TableCell>
+              <TextField
+                className="bg-base-100 w-full"
+                value={newInjuryDetail.InjuryArea}
+                onChange={(e) => setNewInjuryDetail({ ...newInjuryDetail, InjuryArea: e.target.value })}
+                placeholder="InjuryArea"
+              //  required
+              />
+            </TableCell>
+            <TableCell>
+              <TextField
+              className="bg-base-100 w-full"
+                value={newInjuryDetail.InjurySide}
+                onChange={(e) => setNewInjuryDetail({ ...newInjuryDetail, InjurySide: e.target.value })}
+                placeholder="InjurySide"
+             //   required
+              />
+            </TableCell>
+            <TableCell>
+              <TextField
+              className="bg-base-100 w-full"
+                value={newInjuryDetail.WoundType}
+                onChange={(e) => setNewInjuryDetail({ ...newInjuryDetail, WoundType: e.target.value })}
+                placeholder="WoundType"
+             //   required
+              />
+            </TableCell>
+            {(newInjuryDetail.InjuryArea && newInjuryDetail.InjurySide && newInjuryDetail.WoundType)  ? (
+              <>
+              <TableCell>
+              <Button onClick={handleAddInjuryDetail} className="btn btn-success text-base-100 text-xl"><FaCirclePlus /></Button>
+            </TableCell>
+              </>
+            ) : ""
+            }
+            
+
+          </TableRow>
+      
+          </>  )
+               : "" }
+        
+        </TableBody>
+      </Table>
+      <div className="grid gap-2 sm:grid-cols-4 text-base-100 bg-primary w-full whitespace-normal text-center">
+                <div className="rounded-md"></div>
+                <div className="rounded-md"></div>
+                <div className="rounded-md "></div>
+                <div className="rounded-md ">&nbsp;</div> 
             </div> 
-  {/* //////////////////////////////////////////////////////////////////////////// */}
-    {/* //////////////////////////////////////////////////////////////////////////// */}
-      {/* //////////////////////////////////////////////////////////////////////////// */}
-        {/* //////////////////////////////////////////////////////////////////////////// */}
-          {/* //////////////////////////////////////////////////////////////////////////// */}
-              {/* {PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER" ? (accidentDetail ? (
-              <div className="justify-center border-solid w-4/5 m-auto border-2 border-error rounded-lg p-4 mt-2">
-              <h1 className="font-black text-error text-3xl ">
-              AccidentDetail
-              </h1>
-              <div className="flex  w-full ">
-                <div className="w-1/5 ">
-                <LocalizationProvider dateAdapter={AdapterDayjs} >
-      <DemoItem  >
-        <DesktopDatePicker   value={accidentDate} onChange={(newAccidentDate) => setAccidentDate(newAccidentDate)} format="YYYY-MM-DD"/>
-      </DemoItem>
-    </LocalizationProvider>
-    
-                </div>
-                <div className="w-2/5">
-                <FormControl fullWidth>
-        <InputLabel id="demo-error-select-label">สถานที่เกิดอุบัติเหตุ</InputLabel>
-        <Select
-        error
-        className="mx-2"
-          labelId="demo-error-select-label"
-          id="demo-error-select"
-          //name="accidentPlaceText"
-          value={accidentPlaceValue}
-          label="สถานที่เกิดอุบัติเหตุ"
-          onChange={AccidentPlace}
-          required
-        >
-          {dataaccidentPlace
-                ? dataaccidentPlace.Result.map((acc, index) => (
-                    <MenuItem key={index} value={acc.accidentplacecode}>{acc.accidentplacename}</MenuItem>
-                  ))
-                : ""}
-        </Select>
-      </FormControl>
-                </div>
-              <div className="w-2/5">
-          <TextField
-          error
-          className="w-full mx-2"
-          id="outlined-error"
-          label="เกิดอุบัติเหตุว่ามีลักษณะบาดแผลอย่างไร"
-          name="commentOfInjuryText"
-          defaultValue=""
-          inputProps={{ maxLength: 200 }}
-          required
-        />
-                </div> 
-              </div>
-              <div className="flex  w-full mt-4">
-                <div className="w-1/5">
-                <FormControl fullWidth>
-        <InputLabel id="demo-error-select-label">ข้างที่ได้รับบาดเจ็บ</InputLabel>
-        <Select
-        error
-          labelId="demo-error-select-label"
-          id="demo-error-select"
-          value={injurySide}
-          label="ข้างที่ได้รับบาดเจ็บ"
-          onChange={InjurySide}
-          //name="injurySideText"
-          required
-        >
-          {datainjurySide
-                ? datainjurySide.Result.map((inj, index) => (
-                    <MenuItem key={index} value={inj.injurysidecode}>{inj.injurysidename} - {inj.injurysidecode}</MenuItem>
-                  ))
-                : ""}
-        </Select>
-      </FormControl>
-                </div>
-                <div className="w-2/5">
-                <FormControl fullWidth>
-        <InputLabel id="demo-error-select-label">ลักษณะบาดแผลที่ได้รับจากการเกิดอุบัติเหตุ</InputLabel>
-        <Select
-        error
-        className="mx-2"
-          labelId="demo-error-select-label"
-          id="demo-error-select"
-          //name="woundTypeText"
-          value={woundType}
-          label="ลักษณะบาดแผลที่ได้รับจากการเกิดอุบัติเหตุ"
-          onChange={WoundType}
-          required
-        >
-          {DataWoundType
-                ? DataWoundType.Result.map((wound, index) => (
-                    <MenuItem key={index} value={wound.woundtypecode}>{wound.woundtypename}</MenuItem>
-                  ))
-                : ""}
-        </Select>
-      </FormControl>
-                </div>
-                <div className="w-2/5">
-              <FormControl fullWidth>
-        <InputLabel id="demo-error-select-label">สาเหตุของการมารับการรักษาเกิน 45 วัน จากการเกิดอุบัติเหตุ</InputLabel>
-        <Select
-        error
-        className="w-full mx-2"
-          labelId="demo-error-select-label"
-          id="demo-error-select"
-          //name="woundTypeText"
-          value={over45}
-          label="สาเหตุของการมารับการรักษาเกิน 45 วัน จากการเกิดอุบัติเหตุ"
-          onChange={Over45}
-          required
-        >
-          {over45Days
-                ? over45Days.Result.map((over, index) => (
-                    <MenuItem key={index} value={over.CauseOverCode}>{over.CauseOverDesc}</MenuItem>
-                  ))
-                : ""}
-        </Select>
-      </FormControl> 
-                </div>
-              </div>
+    </TableContainer>
+
             </div> 
-            ) : ""  ) : ""} */}
+</>
+) : ""  ) : ""} 
+
               {/* //////////////////////////////////////////////////////////////////////////// */}
-              {/* <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
+             <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
                 <h1 className="font-black text-accent text-3xl ">VitalSign</h1>
                 <div className="overflow-x-auto">
   <table className="table mt-2">
@@ -1827,6 +1887,7 @@ const DocumentBase64 = (data) => {
                   <tbody>
                     {vitalsign
                         ? vitalsign.Result.VitalSignInfo.map((vts, index) => (
+                          vts.VitalSignEntryDateTime !== "" &&(
                             <tr
                               key={index}
                               className=" bg-neutral text-sm"
@@ -1869,7 +1930,7 @@ const DocumentBase64 = (data) => {
                                   </div>
                               </td>
                             </tr>
-                          ))
+                          )))
                         : <tr><td></td></tr>
                       }
                   </tbody>
@@ -1881,9 +1942,9 @@ const DocumentBase64 = (data) => {
                   <div className="rounded-md "></div>
                   <div className="rounded-md ">&nbsp;</div> 
               </div> 
-             </div> */}
+             </div>
              {/* //////////////////////////////////////////////////////////////////////////// */}
-              {/* <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
+           <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
                 <h1 className="font-black text-accent text-3xl ">Doctor</h1>
                 <div className="overflow-x-auto">
   <table className="table  mt-2">
@@ -1898,6 +1959,7 @@ const DocumentBase64 = (data) => {
                   <tbody>
                     {doctor
                         ? doctor.Result.DoctorInfo.map((dc, index) => (
+                          dc.DoctorLicense !== "" &&(
                             <tr
                               key={index}
                               className=" bg-neutral text-sm"
@@ -1912,7 +1974,7 @@ const DocumentBase64 = (data) => {
                               </td>
                               
                             </tr>
-                          ))
+                          )))
                         : <tr><td></td></tr>
                       }
                   </tbody>
@@ -1924,9 +1986,9 @@ const DocumentBase64 = (data) => {
                   <div className="rounded-md "></div>
                   <div className="rounded-md ">&nbsp;</div> 
               </div> 
-             </div> */}
+             </div> 
                           {/* //////////////////////////////////////////////////////////////////////////// */}
-                           {/* <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
+                         <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
                 <h1 className="font-black text-accent text-3xl ">Diagnosis</h1>
                 <div className="overflow-x-auto">
   <table className="table  mt-2">
@@ -1942,6 +2004,7 @@ const DocumentBase64 = (data) => {
                   <tbody>
                   {diagnosis
                   ? diagnosis.Result.DiagnosisInfo.map((dns, index) => (
+                    dns.DxCode !== "" &&(
                             <tr
                               key={index}
                               className=" bg-neutral text-sm"
@@ -1964,7 +2027,7 @@ const DocumentBase64 = (data) => {
                               </td>
                        
                             </tr>
-                          ))
+                          )))
                         : (
                           <tr>
                               <td></td>
@@ -1983,9 +2046,9 @@ const DocumentBase64 = (data) => {
                   <div className="rounded-md "></div>
                   <div className="rounded-md ">&nbsp;</div> 
               </div> 
-             </div> */}
+             </div> 
              {/* //////////////////////////////////////////////////////////////////////////// */}
-             {/* {rows ? (PatientInfo.SurgeryTypeCode === "Y" ? (
+          {rows ? (PatientInfo.SurgeryTypeCode === "Y" ? (
                <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
               <h1 className="font-black text-accent text-3xl ">Procedure <Button className="btn btn-secondary text-base-100 text-xl" onClick={SummitEditProce}><FaEdit /></Button></h1>
               
@@ -2001,19 +2064,26 @@ const DocumentBase64 = (data) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row, index) => (
+          {rows ?(rows.Result.ProcedureInfo.map((row, index) => (
+            row.Icd9 !== "" &&(
             <TableRow key={index} className=" bg-neutral text-sm">
               <TableCell>{index+1}</TableCell>
-              <TableCell ><div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">{row.Icd9 ? row.Icd9 : (<>&nbsp;</>)}</div></TableCell>
-              <TableCell><div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">{row.ProcedureName ? row.ProcedureName : (<>&nbsp;</>)}</div></TableCell>
-              <TableCell><div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">{row.ProcedureDate ? row.ProcedureDate : (<>&nbsp;</>)}</div></TableCell>
+              <TableCell ><div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">{row.Icd9 === "" ? (<>&nbsp;</>) : row.Icd9}</div></TableCell>
+              <TableCell><div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">{row.ProcedureName === "" ? (<>&nbsp;</>) : row.ProcedureName}</div></TableCell>
+              <TableCell><div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">{row.ProcedureDate === "" ? (<>&nbsp;</>) : row.ProcedureDate}</div></TableCell>
               <TableCell>
                 {summitEditProcedure === "true" ?
                 <Button onClick={() => handleDeleteRow(index)} className="btn btn-error text-base-100 text-xl"><FaCircleMinus /></Button>
                : "" }
               </TableCell>
             </TableRow>
-          ))}
+          )
+        )
+         ) ) : (
+            <TableRow>
+              <TableCell></TableCell>
+            </TableRow>
+          )}
            {summitEditProcedure === "true" ? (
             <>
           
@@ -2075,9 +2145,9 @@ const DocumentBase64 = (data) => {
             </div> 
     </TableContainer>
            </div>
-            ) : "") : ""} */}
+            ) : "") : ""}
                     {/* //////////////////////////////////////////////////////////////////////////// */}
-                     {/* <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
+                     <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
               <h1 className="font-black text-accent text-3xl ">Investigation</h1>
               <div className="overflow-x-auto">
               <table className="table  mt-2">
@@ -2092,43 +2162,47 @@ const DocumentBase64 = (data) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {investigation.Result.InvestigationInfo.InvestigationCode ? (
-                    <tr className=" bg-neutral text-sm">
-                            <td>{investigation.Result.InvestigationInfo.InvestigationCode ? "1" : (<>&nbsp;</>)}</td>
+                  {investigation ? (investigation.Result.InvestigationInfo.map((inv, index) => (
+                      inv.InvestigationCode !== "" &&(
+                          <tr
+                            key={index}
+                            className=" bg-neutral text-sm"
+                          >
+                            <td>{inv.InvestigationCode ? "1" : (<>&nbsp;</>)}</td>
                             <td>
                             <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                              {investigation.Result.InvestigationInfo.InvestigationCode === "" ? (<>&nbsp;</>) : investigation.Result.InvestigationInfo.InvestigationCode}
+                              {inv.InvestigationCode === "" ? (<>&nbsp;</>) : inv.InvestigationCode}
                               </div>
                               </td>
                             <td>
                             <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                              {investigation.Result.InvestigationInfo.InvestigationGroup === "" ? (<>&nbsp;</>) : investigation.Result.InvestigationInfo.InvestigationGroup}
+                              {inv.InvestigationGroup === "" ? (<>&nbsp;</>) : inv.InvestigationGroup}
                               </div>
                             </td>
                             <td>
                             <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                              {investigation.Result.InvestigationInfo.InvestigationName === "" ? (<>&nbsp;</>) : investigation.Result.InvestigationInfo.InvestigationName}
+                              {inv.InvestigationName === "" ? (<>&nbsp;</>) : inv.InvestigationName}
                               </div>
                             </td>
                             <td>
                             <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                              {investigation.Result.InvestigationInfo.InvestigationResult === "" ? (<>&nbsp;</>) : investigation.Result.InvestigationInfo.InvestigationResult}
+                              {inv.InvestigationResult === "" ? (<>&nbsp;</>) : inv.InvestigationResult}
                               </div>
                             </td>
                             <td>
                             <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                              {investigation.Result.InvestigationInfo.ResultDateTime === "" ? (<>&nbsp;</>) : investigation.Result.InvestigationInfo.ResultDateTime}
+                              {inv.ResultDateTime === "" ? (<>&nbsp;</>) : inv.ResultDateTime}
                               </div>
                             </td>
                             
                           </tr>
-                  )
-                  : (
-                          <tr>
-                            <td></td>
-                          </tr>
-                  )
-                  }
+                  ) )
+           ) ): (
+              <tr>
+                <td></td>
+              </tr>
+              )
+                 }
                           
                 </tbody>
               </table> 
@@ -2139,9 +2213,9 @@ const DocumentBase64 = (data) => {
                 <div className="rounded-md "></div>
                 <div className="rounded-md ">&nbsp;</div> 
             </div> 
-           </div> */}
+           </div> 
  {/* //////////////////////////////////////////////////////////////////////////// */}
- {/* <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
+ <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
               <h1 className="font-black text-accent text-3xl ">OrderItem</h1>
               <div className="overflow-x-auto">
               <table className="table  mt-2">
@@ -2219,10 +2293,10 @@ const DocumentBase64 = (data) => {
                 <div className="rounded-md "></div>
                 <div className="rounded-md ">&nbsp;</div> 
             </div> 
-           </div> */}
+           </div> 
 
                             {/* //////////////////////////////////////////////////////////////////////////// */}
-                            {/* <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
+                          <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
               <h1 className="font-black text-accent text-3xl ">รายละเอียดค่ารักษาพยาบาล</h1>
               <div className="overflow-x-auto">
               <table className="table  mt-2">
@@ -2261,9 +2335,9 @@ const DocumentBase64 = (data) => {
                 <div className="rounded-md ">สรุปค่ารักษาพยาบาล</div>
                 <div className="rounded-md ">฿ {billing ? billing.Result.TotalBillAmount : ""}</div> 
             </div> 
-            </div>  */}
+            </div>  
                   {/* //////////////////////////////////////////////////////////////////////////// */}
-        {/* <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
+    <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
               <h1 className="font-black text-accent text-3xl ">Upload File</h1>
           <div className="overflow-x-auto mt-6">
                 <div className="flex items-center ">
@@ -2353,12 +2427,12 @@ const DocumentBase64 = (data) => {
               </div>
         ) } 
           </div>
-        </div> */}
+        </div> 
          
 
     </form>
         </>
-      {/* ) : (
+      ) : (
         <div className="pt-6 ">
           <div className="justify-center border-solid w-1/5 m-auto p-8 ">
             <center>
@@ -2367,10 +2441,11 @@ const DocumentBase64 = (data) => {
             <div className="justify-center text-4xl">Loading....</div>
           </div>
         </div>
-      )} */}
+      )
+      } 
 
 
-{/* <dialog id="my_modal_3" className="modal text-xl	">
+ <dialog id="my_modal_3" className="modal text-xl	">
         <div className="modal-box w-11/12 max-w-5xl">
           <form method="dialog">
             <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
@@ -2402,21 +2477,21 @@ const DocumentBase64 = (data) => {
             )}
           </form>
         </div>
-        </dialog> */}
+        </dialog> 
 
 
 
 
-{/* {showModal ? (
+{showModal ? (
   <>
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
           <div className="bg-white p-8 rounded shadow-lg">
-            <h2 className="text-4xl font-bold mb-4 text-primary">ส่งเคลมเรียบร้อยแล้ว</h2> */}
+            <h2 className="text-4xl font-bold mb-4 text-primary">ส่งเคลมเรียบร้อยแล้ว</h2> 
            {/* <div className="text-center"> <span className="loading loading-bars loading-lg "></span></div> */}
-          {/* </div>
+        </div>
         </div>
   </>
-) : ""} */}
+) : ""} 
 
     </>
   );

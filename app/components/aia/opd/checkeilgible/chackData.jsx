@@ -48,8 +48,7 @@ export default function chackData() {
   const router = useRouter();
   const [massError, setMassError] = useState("");
   const [showFormError, setShowFormError] = useState("");
-  const [showFormCheckEligibleError, setShowFormCheckEligibleError] =
-    useState("");
+  const [showFormCheckEligibleError, setShowFormCheckEligibleError] = useState("");
 
   const [accidentDate, setAccidentDate] = useState("");
   const [visitDateTime, setVisitDateTime] = useState("");
@@ -810,8 +809,8 @@ export default function chackData() {
                   <div className="rounded-md "></div>
                   <div className="rounded-md ">&nbsp;</div>
                 </div>
-               {/* {result ? ( */}
-               {/*   result.Result.InsuranceData.CoverageClaimStatus === true ? ( */}
+            {result ? ( 
+               result.Result.InsuranceData.CoverageClaimStatus === true ? ( 
                     <div className="modal-action">
                       <button
                         className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100"
@@ -823,12 +822,12 @@ export default function chackData() {
                         ยืนยันการเคลม
                       </button>
                     </div>
-                  {/* ) : (
+             ) : (
                     ""
                   )
                 ) : (
                   ""
-                )} */}
+                )}
               </>
             )}
           </form>
