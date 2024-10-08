@@ -56,10 +56,13 @@ export default function Page({data}) {
   const [accidentDate, setAccidentDate] = useState(null);
   const [doctor, setDoctor] = useState();
   const [diagnosis, setDiagnosis] = useState();
+  const [injuryWoundType, setInjuryWoundType] = useState();
+  const [injurySideType, setInjurySideType] = useState();
   const [investigation, setInvestigation] = useState();
  const [billing, setBilling] = useState();
   const [orderItemz, setOrderItemz] = useState();
   const [result, setResult] = useState("");
+  const [procedure, setProcedure] = useState("");
   const [showModal, setShowModal] = useState(false);
   const router = useRouter();
   const [bmi, setBmi] = useState("");
@@ -78,7 +81,6 @@ export default function Page({data}) {
   const [rows, setRows] = useState("");
   const [causeOfInjuryDetails, setCauseOfInjuryDetails] = useState("");
   const [injuryDetails, setInjuryDetails] = useState("");
-  const [procedure, setProcedure] = useState("");
   const [newRow, setNewRow] = useState({ Icd9: '', ProcedureName: '', ProcedureDate: '' });
   const [newCauseOfInjuryDetail, setNewCauseOfInjuryDetail] = useState({ CauseOfInjury: '', CommentOfInjury: ''});
   const [newInjuryDetail, setNewInjuryDetail] = useState({ InjuryArea: '', InjurySide: '', WoundType: '' });
@@ -449,8 +451,8 @@ useEffect(() => {
       })
       .then((response) => {
         setRows(response.data)
-       console.log(response.data)
-        setProcedure(response.data)
+       //console.log(response.data)
+       setProcedure(response.data)
       })
       .catch((error) => {
         console.log(error)
@@ -482,9 +484,9 @@ const handleAddCauseOfInjuryDetail = () => {
 };
 ////////////////////////////////
 ////////////////////////////////
-const handleChange = (index2, event) => {
-  const newcauses = causeOfInjuryDetails.map((cause , index) => {
-    if (index === index2) {
+const handleChangeA1 = (index2, event) => {
+  const newcauses = causeOfInjuryDetails.map((injury , index) => {
+    if (injury === index2) {
       return { 
         ...cause, CauseOfInjury: event.target.value
        };
@@ -493,7 +495,7 @@ const handleChange = (index2, event) => {
   });
    setCauseOfInjuryDetails(newcauses);
 };
-const handleChange2 = (index2, event) => {
+const handleChangeA2 = (index2, event) => {
   const newcauses = causeOfInjuryDetails.map((cause , index) => {
     if (index === index2) {
       return { 
@@ -504,6 +506,86 @@ const handleChange2 = (index2, event) => {
   });
    setCauseOfInjuryDetails(newcauses);
 };
+const handleChangeB1 = (index2, event) => {
+  const newinjury = injuryDetails.map((injury , index) => {
+    if (index === index2) {
+      return { 
+        ...injury, InjuryArea: event.target.value
+       };
+    }
+    return injury;
+  });
+  setInjuryDetails(newinjury);
+};
+const handleChangeB2 = (index2, event) => {
+  const newinjury = injuryDetails.map((injury , index) => {
+    if (index === index2) {
+      return { 
+        ...injury, InjurySide: event.target.value
+       };
+    }
+    return injury;
+  });
+  setInjuryDetails(newinjury);
+};
+const handleChangeB3 = (index2, event) => {
+  const newinjury = injuryDetails.map((injury , index) => {
+    if (index === index2) {
+      return { 
+        ...injury, WoundType: event.target.value
+       };
+    }
+    return injury;
+  });
+  setInjuryDetails(newinjury);
+};
+
+useEffect(() => {
+  axios
+    .get(
+      process.env.NEXT_PUBLIC_URL_PD +
+        process.env.NEXT_PUBLIC_URL_InjurySide +
+        PatientInfo.InsurerCode
+    )
+    .then((response) => {
+      setInjurySideType(response.data);
+    })
+    .catch((error) => {
+      console.log(error)
+      try{
+        const ErrorMass = error.config.url
+        const [ErrorMass1, ErrorMass2] = ErrorMass.split('v1/');
+        setMassError(error.code +" - "+error.message +" - "+ErrorMass2);
+        setShowFormError("Error")
+      }
+      catch (error) {
+         setMassError(error.response.data.HTTPStatus.message);
+         setShowFormError("Error");
+     }
+    });
+    axios
+    .get(
+      process.env.NEXT_PUBLIC_URL_PD +
+        process.env.NEXT_PUBLIC_URL_InjuryWoundtype +
+        PatientInfo.InsurerCode
+    )
+    .then((response) => {
+      setInjuryWoundType(response.data);
+    })
+    .catch((error) => {
+      console.log(error)
+      try{
+        const ErrorMass = error.config.url
+        const [ErrorMass1, ErrorMass2] = ErrorMass.split('v1/');
+        setMassError(error.code +" - "+error.message +" - "+ErrorMass2);
+        setShowFormError("Error")
+      }
+      catch (error) {
+         setMassError(error.response.data.HTTPStatus.message);
+         setShowFormError("Error");
+     }
+    });
+}, []);
 ////////////////////////////////
    
 const handleDeleteCauseOfInjuryDetail = (index) => {
@@ -669,392 +751,283 @@ const DocumentBase64 = (data) => {
 
 
 //    //    //  //กดปุ่มส่งเคลม
-  const Claim = (event) => {
+async function Claim(event){
     event.preventDefault();
-    //console.log(causeOfInjuryDetails)
-    const Proold = JSON.stringify(procedure);
-    const Pronew = JSON.stringify(rows);
-
-// // console.log(rows)
-
-//     if (Proold === Pronew) {
-//       console.log("Not Edit")
-
     setShowSummitError();
     setMassSummitError();
     setMassSummit();
+     document.getElementById("my_modal_3").showModal();
       const Datevalue = dayjs(accidentDate.$d).format('YYYY-MM-DD');
       const signDate = dayjs(signSymptomsDate.$d).format('YYYY-MM-DD');
+      let HavecauseOfInjuryDetailsCount;
+      let HaveinjuryDetailsCount;
+ 
 
-      // if(PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER"){
-       // console.log(PatientInfo)
+      const injuryDetailsCount = injuryDetails.length;
+      const causeOfInjuryDetailsCount = causeOfInjuryDetails.length;
+      if(causeOfInjuryDetailsCount >= 1){
+         HavecauseOfInjuryDetailsCount = true;
+      }else{
+        HavecauseOfInjuryDetailsCount = false;
+      }
+      if(injuryDetailsCount >= 1){
+      HaveinjuryDetailsCount = true;
+      }else{
+     HaveinjuryDetailsCount = false;
+      }
+  
+
+    try {
+      await stepOne();
+      await stepTwo();
+      await stepThree();
+    } catch (error) {
+      console.log(error)
+      try{
+        const ErrorMass = error.config.url
+        const [ErrorMass1, ErrorMass2] = ErrorMass.split('v1/');
+        setMassSummitError(error.code +" - "+error.message +" - "+ErrorMass2);
+        setShowSummitError("Error")
+      }
+      catch (error) {
+        console.log(error)
+        //setMassSummitError(error.response.data.HTTPStatus.message);
+        setShowSummitError("Error");
+     }
+    }
+  
+
+
+   function stepOne() {
+    return new Promise((resolve, reject) => {
+ const PatientInfo = {
+     RefId : PatientInfo.RefId,
+     TransactionNo : PatientInfo.TransactionNo,
+     InsurerCode : PatientInfo.InsurerCode,
+     HN : PatientInfo.HN,
+     VN : PatientInfo.VN,
+     HaveAccidentCauseOfInjuryDetail : HavecauseOfInjuryDetailsCount,
+     HaveAccidentInjuryDetail : HaveinjuryDetailsCount,
+     AccidentDetailInfo : {
+                             AccidentDate : Datevalue,
+                             AccidentPlace :  accidentPlaceValue,
+                             CauseOfInjuryDetail :  causeOfInjuryDetails,
+                             InjuryDetail : injuryDetails,
+                          },
+          }
+
+        axios
+    .post(process.env.NEXT_PUBLIC_URL_SV + "v1/opd-discharge/SubmitAccident",PatientInfo
+
+         // console.log(PatientInfo)
+    )
+    .then((response) => {
+      //console.log(response.data);
+
+        resolve('Step 1 completed');
+    })
+    .catch((error) => {
+      console.log(error)
+      try{
+        const ErrorMass = error.config.url
+        const [ErrorMass1, ErrorMass2] = ErrorMass.split('v1/');
+        setMassSummitError(error.code +" - "+error.message +" - "+ErrorMass2);
+        setShowSummitError("Error")
+      }
+      catch (error) {
+        setMassSummitError(error.response.data.HTTPStatus.message);
+        setShowSummitError("Error");
+     }
+});
+
+
+      // ถ้ามีข้อผิดพลาดให้ใช้ reject(new Error('Error in Step 1'));
       
-      // document.getElementById("my_modal_3").showModal();
+    });
+  }
+  
+  function stepTwo() {
+    return new Promise((resolve, reject) => {
+
+      axios
+      .get(process.env.NEXT_PUBLIC_URกฟหL_SV + "v1/utils/illnessType/13")
+      .then((response) => {
+        console.log("2");
+        resolve('Step 2 completed');
+      })
+      .catch((error) => {
+              console.log(error)
+              try{
+                const ErrorMass = error.config.url
+                const [ErrorMass1, ErrorMass2] = ErrorMass.split('v1/');
+                setMassSummitError(error.code +" - "+error.message +" - "+ErrorMass2);
+                setShowSummitError("Error")
+              }
+              catch (error) {
+                setMassSummitError(error.response.data.HTTPStatus.message);
+                setShowSummitError("Error");
+             }
+   });
+
+      // ถ้ามีข้อผิดพลาดให้ใช้ reject(new Error('Error in Step 2'));
       
-        const Data = {
-          "PatientInfo" : {
-             InsurerCode: PatientInfo.InsurerCode,
-           RefId: PatientInfo.RefId,
-             TransactionNo : PatientInfo.TransactionNo,
-            PID : PatientInfo.PID,
-             HN : PatientInfo.HN,
-            GivenNameTH : PatientInfo.GivenNameTH,
-            SurnameTH: PatientInfo.SurnameTH,
-            DateOfBirth: PatientInfo.DateOfBirth,
-            PassportNumber: PatientInfo.PassportNumber,
-            IdType: PatientInfo.IdType,
-             VN:  PatientInfo.VN,
-            VisitDateTime: PatientInfo.VisitDateTime,   
-            AccidentEdit: true,
-            AccidentInfo: {
-              AccidentDate: Datevalue,
-              AccidentPlaceCode:  accidentPlaceValue,
-              AccidentInjuryWoundtypeCode:  woundType,
-              AccidentInjurySideCode: injurySide,
-             // WoundDetails: event.target.commentOfInjuryText.value,
-            },
-            PolicyTypeCode: PatientInfo.PolicyTypeCode,
-            ServiceSettingCode: PatientInfo.ServiceSettingCode, 
-             IllnessTypeCode: PatientInfo.IllnessTypeCode,
-            SurgeryTypeCode:  PatientInfo.SurgeryTypeCode,
-            ChiefComplaint: event.target.ChiefComplaint.value,
-            PresentIllness: event.target.PresentIllness.value,
-            AccidentCauseOver45Days : over45,
-            DxFreeText : event.target.DxFreeTextText.value,
-            FurtherClaimId : PatientInfo.FurtherClaimId,
-            FurtherClaimNo : PatientInfo.FurtherClaimNo,
+     });
+  }
+  
+  function stepThree() {
+    return new Promise((resolve, reject) => {
+
+      axios
+      .get(process.env.NEXT_PUBLIC_URL_SV + "v1/utils/illnessType/13")
+      .then((response) => {
+        console.log("3");
+        resolve('Step 3 completed');
+      })
+      .catch((error) => {
+        console.log(error)
+        try{
+          const ErrorMass = error.config.url
+          const [ErrorMass1, ErrorMass2] = ErrorMass.split('v1/');
+          setMassSummitError(error.code +" - "+error.message +" - "+ErrorMass2);
+          setShowSummitError("Error")
+        }
+        catch (error) {
+          setMassSummitError(error.response.data.HTTPStatus.message);
+          setShowSummitError("Error");
+       }
+   });
+
+      // ถ้ามีข้อผิดพลาดให้ใช้ reject(new Error('Error in Step 3'));
       
-            OtherInsurer : otherInsurer,
-            UnderlyingCondition : event.target.UnderlyingCondition.value,
-            PhysicalExam : event.target.PhysicalExam.value,
-            PlanOfTreatment : event.target.PlanOfTreatment.value,
-            ProcedureFreeText : event.target.ProcedureFreeText.value,
-            AdditionalNote :  event.target.AdditionalNote.value,
-            SignSymptomsDate : signDate,
-            ComaScore : comaScore,
-            ExpectedDayOfRecovery : expectedDayOfRecovery,
-            AlcoholRelated : alcoholRelated,
-            Pregnant : pregnant,
-            PrivateCase : privateCase,
+     });
+  }
+
+
+
+
+
+        // const Data = {
+        //   "PatientInfo" : {
+          //    InsurerCode: PatientInfo.InsurerCode,
+          //  RefId: PatientInfo.RefId,
+          //    TransactionNo : PatientInfo.TransactionNo,
+          //   PID : PatientInfo.PID,
+          //    HN : PatientInfo.HN,
+          //   GivenNameTH : PatientInfo.GivenNameTH,
+          //   SurnameTH: PatientInfo.SurnameTH,
+          //   DateOfBirth: PatientInfo.DateOfBirth,
+          //   PassportNumber: PatientInfo.PassportNumber,
+          //   IdType: PatientInfo.IdType,
+          //    VN:  PatientInfo.VN,
+          //   VisitDateTime: PatientInfo.VisitDateTime,   
+            // PolicyTypeCode: PatientInfo.PolicyTypeCode,
+            // ServiceSettingCode: PatientInfo.ServiceSettingCode, 
+            //  IllnessTypeCode: PatientInfo.IllnessTypeCode,
+            // SurgeryTypeCode:  PatientInfo.SurgeryTypeCode,
+            // ChiefComplaint: event.target.ChiefComplaint.value,
+            // PresentIllness: event.target.PresentIllness.value,
+            // AccidentCauseOver45Days : over45,
+            // DxFreeText : event.target.DxFreeTextText.value,
+            // FurtherClaimId : PatientInfo.FurtherClaimId,
+            // FurtherClaimNo : PatientInfo.FurtherClaimNo,
+      
+            // OtherInsurer : otherInsurer,
+            // UnderlyingCondition : event.target.UnderlyingCondition.value,
+            // PhysicalExam : event.target.PhysicalExam.value,
+            // PlanOfTreatment : event.target.PlanOfTreatment.value,
+            // ProcedureFreeText : event.target.ProcedureFreeText.value,
+            // AdditionalNote :  event.target.AdditionalNote.value,
+            // SignSymptomsDate : signDate,
+            // ComaScore : comaScore,
+            // ExpectedDayOfRecovery : expectedDayOfRecovery,
+            // AlcoholRelated : alcoholRelated,
+            // Pregnant : pregnant,
+            // PrivateCase : privateCase,
             // PreviousTreatmentInfo : {
             //   PreviousTreatment : previousTreatment
             // }
-            ProcedureEdit : true,
-            ProcedureInfo : {
-                      Procedure : 
-                           procedure,
-                      
-                    }
+          //   HaveProcedure : true,
+
       
-          },
-        };
+          // },
+        // };
       
-        console.log(Data.PatientInfo)
-    //     axios
-    //       .post(process.env.NEXT_PUBLIC_URL_PD2 + process.env.NEXT_PUBLIC_URL_sentOPDDischarge,
-    //         Data
+       
+      //   axios
+      //     .post(process.env.NEXT_PUBLIC_URL_PD2 + process.env.NEXT_PUBLIC_URL_SubmitOPDDischargeToAIA,
+      //       Data
         
-    //       )
-    //       .then((response) => {
-    //         //setOrderItemz(response.data);
-    //         console.log(response)
-    //        console.log(response.data.HTTPStatus.message)
-    //        setMassSummit(response.data.HTTPStatus.message)
+      //     )
+      //     .then((response) => {
+      //       //setOrderItemz(response.data);
+      //       console.log(response)
+      //      console.log(response.data.HTTPStatus.message)
+      //      setMassSummit(response.data.HTTPStatus.message)
       
-    //       })
-    //       .catch((error) => {
-    //         console.log(error)
-    //         try{
-    //           const ErrorMass = error.config.url
-    //           const [ErrorMass1, ErrorMass2] = ErrorMass.split('v1/');
-    //           setMassSummitError(error.code +" - "+error.message +" - "+ErrorMass2);
-    //           setShowSummitError("Error")
-    //         }
-    //         catch (error) {
-    //           setMassSummitError(error.response.data.HTTPStatus.message);
-    //           setShowSummitError("Error");
-    //        }
-    //   });
-    // }
-  }
+      //     })
+      //     .catch((error) => {
+      //       console.log(error)
+      //       try{
+      //         const ErrorMass = error.config.url
+      //         const [ErrorMass1, ErrorMass2] = ErrorMass.split('v1/');
+      //         setMassSummitError(error.code +" - "+error.message +" - "+ErrorMass2);
+      //         setShowSummitError("Error")
+      //       }
+      //       catch (error) {
+      //         setMassSummitError(error.response.data.HTTPStatus.message);
+      //         setShowSummitError("Error");
+      //      }
+      // });
    
-//       }else{
+      //  }else{
       
-//         document.getElementById("my_modal_3").showModal();
+       // document.getElementById("my_modal_3").showModal();
       
-//         const Data = {
-//           "PatientInfo" : {
-//             InsurerCode: PatientInfo.InsurerCode,
-//             RefId: PatientInfo.RefId,
-//             TransactionNo : PatientInfo.TransactionNo,
-//             PID : PatientInfo.PID,
-//             HN : PatientInfo.HN,
-//             GivenNameTH : PatientInfo.GivenNameTH,
-//             SurnameTH: PatientInfo.SurnameTH,
-//             DateOfBirth: PatientInfo.DateOfBirth,
-//             PassportNumber: PatientInfo.PassportNumber,
-//             IdType: PatientInfo.IdType,
-//             VN:  PatientInfo.VN,
-//             VisitDateTime: PatientInfo.VisitDateTime,
-//             AccidentDate: Datevalue,
-//             AccidentPlaceCode:  accidentPlaceValue,
-//             AccidentInjuryWoundtypeCode:  woundType,
-//             AccidentInjurySideCode: injurySide,
-//             WoundDetails: "",
-//             PolicyTypeCode: PatientInfo.PolicyTypeCode,
-//             ServiceSettingCode: PatientInfo.ServiceSettingCode, 
-//             IllnessTypeCode: PatientInfo.IllnessTypeCode,
-//             SurgeryTypeCode:  PatientInfo.SurgeryTypeCode,
-//             ChiefComplaint: event.target.ChiefComplaint.value,
-//             PresentIllness: event.target.PresentIllness.value,
-//             AccidentCauseOver45Days : over45,
-//             DxFreeText : event.target.DxFreeTextText.value,
-//             FurtherClaimId : PatientInfo.FurtherClaimId,
-//             FurtherClaimNo : PatientInfo.FurtherClaimNo,
+
+
+      //       WoundDetails: "",
+
       
-//             OtherInsurer : otherInsurer,
-//             UnderlyingCondition : event.target.UnderlyingCondition.value,
-//             PhysicalExam : event.target.PhysicalExam.value,
-//             PlanOfTreatment : event.target.PlanOfTreatment.value,
-//             ProcedureFreeText : event.target.ProcedureFreeText.value,
-//             AdditionalNote :  event.target.AdditionalNote.value,
-//             SignSymptomsDate : signDate,
-//             ComaScore : comaScore,
-//             ExpectedDayOfRecovery : expectedDayOfRecovery,
-//             AlcoholRelated : alcoholRelated,
-//             Pregnant : pregnant,
-//             PrivateCase : privateCase,
-//             ProcedureEdit : true,
-//             ProcedureInfo : {
-//                       Procedure : 
-//                       rows,
-                      
-//                     }
       
-//           },
-//         };
+      //     },
+      //   };
       
-//         console.log(Data.PatientInfo)
+      //   console.log(Data.PatientInfo)
       
-//         axios
-//           .post(process.env.NEXT_PUBLIC_URL_PD2 + process.env.NEXT_PUBLIC_URL_sentOPDDischarge,
-//             Data
+      //   axios
+      //     .post(process.env.NEXT_PUBLIC_URL_PD2 + process.env.NEXT_PUBLIC_URL_sentOPDDischarge,
+      //       Data
         
-//           )
-//           .then((response) => {
-//             //setOrderItemz(response.data);
+      //     )
+      //     .then((response) => {
+      //       //setOrderItemz(response.data);
       
       
       
-//             console.log(response)
-//        //     console.log(response.data.MessageTh)
-//             setMassSummit(response.data.MessageTh)
+      //       console.log(response)
+      //  //     console.log(response.data.MessageTh)
+      //       setMassSummit(response.data.MessageTh)
       
       
       
-//           })
-//           .catch((error) => {
-//             console.log(error)
-//             try{
-//               const ErrorMass = error.config.url
-//               const [ErrorMass1, ErrorMass2] = ErrorMass.split('v1/');
-//               setMassSummitError(error.code +" - "+error.message +" - "+ErrorMass2);
-//               setShowSummitError("Error")
-//             }
-//             catch (error) {
-//               setMassSummitError(error.response.data.HTTPStatus.message);
-//               setShowSummitError("Error");
-//            }
-//       });
+      //     })
+      //     .catch((error) => {
+      //       console.log(error)
+      //       try{
+      //         const ErrorMass = error.config.url
+      //         const [ErrorMass1, ErrorMass2] = ErrorMass.split('v1/');
+      //         setMassSummitError(error.code +" - "+error.message +" - "+ErrorMass2);
+      //         setShowSummitError("Error")
+      //       }
+      //       catch (error) {
+      //         setMassSummitError(error.response.data.HTTPStatus.message);
+      //         setShowSummitError("Error");
+      //      }
+      // });
       
       
-//       }
+  //  }
 
-
-// // console.log(ProcedureInfo)
-
-//     } else {
-//       console.log("Edit")
-
-
-//       const Datevalue = dayjs(accidentDate.$d).format('YYYY-MM-DD');
-//       const signDate = dayjs(signSymptomsDate.$d).format('YYYY-MM-DD');
-
-//       if(PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER"){
-//        // console.log(PatientInfo)
-      
-//        document.getElementById("my_modal_3").showModal();
-      
-//         const Data = {
-//           "PatientInfo" : {
-//             InsurerCode: PatientInfo.InsurerCode,
-//             RefId: PatientInfo.RefId,
-//             TransactionNo : PatientInfo.TransactionNo,
-//             PID : PatientInfo.PID,
-//             HN : PatientInfo.HN,
-//             GivenNameTH : PatientInfo.GivenNameTH,
-//             SurnameTH: PatientInfo.SurnameTH,
-//             DateOfBirth: PatientInfo.DateOfBirth,
-//             PassportNumber: PatientInfo.PassportNumber,
-//             IdType: PatientInfo.IdType,
-//             VN:  PatientInfo.VN,
-//             VisitDateTime: PatientInfo.VisitDateTime,
-//             AccidentDate: Datevalue,
-//             AccidentPlaceCode:  accidentPlaceValue,
-//             AccidentInjuryWoundtypeCode:  woundType,
-//             AccidentInjurySideCode: injurySide,
-//             WoundDetails: event.target.commentOfInjuryText.value,
-//             PolicyTypeCode: PatientInfo.PolicyTypeCode,
-//             ServiceSettingCode: PatientInfo.ServiceSettingCode, 
-//             IllnessTypeCode: PatientInfo.IllnessTypeCode,
-//             SurgeryTypeCode:  PatientInfo.SurgeryTypeCode,
-//             ChiefComplaint: event.target.ChiefComplaint.value,
-//             PresentIllness: event.target.PresentIllness.value,
-//             AccidentCauseOver45Days : over45,
-//             DxFreeText : event.target.DxFreeTextText.value,
-//             FurtherClaimId : PatientInfo.FurtherClaimId,
-//             FurtherClaimNo : PatientInfo.FurtherClaimNo,
-      
-//             OtherInsurer : otherInsurer,
-//             UnderlyingCondition : event.target.UnderlyingCondition.value,
-//             PhysicalExam : event.target.PhysicalExam.value,
-//             PlanOfTreatment : event.target.PlanOfTreatment.value,
-//             ProcedureFreeText : event.target.ProcedureFreeText.value,
-//             AdditionalNote :  event.target.AdditionalNote.value,
-//             SignSymptomsDate : signDate,
-//             ComaScore : comaScore,
-//             ExpectedDayOfRecovery : expectedDayOfRecovery,
-//             AlcoholRelated : alcoholRelated,
-//             Pregnant : pregnant,
-//             PrivateCase : privateCase,
-//             ProcedureInfo : {
-//                       ProcedureEdit : false,
-//                       Procedure : 
-//                            procedure,
-                      
-//                     }
-      
-//           },
-//         };
-      
-//         console.log(Data.PatientInfo)
-//         axios
-//           .post(process.env.NEXT_PUBLIC_URL_PD2 + process.env.NEXT_PUBLIC_URL_sentOPDDischarge,
-//             Data
-        
-//           )
-//           .then((response) => {
-//             //setOrderItemz(response.data);
-//             console.log(response.data.Message)
-//             setMassSummit(response.data.Message)
-      
-//           })
-//           .catch((error) => {
-//             console.log(error)
-//             try{
-//               const ErrorMass = error.config.url
-//               const [ErrorMass1, ErrorMass2] = ErrorMass.split('v1/');
-//               setMassSummitError(error.code +" - "+error.message +" - "+ErrorMass2);
-//               setShowSummitError("Error")
-//             }
-//             catch (error) {
-//               setMassSummitError(error.response.data.HTTPStatus.message);
-//               setShowSummitError("Error");
-//            }
-//       });
-      
-      
-//       }else{
-      
-//         document.getElementById("my_modal_3").showModal();
-      
-//         const Data = {
-//           "PatientInfo" : {
-//             InsurerCode: PatientInfo.InsurerCode,
-//             RefId: PatientInfo.RefId,
-//             TransactionNo : PatientInfo.TransactionNo,
-//             PID : PatientInfo.PID,
-//             HN : PatientInfo.HN,
-//             GivenNameTH : PatientInfo.GivenNameTH,
-//             SurnameTH: PatientInfo.SurnameTH,
-//             DateOfBirth: PatientInfo.DateOfBirth,
-//             PassportNumber: PatientInfo.PassportNumber,
-//             IdType: PatientInfo.IdType,
-//             VN:  PatientInfo.VN,
-//             VisitDateTime: PatientInfo.VisitDateTime,
-//             AccidentDate: Datevalue,
-//             AccidentPlaceCode:  accidentPlaceValue,
-//             AccidentInjuryWoundtypeCode:  woundType,
-//             AccidentInjurySideCode: injurySide,
-//             WoundDetails: "",
-//             PolicyTypeCode: PatientInfo.PolicyTypeCode,
-//             ServiceSettingCode: PatientInfo.ServiceSettingCode, 
-//             IllnessTypeCode: PatientInfo.IllnessTypeCode,
-//             SurgeryTypeCode:  PatientInfo.SurgeryTypeCode,
-//             ChiefComplaint: event.target.ChiefComplaint.value,
-//             PresentIllness: event.target.PresentIllness.value,
-//             AccidentCauseOver45Days : over45,
-//             DxFreeText : event.target.DxFreeTextText.value,
-//             FurtherClaimId : PatientInfo.FurtherClaimId,
-//             FurtherClaimNo : PatientInfo.FurtherClaimNo,
-      
-//             OtherInsurer : otherInsurer,
-//             UnderlyingCondition : event.target.UnderlyingCondition.value,
-//             PhysicalExam : event.target.PhysicalExam.value,
-//             PlanOfTreatment : event.target.PlanOfTreatment.value,
-//             ProcedureFreeText : event.target.ProcedureFreeText.value,
-//             AdditionalNote :  event.target.AdditionalNote.value,
-//             SignSymptomsDate : signSymptomsDate,
-//             ComaScore : comaScore,
-//             ExpectedDayOfRecovery : expectedDayOfRecovery,
-//             AlcoholRelated : alcoholRelated,
-//             Pregnant : pregnant,
-//             PrivateCase : privateCase,
-//             ProcedureInfo : {
-//                       ProcedureEdit : false,
-//                       Procedure : 
-//                       rows,
-                      
-//                     }
-      
-//           },
-//         };
-      
-//         console.log(Data.PatientInfo)
-      
-//         axios
-//           .post(process.env.NEXT_PUBLIC_URL_PD2 + process.env.NEXT_PUBLIC_URL_sentOPDDischarge,
-//             Data
-        
-//           )
-//           .then((response) => {
-//             //setOrderItemz(response.data);
-      
-      
-      
-//             console.log(response.data.Message)
-//             setMassSummit(response.data.Message)
-      
-      
-      
-//           })
-//           .catch((error) => {
-//             console.log(error)
-//             try{
-//               const ErrorMass = error.config.url
-//               const [ErrorMass1, ErrorMass2] = ErrorMass.split('v1/');
-//               setMassSummitError(error.code +" - "+error.message +" - "+ErrorMass2);
-//               setShowSummitError("Error")
-//             }
-//             catch (error) {
-//               setMassSummitError(error.response.data.HTTPStatus.message);
-//               setShowSummitError("Error");
-//            }
-//       });
-      
-      
-//       }
-//     }
 
 
 
@@ -1068,7 +1041,7 @@ const DocumentBase64 = (data) => {
     //   router.push('/aia/opd/checkClaimStatus');
     // }, 5000);
 
-  // };
+   };
 
 
   const handleUpload = async () => {
@@ -1096,6 +1069,7 @@ const DocumentBase64 = (data) => {
      formData.append('TransactionNo', PatientInfo.TransactionNo);
      formData.append('HN', PatientInfo.HN);
      formData.append('VN', PatientInfo.VN); 
+    formData.append('insurerid', 13); 
      formData.append('DocumenttypeCode', "001");  
      setMsg(<span className="loading loading-spinner text-info loading-lg"></span>);
      setProgress(prevState => {
@@ -1643,7 +1617,7 @@ const DocumentBase64 = (data) => {
                 <div className="w-1/5 ">
                 <LocalizationProvider dateAdapter={AdapterDayjs} >
       <DemoItem  >
-        <DesktopDatePicker    format="YYYY-MM-DD"/>
+        <DesktopDatePicker value={accidentDate} onChange={(newAccidentDate) => setAccidentDate(newAccidentDate)} required    format="YYYY-MM-DD"/>
       </DemoItem>
     </LocalizationProvider>
                 </div>
@@ -1685,12 +1659,13 @@ const DocumentBase64 = (data) => {
         </TableHead>
         <TableBody>
           {causeOfInjuryDetails.map((cause, index) => (
+                       cause.CauseOfInjury !== "" &&(
             <TableRow key={index} className=" bg-neutral text-sm">
               <TableCell>{index+1}</TableCell>
               <TableCell >
               {summitEditAcc === "true" ? (
                 <>
-                <input type="text" className="rounded-full px-3 py-2 border-2 bg-base-100 break-all w-full" value={cause.CauseOfInjury} onChange={(e) => handleChange(index,e)}  />
+                <input type="text" className="rounded-full px-3 py-2 border-2 bg-base-100 break-all w-full" value={cause.CauseOfInjury} onChange={(e) => handleChangeA1(index,e)}  />
                 </>
               ) : (
                 <>
@@ -1702,7 +1677,16 @@ const DocumentBase64 = (data) => {
               <TableCell>
               {summitEditAcc === "true" ? (
                 <>
-                <input type="text" className="rounded-full px-3 py-2 border-2 bg-base-100 break-all w-full" value={cause.CommentOfInjury} onChange={(e) => handleChange2(index,e)}  />
+                              <TextField
+              type="text"
+              className="bg-base-100 w-full m-2"
+              value={cause.CommentOfInjury}
+              onChange={(e) => handleChangeA2(index,e)} 
+                inputProps={{ maxLength: 200 }}
+                placeholder="CommentOfInjury"
+                multiline
+                rows={4}
+              />
                 </>
               ) : (
                 <>
@@ -1716,7 +1700,7 @@ const DocumentBase64 = (data) => {
               </TableCell>
                    : "" }
             </TableRow>
-          ))}
+         ) ))}
            {summitEditAcc === "true" ? (
             <>
           
@@ -1790,18 +1774,93 @@ const DocumentBase64 = (data) => {
         </TableHead>
         <TableBody>
           {injuryDetails.map((injury, index) => (
+                 injury.InjuryArea !== "" &&(
             <TableRow key={index} className=" bg-neutral text-sm">
               <TableCell>{index+1}</TableCell>
-              <TableCell ><div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">{injury.InjuryArea ? injury.InjuryArea : (<>&nbsp;</>)}</div></TableCell>
-              <TableCell><div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">{injury.InjurySide ? injury.InjurySide : (<>&nbsp;</>)}</div></TableCell>
-              <TableCell><div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">{injury.WoundType ? injury.WoundType : (<>&nbsp;</>)}</div></TableCell>
+
+
+            <TableCell >
+              {summitEditAcc === "true" ? (
+                <>
+               <input type="text" className="rounded-full px-3 py-2 border-2 bg-base-100 break-all w-full" value={injury.InjuryArea} onChange={(e) => handleChangeB1(index,e)}  /> 
+                </>
+              ) : (
+                <>
+                 <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">{injury.InjuryArea ? injury.InjuryArea : (<>&nbsp;</>)}</div>
+                </>
+              )}
+                </TableCell>
+              <TableCell>
+              {summitEditAcc === "true" ? (
+                <>
+              <FormControl fullWidth>
+                      <Select
+                      className="bg-base-100 w-full m-2"
+                        labelId="policyTypeValue"
+                        id="demo-simple-select"
+                        value={injury.InjurySide}
+                        label=""
+                        onChange={(e) => handleChangeB2(index,e)}
+                        required
+                      >
+                        {injurySideType
+                          ? injurySideType.Result.map((injury, index) => (
+                              <MenuItem
+                                key={index}
+                                value={injury.injurysidecode}
+                              >
+                            {injury.injurysidecode} - {injury.injurysidename}
+                              </MenuItem>
+                            ))
+                          : ""}
+                      </Select>
+                    </FormControl>
+                </>
+              ) : (
+                <>
+                 <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">{injury.InjurySide ? injury.InjurySide : (<>&nbsp;</>)}</div>
+                </>
+              )}
+                </TableCell>
+              <TableCell>
+              {summitEditAcc === "true" ? (
+                <>
+              <FormControl fullWidth>
+                      <Select
+                      className="bg-base-100 w-full m-2"
+                        labelId="policyTypeValue"
+                        id="demo-simple-select"
+                        value={injury.WoundType}
+                        label=""
+                        onChange={(e) => handleChangeB3(index,e)}
+                        required
+                      >
+                        {injuryWoundType
+                          ? injuryWoundType.Result.map((Wound, index) => (
+                              <MenuItem
+                                key={index}
+                                value={Wound.woundtypecode}
+                              >
+                            {Wound.woundtypecode} - {Wound.woundtypename}
+                              </MenuItem>
+                            ))
+                          : ""}
+                      </Select>
+                    </FormControl>
+                </>
+              ) : (
+                <>
+                  <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">{injury.WoundType ? injury.WoundType : (<>&nbsp;</>)}</div>
+                </>
+              )}
+                </TableCell>
               {summitEditAcc === "true" ?
               <TableCell>
                 <Button onClick={() => handleDeleteInjuryDetail(index)} className="btn btn-error text-base-100 text-xl"><FaCircleMinus /></Button>
               </TableCell>
                : "" }
             </TableRow>
-          ))}
+         ) ))}
            {summitEditAcc === "true" ? (
             <>
           
@@ -1816,26 +1875,55 @@ const DocumentBase64 = (data) => {
                 value={newInjuryDetail.InjuryArea}
                 onChange={(e) => setNewInjuryDetail({ ...newInjuryDetail, InjuryArea: e.target.value })}
                 placeholder="InjuryArea"
-              //  required
+
               />
             </TableCell>
             <TableCell>
-              <TextField
-              className="bg-base-100 w-full"
-                value={newInjuryDetail.InjurySide}
-                onChange={(e) => setNewInjuryDetail({ ...newInjuryDetail, InjurySide: e.target.value })}
-                placeholder="InjurySide"
-             //   required
-              />
+            <FormControl fullWidth>
+                      <Select
+                      className="bg-base-100 w-full m-2"
+                        labelId="policyTypeValue"
+                        id="demo-simple-select"
+                        value={newInjuryDetail.InjurySide}
+                        label=""
+                        onChange={(e) => setNewInjuryDetail({ ...newInjuryDetail, InjurySide: e.target.value })}
+
+                      >
+                        {injurySideType
+                          ? injurySideType.Result.map((injury, index) => (
+                              <MenuItem
+                                key={index}
+                                value={injury.injurysidecode}
+                              >
+                            {injury.injurysidecode} - {injury.injurysidename}
+                              </MenuItem>
+                            ))
+                          : ""}
+                      </Select>
+                    </FormControl>
             </TableCell>
             <TableCell>
-              <TextField
-              className="bg-base-100 w-full"
-                value={newInjuryDetail.WoundType}
-                onChange={(e) => setNewInjuryDetail({ ...newInjuryDetail, WoundType: e.target.value })}
-                placeholder="WoundType"
-             //   required
-              />
+            <FormControl fullWidth>
+                      <Select
+                      className="bg-base-100 w-full m-2"
+                        labelId="policyTypeValue"
+                        id="demo-simple-select"
+                        value={newInjuryDetail.WoundType}
+                        label=""
+                        onChange={(e) => setNewInjuryDetail({ ...newInjuryDetail, WoundType: e.target.value })}
+                      >
+                        {injuryWoundType
+                          ? injuryWoundType.Result.map((Wound, index) => (
+                              <MenuItem
+                                key={index}
+                                value={Wound.woundtypecode}
+                              >
+                            {Wound.woundtypecode} - {Wound.woundtypename}
+                              </MenuItem>
+                            ))
+                          : ""}
+                      </Select>
+                    </FormControl>
             </TableCell>
             {(newInjuryDetail.InjuryArea && newInjuryDetail.InjurySide && newInjuryDetail.WoundType)  ? (
               <>
@@ -1875,12 +1963,11 @@ const DocumentBase64 = (data) => {
                     <tr className="text-base-100 bg-primary py-8 text-sm w-full text-center">
                       <th></th>
                       <th className="">วันเวลาที่วัดสัญญาณชีพ</th>
-                      <th>ค่าความดันโลหิตตัวล่าง</th>
                       <th>การเต้นของชีพจร</th>
                       <th>ความเข้มข้นของออกซิเจนในเลือด</th>
                       <th>คะแนนระดับของความเจ็บปวด</th>
                       <th>อัตราการหายใจ</th>
-                      <th>ค่าความดันโลหิตตัวบน</th>
+                      <th>ค่าความดันโลหิต</th>
                       <th>อุณหภูมิร่างกาย</th>
                     </tr>
                   </thead>
@@ -1894,11 +1981,6 @@ const DocumentBase64 = (data) => {
                             >
                               <td>{vts.VitalSignEntryDateTime ? index + 1 : ""}</td>
                               <td><div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">{vts.VitalSignEntryDateTime}</div></td>
-                              <td>
-                              <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                                   {vts.DiastolicBp === "" ? (<>&nbsp;</>) : vts.DiastolicBp + " mmHg"}
-                                  </div>
-                              </td>
                               <td>
                               <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
                                   {vts.HeartRate === "" ? (<>&nbsp;</>) : vts.HeartRate + " bpm"}
@@ -1921,7 +2003,7 @@ const DocumentBase64 = (data) => {
                               </td>
                               <td>
                               <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                                  {vts.SystolicBp === "" ? (<>&nbsp;</>) : vts.SystolicBp + " mmHg"}
+                                  {vts.SystolicBp === "" ? (<>&nbsp;</>) : vts.SystolicBp} / {vts.DiastolicBp === "" ? (<>&nbsp;</>) : vts.DiastolicBp}
                                   </div>
                               </td>
                               <td>

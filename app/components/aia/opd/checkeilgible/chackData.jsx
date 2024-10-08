@@ -78,7 +78,7 @@ export default function chackData() {
       VisitDateTime: ReDux.DataTran.Data.VisitDateTime,
       AccidentDate: ReDux.DataTran.Data.AccidentDate,
     };
-    console.log(PatientInfo);
+   // console.log(PatientInfo);
     axios
       .post(
         process.env.NEXT_PUBLIC_URL_PD +
@@ -90,7 +90,7 @@ export default function chackData() {
       )
       .then((response) => {
         setFurtherClaim(response.data);
-        console.log(response.data);
+       // console.log(response.data);
       })
       .catch((error) => {
         console.log(error);
@@ -262,9 +262,7 @@ export default function chackData() {
   useEffect(() => {
     axios
       .get(
-        process.env.NEXT_PUBLIC_URL_PD +
-          process.env.NEXT_PUBLIC_URL_ServiceSetting +
-          InsurerCode
+        process.env.NEXT_PUBLIC_URL_PD + process.env.NEXT_PUBLIC_URL_ServiceSetting + InsurerCode
       )
       .then((response) => {
         setServiceSetting(response.data);
@@ -310,6 +308,7 @@ export default function chackData() {
         )
         .then((response) => {
           setPost(response.data);
+         // console.log(response.data)
         })
         .catch((error) => {
           // console.error("Error", err)
@@ -332,14 +331,14 @@ export default function chackData() {
     setShowbutton();
     setShowFormCheckEligibleError();
     setSelectedValue();
-    // console.log(event.target.selectVN.value);
+
 
     const [VNselectVN, VisitDateselectVN, AccidentDateselectVN] =
       event.target.selectVN.value.split(" | ");
     //const [YearVN, MonthVN, DayVN] = VisitDateselectVN.split('-');
     const Acc = VisitDateselectVN.split(" ");
     // setVisitDate(VisitDateTime)
-    setAccidentDate(Acc[0]);
+    setAccidentDate(AccidentDateselectVN);
     setVisitDateTime(VisitDateselectVN);
     setDetailVN(VNselectVN);
 
@@ -356,14 +355,14 @@ export default function chackData() {
       IdType: ReDux.Patient.Data.IdType,
       VN: VNselectVN,
       VisitDateTime: VisitDateselectVN,
-      //VisitDateTime : "2024-10-01 00:00",
-      AccidentDate: Acc[0],
+      // AccidentDate: Acc[0],
+      AccidentDate: AccidentDateselectVN,
       PolicyTypeCode: policyTypeValue,
       ServiceSettingCode: statusValue,
       IllnessTypeCode: illnessTypeValue,
       SurgeryTypeCode: surgeryTypeValue,
     };
-    // console.log(PatientInfo)
+   //  console.log(PatientInfo)
     try {
       document.getElementById("my_modal_3").showModal();
       // try {
@@ -377,7 +376,7 @@ export default function chackData() {
 
       if (response.data.HTTPStatus.statusCode < 400) {
         setResult(response.data);
-        //  console.log(response.data)
+       //   console.log(response.data)
         setShowFormCheckEligibleError();
       } else {
         setShowFormCheckEligibleError("Error");
@@ -773,19 +772,6 @@ export default function chackData() {
                               )}
                             </tr>
                           ))
-
-                          // ) : (
-                          //   coverage.MessageList.map((message, msgIndex) => (
-                          //     <tr key={`${index}-${msgIndex}`}>
-
-                          //       <td>{coverage.Type}</td>
-                          //       <td>{message.PolicyNo}</td>
-                          //       <td>{message.PlanName}</td>
-                          //       <td>{message.MessageTh}</td>
-
-                          //     </tr>
-                          //   ))
-                          // )
                       )
                     ) : (
                       <tr>
@@ -810,24 +796,24 @@ export default function chackData() {
                   <div className="rounded-md ">&nbsp;</div>
                 </div>
             {result ? ( 
-               result.Result.InsuranceData.CoverageClaimStatus === true ? ( 
+                 result.Result.InsuranceData.CoverageList.map(
+                  (coverage , index) => 
+                    coverage.Status === true ? ( 
+                      <div Key={index}>
                     <div className="modal-action">
                       <button
                         className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100"
                         onClick={confirmButton}
                         // onClick={() =>
                         //   document.getElementById("my_modal_2").showModal()
-                        // }
+                        // }  
                       >
                         ยืนยันการเคลม
                       </button>
                     </div>
-             ) : (
-                    ""
-                  )
-                ) : (
-                  ""
-                )}
+                    </div>
+            ) :  ""  )) : ""
+          }
               </>
             )}
           </form>
