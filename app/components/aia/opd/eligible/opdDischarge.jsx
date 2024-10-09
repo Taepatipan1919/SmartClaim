@@ -62,7 +62,6 @@ export default function Page({data}) {
  const [billing, setBilling] = useState();
   const [orderItemz, setOrderItemz] = useState();
   const [result, setResult] = useState("");
-  const [procedure, setProcedure] = useState("");
   const [showModal, setShowModal] = useState(false);
   const router = useRouter();
   const [bmi, setBmi] = useState("");
@@ -79,6 +78,7 @@ export default function Page({data}) {
   const [massSummit, setMassSummit] = useState("");
   const [otherInsurer, setOtherInsurer] = useState("false");
   const [rows, setRows] = useState("");
+  const [procedure, setProcedure] = useState("")
   const [causeOfInjuryDetails, setCauseOfInjuryDetails] = useState("");
   const [injuryDetails, setInjuryDetails] = useState("");
   const [newRow, setNewRow] = useState({ Icd9: '', ProcedureName: '', ProcedureDate: '' });
@@ -112,7 +112,8 @@ export default function Page({data}) {
   const Over45 = (event) => {
     setOver45(event.target.value);
   }
-const PatientInfo = {
+const PatientInfoData = {
+  PatientInfo : {
     InsurerCode: data.DataTran.Data.InsurerCode, 
     RefId: data.DataTran.Data.RefId,
     TransactionNo: data.DataTran.Data.TransactionNo,
@@ -138,6 +139,7 @@ const PatientInfo = {
     SurgeryTypeCode:  data.DataTran.Data.SurgeryTypeCode,
     FurtherClaimNo : data.DataTran.Data.FurtherClaimNo,
     FurtherClaimId : data.DataTran.Data.FurtherClaimId,
+    }
   }
   useEffect(() => {
   if (inputRef.current) {
@@ -148,10 +150,10 @@ const PatientInfo = {
   setBillList("");
   axios
     .post(process.env.NEXT_PUBLIC_URL_PD2 + process.env.NEXT_PUBLIC_URL_getlistDocumentName,{
-      RefId : PatientInfo.RefId,
-      TransactionNo : PatientInfo.TransactionNo,
-      HN : PatientInfo.HN,
-      VN : PatientInfo.VN,
+      RefId : PatientInfoData.PatientInfo.RefId,
+      TransactionNo : PatientInfoData.PatientInfo.TransactionNo,
+      HN : PatientInfoData.PatientInfo.HN,
+      VN : PatientInfoData.PatientInfo.VN,
     })
     .then((response) => {
       setBillList(response.data);
@@ -173,7 +175,7 @@ const PatientInfo = {
 
   useEffect(() => {
         axios
-      .get(process.env.NEXT_PUBLIC_URL_SV + process.env.NEXT_PUBLIC_URL_PatientInfoByPID + PatientInfo.PID)
+      .get(process.env.NEXT_PUBLIC_URL_SV + process.env.NEXT_PUBLIC_URL_PatientInfoByPID + PatientInfoData.PatientInfo.PID)
       .then((response) => {
         setPatientInfoByPID(response.data);
         //console.log(response.data)
@@ -197,9 +199,9 @@ const PatientInfo = {
 
   useEffect(() => {
     axios
-    .post(process.env.NEXT_PUBLIC_URL_SV + process.env.NEXT_PUBLIC_URL_getOPDDischargeVisit,{
-      PatientInfo
-    })
+    .post(process.env.NEXT_PUBLIC_URL_SV + process.env.NEXT_PUBLIC_URL_getOPDDischargeVisit,
+      PatientInfoData
+    )
     .then((response) => {
       setVisit(response.data);
       //console.log(response.data)
@@ -231,11 +233,11 @@ const PatientInfo = {
  
 
   useEffect(() => {
-    const dateValue = dayjs(PatientInfo.AccidentDate);
+    const dateValue = dayjs(PatientInfoData.PatientInfo.AccidentDate);
     setAccidentDate(dateValue);
     axios
-    .post(process.env.NEXT_PUBLIC_URL_PD + process.env.NEXT_PUBLIC_URL_getOPDDischargeAccident,{
-       PatientInfo
+    .post(process.env.NEXT_PUBLIC_URL_PD + process.env.NEXT_PUBLIC_URL_getOPDDischargeAccident,
+       PatientInfoData
     //  "PatientInfo": {
     // "InsurerCode": 13, 
     // "RefId":"oljhnklefhbilubsEFJKLb651",
@@ -254,12 +256,17 @@ const PatientInfo = {
     // "PresentIllness":"PI"
     
     // }
-    })
+    )
     .then((response) => {
-//      console.log(PatientInfo.AccidentDate)
+//      console.log(PatientInfoData.PatientInfo.AccidentDate)
       setAccidentDetail(response.data);
-      setCauseOfInjuryDetails(response.data.Result.AccidentDetailInfo.CauseOfInjuryDetail)
-      setInjuryDetails(response.data.Result.AccidentDetailInfo.InjuryDetail)
+      if(response.data.Result.AccidentDetailInfo.CauseOfInjuryDetail[0].CauseOfInjury){
+        setCauseOfInjuryDetails(response.data.Result.AccidentDetailInfo.CauseOfInjuryDetail)
+      }
+      if(response.data.Result.AccidentDetailInfo.InjuryDetail[0].InjuryArea){
+        setInjuryDetails(response.data.Result.AccidentDetailInfo.InjuryDetail)
+      }
+     
 
     })
     .catch((error) => {
@@ -283,6 +290,7 @@ useEffect(() => {
   .then((response) => {
     setOver45Days(response.data);
 
+
   })
   .catch((error) => {
     console.log(error)
@@ -300,9 +308,9 @@ useEffect(() => {
 }, []);
   useEffect(() => {
     axios
-    .get(process.env.NEXT_PUBLIC_URL_PD + process.env.NEXT_PUBLIC_URL_accidentPlace + InsuranceCode,{
-      PatientInfo
-    })
+    .get(process.env.NEXT_PUBLIC_URL_PD + process.env.NEXT_PUBLIC_URL_accidentPlace + InsuranceCode,
+      PatientInfoData
+    )
     .then((response) => {
       setDataaccidentPlace(response.data);
 
@@ -324,9 +332,9 @@ useEffect(() => {
   }, []);
   useEffect(() => {
     axios
-    .get(process.env.NEXT_PUBLIC_URL_PD + process.env.NEXT_PUBLIC_URL_InjurySide + InsuranceCode,{
-      PatientInfo
-    })
+    .get(process.env.NEXT_PUBLIC_URL_PD + process.env.NEXT_PUBLIC_URL_InjurySide + InsuranceCode,
+      PatientInfoData
+    )
     .then((response) => {
       setDatainjurySide(response.data);
 
@@ -349,9 +357,9 @@ useEffect(() => {
 
   useEffect(() => {
     axios
-    .get(process.env.NEXT_PUBLIC_URL_PD + process.env.NEXT_PUBLIC_URL_InjuryWoundtype + InsuranceCode,{
-      PatientInfo
-    })
+    .get(process.env.NEXT_PUBLIC_URL_PD + process.env.NEXT_PUBLIC_URL_InjuryWoundtype + InsuranceCode,
+      PatientInfoData
+    )
     .then((response) => {
       setDataWoundType(response.data);
 
@@ -375,9 +383,9 @@ useEffect(() => {
 
   useEffect(() => {
     axios
-    .post(process.env.NEXT_PUBLIC_URL_PD + process.env.NEXT_PUBLIC_URL_getOPDDischargeVitalSign,{
-      PatientInfo
-    })
+    .post(process.env.NEXT_PUBLIC_URL_PD + process.env.NEXT_PUBLIC_URL_getOPDDischargeVitalSign,
+      PatientInfoData
+    )
     .then((response) => {
       setVitalsign(response.data);
 
@@ -399,9 +407,9 @@ useEffect(() => {
 
   useEffect(() => {
     axios
-    .post(process.env.NEXT_PUBLIC_URL_PD + process.env.NEXT_PUBLIC_URL_getOPDDischargeDoctor,{
-      PatientInfo
-    })
+    .post(process.env.NEXT_PUBLIC_URL_PD + process.env.NEXT_PUBLIC_URL_getOPDDischargeDoctor,
+      PatientInfoData
+    )
     .then((response) => {
       setDoctor(response.data);
 
@@ -424,9 +432,9 @@ useEffect(() => {
 
   useEffect(() => {
     axios
-     .post(process.env.NEXT_PUBLIC_URL_PD + process.env.NEXT_PUBLIC_URL_getOPDDischargeDiagnosis,{
-        PatientInfo
-      })
+     .post(process.env.NEXT_PUBLIC_URL_PD + process.env.NEXT_PUBLIC_URL_getOPDDischargeDiagnosis,
+        PatientInfoData
+      )
       .then((response) => {
         setDiagnosis(response.data);
       })
@@ -446,13 +454,15 @@ useEffect(() => {
 }, []);
   useEffect(() => {
     axios
-      .post(process.env.NEXT_PUBLIC_URL_SV + process.env.NEXT_PUBLIC_URL_getOPDDischargeProcedure,{
-        PatientInfo
-      })
+      .post(process.env.NEXT_PUBLIC_URL_SV + process.env.NEXT_PUBLIC_URL_getOPDDischargeProcedure,
+        PatientInfoData
+      )
       .then((response) => {
-        setRows(response.data)
-       //console.log(response.data)
-       setProcedure(response.data)
+        setProcedure(response.data)
+      if(response.data.Result.ProcedureInfo[0].Icd9){
+        setRows(response.data.Result.ProcedureInfo)
+      }
+    console.log(rows)
       })
       .catch((error) => {
         console.log(error)
@@ -468,6 +478,7 @@ useEffect(() => {
        }
   });
 }, []);
+
 const handleAddRow = () => {
   setRows([...rows, newRow]);
   setNewRow({ Icd9: '', ProcedureName: '', ProcedureDate: '' });
@@ -545,7 +556,7 @@ useEffect(() => {
     .get(
       process.env.NEXT_PUBLIC_URL_PD +
         process.env.NEXT_PUBLIC_URL_InjurySide +
-        PatientInfo.InsurerCode
+        PatientInfoData.PatientInfo.InsurerCode
     )
     .then((response) => {
       setInjurySideType(response.data);
@@ -567,7 +578,7 @@ useEffect(() => {
     .get(
       process.env.NEXT_PUBLIC_URL_PD +
         process.env.NEXT_PUBLIC_URL_InjuryWoundtype +
-        PatientInfo.InsurerCode
+        PatientInfoData.PatientInfo.InsurerCode
     )
     .then((response) => {
       setInjuryWoundType(response.data);
@@ -626,9 +637,9 @@ const handleDeleteInjuryDetail = (index) => {
 
 useEffect(() => {
   axios
-    .post(process.env.NEXT_PUBLIC_URL_PD + process.env.NEXT_PUBLIC_URL_getOPDDischargeInvestigation,{
-      PatientInfo
-    })
+    .post(process.env.NEXT_PUBLIC_URL_PD + process.env.NEXT_PUBLIC_URL_getOPDDischargeInvestigation,
+      PatientInfoData
+    )
     .then((response) => {
       setInvestigation(response.data);
     })
@@ -649,9 +660,9 @@ useEffect(() => {
 
 useEffect(() => {
   axios
-    .post(process.env.NEXT_PUBLIC_URL_SV + process.env.NEXT_PUBLIC_URL_getOPDDischargeOrderItem,{
-      PatientInfo
-    })
+    .post(process.env.NEXT_PUBLIC_URL_SV + process.env.NEXT_PUBLIC_URL_getOPDDischargeOrderItem,
+      PatientInfoData
+    )
     .then((response) => {
       setOrderItemz(response.data);
     })
@@ -672,9 +683,9 @@ useEffect(() => {
 
 useEffect(() => {
   axios
-    .post(process.env.NEXT_PUBLIC_URL_SV + process.env.NEXT_PUBLIC_URL_getOPDDischargeBilling,{
-      PatientInfo
-    })
+    .post(process.env.NEXT_PUBLIC_URL_SV + process.env.NEXT_PUBLIC_URL_getOPDDischargeBilling,
+      PatientInfoData
+    )
     .then((response) => {
       setBilling(response.data);
     })
@@ -699,10 +710,10 @@ const DocumentBase64 = (data) => {
   setProgress({ started: false, pc: 0 });
   axios
     .post(process.env.NEXT_PUBLIC_URL_PD2 + process.env.NEXT_PUBLIC_URL_getDocumentByDocname,{
-      RefId : PatientInfo.RefId,
-      TransactionNo : PatientInfo.TransactionNo,
-      HN : PatientInfo.HN,
-      VN : PatientInfo.VN,
+      RefId : PatientInfoData.PatientInfo.RefId,
+      TransactionNo : PatientInfoData.PatientInfo.TransactionNo,
+      HN : PatientInfoData.PatientInfo.HN,
+      VN : PatientInfoData.PatientInfo.VN,
       DocumentName : data,
      }
   )
@@ -752,6 +763,7 @@ const DocumentBase64 = (data) => {
 
 //    //    //  //กดปุ่มส่งเคลม
 async function Claim(event){
+
     event.preventDefault();
     setShowSummitError();
     setMassSummitError();
@@ -761,10 +773,13 @@ async function Claim(event){
       const signDate = dayjs(signSymptomsDate.$d).format('YYYY-MM-DD');
       let HavecauseOfInjuryDetailsCount;
       let HaveinjuryDetailsCount;
- 
+      let HaveProcedureCount;
 
       const injuryDetailsCount = injuryDetails.length;
       const causeOfInjuryDetailsCount = causeOfInjuryDetails.length;
+      const ProcedureInfoCount = rows.length
+
+
       if(causeOfInjuryDetailsCount >= 1){
          HavecauseOfInjuryDetailsCount = true;
       }else{
@@ -775,25 +790,19 @@ async function Claim(event){
       }else{
      HaveinjuryDetailsCount = false;
       }
-  
+      if(ProcedureInfoCount >= 1){
+        HaveProcedureCount = true;
+        }else{
+          HaveProcedureCount = false;
+        }
 
     try {
       await stepOne();
       await stepTwo();
       await stepThree();
+      await stepFour();
     } catch (error) {
       console.log(error)
-      try{
-        const ErrorMass = error.config.url
-        const [ErrorMass1, ErrorMass2] = ErrorMass.split('v1/');
-        setMassSummitError(error.code +" - "+error.message +" - "+ErrorMass2);
-        setShowSummitError("Error")
-      }
-      catch (error) {
-        console.log(error)
-        //setMassSummitError(error.response.data.HTTPStatus.message);
-        setShowSummitError("Error");
-     }
     }
   
 
@@ -801,11 +810,11 @@ async function Claim(event){
    function stepOne() {
     return new Promise((resolve, reject) => {
  const PatientInfo = {
-     RefId : PatientInfo.RefId,
-     TransactionNo : PatientInfo.TransactionNo,
-     InsurerCode : PatientInfo.InsurerCode,
-     HN : PatientInfo.HN,
-     VN : PatientInfo.VN,
+     RefId : PatientInfoData.PatientInfo.RefId,
+     TransactionNo : PatientInfoData.PatientInfo.TransactionNo,
+     InsurerCode : PatientInfoData.PatientInfo.InsurerCode,
+     HN : PatientInfoData.PatientInfo.HN,
+     VN : PatientInfoData.PatientInfo.VN,
      HaveAccidentCauseOfInjuryDetail : HavecauseOfInjuryDetailsCount,
      HaveAccidentInjuryDetail : HaveinjuryDetailsCount,
      AccidentDetailInfo : {
@@ -814,15 +823,13 @@ async function Claim(event){
                              CauseOfInjuryDetail :  causeOfInjuryDetails,
                              InjuryDetail : injuryDetails,
                           },
-          }
+    }
 
         axios
-    .post(process.env.NEXT_PUBLIC_URL_SV + "v1/opd-discharge/SubmitAccident",PatientInfo
-
-         // console.log(PatientInfo)
+    .post(process.env.NEXT_PUBLIC_URL_SV + process.env.NEXT_PUBLIC_URL_SubmitAccident,{PatientInfo}
     )
     .then((response) => {
-      //console.log(response.data);
+      console.log("1 Succ");
 
         resolve('Step 1 completed');
     })
@@ -848,11 +855,22 @@ async function Claim(event){
   
   function stepTwo() {
     return new Promise((resolve, reject) => {
-
+ const PatientInfo = {
+     RefId : PatientInfoData.PatientInfo.RefId,
+     TransactionNo : PatientInfoData.PatientInfo.TransactionNo,
+     InsurerCode : PatientInfoData.PatientInfo.InsurerCode,
+     HN : PatientInfoData.PatientInfo.HN,
+     VN : PatientInfoData.PatientInfo.VN,
+     HaveProcedure : HaveProcedureCount,
+     ProcedureInfo : rows
+                         
+    }
       axios
-      .get(process.env.NEXT_PUBLIC_URกฟหL_SV + "v1/utils/illnessType/13")
+      .post(process.env.NEXT_PUBLIC_URL_SV + process.env.NEXT_PUBLIC_URL_SubmitProcedure,{PatientInfo}
+
+      )
       .then((response) => {
-        console.log("2");
+        console.log("2 Succ");
         resolve('Step 2 completed');
       })
       .catch((error) => {
@@ -876,11 +894,48 @@ async function Claim(event){
   
   function stepThree() {
     return new Promise((resolve, reject) => {
+ let comaScoreP;
+ let expectedDayOfRecoveryP;
+       if(comaScore){ comaScoreP = comaScore.target.value; }else{ comaScoreP = "";}
+       if(expectedDayOfRecovery){ expectedDayOfRecoveryP = expectedDayOfRecovery.target.value; }else{ expectedDayOfRecoveryP = "";}
+      const PatientInfo = {
+        RefId: PatientInfoData.PatientInfo.RefId,
+        TransactionNo: PatientInfoData.PatientInfo.TransactionNo,
+        InsurerCode: PatientInfoData.PatientInfo.InsurerCode, 
+        HN: PatientInfoData.PatientInfo.HN,
+        VN: PatientInfoData.PatientInfo.VN,
+        
+        VisitDateTime: PatientInfoData.PatientInfo.VisitDateTime,
+        DxFreeText: event.target.DxFreeTextText.value,
+        PresentIllness: event.target.PresentIllness.value,
+        ChiefComplaint: event.target.ChiefComplaint.value,
+        AccidentCauseOver45Days: over45,
+        UnderlyingCondition: event.target.UnderlyingCondition.value,
+        PhysicalExam: event.target.PhysicalExam.value,
+        PlanOfTreatment: event.target.PlanOfTreatment.value,
+        ProcedureFreeText: event.target.ProcedureFreeText.value,
+        AdditionalNote: event.target.AdditionalNote.value,
+        SignSymptomsDate: signDate,
+        ComaScore: comaScoreP,
+        ExpectedDayOfRecovery: expectedDayOfRecoveryP,
+    
+        HaveProcedure: HaveProcedureCount,
+        HaveAccidentCauseOfInjuryDetail: HavecauseOfInjuryDetailsCount,
+        HaveAccidentInjuryDetail: HaveinjuryDetailsCount,
+        AlcoholRelated: alcoholRelated,
+        Pregnant: pregnant,
+        PrivateCase: privateCase,
 
+
+
+      }
+    //console.log(PatientInfo)
       axios
-      .get(process.env.NEXT_PUBLIC_URL_SV + "v1/utils/illnessType/13")
+      .post(process.env.NEXT_PUBLIC_URL_SV + process.env.NEXT_PUBLIC_URL_SubmitVisit,{PatientInfo}
+
+      )
       .then((response) => {
-        console.log("3");
+        console.log("3 Succ");
         resolve('Step 3 completed');
       })
       .catch((error) => {
@@ -897,149 +952,81 @@ async function Claim(event){
        }
    });
 
-      // ถ้ามีข้อผิดพลาดให้ใช้ reject(new Error('Error in Step 3'));
+  //     // ถ้ามีข้อผิดพลาดให้ใช้ reject(new Error('Error in Step 3'));
       
-     });
+      });
+  }
+  function stepFour() {
+    return new Promise((resolve, reject) => {
+      const PatientInfo = {
+        InsurerCode: PatientInfoData.PatientInfo.InsurerCode, 
+        RefId: PatientInfoData.PatientInfo.RefId,
+        TransactionNo: PatientInfoData.PatientInfo.TransactionNo,
+        PID: PatientInfoData.PatientInfo.PID,
+        HN: PatientInfoData.PatientInfo.HN,
+        GivenNameTH: PatientInfoData.PatientInfo.GivenNameTH,
+        SurnameTH: PatientInfoData.PatientInfo.SurnameTH,
+        DateOfBirth: PatientInfoData.PatientInfo.DateOfBirth,
+        PassportNumber: PatientInfoData.PatientInfo.PassportNumber,
+        IdType: PatientInfoData.PatientInfo.IdType,
+        VN: PatientInfoData.PatientInfo.VN,
+        VisitDateTime: PatientInfoData.PatientInfo.VisitDateTime,
+        AccidentDate: PatientInfoData.PatientInfo.AccidentDate,
+        PolicyTypeCode: PatientInfoData.PatientInfo.PolicyTypeCode,
+        ServiceSettingCode: PatientInfoData.PatientInfo.ServiceSettingCode, 
+        IllnessTypeCode: PatientInfoData.PatientInfo.IllnessTypeCode,
+        SurgeryTypeCode:  PatientInfoData.PatientInfo.SurgeryTypeCode
+
+      }
+    //console.log(PatientInfo)
+      axios
+      .post(process.env.NEXT_PUBLIC_URL_SV + process.env.NEXT_PUBLIC_URL_SubmitOPDDischargeToAIA,{PatientInfo}
+
+      )
+      .then((response) => {
+
+
+if(response.data.HTTPStatus.statusCode === 200){
+
+        document.getElementById("my_modal_3").close()
+        console.log("4 Succ")
+       // console.log(response.data);
+             setShowModal(true)
+
+             resolve('Step 4 completed');
+    setTimeout(() => {
+      setShowModal(false)
+      router.push('/aia/opd/checkClaimStatus');
+    }, 5000);
+  }else{
+    setMassSummitError(response.data.HTTPStatus.message);
+    setShowSummitError("Error");
+  }
+      })
+      .catch((error) => {
+        console.log(error)
+        try{
+          const ErrorMass = error.config.url
+          const [ErrorMass1, ErrorMass2] = ErrorMass.split('v1/');
+          setMassSummitError(error.code +" - "+error.message +" - "+ErrorMass2);
+          setShowSummitError("Error")
+        }
+        catch (error) {
+          setMassSummitError(error.response.data.HTTPStatus.message);
+          setShowSummitError("Error");
+       }
+   });
+
+  //     // ถ้ามีข้อผิดพลาดให้ใช้ reject(new Error('Error in Step 3'));
+      
+      });
   }
 
-
-
-
-
-        // const Data = {
-        //   "PatientInfo" : {
-          //    InsurerCode: PatientInfo.InsurerCode,
-          //  RefId: PatientInfo.RefId,
-          //    TransactionNo : PatientInfo.TransactionNo,
-          //   PID : PatientInfo.PID,
-          //    HN : PatientInfo.HN,
-          //   GivenNameTH : PatientInfo.GivenNameTH,
-          //   SurnameTH: PatientInfo.SurnameTH,
-          //   DateOfBirth: PatientInfo.DateOfBirth,
-          //   PassportNumber: PatientInfo.PassportNumber,
-          //   IdType: PatientInfo.IdType,
-          //    VN:  PatientInfo.VN,
-          //   VisitDateTime: PatientInfo.VisitDateTime,   
-            // PolicyTypeCode: PatientInfo.PolicyTypeCode,
-            // ServiceSettingCode: PatientInfo.ServiceSettingCode, 
-            //  IllnessTypeCode: PatientInfo.IllnessTypeCode,
-            // SurgeryTypeCode:  PatientInfo.SurgeryTypeCode,
-            // ChiefComplaint: event.target.ChiefComplaint.value,
-            // PresentIllness: event.target.PresentIllness.value,
-            // AccidentCauseOver45Days : over45,
-            // DxFreeText : event.target.DxFreeTextText.value,
-            // FurtherClaimId : PatientInfo.FurtherClaimId,
-            // FurtherClaimNo : PatientInfo.FurtherClaimNo,
       
-            // OtherInsurer : otherInsurer,
-            // UnderlyingCondition : event.target.UnderlyingCondition.value,
-            // PhysicalExam : event.target.PhysicalExam.value,
-            // PlanOfTreatment : event.target.PlanOfTreatment.value,
-            // ProcedureFreeText : event.target.ProcedureFreeText.value,
-            // AdditionalNote :  event.target.AdditionalNote.value,
-            // SignSymptomsDate : signDate,
-            // ComaScore : comaScore,
-            // ExpectedDayOfRecovery : expectedDayOfRecovery,
-            // AlcoholRelated : alcoholRelated,
-            // Pregnant : pregnant,
-            // PrivateCase : privateCase,
-            // PreviousTreatmentInfo : {
-            //   PreviousTreatment : previousTreatment
-            // }
-          //   HaveProcedure : true,
-
-      
-          // },
-        // };
-      
-       
-      //   axios
-      //     .post(process.env.NEXT_PUBLIC_URL_PD2 + process.env.NEXT_PUBLIC_URL_SubmitOPDDischargeToAIA,
-      //       Data
-        
-      //     )
-      //     .then((response) => {
-      //       //setOrderItemz(response.data);
-      //       console.log(response)
-      //      console.log(response.data.HTTPStatus.message)
-      //      setMassSummit(response.data.HTTPStatus.message)
-      
-      //     })
-      //     .catch((error) => {
-      //       console.log(error)
-      //       try{
-      //         const ErrorMass = error.config.url
-      //         const [ErrorMass1, ErrorMass2] = ErrorMass.split('v1/');
-      //         setMassSummitError(error.code +" - "+error.message +" - "+ErrorMass2);
-      //         setShowSummitError("Error")
-      //       }
-      //       catch (error) {
-      //         setMassSummitError(error.response.data.HTTPStatus.message);
-      //         setShowSummitError("Error");
-      //      }
-      // });
-   
-      //  }else{
-      
-       // document.getElementById("my_modal_3").showModal();
-      
-
-
-      //       WoundDetails: "",
-
-      
-      
-      //     },
-      //   };
-      
-      //   console.log(Data.PatientInfo)
-      
-      //   axios
-      //     .post(process.env.NEXT_PUBLIC_URL_PD2 + process.env.NEXT_PUBLIC_URL_sentOPDDischarge,
-      //       Data
-        
-      //     )
-      //     .then((response) => {
-      //       //setOrderItemz(response.data);
-      
-      
-      
-      //       console.log(response)
-      //  //     console.log(response.data.MessageTh)
-      //       setMassSummit(response.data.MessageTh)
-      
-      
-      
-      //     })
-      //     .catch((error) => {
-      //       console.log(error)
-      //       try{
-      //         const ErrorMass = error.config.url
-      //         const [ErrorMass1, ErrorMass2] = ErrorMass.split('v1/');
-      //         setMassSummitError(error.code +" - "+error.message +" - "+ErrorMass2);
-      //         setShowSummitError("Error")
-      //       }
-      //       catch (error) {
-      //         setMassSummitError(error.response.data.HTTPStatus.message);
-      //         setShowSummitError("Error");
-      //      }
-      // });
-      
-      
-  //  }
-
-
-
 
  
 
-    // setShowModal(true)
 
-
-    // setTimeout(() => {
-    //   setShowModal(false)
-    //   router.push('/aia/opd/checkClaimStatus');
-    // }, 5000);
 
    };
 
@@ -1065,10 +1052,10 @@ async function Claim(event){
     setProgress({ started: false, pc: 0 });
     const formData = new FormData();
     formData.append('file', file);
-     formData.append('RefId', PatientInfo.RefId);
-     formData.append('TransactionNo', PatientInfo.TransactionNo);
-     formData.append('HN', PatientInfo.HN);
-     formData.append('VN', PatientInfo.VN); 
+     formData.append('RefId', PatientInfoData.PatientInfo.RefId);
+     formData.append('TransactionNo', PatientInfoData.PatientInfo.TransactionNo);
+    formData.append('HN', PatientInfoData.PatientInfo.HN);
+     formData.append('VN', PatientInfoData.PatientInfo.VN); 
     formData.append('insurerid', 13); 
      formData.append('DocumenttypeCode', "001");  
      setMsg(<span className="loading loading-spinner text-info loading-lg"></span>);
@@ -1101,10 +1088,10 @@ async function Claim(event){
            </div>)
    axios
    .post(process.env.NEXT_PUBLIC_URL_PD2 + process.env.NEXT_PUBLIC_URL_getlistDocumentName,{
-     RefId : PatientInfo.RefId,
-     TransactionNo : PatientInfo.TransactionNo,
-     HN : PatientInfo.HN,
-     VN : PatientInfo.VN,
+     RefId : PatientInfoData.PatientInfo.RefId,
+     TransactionNo : PatientInfoData.PatientInfo.TransactionNo,
+     HN : PatientInfoData.PatientInfo.HN,
+     VN : PatientInfoData.PatientInfo.VN,
    })
    .then((response) => {
      setBillList(response.data);
@@ -1147,27 +1134,14 @@ async function Claim(event){
   const handleOtherInsurer = (e) => {
     setOtherInsurer(e.target.value);
   };
-
   const handleAlcoholRelated = () => {
-    if(alcoholRelated === "false"){
-      setAlcoholRelated("true");
-    }else{
-      setAlcoholRelated("false");
-    }
+    setAlcoholRelated(!alcoholRelated)
   };
   const handlePregnant = () => {
-    if(pregnant === "false"){
-      setPregnant("true");
-    }else{
-      setPregnant("false");
-    }
+    setPregnant(!pregnant)
    };
    const handlePrivateCase = () => {
-    if(privateCase === "false"){
-      setPrivateCase("true");
-    }else{
-      setPrivateCase("false");
-    }
+    setPrivateCase(!privateCase)
    };
    const handlePreviousTreatment = () => {
     setPreviousTreatmentDetail("");
@@ -1233,13 +1207,13 @@ async function Claim(event){
                 </div>
                 <div className="rounded-md">
                 <Box sx={{backgroundColor: '#e5e7eb', padding: 0, borderRadius: 0,}}>
-                <CustomTextField  id="disabledInput" label="PID" defaultValue={PatientInfo.PID} className="w-full text-black rounded disabled:text-black disabled:bg-gray-300" InputProps={{readOnly: true,}}/>
+                <CustomTextField  id="disabledInput" label="PID" defaultValue={PatientInfoData.PatientInfo.PID} className="w-full text-black rounded disabled:text-black disabled:bg-gray-300" InputProps={{readOnly: true,}}/>
         </Box>
                 </div>
-              {PatientInfo.PassportNumber ? (
+              {PatientInfoData.PatientInfo.PassportNumber ? (
                   <div className="rounded-md">
                <Box sx={{backgroundColor: '#e5e7eb', padding: 0, borderRadius: 0,}}>
-                    <CustomTextField  id="disabledInput" label="Passport" defaultValue={PatientInfo.PassportNumber} className="w-full text-black rounded disabled:text-black disabled:bg-gray-300" InputProps={{readOnly: true,}}/>
+                    <CustomTextField  id="disabledInput" label="Passport" defaultValue={PatientInfoData.PatientInfo.PassportNumber} className="w-full text-black rounded disabled:text-black disabled:bg-gray-300" InputProps={{readOnly: true,}}/>
         </Box>
                   </div>
                 ) : ""} 
@@ -1250,7 +1224,7 @@ async function Claim(event){
                 </div>
                 <div className="rounded-md">
                 <Box sx={{backgroundColor: '#e5e7eb', padding: 0, borderRadius: 0,}}>
-                <CustomTextField  id="disabledInput" label="HN" defaultValue={PatientInfo.HN} className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"  InputProps={{readOnly: true,}}/>
+                <CustomTextField  id="disabledInput" label="HN" defaultValue={PatientInfoData.PatientInfo.HN} className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"  InputProps={{readOnly: true,}}/>
            </Box>
                 </div>
                 <div className="rounded-md">
@@ -1270,7 +1244,7 @@ async function Claim(event){
               <div className="grid gap-2 sm:grid-cols-4 w-full mt-2">
               <div className="rounded-md"> 
                <div className="flex items-center ">
-              {PatientInfo.FurtherClaimNo ? <>  
+              {PatientInfoData.PatientInfo.FurtherClaimNo ? <>  
                                       <input
                                       type="radio"
                                       id="OtherInsurer"
@@ -1348,10 +1322,10 @@ async function Claim(event){
                 <CustomTextField  id="disabledInput"   className="w-full text-black rounded disabled:text-black disabled:bg-gray-300" label="น้ำหนัก / ส่วนสูง" defaultValue={combinedString} InputProps={{readOnly: true,}}/>
                 </Box>
                 </div>
-                {PatientInfo.FurtherClaimNo ? (
+                {PatientInfoData.PatientInfo.FurtherClaimNo ? (
                 <div className="rounded-md text-black">
                 <Box sx={{backgroundColor: '#e5e7eb', padding: 0, borderRadius: 0,}}>
-                <CustomTextField  id="disabledInput"   className="w-full text-black rounded disabled:text-black disabled:bg-gray-300" label="ประวัติการรักษาครั้งก่อนหน้า เลขที่อ้างอิง" defaultValue={PatientInfo.FurtherClaimNo} InputProps={{readOnly: true,}}/>
+                <CustomTextField  id="disabledInput"   className="w-full text-black rounded disabled:text-black disabled:bg-gray-300" label="ประวัติการรักษาครั้งก่อนหน้า เลขที่อ้างอิง" defaultValue={PatientInfoData.PatientInfo.FurtherClaimNo} InputProps={{readOnly: true,}}/>
                 </Box>
                 </div>
                 ) : ""}
@@ -1607,7 +1581,7 @@ async function Claim(event){
             </div> 
             ) : ""}
   {/* //////////////////////////////////////////////////////////////////////////// */}
-           {PatientInfo.IllnessTypeCode === "ACC" || PatientInfo.IllnessTypeCode === "ER" ? (accidentDetail ? (
+           {PatientInfoData.PatientInfo.IllnessTypeCode === "ACC" || PatientInfoData.PatientInfo.IllnessTypeCode === "ER" ? (accidentDetail ? (
             <>
             <div className="justify-center border-solid w-4/5 m-auto border-2 border-error rounded-lg p-4 mt-2">
               <h1 className="font-black text-error text-3xl ">AccidentDetail <Button className="btn btn-secondary text-base-100 text-xl" onClick={SummitEditAcc}><FaEdit /></Button></h1>
@@ -1643,6 +1617,28 @@ async function Claim(event){
         </Select>
       </FormControl>
                 </div>
+                <div className="w-2/5">
+                <FormControl fullWidth>
+        <InputLabel id="demo-error-select-label">สาเหตุของการมารับการรักษาเกิน 45 วัน จากการเกิดอุบัติเหตุ</InputLabel>
+        <Select
+        error
+        className="w-full mx-2"
+          labelId="demo-error-select-label"
+          id="demo-error-select"
+          //name="woundTypeText"
+          value={over45}
+          label="สาเหตุของการมารับการรักษาเกิน 45 วัน จากการเกิดอุบัติเหตุ"
+          onChange={Over45}
+          required
+        >
+          {over45Days
+                ? over45Days.Result.map((over, index) => (
+                    <MenuItem key={index} value={over.causeovercode}>{over.causeoverdesc}</MenuItem>
+                  ))
+                : ""}
+        </Select>
+      </FormControl> 
+                  </div>
                 </div>
 
                 <TableContainer component={Paper} className="mt-2">
@@ -1658,7 +1654,7 @@ async function Claim(event){
           </TableRow>
         </TableHead>
         <TableBody>
-          {causeOfInjuryDetails.map((cause, index) => (
+          {causeOfInjuryDetails ? (causeOfInjuryDetails.map((cause, index) => (
                        cause.CauseOfInjury !== "" &&(
             <TableRow key={index} className=" bg-neutral text-sm">
               <TableCell>{index+1}</TableCell>
@@ -1700,7 +1696,7 @@ async function Claim(event){
               </TableCell>
                    : "" }
             </TableRow>
-         ) ))}
+         ) ))) : ""}
            {summitEditAcc === "true" ? (
             <>
           
@@ -1773,7 +1769,7 @@ async function Claim(event){
           </TableRow>
         </TableHead>
         <TableBody>
-          {injuryDetails.map((injury, index) => (
+          {injuryDetails ? (injuryDetails.map((injury, index) => (
                  injury.InjuryArea !== "" &&(
             <TableRow key={index} className=" bg-neutral text-sm">
               <TableCell>{index+1}</TableCell>
@@ -1860,7 +1856,7 @@ async function Claim(event){
               </TableCell>
                : "" }
             </TableRow>
-         ) ))}
+         ) ))) : ""}
            {summitEditAcc === "true" ? (
             <>
           
@@ -2130,7 +2126,7 @@ async function Claim(event){
               </div> 
              </div> 
              {/* //////////////////////////////////////////////////////////////////////////// */}
-          {rows ? (PatientInfo.SurgeryTypeCode === "Y" ? (
+          {procedure ? (PatientInfoData.PatientInfo.SurgeryTypeCode === "Y" ? (
                <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
               <h1 className="font-black text-accent text-3xl ">Procedure <Button className="btn btn-secondary text-base-100 text-xl" onClick={SummitEditProce}><FaEdit /></Button></h1>
               
@@ -2146,26 +2142,22 @@ async function Claim(event){
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows ?(rows.Result.ProcedureInfo.map((row, index) => (
-            row.Icd9 !== "" &&(
+          {rows ? (rows.map((proce, index) => (
+             proce.Icd9 !== "" &&(
             <TableRow key={index} className=" bg-neutral text-sm">
               <TableCell>{index+1}</TableCell>
-              <TableCell ><div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">{row.Icd9 === "" ? (<>&nbsp;</>) : row.Icd9}</div></TableCell>
-              <TableCell><div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">{row.ProcedureName === "" ? (<>&nbsp;</>) : row.ProcedureName}</div></TableCell>
-              <TableCell><div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">{row.ProcedureDate === "" ? (<>&nbsp;</>) : row.ProcedureDate}</div></TableCell>
+              <TableCell ><div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">{proce.Icd9 === "" ? (<>&nbsp;</>) : proce.Icd9}</div></TableCell>
+              <TableCell><div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">{proce.ProcedureName === "" ? (<>&nbsp;</>) : proce.ProcedureName}</div></TableCell>
+              <TableCell><div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">{proce.ProcedureDate === "" ? (<>&nbsp;</>) : proce.ProcedureDate}</div></TableCell>
               <TableCell>
                 {summitEditProcedure === "true" ?
                 <Button onClick={() => handleDeleteRow(index)} className="btn btn-error text-base-100 text-xl"><FaCircleMinus /></Button>
                : "" }
               </TableCell>
             </TableRow>
-          )
+           )
         )
-         ) ) : (
-            <TableRow>
-              <TableCell></TableCell>
-            </TableRow>
-          )}
+         )) : "" }
            {summitEditProcedure === "true" ? (
             <>
           
@@ -2365,7 +2357,7 @@ async function Claim(event){
                           </tr>
                         ))
                       : <tr><td></td></tr>
-                    }
+                  }
                 </tbody>
               </table> 
               </div>

@@ -27,6 +27,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
 export default function chackData() {
   const InsuranceCode = 13;
+  console.log(InsuranceCode)
   // const  ReDux  = useSelector((state) => ({ ...state }));
   //console.log(ReDux)
   /////////////////ปุ่ม ย่อย 3 อัน/////////////////////////////
@@ -77,21 +78,32 @@ export default function chackData() {
 
 
   useEffect(() => {
-    const getClaimStatus = async () => {
-      const response = await fetch(
-        process.env.NEXT_PUBLIC_URL_SV + "v1/utils/claimStatus/"
-      );
+    axios
+    .get(process.env.NEXT_PUBLIC_URL_SV + process.env.NEXT_PUBLIC_URL_claimStatus + InsuranceCode)
+    .then((response) => {
+      setClaimStatus(response.data)
+      console.log(response.data)
+    })
+    .catch((error) => {
+      console.log(error)
+      // try{
+      //   const ErrorMass = error.config.url
+      //   const [ErrorMass1, ErrorMass2] = ErrorMass.split('v1/');
+      //   setMassSummitError(error.code +" - "+error.message +" - "+ErrorMass2);
+      //   setShowSummitError("Error")
+      // }
+      // catch (error) {
+      //   setMassSummitError(error.response.data.HTTPStatus.message);
+      //   setShowSummitError("Error");
+     });
 
-      const data = await response.json();
-      setClaimStatus(data);
-    };
-    getClaimStatus();
+
   }, []);
 
 
-  const Status = (event) => {
-    setStatusValue(event.target.value);
-  }
+  // const Status = (event) => {
+  //   setStatusValue(event.target.value);
+  // }
 
   const handleSubmit =  (event) => {
     //ยังไม่วางบิล
@@ -212,23 +224,23 @@ if(Object.keys(data).length === 0){
   setShowFormError()
   //    console.log(data)
 
-axios
-.post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-submitbilling/selectbilling",
-        //ส่งเป็น statisCode
-        data
-)
-.then((response) => {
-  setPost(response.data);
-  setShowFormError("");
-})
-.catch((error) => {
- // console.error("Error", err)
-  console.log(error)
+// axios
+// .post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-submitbilling/selectbilling",
+//         //ส่งเป็น statisCode
+//         data
+// )
+// .then((response) => {
+//   setPost(response.data);
+//   setShowFormError("");
+// })
+// .catch((error) => {
+//  // console.error("Error", err)
+//   console.log(error)
 
-          setShowFormError("Error");
-          setMassError(error.message);
+//           setShowFormError("Error");
+//           setMassError(error.message);
 
-});
+// });
 
 }
 
@@ -343,8 +355,8 @@ axios
           onChange={Status}
         >
           {claimStatus
-                ? claimStatus.map((status, index) => (
-                    <MenuItem key={index} value={status.StatusCode}>{status.StatusDescTH}</MenuItem>
+                ? claimStatus.Result.map((status, index) => (
+                    <MenuItem key={index} value={status.claimstatuscode}>{status.claimstatusdesc_en} - {status.claimstatusdesc_th}</MenuItem>
                   ))
                 : ""}
 
@@ -403,7 +415,7 @@ axios
       </tr>
     </thead>
     <tbody>
-    {post ? post.HTTPStatus.statusCode === 200 ? 
+    {/* {post ? post.HTTPStatus.statusCode === 200 ? 
     (post.Result.Data.map((bill, index) => (
 <tr className="hover text-center" key={index}>
    <th>{index+1}</th>
@@ -412,7 +424,6 @@ axios
       <td>{bill.VN}</td>
       <td>{bill.ClaimNo}</td>
       <td>{bill.invoicenumber}</td>
-      {/* <td>{bill.IllnessType}</td> */}
         <td ><a className="bg-success text-base-100 rounded-full px-3 py-2">{bill.ClaimstatusName}</a></td>
         <td>
         <Button
@@ -435,14 +446,14 @@ axios
       >
         <MenuItem onClick={() => Refresh(`${bill.RefId} | ${bill.TransactionNo} | ${bill.HN}`)}><LuRefreshCw />&nbsp;Refresh</MenuItem>
         <MenuItem onClick={Document}><IoDocumentText />&nbsp;Document</MenuItem>
-        {/* <MenuItem onClick={Delect}><ImBin />&nbsp;Cancel</MenuItem> */}
+
       </Menu>
       </td>
        
       </tr>
 
    ) 
-  )): (
+  )): ( */}
 
       <tr>
       <th></th>
@@ -457,20 +468,20 @@ axios
       <td></td>
       </tr>
   
-    ): (
-      <tr>
-      <th></th>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <th></th>
-      <td></td>
-      </tr>
-    )}
+    {/* // ): (
+    //   <tr>
+    //   <th></th>
+    //   <td></td>
+    //   <td></td>
+    //   <td></td>
+    //   <td></td>
+    //   <td></td>
+    //   <td></td>
+    //   <td></td>
+    //   <th></th>
+    //   <td></td>
+    //   </tr>
+    // )} */}
     </tbody>
   </table>
 </div>

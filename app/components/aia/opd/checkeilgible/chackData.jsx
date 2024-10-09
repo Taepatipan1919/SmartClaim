@@ -342,6 +342,15 @@ export default function chackData() {
     setVisitDateTime(VisitDateselectVN);
     setDetailVN(VNselectVN);
 
+      let TypeValue;
+
+      if(illnessTypeValue === "DAY"){
+        TypeValue = "IPD"
+      }else{
+        TypeValue = "OPD"
+      }
+
+
     const PatientInfo = {
       InsurerCode: InsurerCode, // ควรเป็น integer ไม่ใช่ string
       RefID: "",
@@ -358,11 +367,11 @@ export default function chackData() {
       // AccidentDate: Acc[0],
       AccidentDate: AccidentDateselectVN,
       PolicyTypeCode: policyTypeValue,
-      ServiceSettingCode: statusValue,
+      ServiceSettingCode: TypeValue,
       IllnessTypeCode: illnessTypeValue,
       SurgeryTypeCode: surgeryTypeValue,
     };
-   //  console.log(PatientInfo)
+     console.log(PatientInfo)
     try {
       document.getElementById("my_modal_3").showModal();
       // try {
@@ -376,9 +385,10 @@ export default function chackData() {
 
       if (response.data.HTTPStatus.statusCode < 400) {
         setResult(response.data);
-       //   console.log(response.data)
+        console.log(response.data)
         setShowFormCheckEligibleError();
       } else {
+        console.log(response.data)
         setShowFormCheckEligibleError("Error");
         setMassError(response.data.HTTPStatus.message);
       }

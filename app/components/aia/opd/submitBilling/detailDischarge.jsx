@@ -8,7 +8,7 @@ import axios from "axios";
 
 export default function DetailDischarge({data}) {
   const [patientInfo, setPatientInfo] = useState({});
-  //console.log(data)
+ // console.log(data)
   // const [patientInfo, setPatientInfo] = useState("");
   const [patien, setPatien] = useState();
   const [visit, setVisit] = useState();
@@ -53,35 +53,35 @@ export default function DetailDischarge({data}) {
   document.getElementById('my_modal_4').showModal();
 }, [data]);
 
-useEffect(() => {
-  axios
-.post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-opddischarge/getOPDDischargePatient",{
-  patientInfo
-})
-.then((response) => {
-  setPatien(response.data);
-})
-.catch((err) => {
- // console.error("Error", err)
-  console.log(err)
-});
-}, [data]);
+// useEffect(() => {
+//   axios
+// .post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-opddischarge/getOPDDischargePatient",{
+//   patientInfo
+// })
+// .then((response) => {
+//   setPatien(response.data);
+// })
+// .catch((err) => {
+//  // console.error("Error", err)
+//   console.log(err)
+// });
+// }, [data]);
 
-useEffect(() => {
-  axios
-  .post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-opddischarge/getOPDDischargeVisit",{
-    patientInfo
-  })
-  .then((response) => {
-    setVisit(response.data);
+// useEffect(() => {
+//   axios
+//   .post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-opddischarge/getOPDDischargeVisit",{
+//     patientInfo
+//   })
+//   .then((response) => {
+//     setVisit(response.data);
 
-  })
-  .catch((err) => {
-   // console.error("Error", err)
-    console.log(err)
-  });
+//   })
+//   .catch((err) => {
+//    // console.error("Error", err)
+//     console.log(err)
+//   });
 
-}, [data]);
+// }, [data]);
 
      // console.log(patientInfo)
   return (
@@ -131,7 +131,13 @@ useEffect(() => {
                 <Box sx={{backgroundColor: '#e5e7eb', padding: 0, borderRadius: 0,}}>
                 {/* <TextField id="standard-basic" className="text-black bg-gray-200 border border-gray-300 rounded p-2 disabled:text-black" label="HN" variant="standard" value={PatientInfo.HN} /> */}
                 <TextField disabled id="outlined-disabled" label="HN" defaultValue={patientInfo.HN} className="w-full  text-black border border-black rounded disabled:text-black"/>
-           </Box>
+                </Box>
+                </div>
+                <div className="rounded-md">
+                <Box sx={{backgroundColor: '#e5e7eb', padding: 0, borderRadius: 0,}}>
+                {/* <TextField id="standard-basic" className="text-black bg-gray-200 border border-gray-300 rounded p-2 disabled:text-black" label="HN" variant="standard" value={PatientInfo.HN} /> */}
+                <TextField disabled id="outlined-disabled" label="VN" defaultValue={patientInfo.VN} className="w-full  text-black border border-black rounded disabled:text-black"/>
+                </Box>
                 </div>
           
                 {patien ? (

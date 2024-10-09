@@ -40,6 +40,9 @@ const  ReDux  = useSelector((state) => ({ ...state }));
   const [toValue, setToValue] = useState(null);
   const [massError, setMassError] = useState("");
   const [showFormError, setShowFormError] = useState("");
+  const [invoiceNumberL, setInvoiceNumberL] = useState("");
+  const [massCancel, setMassCancel] = useState("");
+  const [showFormCancel, setShowFormCancel] = useState("");
   const [billList, setBillList] = useState("");
   const [showModal, setShowModal] = useState(false);
   const router = useRouter();
@@ -54,22 +57,72 @@ const  ReDux  = useSelector((state) => ({ ...state }));
   const [detailData , setDetailData] = useState("");
   const [statusValue, setStatusValue] = useState("");
   const [claimStatus, setClaimStatus] = useState("");
-
+  const [showDocError, setShowDocError] = useState("");
+console.log(post)
   useEffect(() => {
-    const getClaimStatus = async () => {
-      const response = await fetch(
-        process.env.NEXT_PUBLIC_URL_SV + "v1/utils/claimStatus/"
-      );
+    axios
+    .get(process.env.NEXT_PUBLIC_URL_SV + process.env.NEXT_PUBLIC_URL_claimStatus + InsuranceCode)
+    .then((response) => {
+      setClaimStatus(response.data)
+      //console.log(response.data)
+    })
+    .catch((error) => {
+      console.log(error)
+      // try{
+      //   const ErrorMass = error.config.url
+      //   const [ErrorMass1, ErrorMass2] = ErrorMass.split('v1/');
+      //   setMassSummitError(error.code +" - "+error.message +" - "+ErrorMass2);
+      //   setShowSummitError("Error")
+      // }
+      // catch (error) {
+      //   setMassSummitError(error.response.data.HTTPStatus.message);
+      //   setShowSummitError("Error");
+     });
 
-      const data = await response.json();
-      setClaimStatus(data);
-    };
-    getClaimStatus();
   }, []);
-  const Status = (event) => {
+  const status = (event) => {
     setStatusValue(event.target.value);
   }
 
+  const handleButtonClick = (data) => {
+    setShowDocError();
+    const [RefId, TransactionNo, PID , PassportNumber , IdType , HN , VN , InvoiceNumber] = data.split(' | ');
+    setRefIdL(RefId)
+    setTransactionNoL(TransactionNo)
+    setHNL(HN)
+    setVNL(VN)
+    setInvoiceNumberL(InvoiceNumber)
+    setMsg(null)
+
+    const PatientInfo = {
+      InsurerCode: InsuranceCode, 
+      RefId: RefId,
+      TransactionNo: TransactionNo,
+      PID: PID,
+      PassportNumber: PassportNumber,
+      IdType: IdType,
+      HN: HN,
+      VN: VN,
+    }
+
+
+
+    axios
+      .post(process.env.NEXT_PUBLIC_URL_PD2 + process.env.NEXT_PUBLIC_URL_getlistDocumentName,{PatientInfo})
+      .then((response) => {
+        setBillList(response.data);
+      })
+      .catch((err) => {
+       // console.error("Error", err)
+        console.log(err)
+        //  if (err.response.request.status === 500) {
+                 setShowFormError("Error");
+                 setMassError(err.response.data.HTTPStatus.message);
+             })  
+
+document.getElementById("my_modal_3").showModal()
+
+   }
 
 const handleUpload = async () => {
   if (!file){
@@ -91,46 +144,46 @@ setProgress(prevState => {
   return { ...prevState, started: true }
 })
 try{
-  const response = await axios.post(process.env.NEXT_PUBLIC_URL_PD +  "v1/utils/uploadDocuments", formData, {
-      onUploadProgress: (progressEvent) => {  setProgress(prevState => {
-        return { ...prevState, pc: progressEvent.progress*100 }
-      })},
-      headers: {
-        "Content-Type": "multipart/form-data",
-      }
-    })
-    setMsg(<div role="alert" className="alert alert-success text-base-100">
-       <svg
-    xmlns="http://www.w3.org/2000/svg"
-    className="h-6 w-6 shrink-0 stroke-current"
-    fill="none"
-    viewBox="0 0 24 24">
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth="2"
-      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-  </svg>
-  Upload Successful</div>)
-// console.log("server response",response.data)
-axios
-.post(process.env.NEXT_PUBLIC_URL_PD + "v1/utils/getlistDocumentName",{
-  RefId : RefIdL,
-  TransactionNo : TransactionNoL,
-  HN : HNL,
-  VN : VNL,
-})
-.then((response) => {
-  setBillList(response.data);
-  //console.log(response.data)
-})
-.catch((err) => {
- // console.error("Error", err)
-  console.log(err)
-  //  if (err.response.request.status === 500) {
-          // setShowFormError("Error");
-          // setMassError(err.response.data.HTTPStatus.message);
-       })  
+//   const response = await axios.post(process.env.NEXT_PUBLIC_URL_PD +  "v1/utils/uploadDocuments", formData, {
+//       onUploadProgress: (progressEvent) => {  setProgress(prevState => {
+//         return { ...prevState, pc: progressEvent.progress*100 }
+//       })},
+//       headers: {
+//         "Content-Type": "multipart/form-data",
+//       }
+//     })
+//     setMsg(<div role="alert" className="alert alert-success text-base-100">
+//        <svg
+//     xmlns="http://www.w3.org/2000/svg"
+//     className="h-6 w-6 shrink-0 stroke-current"
+//     fill="none"
+//     viewBox="0 0 24 24">
+//     <path
+//       strokeLinecap="round"
+//       strokeLinejoin="round"
+//       strokeWidth="2"
+//       d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+//   </svg>
+//   Upload Successful</div>)
+// // console.log("server response",response.data)
+// axios
+// .post(process.env.NEXT_PUBLIC_URL_PD + "v1/utils/getlistDocumentName",{
+//   RefId : RefIdL,
+//   TransactionNo : TransactionNoL,
+//   HN : HNL,
+//   VN : VNL,
+// })
+// .then((response) => {
+//   setBillList(response.data);
+//   //console.log(response.data)
+// })
+// .catch((err) => {
+//  // console.error("Error", err)
+//   console.log(err)
+//   //  if (err.response.request.status === 500) {
+//           // setShowFormError("Error");
+//           // setMassError(err.response.data.HTTPStatus.message);
+//        })  
 } catch (error){
   setProgress({ started: false, pc: 0 });
   console.log(error)
@@ -152,42 +205,35 @@ axios
 const Refresh = (data) => {
   setShowFormError()
   console.log("-Refresh-")
-  const [RefId, TransactionNo , HN , VN] = data.split(' | ');
-  console.log({
-    RefId : RefId,
-    TransactionNo : TransactionNo,
-    HN : HN,
-    VN : VN,
-  })
-
+  const [RefId, TransactionNo, PID , PassportNumber , IdType , HN , VN] = data.split(' | ');
+  const PatientInfo = {
+    InsurerCode: InsuranceCode, 
+    RefId: RefId,
+    TransactionNo: TransactionNo,
+    PID: PID,
+    PassportNumber: PassportNumber,
+    IdType: IdType,
+    HN: HN,
+    VN: VN,
+  }
 
   axios
-  .post(process.env.NEXT_PUBLIC_URL_PD + "v1/aia-checkclaimstatus/checkclaimstatus",
-    {
-      "PatientInfo": {
-    InsurerCode: InsuranceCode, 
-     RefId: RefId,
-	TransactionNo: TransactionNo,
-    PID: ReDux.Patient.Data.PID,
-    HN: HN,
-    PassportNumber: ReDux.Patient.Data.PassportNumber,
-    IdType:"HOSPITAL_ID",
-    VN: VN,
-    ClaimNo:""
-          }
-        }
-  )
+  .post(process.env.NEXT_PUBLIC_URL_PD + process.env.NEXT_PUBLIC_URL_getcheckclaimstatus,{PatientInfo})
   .then((response) => {
     console.log(response.data)
 
     if(response.data.HTTPStatus.statusCode === 200){
       setStatusNew((prevData) => ({
       ...prevData,
-      ClaimstatusName : response.data.Result.Data.ClaimstatusName, 
-      RefId : response.data.Result.Data.RefId,
-      TransactionNo : response.data.Result.Data.transactionNo,
-      HN : response.data.Result.Data.HN,     
-      VN : response.data.Result.Data.VN,
+      InsurerCode: response.data.Result.InsuranceData.InsurerCode,
+      BatchNumber: response.data.Result.InsuranceData.BatchNumber,
+      ClaimStatus: response.data.Result.InsuranceData.ClaimStatus,
+      ClaimStatusDesc: response.data.Result.InsuranceData.ClaimStatusDesc,
+      TotalApproveAmount: response.data.Result.InsuranceData.TotalApproveAmount,
+      PaymentDate: response.data.Result.InsuranceData.PaymentDate,
+      InvoiceNumber: response.data.Result.InsuranceData.InvoiceNumber,
+      // HN : response.data.Result.InsuranceData.HN,     
+      // VN : response.data.Result.InsuranceData.VN,
     }));
   }else{
     setShowFormError("Error");
@@ -201,38 +247,39 @@ const Refresh = (data) => {
     //   //router.push('/aia/opd/submitBilling');
     // }, 5000);
   // })
-  .catch((err) => {
+  .catch((error) => {
    // console.error("Error", err)
-    console.log(err)
+    console.log(error)
     //  if (err.response.request.status === 500) {
              setShowFormError("Error");
-             setMassError(err.response.data.HTTPStatus.message);
+             setMassError(error.response.data.HTTPStatus.message);
          })  
 };
 
 const Detail = (data) => {
+  
   //console.log("-Detail-")
   setShowFormError()
-  const [RefId, TransactionNo , HN , VN , GivenNameEN , GivenNameTH , IllnessType , SurnameEN , SurnameTH , TitleEN , TitleTH , VisitDateTime , PID , PassportNumber , SurgeryTypeCode , FurtherClaimNo , FurtherClaimId , DateOfBirth] = data.split(' | ');
+  const [RefId, TransactionNo, PID , PassportNumber , IdType , HN , VN] = data.split(' | ');
   setDetailData({
     RefId : RefId,
     TransactionNo : TransactionNo,
     HN : HN,
     VN : VN,
-    GivenNameEN : GivenNameEN,
-    GivenNameTH : GivenNameTH,
-    IllnessType : IllnessType,
-    SurnameEN : SurnameEN,
-    SurnameTH : SurnameTH,
-    TitleEN : TitleEN,
-    TitleTH : TitleTH,
-    VisitDateTime : VisitDateTime,
+    GivenNameEN : "",
+    GivenNameTH : "",
+    IllnessType : "",
+    SurnameEN : "",
+    SurnameTH : "",
+    TitleEN : "",
+    TitleTH : "",
+    VisitDateTime : "",
     PID : PID,
     PassportNumber : PassportNumber,
-    SurgeryTypeCode : SurgeryTypeCode,
-    FurtherClaimNo : FurtherClaimNo,
-    FurtherClaimId : FurtherClaimId,
-    DateOfBirth : DateOfBirth,
+    SurgeryTypeCode : "",
+    FurtherClaimNo : "",
+    FurtherClaimId : "",
+    DateOfBirth : "",
   })
 
 //   dispatch(save2({
@@ -302,12 +349,95 @@ const Detail = (data) => {
   //            setMassError(err.response.data.HTTPStatus.message);
   //        })  
 };
+const submitbilling = (event) => {
+  event.preventDefault();
+      //วนลูบ DocList
+  let filenames = {};
+  filenames = billList.map(Bll => ({ DocName: Bll.filename }));
 
-const Cancel = () => {
+  axios
+    .post(process.env.NEXT_PUBLIC_URL_PD2 + "v1/aia-billing-submission/getbilling-submission",{
+      InsurerCode: InsuranceCode, 
+      RefId: refIdL,
+    TransactionNo: transactionNoL,
+      PID: "",
+      HN: hNL,
+      PassportNumber:"",
+      IdType:"",
+      VN: vNL,
+      ClaimNo:"",
+      Invoicenumber: "",
+      AttachDocList: [
+                        filenames,
+                      ]
+  })
+    .then((response) => {
+      console.log(response.data)
+      document.getElementById("my_modal_3").close()
+      setShowModal(true)
+      setTimeout(() => {
+        setShowModal(false)
+        //router.push('/aia/opd/submitBilling');
+      }, 2000);
+    })
+    .catch((err) => {
+     // console.error("Error", err)
+      console.log(err)
+      //  if (err.response.request.status === 500) {
+               setShowFormError("Error");
+             //  setMassError(err.response.data.HTTPStatus.message);
+           })  
+}
+const Cancel = (data) => {
+ // setPost();
+  setShowFormError()
   // console.log("-Cancel-")
   const isConfirmed = window.confirm('แน่ใจแล้วที่จะยกเลิกการเคลมใช่ไหม');
   if (isConfirmed) {
-    console.log('Item deleted');
+
+    const [RefId, TransactionNo, PID , PassportNumber , IdType , HN , VN] = data.split(' | ');
+    const PatientInfo = {
+      InsurerCode: InsuranceCode, 
+      RefId: RefId,
+      TransactionNo: TransactionNo,
+      PID: PID,
+      PassportNumber: PassportNumber,
+      IdType: IdType,
+      HN: HN,
+      VN: VN,
+    }
+
+    axios
+    .post(process.env.NEXT_PUBLIC_URL_PD + process.env.NEXT_PUBLIC_URL_getclaimcancel,{PatientInfo})
+    .then((response) => {
+      console.log(response.data)
+  
+      if(response.data.HTTPStatus.statusCode === 200){
+      setMassCancel(response.data.Result.InsuranceData.Status)
+      setShowFormCancel("Cancel")
+
+    }else{
+      setShowFormError("Error");
+      setMassError(response.data.HTTPStatus.error);
+    }
+      
+    })
+      // setShowModal(true)
+      // setTimeout(() => {
+      //   setShowModal(false)
+      //   //router.push('/aia/opd/submitBilling');
+      // }, 5000);
+    // })
+    .catch((error) => {
+     // console.error("Error", err)
+      console.log(error)
+      //  if (err.response.request.status === 500) {
+               setShowFormError("Error");
+               setMassError(error.response.data.HTTPStatus.message);
+           })  
+
+
+
   }
 };
 
@@ -325,6 +455,7 @@ const Cancel = () => {
   const handleSubmit =  (event) => {
     event.preventDefault();
     setPost();
+    setShowFormError();
     let data = {};
     let  dateToValue  = "";
     let dateFromValue = "";
@@ -338,76 +469,29 @@ const Cancel = () => {
 
   if (selectedIdType === "VN" && numberValue){
   
-  data = {
-    Insurerid: InsuranceCode,
-    Status: "09",
+  const PatientInfo = {
+    InsurerCode: InsuranceCode,
+   // Status: "09",
     IdType: selectedIdType,
     Invoice: "",
     VN: numberValue,
     PID : ReDux.Patient.Data.PID,
     PassportNumber : ReDux.Patient.Data.PassportNumber,
     HN : ReDux.Patient.Data.HN,
-    DateVisitFrom : dateFromValue,
-    ToValue : dateToValue,
-    Claimstatuscode : statusValue,
-    };
-}else if (selectedIdType === "Invoice" && numberValue){
-  data = {
-    Insurerid: InsuranceCode,
-    Status: "09",
-    IdType: selectedIdType,
-    Invoice: numberValue,
-    VN: "",
-    PID : ReDux.Patient.Data.PID,
-    PassportNumber : ReDux.Patient.Data.PassportNumber,
-    HN : ReDux.Patient.Data.HN,
-    DateVisitFrom : dateFromValue,
-    ToValue : dateToValue,
-    Claimstatuscode : statusValue,
-    };
-}else if (fromValue && toValue){
-  data = {
-      PID : ReDux.Patient.Data.PID,
-      PassportNumber : ReDux.Patient.Data.PassportNumber,
-      HN : ReDux.Patient.Data.HN,
-      Insurerid: InsuranceCode,
-      Status: "09",
-      IdType: "",
-      VN: "",
-      Invoice: "",
-      DateVisitFrom : dateFromValue,
-      ToValue : dateToValue,
-      Claimstatuscode : statusValue,
+    VisitDatefrom : dateFromValue,
+    VisitDateto : dateToValue,
+    StatusClaimCode : statusValue,
+    RefId: "",
+    TransactionNo: ""
     };
 
-}else if (statusValue){
-  data = {
-    PID : "",
-    HN : "",
-      Insurerid: "",
-      IdType: "",
-      VN: "",
-      Invoice: "",
-      DateVisitFrom : dateFromValue,
-      DateVisitTo : dateToValue,
-      Claimstatuscode : statusValue,
-    };
-}
-if(Object.keys(data).length === 0){
-  setShowFormError("Error");
-  setMassError("กรุณากรอก ข้อความที่จะค้นหาให้ครบ");
-}else{
-  setShowFormError()
-console.log(data)
+console.log(PatientInfo)
 
 axios
-.post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-submitbilling/selectbilling",
-        //ส่งเป็น statisCode
-        data
-)
+.post(process.env.NEXT_PUBLIC_URL_SV + process.env.NEXT_PUBLIC_URL_FindtransectionByVN,{PatientInfo})
 .then((response) => {
   setPost(response.data);
-  setShowFormError("");
+  setShowFormError();
 })
 .catch((error) => {
  // console.error("Error", err)
@@ -418,7 +502,82 @@ axios
 
 });
 
+
+}else if (selectedIdType === "Invoice" && numberValue){
+  const PatientInfo = {
+    Insurerid: InsuranceCode,
+    //Status: "09",
+    IdType: selectedIdType,
+    Invoice: numberValue,
+    VN: "",
+    PID : ReDux.Patient.Data.PID,
+    PassportNumber : ReDux.Patient.Data.PassportNumber,
+    HN : ReDux.Patient.Data.HN,
+    VisitDatefrom : dateFromValue,
+    VisitDateto : dateToValue,
+    StatusClaimCode : statusValue,
+        RefId: "",
+    TransactionNo: ""
+    };
+}else if (fromValue && toValue){
+  const PatientInfo = {
+      PID : ReDux.Patient.Data.PID,
+      PassportNumber : ReDux.Patient.Data.PassportNumber,
+      HN : ReDux.Patient.Data.HN,
+      Insurerid: InsuranceCode,
+      //Status: "09",
+      IdType: "",
+      VN: "",
+      Invoice: "",
+      VisitDatefrom : dateFromValue,
+      VisitDateto : dateToValue,
+      StatusClaimCode : statusValue,
+          RefId: "",
+    TransactionNo: ""
+    };
+
+}else if (statusValue){
+  const PatientInfo = {
+    PID : "",
+    HN : "",
+      Insurerid: "",
+      IdType: "",
+      VN: "",
+      Invoice: "",
+      VisitDatefrom : dateFromValue,
+      VisitDateto : dateToValue,
+      StatusClaimCode : statusValue,
+          RefId: "",
+    TransactionNo: ""
+    };
 }
+
+// if(Object.keys(data).length === 0){
+//   setShowFormError("Error");
+//   setMassError("กรุณากรอก ข้อความที่จะค้นหาให้ครบ");
+// }else{
+//   setShowFormError()
+// console.log(data)
+
+// // axios
+// // .post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-submitbilling/selectbilling",
+// //         //ส่งเป็น statisCode
+// //         data
+// // )
+// // .then((response) => {
+// //   setPost(response.data);
+// //   setShowFormError("");
+// // })
+// // .catch((error) => {
+// //  // console.error("Error", err)
+// //   console.log(error)
+
+// //           setShowFormError("Error");
+// //           setMassError(error.message);
+
+// // });
+
+// }
 
 
 
@@ -503,11 +662,11 @@ axios
           id="demo-simple-select"
           value={statusValue}
           label="Claim Status"
-          onChange={Status}
+          onChange={status}
         >
           {claimStatus
-                ? claimStatus.map((status, index) => (
-                    <MenuItem key={index} value={status.StatusCode}>{status.StatusDescTH}</MenuItem>
+                ? claimStatus.Result.map((status, index) => (
+                    <MenuItem key={index} value={status.claimstatuscode}>{status.claimstatusdesc_en} - {status.claimstatusdesc_th}</MenuItem>
                   ))
                 : ""}
 
@@ -549,6 +708,23 @@ axios
             </div>
             ) : ""
             }
+         {showFormCancel === "Cancel" ? (
+            <div role="alert" className="alert alert-success mt-2 text-base-100">
+ <svg
+    xmlns="http://www.w3.org/2000/svg"
+    className="h-6 w-6 shrink-0 stroke-current"
+    fill="none"
+    viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="2"
+      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+  </svg>
+              <span>{massCancel}</span>
+            </div>
+            ) : ""
+            }
 
           
  <table className="table mt-2">
@@ -567,8 +743,8 @@ axios
       </tr>
     </thead>
     <tbody>
-    {post ? post.HTTPStatus.statusCode === 200 ? 
-    (post.Result.Data.map((bill, index) => (
+     {post ? post.HTTPStatus.statusCode === 200 ? 
+    (post.Result.TransactionClaimInfo.map((bill, index) => (
 <tr className="hover text-center" key={index}>
    <th>{index+1}
    </th>
@@ -576,34 +752,43 @@ axios
       <td>{bill.TitleTH} {bill.GivenNameTH} {bill.SurnameTH}</td>
       <td>{bill.VN}</td>
       <td>{bill.ClaimNo}</td>
-      <td>{bill.invoicenumber}</td>
-        <td ><a className="bg-success text-base-100 rounded-full px-3 py-2">{statusNew ? (bill.RefId === statusNew.RefId ? (statusNew.ClaimstatusName) : bill.ClaimstatusName) : "Loading..."}</a></td>
-        <th>{bill.TotalAmount}</th>
+      <td>{bill.InvoiceNumber}</td>
+        <td ><a className="bg-success text-base-100 rounded-full px-3 py-2">{statusNew ? (bill.RefId === statusNew.RefId ? (statusNew.ClaimStatusDesc) : bill.ClaimStatusDesc) : "Loading..."}</a></td>
+        <th>{bill.TotalApprovedAmount ? bill.TotalApprovedAmount+" บาท" : ""}</th>
         <td>
     <div className="tooltip" data-tip="Refresh">
-        <h1 className="text-primary text-2xl" onClick={() => Refresh(`${bill.RefId} | ${bill.TransactionNo} | ${bill.HN} | ${bill.VN}`)}><LuRefreshCw /></h1>
+        <h1 className="text-primary text-2xl" onClick={() => Refresh(`${bill.RefId} | ${bill.TransactionNo} | ${bill.PID} | ${bill.PassportNumber} | ${bill.IdType}  | ${bill.HN} | ${bill.VN}| ${bill.InvoiceNumber}`)}><LuRefreshCw /></h1>
     </div>
     <div className="tooltip ml-4" data-tip="Detail">
-        <h1 className="text-primary text-2xl" onClick={() => Detail(`${bill.RefId} | ${bill.TransactionNo} | ${bill.HN} | ${bill.VN} | ${bill.GivenNameEN} | ${bill.GivenNameTH} | ${bill.IllnessType} | ${bill.SurnameEN} | ${bill.SurnameTH} | ${bill.TitleEN} | ${bill.TitleTH} | ${bill.VisitDateTime} | ${bill.PID} | ${bill.PassportNumber} | ${bill.SurgeryTypeCode} | ${bill.FurtherClaimNo} | ${bill.FurtherClaimId} | ${bill.DateOfBirth}`)}><IoDocumentText /></h1>
+        <h1 className="text-primary text-2xl" onClick={() => Detail(`${bill.RefId} | ${bill.TransactionNo} | ${bill.PID} | ${bill.PassportNumber} | ${bill.IdType}  | ${bill.HN} | ${bill.VN}| ${bill.InvoiceNumber}`)}><IoDocumentText /></h1>
     </div>
     {statusNew ?
-    (bill.RefId ? (bill.ClaimstatusName === "ได้รับเอกสารแล้ว" ? (
-      
+    (bill.RefId ? (bill.ClaimStatusDesc === "Approve" ? (
+      <>
     <div className="tooltip ml-4" data-tip="Cancel Claim">
-    <h1 className="text-primary text-2xl" onClick={() =>Cancel(`${bill.RefId} | ${bill.TransactionNo} | ${bill.HN} | ${bill.VN}`)}><MdCancel /></h1>
-</div>
+      <h1 className="text-primary text-2xl" onClick={() =>Cancel(`${bill.RefId} | ${bill.TransactionNo} | ${bill.PID} | ${bill.PassportNumber} | ${bill.IdType}  | ${bill.HN} | ${bill.VN}| ${bill.InvoiceNumber}`)}><MdCancel /></h1>
+    </div>
+
+        </>
     ): "" )
       : "Loading...")
 : ""}
    
-</td>
+      </td>
 <td>
-    {/* <button className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100"
-        onClick={() => handleButtonClick(`${bill.RefId} | ${bill.TransactionNo} | ${bill.HN} | ${bill.VN}`)}
-        >วางบิล</button> */}
-    </td>
-       
-      </tr>
+{statusNew ?
+    (bill.RefId ? (bill.ClaimStatusDesc === "Approve" ? (
+      <>
+      <button className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100 ml-4"
+        onClick={() => handleButtonClick(`${bill.RefId} | ${bill.TransactionNo} | ${bill.PID} | ${bill.PassportNumber} | ${bill.IdType}  | ${bill.HN} | ${bill.VN}| ${bill.InvoiceNumber}`)}
+        >วางบิล</button> 
+  
+  </>
+    ): "" )
+      : "Loading...")
+: ""}
+       </td>
+</tr>
 
    ) 
   )): (
@@ -632,7 +817,7 @@ axios
       <td></td>
       <th></th>
       </tr>
-    )}
+    )} 
     </tbody>
   </table>
 
@@ -640,6 +825,105 @@ axios
 
 {detailData ? <DetailDischarge data={detailData}/>: ""}
 
+
+
+
+
+<dialog id="my_modal_3" className="modal text-xl	">
+                            <div className="modal-box">
+                              <form method="dialog">
+                                <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
+                                  ✕
+                                </button>
+
+                                <h3 className="font-bold text-lg">
+                                  ส่งเอกสาร วางบิล
+                                </h3>
+                                <hr />
+          <div className="grid gap-2 w-full mt-2">
+            <div className="px-2 rounded-md">
+              <div className="flex items-center ">
+                            <input type="file" accept=".pdf" className="file-input file-input-bordered file-input-info w-5/6" onChange={ (e) => { setFile(e.target.files[0]) } } /> 
+                            <div className="btn btn-success text-base-100 hover:text-success hover:bg-base-100 w-1/6 ml-2" onClick={ handleUpload }>
+                                <FaCloudUploadAlt className="size-6"/>
+                            </div>
+              </div>
+            </div>
+          </div>
+{ progress.started && <progress max="100" value={progress.pc} className="mt-2 w-full"></progress> }
+<br /> 
+<h1 className="text-center">{ msg }</h1>
+
+{showDocError === "Error" ? (
+            <div role="alert" className="alert alert-error mt-2 text-base-100">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6 shrink-0 stroke-current"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <span>{massDocError}</span>
+            </div>
+            ) : ""
+            }
+
+
+
+
+                              <div className="flex items-center mt-3">
+             <table className="table table-zebra mt-2">
+                <thead >
+                  <tr className="text-base-100 bg-primary py-8 text-sm w-full text-center">
+                      <th className="w-2/5">ชื่อไฟล์</th>
+                      <th className="w-1/5"></th>
+                    </tr>
+                </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                   {billList
+                      ? billList.map((list, index) => (
+                          <tr
+                             key={index}
+                            className=" bg-neutral text-sm"
+                          >
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              {list.filename}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="tooltip" data-tip="Document">
+                              <div className="btn btn-warning  mr-2" type="submit" onClick={() => DocumentBase64(list.filename)}><IoIosDocument /></div>
+                            </div>
+                              <div className="tooltip" data-tip="Cancel Claim">
+                                <div className="btn btn-error " type="submit"><MdCancel /></div>
+                              </div>
+                            </td>
+                          </tr>
+                    ))
+                      : (
+                        <tr>
+                          <td></td>
+                          <td></td>
+                        </tr>
+                      )} 
+                  </tbody>
+              </table>
+                              </div>
+                                <div className="modal-action">
+                                    <div className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100"
+                                  onClick={submitbilling}
+                                    >
+                                      ส่งบิล
+                                    </div>
+                                </div>
+                              </form>
+                            </div>
+                          </dialog>
 </div>
 </div>
 
