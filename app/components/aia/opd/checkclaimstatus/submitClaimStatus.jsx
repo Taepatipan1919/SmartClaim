@@ -53,6 +53,9 @@ export default function chackData() {
   const [claimStatus, setClaimStatus] = useState();
   const router = useRouter();
 
+  const status = (event) => {
+    setStatusValue(event.target.value);
+  }
 
 
   const Refresh = (data) => {
@@ -352,7 +355,7 @@ if(Object.keys(data).length === 0){
           id="demo-simple-select"
           value={statusValue}
           label="Claim Status"
-          onChange={Status}
+          onChange={status}
         >
           {claimStatus
                 ? claimStatus.Result.map((status, index) => (
@@ -405,6 +408,7 @@ if(Object.keys(data).length === 0){
       <tr>
         <th></th>
         <th>Visit Date</th>
+        <th>HN</th>
         <th>Full Name</th>
         <th>VN</th>
         <th>ClaimNo</th>
@@ -420,6 +424,7 @@ if(Object.keys(data).length === 0){
 <tr className="hover text-center" key={index}>
    <th>{index+1}</th>
    <td>{bill.VisitDateTime}</td>
+   <td>{bill.HN}</td>
       <td>{bill.TitleTH} {bill.GivenNameTH} {bill.SurnameTH}</td>
       <td>{bill.VN}</td>
       <td>{bill.ClaimNo}</td>

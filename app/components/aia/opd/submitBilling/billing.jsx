@@ -167,11 +167,11 @@ const Refresh = (data) => {
     TransactionNo: TransactionNo,
     PID: PID,
     PassportNumber: PassportNumber,
-    IdType: IdType,
+    //IdType: IdType,
     HN: HN,
     VN: VN,
   }
-
+console.log(PatientInfo)
   axios
   .post(process.env.NEXT_PUBLIC_URL_PD + process.env.NEXT_PUBLIC_URL_getcheckclaimstatus,{PatientInfo})
   .then((response) => {
@@ -207,7 +207,7 @@ const Refresh = (data) => {
     console.log(error)
     //  if (err.response.request.status === 500) {
              setShowFormError("Error");
-             setMassError(error.response.data.HTTPStatus.message);
+            //  setMassError(error.response.data.HTTPStatus.message);
          })  
 };
 
@@ -397,7 +397,7 @@ const Cancel = (data) => {
       HN : ReDux.Patient.Data.HN,
       VisitDatefrom : dateFromValue,
       VisitDateto : dateToValue,
-      StatusClaimCode : "09",
+      StatusClaimCode : "",
       RefId: "",
       TransactionNo: ""
       };
@@ -406,10 +406,11 @@ const Cancel = (data) => {
       console.log(PatientInfo)
 
       axios
-      .post(process.env.NEXT_PUBLIC_URL_SV + process.env.NEXT_PUBLIC_URL_FindtransectionByVN,{PatientInfo})
+      .post(process.env.NEXT_PUBLIC_URL_SV + process.env.NEXT_PUBLIC_URL_SearchTransection,{PatientInfo})
       .then((response) => {
       
         setPost(response.data);
+        console.log(response.data);
         setShowFormError();
       })
       .catch((error) => {
@@ -484,99 +485,6 @@ const Cancel = (data) => {
 }
 
 
-   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-  const handleSubmit2 = (event) => {
-  //วางบิลแล้ว
-  event.preventDefault();
-  setPost();
-  let data = {};
-  let  dateToValue  = "";
-    let dateFromValue = "";
-
-
-if(fromValue && toValue){
-  dateFromValue = dayjs(fromValue.$d).format('YYYY-MM-DD');
-  dateToValue = dayjs(toValue.$d).format('YYYY-MM-DD');
-
-}
-
-if (selectedIdType === "VN" && numberValue){
-
-data = {
-  Insurerid: InsuranceCode,
-  Status: "03",
-  IdType: selectedIdType,
-  Invoice: "",
-  VN: numberValue,
-  PID : ReDux.Patient.Data.PID,
-  PassportNumber : ReDux.Patient.Data.PassportNumber,
-  HN : ReDux.Patient.Data.HN,
-  DateVisitFrom : dateFromValue,
-  DateVisitTo : dateToValue,
-  };
-}else if (selectedIdType === "Invoice" && numberValue){
-data = {
-  Insurerid: InsuranceCode,
-  Status: "03",
-  IdType: selectedIdType,
-  Invoice: numberValue,
-  VN: "",
-  PID : ReDux.Patient.Data.PID,
-  PassportNumber : ReDux.Patient.Data.PassportNumber,
-  HN : ReDux.Patient.Data.HN,
-  DateVisitFrom : dateFromValue,
-  DateVisitTo : dateToValue,
-  };
-}else if (fromValue && toValue){
-data = {
-  PID : ReDux.Patient.Data.PID,
-  PassportNumber : ReDux.Patient.Data.PassportNumber,
-  HN : ReDux.Patient.Data.HN,
-    Insurerid: InsuranceCode,
-    Status: "03",
-    IdType: "",
-    VN: "",
-    Invoice: "",
-    DateVisitFrom : dateFromValue,
-    DateVisitTo : dateToValue,
-  };
-
-}
-// if(Object.keys(data).length === 0){
-// setShowFormError("Error");
-// setMassError("กรุณากรอก ข้อความที่จะค้นหาให้ครบ");
-// }else{
-// setShowFormError()
-// console.log(data)
-
-// axios
-// .post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-submitbilling/selectbilling",
-//       //ส่งเป็น statisCode
-//       data
-// )
-// .then((response) => {
-// setPost(response.data);
-// setShowFormError("");
-// })
-// .catch((error) => {
-// // console.error("Error", err)
-// console.log(error)
-
-//         setShowFormError("Error");
-//         setMassError(error.message);
-
-// });
-
-// }
-
-
-    }
    const submitbilling = (event) => {
     setShowDocError()
     event.preventDefault();
@@ -724,9 +632,9 @@ document.getElementById("my_modal_3").showModal()
 
   return (
     <>
-    <div role="tablist" className="tabs tabs-lifted">
-      <input type="radio" name="my_tabs_2" role="tab" className="tab text-error" aria-label="รายการที่ยังไม่วางบิล" defaultChecked/>
-    <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6 w-5/5">
+    {/* <div role="tablist" className="tabs tabs-lifted">
+      <input type="radio" name="my_tabs_2" role="tab" className="tab text-error" aria-label="รายการที่ยังไม่วางบิล" defaultChecked/> */}
+    <div  className="bg-base-100 border-base-300 rounded-box w-5/5">
     
     <form onSubmit={handleSubmit}>
     <div className="grid gap-1 sm:grid-cols-1 w-full">
@@ -800,7 +708,7 @@ document.getElementById("my_modal_3").showModal()
 
   </form>
   </div>
-
+{/* 
   <input
     type="radio"
     name="my_tabs_2"
@@ -881,7 +789,7 @@ document.getElementById("my_modal_3").showModal()
 
   </form>
   </div>
-  </div>
+  </div> */}
 
 
 
@@ -939,16 +847,16 @@ document.getElementById("my_modal_3").showModal()
         <th>{bill.TotalApprovedAmount ? bill.TotalApprovedAmount+" บาท" : ""}</th>
         <td>
     <div className="tooltip" data-tip="Refresh">
-        <h1 className="text-primary text-2xl" onClick={() => Refresh(`${bill.RefId} | ${bill.TransactionNo} | ${bill.PID} | ${bill.PassportNumber} | ${bill.IdType}  | ${bill.HN} | ${bill.VN}| ${bill.InvoiceNumber}`)}><LuRefreshCw /></h1>
+        <h1 className="text-primary text-2xl" onClick={() => Refresh(`${bill.RefId} | ${bill.TransactionNo} | ${bill.PID} | ${bill.PassportNumber} | ${bill.IdType}  | ${bill.HN} | ${bill.VN} | ${bill.InvoiceNumber}`)}><LuRefreshCw /></h1>
     </div>
     <div className="tooltip ml-4" data-tip="Detail">
-        <h1 className="text-primary text-2xl" onClick={() => Detail(`${bill.RefId} | ${bill.TransactionNo} | ${bill.PID} | ${bill.PassportNumber} | ${bill.IdType}  | ${bill.HN} | ${bill.VN}| ${bill.InvoiceNumber}`)}><IoDocumentText /></h1>
+        <h1 className="text-primary text-2xl" onClick={() => Detail(`${bill.RefId} | ${bill.TransactionNo} | ${bill.PID} | ${bill.PassportNumber} | ${bill.IdType}  | ${bill.HN} | ${bill.VN} | ${bill.InvoiceNumber}`)}><IoDocumentText /></h1>
     </div>
     {statusNew ?
     (bill.RefId ? (bill.ClaimStatusDesc === "Approve" ? (
       <>
     <div className="tooltip ml-4" data-tip="Cancel Claim">
-      <h1 className="text-primary text-2xl" onClick={() =>Cancel(`${bill.RefId} | ${bill.TransactionNo} | ${bill.PID} | ${bill.PassportNumber} | ${bill.IdType}  | ${bill.HN} | ${bill.VN}| ${bill.InvoiceNumber}`)}><MdCancel /></h1>
+      <h1 className="text-primary text-2xl" onClick={() =>Cancel(`${bill.RefId} | ${bill.TransactionNo} | ${bill.PID} | ${bill.PassportNumber} | ${bill.IdType}  | ${bill.HN} | ${bill.VN} | ${bill.InvoiceNumber}`)}><MdCancel /></h1>
     </div>
 
         </>
@@ -962,7 +870,7 @@ document.getElementById("my_modal_3").showModal()
     (bill.RefId ? (bill.ClaimStatusDesc === "Approve" ? (
       <>
       <button className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100 ml-4"
-        onClick={() => handleButtonClick(`${bill.RefId} | ${bill.TransactionNo} | ${bill.PID} | ${bill.PassportNumber} | ${bill.IdType}  | ${bill.HN} | ${bill.VN}| ${bill.InvoiceNumber}`)}
+        onClick={() => handleButtonClick(`${bill.RefId} | ${bill.TransactionNo} | ${bill.PID} | ${bill.PassportNumber} | ${bill.IdType}  | ${bill.HN} | ${bill.VN} | ${bill.InvoiceNumber}`)}
         >วางบิล</button> 
   
   </>

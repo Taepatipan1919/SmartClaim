@@ -536,7 +536,7 @@ export default function chackData() {
                         <th></th>
                         <th>VN</th>
                         <th>VisitDate</th>
-                        <th>AccidentDate</th>
+                        {/* <th>AccidentDate</th> */}
                         <th>LocationDesc</th>
                         <th>WardDesc</th>
                         <th>DoctorLicense</th>
@@ -558,7 +558,7 @@ export default function chackData() {
                             </td>
                             <td>{ep.VN}</td>
                             <td>{ep.VisitDateTime}</td>
-                            <td>{ep.AccidentDate}</td>
+                            {/* <td>{ep.AccidentDate}</td> */}
                             <td>{ep.LocationDesc}</td>
                             <td>{ep.WardDesc}</td>
                             <td>{ep.DoctorLicense}</td>
@@ -567,7 +567,6 @@ export default function chackData() {
                         ))
                       ) : (
                         <tr>
-                          <td></td>
                           <td></td>
                           <td></td>
                           <td></td>

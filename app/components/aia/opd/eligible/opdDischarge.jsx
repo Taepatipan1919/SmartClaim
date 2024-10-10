@@ -22,7 +22,7 @@ import { FaCirclePlus , FaCircleMinus  } from "react-icons/fa6";
  import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
 import { FaCloudUploadAlt } from "react-icons/fa";
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 export default function Page({data}) {
@@ -204,10 +204,9 @@ const PatientInfoData = {
     )
     .then((response) => {
       setVisit(response.data);
-      //console.log(response.data)
-      const dateValue = dayjs(response.data.Result.VisitInfo.SignSymptomsDate);
-     // console.log(response.data.Result.VisitInfo.SignSymptomsDate)
-      setSignSymptomsDate(dateValue);
+      //const dateValue = dayjs(response.data.Result.VisitInfo.SignSymptomsDate);
+      //console.log(response.data.Result.VisitInfo.SignSymptomsDate)
+      // setSignSymptomsDate(dateValue);
       setComaScore(response.data.Result.VisitInfo.ComaScore)
 
       setCombinedString(response ? `${response.data.Result.VisitInfo.Weight} / ${response.data.Result.VisitInfo.Height}`
@@ -380,7 +379,7 @@ useEffect(() => {
     });
 
   }, []);
-
+console.log(vitalsign)
   useEffect(() => {
     axios
     .post(process.env.NEXT_PUBLIC_URL_PD + process.env.NEXT_PUBLIC_URL_getOPDDischargeVitalSign,
@@ -770,7 +769,30 @@ async function Claim(event){
     setMassSummit();
      document.getElementById("my_modal_3").showModal();
       const Datevalue = dayjs(accidentDate.$d).format('YYYY-MM-DD');
+      let PreviousDate;
+      let PreviousDetail;
+      let Suc;
+
+    if((previousTreatment === true)&&(previousTreatmentDate)&&(previousTreatmentDetail.target.value)){
+    //console.log(previousTreatmentDetail)
+     PreviousDate = dayjs(previousTreatmentDate.$d).format('YYYY-MM-DD');
+     PreviousDetail = previousTreatmentDetail.target.value;
+     Suc = "S";
+    }else if (previousTreatment === false){
+      Suc = "S";
+      PreviousDate= "";
+      PreviousDetail= "";
+    }else{
+          setMassSummitError("กรุณากรอก ' เคยเข้ารับการรักษาก่อนการรักษาครั้งนี้ ให้ครบ '");
+          setShowSummitError("Error");
+          Suc = "E";
+    }
       const signDate = dayjs(signSymptomsDate.$d).format('YYYY-MM-DD');
+    // }else{
+    //    const signDate = "";
+    //  }
+    //   console.log(dayjs(signSymptomsDate))
+
       let HavecauseOfInjuryDetailsCount;
       let HaveinjuryDetailsCount;
       let HaveProcedureCount;
@@ -795,7 +817,8 @@ async function Claim(event){
         }else{
           HaveProcedureCount = false;
         }
-
+    //console.log(Suc)
+    if(Suc === "S"){
     try {
       await stepOne();
       await stepTwo();
@@ -804,7 +827,7 @@ async function Claim(event){
     } catch (error) {
       console.log(error)
     }
-  
+    }
 
 
    function stepOne() {
@@ -926,10 +949,13 @@ async function Claim(event){
         Pregnant: pregnant,
         PrivateCase: privateCase,
 
+        PreviousTreatment: previousTreatment,
+        PreviousTreatmentDate: PreviousDate,
+        PreviousTreatmentDetail: PreviousDetail,
 
 
       }
-    //console.log(PatientInfo)
+    console.log(PatientInfo)
       axios
       .post(process.env.NEXT_PUBLIC_URL_SV + process.env.NEXT_PUBLIC_URL_SubmitVisit,{PatientInfo}
 
@@ -947,8 +973,8 @@ async function Claim(event){
           setShowSummitError("Error")
         }
         catch (error) {
-          setMassSummitError(error.response.data.HTTPStatus.message);
-          setShowSummitError("Error");
+          // setMassSummitError(error.response.data.HTTPStatus.message);
+          // setShowSummitError("Error");
        }
    });
 
@@ -1144,10 +1170,9 @@ if(response.data.HTTPStatus.statusCode === 200){
     setPrivateCase(!privateCase)
    };
    const handlePreviousTreatment = () => {
-    setPreviousTreatmentDetail("");
-    setPreviousTreatmentDate(null);
+      setPreviousTreatmentDetail("");
+      setPreviousTreatmentDate(null);
       setPreviousTreatment(!previousTreatment);
-
    };
 
 
@@ -1450,14 +1475,9 @@ if(response.data.HTTPStatus.statusCode === 200){
                       <div className="w-1/5">
                   <LocalizationProvider dateAdapter={AdapterDayjs} >
       <DemoItem  >
-        <DesktopDatePicker label="วันที่เริ่มมีอาการ" value={signSymptomsDate} onChange={(newSignSymptomsDate) => setSignSymptomsDate(newSignSymptomsDate)} format="YYYY-MM-DD"/>
+        <DesktopDatePicker  label="วันที่เริ่มมีอาการ" value={signSymptomsDate} onChange={(newSignSymptomsDate) => setSignSymptomsDate(newSignSymptomsDate)} format="YYYY-MM-DD"/>
       </DemoItem>
     </LocalizationProvider> 
-                    {/* <LocalizationProvider dateAdapter={AdapterDayjs} >
-      <DemoItem  >
-        <DesktopDatePicker   value={accidentDate} onChange={(newAccidentDate) => setAccidentDate(newAccidentDate)} format="YYYY-MM-DD"/>
-      </DemoItem>
-    </LocalizationProvider> */}
                         </div>
                         <div className="w-1/4 ml-2">
                         <TextField
@@ -1584,7 +1604,7 @@ if(response.data.HTTPStatus.statusCode === 200){
            {PatientInfoData.PatientInfo.IllnessTypeCode === "ACC" || PatientInfoData.PatientInfo.IllnessTypeCode === "ER" ? (accidentDetail ? (
             <>
             <div className="justify-center border-solid w-4/5 m-auto border-2 border-error rounded-lg p-4 mt-2">
-              <h1 className="font-black text-error text-3xl ">AccidentDetail <Button className="btn btn-secondary text-base-100 text-xl" onClick={SummitEditAcc}><FaEdit /></Button></h1>
+              <h1 className="font-black text-error text-3xl ">AccidentDetail <div className="btn btn-secondary text-base-100 text-xl" onClick={SummitEditAcc}><FaEdit /></div></h1>
               
         
               <div className="flex  w-full mt-2">
@@ -1646,8 +1666,8 @@ if(response.data.HTTPStatus.statusCode === 200){
         <TableHead>
           <TableRow className="bg-primary">
           <TableCell className="w-2"></TableCell>
-            <TableCell className="text-base-100  text-sm w-2/5 text-center">สาเหตุของการเกิดอุบัติเหตุ (ICD10 code)</TableCell>
-            <TableCell className="text-base-100  text-sm w-3/5 text-center">คำอธิบายอวัยวะที่ได้รับจากการเกิดอุบัติเหตุว่ามีลักษณะบาดแผลอย่างไร</TableCell>
+            <TableCell ><h1 className="text-base-100  text-sm w-2/5 text-center">สาเหตุของการเกิดอุบัติเหตุ (ICD10 code)</h1></TableCell>
+            <TableCell ><h1 className="text-base-100  text-sm w-2/5 text-center">คำอธิบายอวัยวะที่ได้รับจากการเกิดอุบัติเหตุว่ามีลักษณะบาดแผลอย่างไร</h1></TableCell>
             {summitEditAcc === "true" ?
             <TableCell></TableCell>
             : "" }
@@ -1692,7 +1712,7 @@ if(response.data.HTTPStatus.statusCode === 200){
                 </TableCell>
               {summitEditAcc === "true" ?
               <TableCell>
-                <Button onClick={() => handleDeleteCauseOfInjuryDetail(index)} className="btn btn-error text-base-100 text-xl"><FaCircleMinus /></Button>
+                <div onClick={() => handleDeleteCauseOfInjuryDetail(index)} className="btn btn-error text-base-100 text-xl"><FaCircleMinus /></div>
               </TableCell>
                    : "" }
             </TableRow>
@@ -1705,7 +1725,7 @@ if(response.data.HTTPStatus.statusCode === 200){
             <FaCirclePlus className="text-xl" />
             </TableCell>
            
-            <TableCell>
+            <TableCell >
               <TextField
                 className="bg-base-100 w-full"
                 value={newCauseOfInjuryDetail.CauseOfInjury}
@@ -1715,9 +1735,10 @@ if(response.data.HTTPStatus.statusCode === 200){
               />
             </TableCell>
             {/* <TableCell> */}
+            <div className="m-2">
               <TextField
               type="text"
-              className="bg-base-100 w-full m-2"
+              className="bg-base-100 w-full "
                 value={newCauseOfInjuryDetail.CommentOfInjury}
                 onChange={(e) => setNewCauseOfInjuryDetail({ ...newCauseOfInjuryDetail, CommentOfInjury: e.target.value })}
                 inputProps={{ maxLength: 200 }}
@@ -1726,11 +1747,12 @@ if(response.data.HTTPStatus.statusCode === 200){
                 rows={4}
              //   required
               />
+              </div>
             {/* </TableCell> */}
             {(newCauseOfInjuryDetail.CauseOfInjury && newCauseOfInjuryDetail.CommentOfInjury)  ? (
               <>
               <TableCell>
-              <Button onClick={handleAddCauseOfInjuryDetail} className="btn btn-success text-base-100 text-xl"><FaCirclePlus /></Button>
+              <div onClick={handleAddCauseOfInjuryDetail} className="btn btn-success text-base-100 text-xl"><FaCirclePlus /></div>
             </TableCell>
               </>
             ) : ""
@@ -1760,9 +1782,9 @@ if(response.data.HTTPStatus.statusCode === 200){
         <TableHead>
           <TableRow className="bg-primary">
           <TableCell className="w-2"></TableCell>
-            <TableCell className="text-base-100  text-sm w-1/7 text-center">อวัยวะที่ได้บาดเจ็บจากการเกิดอุบัติเหตุ (ICD10 code)</TableCell>
-            <TableCell className="text-base-100  text-sm w-3/7 text-center">ข้างของอวัยวะที่ได้รับบาดเจ็บจากการเกิดอุบัติเหตุ</TableCell>
-            <TableCell className="text-base-100  text-sm w-3/7 text-center">ลักษณะบาดแผลที่ได้รับจากการเกิดอุบัติเหตุ</TableCell>
+            <TableCell ><h1 className="text-base-100  text-sm w-1/7 text-center">อวัยวะที่ได้บาดเจ็บจากการเกิดอุบัติเหตุ (ICD10 code)</h1></TableCell>
+            <TableCell ><h1 className="text-base-100  text-sm w-3/7 text-center">ข้างของอวัยวะที่ได้รับบาดเจ็บจากการเกิดอุบัติเหตุ</h1></TableCell>
+            <TableCell ><h1 className="text-base-100  text-sm w-3/7 text-center">ลักษณะบาดแผลที่ได้รับจากการเกิดอุบัติเหตุ</h1></TableCell>
             {summitEditAcc === "true" ?
             <TableCell></TableCell>
             : "" }
@@ -1852,7 +1874,7 @@ if(response.data.HTTPStatus.statusCode === 200){
                 </TableCell>
               {summitEditAcc === "true" ?
               <TableCell>
-                <Button onClick={() => handleDeleteInjuryDetail(index)} className="btn btn-error text-base-100 text-xl"><FaCircleMinus /></Button>
+                <div onClick={() => handleDeleteInjuryDetail(index)} className="btn btn-error text-base-100 text-xl"><FaCircleMinus /></div>
               </TableCell>
                : "" }
             </TableRow>
@@ -1924,7 +1946,7 @@ if(response.data.HTTPStatus.statusCode === 200){
             {(newInjuryDetail.InjuryArea && newInjuryDetail.InjurySide && newInjuryDetail.WoundType)  ? (
               <>
               <TableCell>
-              <Button onClick={handleAddInjuryDetail} className="btn btn-success text-base-100 text-xl"><FaCirclePlus /></Button>
+              <div onClick={handleAddInjuryDetail} className="btn btn-success text-base-100 text-xl"><FaCirclePlus /></div>
             </TableCell>
               </>
             ) : ""
@@ -1968,7 +1990,8 @@ if(response.data.HTTPStatus.statusCode === 200){
                     </tr>
                   </thead>
                   <tbody>
-                    {vitalsign
+                    
+               {vitalsign
                         ? vitalsign.Result.VitalSignInfo.map((vts, index) => (
                           vts.VitalSignEntryDateTime !== "" &&(
                             <tr
@@ -2008,9 +2031,10 @@ if(response.data.HTTPStatus.statusCode === 200){
                                   </div>
                               </td>
                             </tr>
-                          )))
+                          )
+                        ))
                         : <tr><td></td></tr>
-                      }
+                      } 
                   </tbody>
                 </table> 
                 </div>
@@ -2128,16 +2152,16 @@ if(response.data.HTTPStatus.statusCode === 200){
              {/* //////////////////////////////////////////////////////////////////////////// */}
           {procedure ? (PatientInfoData.PatientInfo.SurgeryTypeCode === "Y" ? (
                <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
-              <h1 className="font-black text-accent text-3xl ">Procedure <Button className="btn btn-secondary text-base-100 text-xl" onClick={SummitEditProce}><FaEdit /></Button></h1>
+              <h1 className="font-black text-accent text-3xl ">Procedure <div className="btn btn-secondary text-base-100 text-xl" onClick={SummitEditProce}><FaEdit /></div></h1>
               
                 <TableContainer component={Paper} className="mt-2">
       <Table className="table">
         <TableHead>
           <TableRow className="bg-primary">
           <TableCell className="w-2"></TableCell>
-            <TableCell className="text-base-100  text-sm w-1/5 text-center">Icd 9 Code ของหัตถการหรือการผ่าตัด</TableCell>
-            <TableCell className="text-base-100  text-sm w-3/5 text-center">ชื่อของหัตถการหรือการผ่าตัด</TableCell>
-            <TableCell className="text-base-100  text-sm w-1/5 text-center">วันที่ทำหัตถการหรือทำการผ่าตัด</TableCell>
+            <TableCell ><h1 className="text-base-100  text-sm w-1/5 text-center">Icd 9 Code ของหัตถการหรือการผ่าตัด</h1></TableCell>
+            <TableCell ><h1 className="text-base-100  text-sm w-3/5 text-center">ชื่อของหัตถการหรือการผ่าตัด</h1></TableCell>
+            <TableCell ><h1 className="text-base-100  text-sm w-1/5 text-center">วันที่ทำหัตถการหรือทำการผ่าตัด</h1></TableCell>
             <TableCell></TableCell>
           </TableRow>
         </TableHead>
@@ -2151,7 +2175,7 @@ if(response.data.HTTPStatus.statusCode === 200){
               <TableCell><div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">{proce.ProcedureDate === "" ? (<>&nbsp;</>) : proce.ProcedureDate}</div></TableCell>
               <TableCell>
                 {summitEditProcedure === "true" ?
-                <Button onClick={() => handleDeleteRow(index)} className="btn btn-error text-base-100 text-xl"><FaCircleMinus /></Button>
+                <div onClick={() => handleDeleteRow(index)} className="btn btn-error text-base-100 text-xl"><FaCircleMinus /></div>
                : "" }
               </TableCell>
             </TableRow>
@@ -2197,7 +2221,7 @@ if(response.data.HTTPStatus.statusCode === 200){
             {(newRow.Icd9 && newRow.ProcedureName && newRow.ProcedureDate)  ? (
               <>
               <TableCell>
-              <Button onClick={handleAddRow} className="btn btn-success text-base-100 text-xl"><FaCirclePlus /></Button>
+              <div onClick={handleAddRow} className="btn btn-success text-base-100 text-xl"><FaCirclePlus /></div>
             </TableCell>
               </>
             ) : ""
@@ -2403,7 +2427,7 @@ if(response.data.HTTPStatus.statusCode === 200){
                   </tbody>
                 </table>
               </div> 
-              <div className="grid gap-2 sm:grid-cols-4  bg-primary w-full whitespace-normal text-center">
+              <div className="grid gap-2 sm:grid-cols-4  bg-primary w-full whitespace-normal text-center text-base-100 text-lg">
                 <div className="rounded-md"></div>
                 <div className="rounded-md"></div>
                 <div className="rounded-md ">สรุปค่ารักษาพยาบาล</div>
@@ -2421,7 +2445,7 @@ if(response.data.HTTPStatus.statusCode === 200){
                             </div>
               </div>
               <div className="label">
-    <span className="label-text-alt text-error text-sm">** Upload เฉพาะไฟล์ .PDF เท่านั้น ( ไม่เกิน 20 MB )**</span>
+    <span className="label-text-alt text-error text-sm">** Upload เฉพาะไฟล์ .PDF เท่านั้น สามารถส่งได้มากกว่า 1 ไฟล์( แต่ละไฟล์ไม่เกิน 20 MB )**</span>
   </div>
               { progress.started && <progress max="100" value={progress.pc} className="progress progress-info mt-2 w-full"></progress> }
 <br /> 
@@ -2544,7 +2568,7 @@ if(response.data.HTTPStatus.statusCode === 200){
             </div>
             ) : (
               <>
-         {massSummit ? (massSummit) : <center><span className="loading loading-spinner text-error size-10 "></span></center>}
+         {massSummit ? (massSummit) : <center><h1 className="text-4xl text-error">ทางบริษัท AIA กำลังตรวจสอบ</h1><span className="loading loading-spinner text-error size-10 "></span></center>}
 
 
           </>
