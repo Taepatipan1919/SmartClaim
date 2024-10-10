@@ -257,6 +257,7 @@ export default function Page({ data }) {
   useEffect(() => {
     const dateValue = dayjs(PatientInfoData.PatientInfo.AccidentDate);
     setAccidentDate(dateValue);
+
     axios
       .post(
         process.env.NEXT_PUBLIC_URL_PD +
@@ -282,10 +283,10 @@ export default function Page({ data }) {
         // }
       )
       .then((response) => {
-        //      console.log(PatientInfoData.PatientInfo.AccidentDate)
-        setAccidentDetail(response.data);
+    
+         setAccidentDetail(response.data);
         if (
-          response.data.Result.AccidentDetailInfo.CauseOfInjuryDetail[0]
+          response.data.Result.AccidentDetailInfo[0].CauseOfInjuryDetail[0]
             .CauseOfInjury
         ) {
           setCauseOfInjuryDetails(
@@ -293,7 +294,7 @@ export default function Page({ data }) {
           );
         }
         if (
-          response.data.Result.AccidentDetailInfo.InjuryDetail[0].InjuryArea
+          response.data.Result.AccidentDetailInfo[0].InjuryDetail[0].InjuryArea
         ) {
           setInjuryDetails(
             response.data.Result.AccidentDetailInfo.InjuryDetail
@@ -302,15 +303,16 @@ export default function Page({ data }) {
       })
       .catch((error) => {
         console.log(error);
-        try {
-          const ErrorMass = error.config.url;
-          const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
-          setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
-          setShowFormError("Error");
-        } catch (error) {
-          setMassError(error.response.data.HTTPStatus.message);
-          setShowFormError("Error");
-        }
+        // try {
+        //   const ErrorMass = error.config.url;
+        //   const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+        //   setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
+        //   setShowFormError("Error");
+        // } catch (error) {
+        //   setMassError("Error Accident");
+        //   setShowFormError("Error");
+        // }
+      
       });
   }, []);
   useEffect(() => {
@@ -409,7 +411,7 @@ export default function Page({ data }) {
         }
       });
   }, []);
-  console.log(vitalsign);
+ 
   useEffect(() => {
     axios
       .post(
@@ -802,6 +804,7 @@ export default function Page({ data }) {
     let PreviousDate;
     let PreviousDetail;
     let Suc;
+    let signDate ="";
 
     if (
       previousTreatment === true &&
@@ -823,7 +826,11 @@ export default function Page({ data }) {
       setShowSummitError("Error");
       Suc = "E";
     }
-    const signDate = dayjs(signSymptomsDate.$d).format("YYYY-MM-DD");
+    try{
+   signDate = dayjs(signSymptomsDate.$d).format("YYYY-MM-DD");
+    } catch(error){
+    signDate = "";
+    }
     // }else{
     //    const signDate = "";
     //  }
@@ -857,8 +864,8 @@ export default function Page({ data }) {
       try {
         await stepOne();
         await stepTwo();
-        await stepThree();
-        await stepFour();
+         await stepThree();
+         await stepFour();
       } catch (error) {
         console.log(error);
       }

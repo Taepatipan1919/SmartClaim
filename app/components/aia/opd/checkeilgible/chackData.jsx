@@ -41,6 +41,7 @@ export default function chackData() {
   const [result, setResult] = useState();
   const [detailVN, setDetailVN] = useState();
   const [fromValue, setFromValue] = useState(null);
+  const [accValue, setAccValue] = useState(null);
   const [statusValue, setStatusValue] = useState("OPD");
   const [policyTypeValue, setPolicyTypeValue] = useState("");
   const [surgeryTypeValue, setSurgeryTypeValue] = useState("");
@@ -114,16 +115,16 @@ export default function chackData() {
         save({
           value: "มีข้อมูล",
           Data: {
-            // RefId: "ccXwZWYmukJdvzFrWaccN8bNr83caECQjC+vvuEaIKY=",
-            // TransactionNo: "5c5aabb3-b919-4ee8-ac42-848ae4d5f55a",
-            // VN: "O477382-67",
+            // RefId: "x9v8T2G/i6pEuNughp+kX8bNr83caECQjC+vvuEaIKY=",
+            // TransactionNo: "3ba72f56-c764-43ff-9000-920453ba3d5b",
+            // VN: "O604374-65",
             // InsurerCode: 13,
             // ServiceSettingCode: "OPD",
             // IllnessTypeCode: "ACC",
             // SurgeryTypeCode: "N",
             // PolicyTypeCode: "IB",
-            // AccidentDate: "2024-09-08",
-            // VisitDateTime:"2024-09-08 08:22",
+            // AccidentDate: "2024-10-01",
+            // VisitDateTime:"2024-10-01 08:22",
             // FurtherClaimNo: "",
             // FurtherClaimId: "",
 
@@ -147,31 +148,31 @@ export default function chackData() {
         save({
           value: "มีข้อมูล",
           Data: {
-            // RefId: "ccXwZWYmukJdvzFrWaccN8bNr83caECQjC+vvuEaIKY=",
-            // TransactionNo: "5c5aabb3-b919-4ee8-ac42-848ae4d5f55a",
-            // VN: "O477382-67",
-            // InsurerCode: 13,
-            // ServiceSettingCode: "OPD",
-            // IllnessTypeCode: "ER",
-            // SurgeryTypeCode: "N",
-            // PolicyTypeCode: "IB",
-            // AccidentDate: "2024-09-08",
-            // VisitDateTime:"2024-09-08 08:22",
-            // FurtherClaimNo: "",
-            // FurtherClaimId: "",
-
-            RefId: result.Result.InsuranceData.RefId,
-            TransactionNo: result.Result.InsuranceData.TransactionNo,
-            VN: detailVN,
-            InsurerCode: InsurerCode,
-            ServiceSettingCode: statusValue,
-            IllnessTypeCode: illnessTypeValue,
-            SurgeryTypeCode: surgeryTypeValue,
-            PolicyTypeCode: policyTypeValue,
-            AccidentDate: accidentDate,
-            VisitDateTime: visitDateTime,
+            RefId: "ccXwZWYmukJdvzFrWaccN8bNr83caECQjC+vvuEaIKY=",
+            TransactionNo: "5c5aabb3-b919-4ee8-ac42-848ae4d5f55a",
+            VN: "O477382-67",
+            InsurerCode: 13,
+            ServiceSettingCode: "OPD",
+            IllnessTypeCode: "ER",
+            SurgeryTypeCode: "N",
+            PolicyTypeCode: "IB",
+            AccidentDate: "2024-09-08",
+            VisitDateTime:"2024-09-08 08:22",
             FurtherClaimNo: "",
             FurtherClaimId: "",
+
+            // RefId: result.Result.InsuranceData.RefId,
+            // TransactionNo: result.Result.InsuranceData.TransactionNo,
+            // VN: detailVN,
+            // InsurerCode: InsurerCode,
+            // ServiceSettingCode: statusValue,
+            // IllnessTypeCode: illnessTypeValue,
+            // SurgeryTypeCode: surgeryTypeValue,
+            // PolicyTypeCode: policyTypeValue,
+            // AccidentDate: accidentDate,
+            // VisitDateTime: visitDateTime,
+            // FurtherClaimNo: "",
+            // FurtherClaimId: "",
           },
         })
       );
@@ -183,8 +184,21 @@ export default function chackData() {
   const policy = (event) => {
     setPolicyTypeValue(event.target.value);
   };
+  const [selectedOption, setSelectedOption] = useState('');
+  const [textInputVisible, setTextInputVisible] = useState(false);
   const Illness = (event) => {
     setIllnessTypeValue(event.target.value);
+
+
+    setSelectedOption(event.target.value);
+    if ((event.target.value === 'ACC')||(event.target.value === 'ER')) {
+      setTextInputVisible(true);
+    } else {
+      setTextInputVisible(false);
+    }
+
+
+
   };
   const surgery = (event) => {
     setSurgeryTypeValue(event.target.value);
@@ -335,16 +349,24 @@ export default function chackData() {
     setShowFormCheckEligibleError();
     setSelectedValue();
 
-    const [VNselectVN, VisitDateselectVN, AccidentDateselectVN] =
-      event.target.selectVN.value.split(" | ");
+    const [VNselectVN, VisitDateselectVN] = event.target.selectVN.value.split(" | ");
     //const [YearVN, MonthVN, DayVN] = VisitDateselectVN.split('-');
-    const Acc = VisitDateselectVN.split(" ");
+    // const Acc = accValue.split(" ");
     // setVisitDate(VisitDateTime)
-    setAccidentDate(AccidentDateselectVN);
+    let DateAccValue;
+    let TypeValue;
+
+    if(accValue){
+    DateAccValue = dayjs(accValue.$d).format("YYYY-MM-DD");
+    }else{
+      DateAccValue="";
+    }
+
+    setAccidentDate(DateAccValue);
     setVisitDateTime(VisitDateselectVN);
     setDetailVN(VNselectVN);
 
-    let TypeValue;
+    
 
     if (illnessTypeValue === "DAY") {
       TypeValue = "IPD";
@@ -366,7 +388,7 @@ export default function chackData() {
       VN: VNselectVN,
       VisitDateTime: VisitDateselectVN,
       // AccidentDate: Acc[0],
-      AccidentDate: AccidentDateselectVN,
+      AccidentDate: DateAccValue,
       PolicyTypeCode: policyTypeValue,
       ServiceSettingCode: TypeValue,
       IllnessTypeCode: illnessTypeValue,
@@ -410,6 +432,13 @@ export default function chackData() {
       //  setMassError(error.response.data.HTTPStatus.message);
     }
   };
+
+
+
+
+
+
+
 
   return (
     <>
@@ -529,7 +558,8 @@ export default function chackData() {
         {post ? (
           post.HTTPStatus.statusCode === 200 ? (
             <>
-              <form onSubmit={check}>
+         <form onSubmit={gourl}>
+               {/*     <form onSubmit={check}> */}
                 <div className="overflow-x-auto mt-2">
                   <table className="table">
                     <thead className="bg-info text-base-100 text-center text-lg">
@@ -639,15 +669,26 @@ export default function chackData() {
                       </Select>
                     </FormControl>
                   </div>
+                  
+
+                  {textInputVisible &&
+
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DatePicker
                     label="วันที่เกิดอุบัติเหตุ"
-                    value={fromValue}
-                    onChange={(newDate) => setFromValue(newDate)}
+                    value={accValue}
+                    onChange={(newDate) => setAccValue(newDate)}
                     format="YYYY-MM-DD"
-                    className="input-info"
+                    slotProps={{
+                      openPickerButton: { color: "error" },
+                      textField: { focused: true, color: "error" },
+                    }}
+        
                   />
                 </LocalizationProvider>
+
+ }
+     
                   <div>
                     <FormControl fullWidth>
                       <InputLabel id="surgeryTypeValue">การผ่าตัด</InputLabel>
@@ -670,6 +711,7 @@ export default function chackData() {
                       </Select>
                     </FormControl>
                   </div>
+       
                   <div>
                     <button
                       className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 text-xl"
