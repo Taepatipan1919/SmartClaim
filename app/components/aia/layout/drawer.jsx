@@ -11,8 +11,7 @@ import { TbUserSearch } from "react-icons/tb";
 import { RiContactsLine } from "react-icons/ri";
 import { GoBrowser } from "react-icons/go";
 import { IoArrowForwardCircleSharp } from "react-icons/io5";
-import { MdKeyboardArrowDown , MdKeyboardArrowUp } from "react-icons/md";
-
+import { MdKeyboardArrowDown, MdKeyboardArrowUp } from "react-icons/md";
 
 export default function Drawer() {
   const [open, setOpen] = useState(true);
@@ -82,28 +81,27 @@ export default function Drawer() {
               height={37}
               priority
             /> */}
-         <img
-              className={`text-4xl rounded cursor-pointer block float-center self-center duration-500 ${
-                open && "rotate-[360deg]"
-              }`}
-              src="/hch-logo.png"
-            /> 
+          <img
+            className={`text-4xl rounded cursor-pointer block float-center self-center duration-500 ${
+              open && "rotate-[360deg]"
+            }`}
+            src="/hch-logo.png"
+          />
           <BsArrowLeftShort
             className={`bg-7u-300 mt-6 text-black-200 text-3xl rounded-full absolute -right-3 top-9 text-base-100  bg-info  cursor-pointer ${
               !open && "rotate-180"
             }`}
             onClick={() => setOpen(!open)}
           />
-
         </div>
-        {open &&
-        <h1
-          className="font-black text-base-100 text-1xl text-center kanit bg-primary"
-          data-theme="mytheme"
-        >
-          Smart Claim
-        </h1>
-      }
+        {open && (
+          <h1
+            className="font-black text-base-100 text-1xl text-center kanit bg-primary"
+            data-theme="mytheme"
+          >
+            Smart Claim
+          </h1>
+        )}
         <div className="">
           <div
             className={`divider divider-warning origin-left font-medium text-2xl duration-300  ${
@@ -111,8 +109,8 @@ export default function Drawer() {
             } `}
           ></div>
 
-         <ul>
-         {/* {menuItems.map((item) => (
+          <ul>
+            {/* {menuItems.map((item) => (
         <li key={item.id}>
           <button
             onClick={() => toggleMenu(item.id)}
@@ -135,9 +133,9 @@ export default function Drawer() {
           )}
         </li>
       ))} */}
-         {menuItems.map((menuitem) => (
+            {menuItems.map((menuitem) => (
               <li key={menuitem.id}>
-               {/* เมนูตอน พับ */}
+                {/* เมนูตอน พับ */}
                 <button
                   onClick={() => toggleMenu(menuitem.id)}
                   className={`text-base-100 text-3xl  flex gap-x-1 self-center  hover:bg-base-100 hover:text-accent rounded-md mt-4 ${
@@ -147,7 +145,7 @@ export default function Drawer() {
                   {menuitem.icon ? menuitem.icon : <AiFillHome />}
                 </button>
 
-      {/* เมนูตอน เปิด */}
+                {/* เมนูตอน เปิด */}
                 <button
                   onClick={() => toggleMenu(menuitem.id)}
                   className={`text-base-100 text-xl  flex gap-x-1 cursor-point p-4 px-5 hover:bg-base-100 hover:text-accent w-full  rounded-md mt-4 " ${
@@ -155,26 +153,39 @@ export default function Drawer() {
                   }`}
                 >
                   {menuitem.icon ? menuitem.icon : <AiFillHome />}
-                  {menuitem.label} <div className="text-right">{menuitem.submenu ? (openMenu ? <MdKeyboardArrowUp /> : <MdKeyboardArrowDown />) : ""}</div>
-                  
+                  {menuitem.label}{" "}
+                  <div className="text-right">
+                    {menuitem.submenu ? (
+                      openMenu ? (
+                        <MdKeyboardArrowUp />
+                      ) : (
+                        <MdKeyboardArrowDown />
+                      )
+                    ) : (
+                      ""
+                    )}
+                  </div>
                 </button>
                 {open && openMenu === menuitem.id && menuitem.submenu && (
-            <ul className="bg-base-100 rounded-lg border-2">
-              {menuitem.submenu.map((subItem) => (
-                <li key={subItem.id}>
-                  <Link href={subItem.href}>
-                    {/* เมนู ย่อย */}
-                    <h1 className="block text-primary rounded-lg m-0.5 mt-1 px-3 hover:text-base-100 hover:bg-secondary">
-                    <div className="flex items-center "><IoArrowForwardCircleSharp />&nbsp;{subItem.label}</div>
-                    </h1>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          )}
+                  <ul className="bg-base-100 rounded-lg border-2">
+                    {menuitem.submenu.map((subItem) => (
+                      <li key={subItem.id}>
+                        <Link href={subItem.href}>
+                          {/* เมนู ย่อย */}
+                          <h1 className="block text-primary rounded-lg m-0.5 mt-1 px-3 hover:text-base-100 hover:bg-secondary">
+                            <div className="flex items-center ">
+                              <IoArrowForwardCircleSharp />
+                              &nbsp;{subItem.label}
+                            </div>
+                          </h1>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </li>
-            ))} 
-          </ul> 
+            ))}
+          </ul>
         </div>
       </div>
     </div>

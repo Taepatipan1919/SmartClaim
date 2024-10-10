@@ -48,7 +48,8 @@ export default function chackData() {
   const router = useRouter();
   const [massError, setMassError] = useState("");
   const [showFormError, setShowFormError] = useState("");
-  const [showFormCheckEligibleError, setShowFormCheckEligibleError] = useState("");
+  const [showFormCheckEligibleError, setShowFormCheckEligibleError] =
+    useState("");
 
   const [accidentDate, setAccidentDate] = useState("");
   const [visitDateTime, setVisitDateTime] = useState("");
@@ -78,7 +79,7 @@ export default function chackData() {
       VisitDateTime: ReDux.DataTran.Data.VisitDateTime,
       AccidentDate: ReDux.DataTran.Data.AccidentDate,
     };
-   // console.log(PatientInfo);
+    // console.log(PatientInfo);
     axios
       .post(
         process.env.NEXT_PUBLIC_URL_PD +
@@ -90,7 +91,7 @@ export default function chackData() {
       )
       .then((response) => {
         setFurtherClaim(response.data);
-       // console.log(response.data);
+        // console.log(response.data);
       })
       .catch((error) => {
         console.log(error);
@@ -158,7 +159,7 @@ export default function chackData() {
             // VisitDateTime:"2024-09-08 08:22",
             // FurtherClaimNo: "",
             // FurtherClaimId: "",
-            
+
             RefId: result.Result.InsuranceData.RefId,
             TransactionNo: result.Result.InsuranceData.TransactionNo,
             VN: detailVN,
@@ -262,7 +263,9 @@ export default function chackData() {
   useEffect(() => {
     axios
       .get(
-        process.env.NEXT_PUBLIC_URL_PD + process.env.NEXT_PUBLIC_URL_ServiceSetting + InsurerCode
+        process.env.NEXT_PUBLIC_URL_PD +
+          process.env.NEXT_PUBLIC_URL_ServiceSetting +
+          InsurerCode
       )
       .then((response) => {
         setServiceSetting(response.data);
@@ -308,7 +311,7 @@ export default function chackData() {
         )
         .then((response) => {
           setPost(response.data);
-         // console.log(response.data)
+          // console.log(response.data)
         })
         .catch((error) => {
           // console.error("Error", err)
@@ -332,7 +335,6 @@ export default function chackData() {
     setShowFormCheckEligibleError();
     setSelectedValue();
 
-
     const [VNselectVN, VisitDateselectVN, AccidentDateselectVN] =
       event.target.selectVN.value.split(" | ");
     //const [YearVN, MonthVN, DayVN] = VisitDateselectVN.split('-');
@@ -342,14 +344,13 @@ export default function chackData() {
     setVisitDateTime(VisitDateselectVN);
     setDetailVN(VNselectVN);
 
-      let TypeValue;
+    let TypeValue;
 
-      if(illnessTypeValue === "DAY"){
-        TypeValue = "IPD"
-      }else{
-        TypeValue = "OPD"
-      }
-
+    if (illnessTypeValue === "DAY") {
+      TypeValue = "IPD";
+    } else {
+      TypeValue = "OPD";
+    }
 
     const PatientInfo = {
       InsurerCode: InsurerCode, // ควรเป็น integer ไม่ใช่ string
@@ -371,7 +372,7 @@ export default function chackData() {
       IllnessTypeCode: illnessTypeValue,
       SurgeryTypeCode: surgeryTypeValue,
     };
-     console.log(PatientInfo)
+    console.log(PatientInfo);
     try {
       document.getElementById("my_modal_3").showModal();
       // try {
@@ -385,10 +386,10 @@ export default function chackData() {
 
       if (response.data.HTTPStatus.statusCode < 400) {
         setResult(response.data);
-        console.log(response.data)
+        console.log(response.data);
         setShowFormCheckEligibleError();
       } else {
-        console.log(response.data)
+        console.log(response.data);
         setShowFormCheckEligibleError("Error");
         setMassError(response.data.HTTPStatus.message);
       }
@@ -585,7 +586,7 @@ export default function chackData() {
                     <div className="rounded-md ">&nbsp;</div>
                   </div>
                 </div>
-                <div className="grid grid-cols-6 gap-2 mt-4">
+                <div className="grid grid-cols-7 gap-2 mt-4">
                   <div></div>
                   <div>
                     <FormControl fullWidth>
@@ -638,6 +639,15 @@ export default function chackData() {
                       </Select>
                     </FormControl>
                   </div>
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DatePicker
+                    label="วันที่เกิดอุบัติเหตุ"
+                    value={fromValue}
+                    onChange={(newDate) => setFromValue(newDate)}
+                    format="YYYY-MM-DD"
+                    className="input-info"
+                  />
+                </LocalizationProvider>
                   <div>
                     <FormControl fullWidth>
                       <InputLabel id="surgeryTypeValue">การผ่าตัด</InputLabel>
@@ -804,25 +814,28 @@ export default function chackData() {
                   <div className="rounded-md "></div>
                   <div className="rounded-md ">&nbsp;</div>
                 </div>
-            {result ? ( 
-                 result.Result.InsuranceData.CoverageList.map(
-                  (coverage , index) => 
-                    coverage.Status === true ? ( 
-                      <div Key={index}>
-                    <div className="modal-action">
-                      <button
-                        className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100"
-                        onClick={confirmButton}
-                        // onClick={() =>
-                        //   document.getElementById("my_modal_2").showModal()
-                        // }  
-                      >
-                        ยืนยันการเคลม
-                      </button>
-                    </div>
-                    </div>
-            ) :  ""  )) : ""
-          }
+                {result
+                  ? result.Result.InsuranceData.CoverageList.map(
+                      (coverage, index) =>
+                        coverage.Status === true ? (
+                          <div Key={index}>
+                            <div className="modal-action">
+                              <button
+                                className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100"
+                                onClick={confirmButton}
+                                // onClick={() =>
+                                //   document.getElementById("my_modal_2").showModal()
+                                // }
+                              >
+                                ยืนยันการเคลม
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          ""
+                        )
+                    )
+                  : ""}
               </>
             )}
           </form>
