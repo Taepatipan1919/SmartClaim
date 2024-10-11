@@ -1586,7 +1586,7 @@ export default function Page({ data }) {
                       //    error
                       className="w-full"
                       id="outlined-multiline-static"
-                      label="อาการสำคัญที่มาโรงพยาบาล"
+                      label="Cheif Complaint and duration"
                       name="ChiefComplaint"
                       multiline
                       rows={4}
@@ -1600,7 +1600,7 @@ export default function Page({ data }) {
                       //   error
                       className="w-full"
                       id="outlined-multiline-static"
-                      label="โรคประจำตัว"
+                      label="Chronic disease"
                       name="UnderlyingCondition"
                       multiline
                       rows={4}
@@ -1614,7 +1614,7 @@ export default function Page({ data }) {
                       error
                       className="w-full"
                       id="outlined-multiline-static"
-                      label="ข้อวินิจฉัยโรค"
+                      label="Diagnosis"
                       name="DxFreeTextText"
                       multiline
                       rows={4}
@@ -1629,7 +1629,7 @@ export default function Page({ data }) {
                       className="w-full"
                       name="PresentIllness"
                       id="outlined-multiline-static"
-                      label="ประวัติเจ็บป่วยปัจจุบัน รายละเอียดอาการ และประวัติที่เกี่ยวข้อง"
+                      label="Present illness or Cause of Injury"
                       multiline
                       rows={4}
                       defaultValue={visit.Result.VisitInfo.PresentIllness}
@@ -1643,7 +1643,7 @@ export default function Page({ data }) {
                       className="w-full"
                       name="PhysicalExam"
                       id="outlined-multiline-static"
-                      label="รายละเอียด หรือ ความผิดปกติของการตรวจร่างกาย"
+                      label="Physical exam"
                       multiline
                       rows={4}
                       defaultValue={visit.Result.VisitInfo.PhysicalExam}
@@ -1656,7 +1656,7 @@ export default function Page({ data }) {
                       className="w-full"
                       name="PlanOfTreatment"
                       id="outlined-multiline-static"
-                      label="แผนการรักษา"
+                      label="Treatment"
                       multiline
                       rows={4}
                       defaultValue={visit.Result.VisitInfo.PlanOfTreatment}
@@ -1670,7 +1670,7 @@ export default function Page({ data }) {
                       className="w-full"
                       name="ProcedureFreeText"
                       id="outlined-multiline-static"
-                      label="หัตถการ/หรือการผ่าตัด (ที่เกี่ยวข้องกับการจ่ายผลประโยชน์ตาม % การพิจารณาสินไหมตามปะเภทของหัตถการ/การผ่าตัด)"
+                      label="ProcedureFreeText"
                       multiline
                       rows={4}
                       defaultValue={visit.Result.VisitInfo.ProcedureFreeText}
@@ -1684,7 +1684,7 @@ export default function Page({ data }) {
                       className="w-full"
                       name="AdditionalNote"
                       id="outlined-multiline-static"
-                      label="ข้อมูลเพิ่มเติมอื่น ๆ"
+                      label="AdditionalNote"
                       multiline
                       rows={4}
                       defaultValue={visit.Result.VisitInfo.AdditionalNote}
@@ -3174,20 +3174,20 @@ export default function Page({ data }) {
                             {list.filename}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="tooltip" data-tip="Document">
+                          
                               <div
-                                className="btn btn-warning  mr-2"
+                                className="btn btn-primary  mr-2 text-base-100 hover:text-primary hover:bg-base-100"
                                 type="submit"
                                 onClick={() => DocumentBase64(list.filename)}
                               >
-                                <IoIosDocument />
+                                Document
                               </div>
-                            </div>
-                            <div className="tooltip" data-tip="Cancel Claim">
-                              <div className="btn btn-error " type="submit">
-                                <MdCancel />
+                           
+                            
+                              <div className="btn btn-error text-base-100 hover:text-error hover:bg-base-100" type="submit">
+                              Cancel
                               </div>
-                            </div>
+                        
                           </td>
                         </tr>
                       ))
@@ -3265,7 +3265,7 @@ export default function Page({ data }) {
                 ) : (
                   <center>
                     <h1 className="text-4xl text-error">
-                      ทางบริษัท AIA กำลังตรวจสอบ
+                      ทางบริษัทประกัน กำลังตรวจสอบ...
                     </h1>
                     <span className="loading loading-spinner text-error size-10 "></span>
                   </center>

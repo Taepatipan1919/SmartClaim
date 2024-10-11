@@ -38,11 +38,15 @@ export default function chackData() {
   const [billList, setBillList] = useState("");
   const [showModal, setShowModal] = useState(false);
   const router = useRouter();
+  const [patientInfoDetail, setPatientInfoDetail] = useState();
   const [statusNew, setStatusNew] = useState({});
   const [file, setFile] = useState(null);
   const [progress, setProgress] = useState({ started: false, pc: 0 });
   const [msg, setMsg] = useState(null);
   const [refIdL, setRefIdL] = useState("");
+  const [pIDL, setPIDL] = useState("");
+  const [passportNumberL, setPassportNumberL] = useState("");
+
   const [transactionNoL, setTransactionNoL] = useState("");
   const [hNL, setHNL] = useState("");
   const [vNL, setVNL] = useState("");
@@ -127,15 +131,23 @@ export default function chackData() {
           Upload Successful
         </div>
       );
+      const PatientInfo = {
+        InsurerCode: InsuranceCode,
+        RefId: refIdL,
+        TransactionNo: transactionNoL,
+        PID: pIDL,
+        HN: hNL,
+        PassportNumber: passportNumberL,
+        VN: vNL,
+        DocumenttypeCode: "003",
+        DocumentName : "",
+      }
       axios
         .post(
           process.env.NEXT_PUBLIC_URL_PD2 +
             process.env.NEXT_PUBLIC_URL_getlistDocumentName,
           {
-            RefId: refIdL,
-            TransactionNo: transactionNoL,
-            HN: hNL,
-            VN: vNL,
+            PatientInfo
           }
         )
         .then((response) => {
@@ -182,8 +194,9 @@ export default function chackData() {
 
   const Refresh = (data) => {
     setShowFormError();
-    console.log("-Refresh-");
-    const [RefId, TransactionNo, PID, PassportNumber, IdType, HN, VN] =
+    setPost();
+   // console.log("-Refresh-");
+    const [RefId, TransactionNo, PID, PassportNumber, HN, VN] =
       data.split(" | ");
     const PatientInfo = {
       InsurerCode: InsuranceCode,
@@ -191,11 +204,10 @@ export default function chackData() {
       TransactionNo: TransactionNo,
       PID: PID,
       PassportNumber: PassportNumber,
-      //IdType: IdType,
       HN: HN,
       VN: VN,
     };
-    console.log(PatientInfo);
+   // console.log(PatientInfo);
     axios
       .post(
         process.env.NEXT_PUBLIC_URL_PD +
@@ -203,7 +215,7 @@ export default function chackData() {
         { PatientInfo }
       )
       .then((response) => {
-        console.log(response.data);
+        //console.log(response.data);
 
         if (response.data.HTTPStatus.statusCode === 200) {
           setStatusNew((prevData) => ({
@@ -231,18 +243,46 @@ export default function chackData() {
       // }, 5000);
       // })
       .catch((error) => {
-        // console.error("Error", err)
+        // console.error("Error", error)
         console.log(error);
         //  if (err.response.request.status === 500) {
         setShowFormError("Error");
         //  setMassError(error.response.data.HTTPStatus.message);
       });
+
+console.log(patientInfoDetail)
+      axios
+        .post(
+          process.env.NEXT_PUBLIC_URL_SV +
+            process.env.NEXT_PUBLIC_URL_SearchTransection,
+         {patientInfoDetail}  
+        )
+        .then((response) => {
+  //        setPost(response.data);
+          console.log(response.data);
+    //      setShowFormError();
+        })
+        .catch((error) => {
+          // console.error("Error", error)
+          console.log(error);
+
+          setShowFormError("Error");
+          setMassError(error.message);
+        });
+
+
+
+
+
+
+
+
   };
 
   const Detail = (data) => {
     //console.log("-Detail-")
     setShowFormError();
-    const [RefId, TransactionNo, PID, PassportNumber, IdType, HN, VN] =
+    const [RefId, TransactionNo, PID, PassportNumber, HN, VN] =
       data.split(" | ");
     setDetailData({
       RefId: RefId,
@@ -325,8 +365,8 @@ export default function chackData() {
     // .then((response) => {
     //   console.log(response.data)
     // })
-    // .catch((err) => {
-    //   console.log(err)
+    // .catch((error) => {
+    //   console.log(error)
     //            setShowFormError("Error");
     //            setMassError(err.response.data.HTTPStatus.message);
     //        })
@@ -338,7 +378,7 @@ export default function chackData() {
     // console.log("-Cancel-")
     const isConfirmed = window.confirm("แน่ใจแล้วที่จะยกเลิกการเคลมใช่ไหม");
     if (isConfirmed) {
-      const [RefId, TransactionNo, PID, PassportNumber, IdType, HN, VN] =
+      const [RefId, TransactionNo, PID, PassportNumber, HN, VN] =
         data.split(" | ");
       const PatientInfo = {
         InsurerCode: InsuranceCode,
@@ -346,7 +386,6 @@ export default function chackData() {
         TransactionNo: TransactionNo,
         PID: PID,
         PassportNumber: PassportNumber,
-        IdType: IdType,
         HN: HN,
         VN: VN,
       };
@@ -375,7 +414,7 @@ export default function chackData() {
         // }, 5000);
         // })
         .catch((error) => {
-          // console.error("Error", err)
+          // console.error("Error", error)
           console.log(error);
           //  if (err.response.request.status === 500) {
           setShowFormError("Error");
@@ -423,8 +462,8 @@ export default function chackData() {
         RefId: "",
         TransactionNo: "",
       };
-
-      console.log(PatientInfo);
+      setPatientInfoDetail(PatientInfo)
+     // console.log(PatientInfo);
 
       axios
         .post(
@@ -434,11 +473,11 @@ export default function chackData() {
         )
         .then((response) => {
           setPost(response.data);
-          console.log(response.data);
+         // console.log(response.data);
           setShowFormError();
         })
         .catch((error) => {
-          // console.error("Error", err)
+          // console.error("Error", error)
           console.log(error);
 
           setShowFormError("Error");
@@ -447,7 +486,6 @@ export default function chackData() {
     } else if (selectedIdType === "Invoice" && numberValue) {
       data = {
         Insurerid: InsuranceCode,
-        StatusClaimCode: "09",
         IdType: selectedIdType,
         Invoice: numberValue,
         VN: "",
@@ -488,7 +526,7 @@ export default function chackData() {
     //   setShowFormError("");
     // })
     // .catch((error) => {
-    //  // console.error("Error", err)
+    //  // console.error("Error", error)
     //   console.log(error)
 
     //           setShowFormError("Error");
@@ -585,7 +623,7 @@ export default function chackData() {
         //       `<iframe width='100%' height='99%' src='${linkSource}'></iframe>`
         // );
       })
-      .catch((err) => {
+      .catch((error) => {
         console.log(error);
         try {
           const ErrorMass = error.config.url;
@@ -602,21 +640,24 @@ export default function chackData() {
   };
 
   const handleButtonClick = (data) => {
+    setBillList();
     setShowDocError();
     const [
       RefId,
       TransactionNo,
       PID,
       PassportNumber,
-      IdType,
       HN,
       VN,
       InvoiceNumber,
     ] = data.split(" | ");
+
     setRefIdL(RefId);
     setTransactionNoL(TransactionNo);
     setHNL(HN);
     setVNL(VN);
+    setPIDL(PID);
+    setPassportNumberL(PassportNumber);
     setInvoiceNumberL(InvoiceNumber);
     setMsg(null);
 
@@ -625,12 +666,13 @@ export default function chackData() {
       RefId: RefId,
       TransactionNo: TransactionNo,
       PID: PID,
-      PassportNumber: PassportNumber,
-      IdType: IdType,
       HN: HN,
+      PassportNumber: PassportNumber,
       VN: VN,
+      DocumenttypeCode: "003",
+      DocumentName : "",
     };
-
+    //console.log(PatientInfo)
     axios
       .post(
         process.env.NEXT_PUBLIC_URL_PD2 +
@@ -639,10 +681,11 @@ export default function chackData() {
       )
       .then((response) => {
         setBillList(response.data);
+      //  console.log(response.data)
       })
-      .catch((err) => {
-        // console.error("Error", err)
-        console.log(err);
+      .catch((error) => {
+        // console.error("Error", error)
+        console.log(error);
         //  if (err.response.request.status === 500) {
         setShowFormError("Error");
         setMassError(err.response.data.HTTPStatus.message);
@@ -936,7 +979,7 @@ export default function chackData() {
                                   className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100 ml-4"
                                   onClick={() =>
                                     handleButtonClick(
-                                      `${bill.RefId} | ${bill.TransactionNo} | ${bill.PID} | ${bill.PassportNumber} | ${bill.IdType}  | ${bill.HN} | ${bill.VN} | ${bill.InvoiceNumber}`
+                                      `${bill.RefId} | ${bill.TransactionNo} | ${bill.PID} | ${bill.PassportNumber} | ${bill.HN} | ${bill.VN} | ${bill.InvoiceNumber}`
                                     )
                                   }
                                 >
@@ -1062,20 +1105,20 @@ export default function chackData() {
                               {list.filename}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="tooltip" data-tip="Document">
+                        
                                 <div
-                                  className="btn btn-warning  mr-2"
+                                  className="btn btn-primary  mr-2 text-base-100 hover:text-primary hover:bg-base-100"
                                   type="submit"
                                   onClick={() => DocumentBase64(list.filename)}
                                 >
-                                  <IoIosDocument />
+                                  Document
                                 </div>
-                              </div>
-                              <div className="tooltip" data-tip="Cancel Claim">
-                                <div className="btn btn-error " type="submit">
-                                  <MdCancel />
+                     
+                             
+                                <div className="btn btn-error  mr-2 text-base-100 hover:text-error hover:bg-base-100" type="submit">
+                                Cancel
                                 </div>
-                              </div>
+                      
                             </td>
                           </tr>
                         ))

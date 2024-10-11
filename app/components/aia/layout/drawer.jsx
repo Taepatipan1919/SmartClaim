@@ -41,8 +41,8 @@ export default function Drawer() {
         { id: "1-1", label: "ข้อมูลผู้ป่วย", href: "/aia/opd/chackpatient" },
         { id: "1-2", label: "ตรวจสอบสิทธิ์", href: "/aia/opd/checkeligible" },
         { id: "1-3", label: "ส่งยอดเคลม", href: "/aia/opd/eligible" },
-        { id: "1-4", label: "วางบิล", href: "/aia/opd/submitBilling" },
-        { id: "1-5", label: "สถานะการเคลม", href: "/aia/opd/checkClaimStatus" },
+        { id: "1-4", label: "สถานะการเคลม", href: "/aia/opd/checkClaimStatus" },
+        { id: "1-5", label: "วางบิล", href: "/aia/opd/submitBilling" },
       ],
     },
     // {

@@ -148,31 +148,31 @@ export default function chackData() {
         save({
           value: "มีข้อมูล",
           Data: {
-            RefId: "ccXwZWYmukJdvzFrWaccN8bNr83caECQjC+vvuEaIKY=",
-            TransactionNo: "5c5aabb3-b919-4ee8-ac42-848ae4d5f55a",
-            VN: "O477382-67",
-            InsurerCode: 13,
-            ServiceSettingCode: "OPD",
-            IllnessTypeCode: "ER",
-            SurgeryTypeCode: "N",
-            PolicyTypeCode: "IB",
-            AccidentDate: "2024-09-08",
-            VisitDateTime:"2024-09-08 08:22",
-            FurtherClaimNo: "",
-            FurtherClaimId: "",
-
-            // RefId: result.Result.InsuranceData.RefId,
-            // TransactionNo: result.Result.InsuranceData.TransactionNo,
-            // VN: detailVN,
-            // InsurerCode: InsurerCode,
-            // ServiceSettingCode: statusValue,
-            // IllnessTypeCode: illnessTypeValue,
-            // SurgeryTypeCode: surgeryTypeValue,
-            // PolicyTypeCode: policyTypeValue,
-            // AccidentDate: accidentDate,
-            // VisitDateTime: visitDateTime,
+            // RefId: "ccXwZWYmukJdvzFrWaccN8bNr83caECQjC+vvuEaIKY=",
+            // TransactionNo: "5c5aabb3-b919-4ee8-ac42-848ae4d5f55a",
+            // VN: "O477382-67",
+            // InsurerCode: 13,
+            // ServiceSettingCode: "OPD",
+            // IllnessTypeCode: "ER",
+            // SurgeryTypeCode: "N",
+            // PolicyTypeCode: "IB",
+            // AccidentDate: "2024-09-08",
+            // VisitDateTime:"2024-09-08 08:22",
             // FurtherClaimNo: "",
             // FurtherClaimId: "",
+
+            RefId: result.Result.InsuranceData.RefId,
+            TransactionNo: result.Result.InsuranceData.TransactionNo,
+            VN: detailVN,
+            InsurerCode: InsurerCode,
+            ServiceSettingCode: statusValue,
+            IllnessTypeCode: illnessTypeValue,
+            SurgeryTypeCode: surgeryTypeValue,
+            PolicyTypeCode: policyTypeValue,
+            AccidentDate: accidentDate,
+            VisitDateTime: visitDateTime,
+            FurtherClaimNo: "",
+            FurtherClaimId: "",
           },
         })
       );
@@ -558,8 +558,8 @@ export default function chackData() {
         {post ? (
           post.HTTPStatus.statusCode === 200 ? (
             <>
-         <form onSubmit={gourl}>
-               {/*     <form onSubmit={check}> */}
+       {/*   <form onSubmit={gourl}>*/}
+                   <form onSubmit={check}> 
                 <div className="overflow-x-auto mt-2">
                   <table className="table">
                     <thead className="bg-info text-base-100 text-center text-lg">
@@ -856,14 +856,22 @@ export default function chackData() {
                   <div className="rounded-md "></div>
                   <div className="rounded-md ">&nbsp;</div>
                 </div>
+                <div className="modal-action">
+               <div
+                className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100"
+                //  onClick={gourl}
+              >
+                Print
+              </div>
+      
                 {result
                   ? result.Result.InsuranceData.CoverageList.map(
                       (coverage, index) =>
                         coverage.Status === true ? (
                           <div Key={index}>
-                            <div className="modal-action">
+              
                               <button
-                                className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100"
+                                className="btn btn-success text-base-100 hover:text-success hover:bg-base-100"
                                 onClick={confirmButton}
                                 // onClick={() =>
                                 //   document.getElementById("my_modal_2").showModal()
@@ -871,13 +879,14 @@ export default function chackData() {
                               >
                                 ยืนยันการเคลม
                               </button>
-                            </div>
+                  
                           </div>
                         ) : (
                           ""
                         )
                     )
                   : ""}
+                        </div>
               </>
             )}
           </form>

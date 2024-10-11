@@ -351,6 +351,15 @@ export default function chackData() {
       DateOfBirth: "",
     });
 
+
+
+
+
+
+
+
+
+
     //   dispatch(save2({
     //     value: "มีรายชื่อ2",
     //     Data:
@@ -605,7 +614,7 @@ export default function chackData() {
     } else if (statusValue) {
     }
 
-   // console.log(PatientInfo);
+    console.log(PatientInfo);
     setPatientUpdate(PatientInfo);
     if (PatientInfo) {
       axios
@@ -821,6 +830,7 @@ export default function chackData() {
               {post ? (
                 post.HTTPStatus.statusCode === 200 ? (
                   post.Result.TransactionClaimInfo.map((bill, index) => (
+                    (bill.VisitDate||bill.HN) !== "" && (
                     <tr className="hover text-center" key={index}>
                       <th>{index + 1}</th>
                       <td>{bill.VisitDate}</td>
@@ -927,6 +937,7 @@ export default function chackData() {
                         )}
                       </td>
                     </tr>
+                    )
                   ))
                 ) : (
                   <tr>
@@ -957,7 +968,7 @@ export default function chackData() {
             </tbody>
           </table>
 
-          {detailData ? <DetailDischarge data={detailData} /> : ""}
+          {/* {detailData ? <DetailDischarge data={detailData} /> : ""} */}
 
           <dialog id="my_modal_3" className="modal text-xl	">
             <div className="modal-box">
