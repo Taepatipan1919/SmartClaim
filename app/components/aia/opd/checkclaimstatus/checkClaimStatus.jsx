@@ -61,8 +61,16 @@ export default function chackData() {
   const [massDocError, setMassDocError] = useState("");
   const [showDocError, setShowDocError] = useState("");
   const [patientUpdate, setPatientUpdate] = useState("");
+  const [docType, setDocType] = useState("");
+  const [randomNumber, setRandomNumber] = useState('');
+
+  const [selectedValue, setSelectedValue] = useState("");
+  const handleSelectChange = (event) => {
+    setSelectedValue(event.target.value);
+  };
 
   useEffect(() => {
+
     axios
       .get(
         process.env.NEXT_PUBLIC_URL_SV +
@@ -91,6 +99,15 @@ export default function chackData() {
   };
 
   const handleButtonClick = (data) => {
+    const generateRandomFiveDigitNumber = () => {
+      return String(Math.floor(Math.random() * 100000)).padStart(5, '0');
+    };
+    const newRandomNumber = generateRandomFiveDigitNumber();
+    setRandomNumber(newRandomNumber);
+    console.log(newRandomNumber);
+
+
+
     setShowDocError();
     const [
       RefId,
@@ -118,6 +135,8 @@ export default function chackData() {
       PassportNumber: PassportNumber,
       HN: HN,
       VN: VN,
+      DocumenttypeCode : "006",
+      Runningdocument : newRandomNumber,
     };
 
     console.log(PatientInfo);
@@ -138,13 +157,31 @@ export default function chackData() {
         setMassError(err.response.data.HTTPStatus.message);
       });
 
+      axios
+      .get(
+        process.env.NEXT_PUBLIC_URL_PD2 +
+          process.env.NEXT_PUBLIC_URL_documentType+ PatientInfo.InsurerCode
+      )
+      .then((response) => {
+        setDocType(response.data);
+      })
+      .catch((err) => {
+        // console.error("Error", err)
+        console.log(err);
+        //  if (err.response.request.status === 500) {
+        setShowFormError("Error");
+        setMassError(err.response.data.HTTPStatus.message);
+      });
+
     document.getElementById("my_modal_3").showModal();
   };
 
   const handleUpload = async () => {
     if (!file) {
       setMsg("No file selected");
+     // console.log(transactionNoL)
       return;
+      
     }
     setMsg();
     setShowDocError();
@@ -157,8 +194,9 @@ export default function chackData() {
     formData.append("HN", hNL);
     formData.append("DocumentName", file.name);
     formData.append("insurerid", InsuranceCode);
-    formData.append("DocumenttypeCode", "006");
-    //console.log(formData)
+    formData.append("DocumenttypeCode", selectedValue);
+    formData.append("UploadedBy", "");
+    formData.append("Runningdocument", randomNumber);
     setMsg(
       <span className="loading loading-spinner text-info loading-lg"></span>
     );
@@ -206,15 +244,20 @@ export default function chackData() {
         .post(
           process.env.NEXT_PUBLIC_URL_PD +
             process.env.NEXT_PUBLIC_URL_getlistDocumentName,
-          (PatientInfo = {
+          {
+            "PatientInfo" : {
             InsurerCode: InsuranceCode,
             RefId: refIdL,
             TransactionNo: transactionNoL,
             PID: pIDL,
-            PassportNumber: PassportNumber,
+            PassportNumber: passportNumberL,
             HN: hNL,
             VN: vNL,
-          })
+            DocumenttypeCode: "",
+            DocumentName : "",
+            Runningdocument : randomNumber,
+          }
+        }
         )
         .then((response) => {
           setBillList(response.data);
@@ -252,9 +295,9 @@ export default function chackData() {
   };
 
   const Refresh = (data) => {
-     setPost()
+   //  setPost()
     setShowFormError();
-    console.log("-Refresh-");
+   // console.log("-Refresh-");
     const [RefId, TransactionNo, PID, PassportNumber, HN, VN] =
       data.split(" | ");
     const PatientInfo = {
@@ -277,19 +320,23 @@ export default function chackData() {
         console.log(response.data);
 
         if (response.data.HTTPStatus.statusCode === 200) {
-          setStatusNew((prevData) => ({
-            ...prevData,
-            InsurerCode: response.data.Result.InsuranceData.InsurerCode,
-            BatchNumber: response.data.Result.InsuranceData.BatchNumber,
-            ClaimStatus: response.data.Result.InsuranceData.ClaimStatus,
-            ClaimStatusDesc: response.data.Result.InsuranceData.ClaimStatusDesc,
-            TotalApproveAmount:
-              response.data.Result.InsuranceData.TotalApproveAmount,
-            PaymentDate: response.data.Result.InsuranceData.PaymentDate,
-            InvoiceNumber: response.data.Result.InsuranceData.InvoiceNumber,
-            // HN : response.data.Result.InsuranceData.HN,
-            // VN : response.data.Result.InsuranceData.VN,
-          }));
+         // console.log("Succ")
+          setStatusNew(prevData)
+          console.log(prevData)
+          //  => ({
+          //   ...prevData,
+          //   InsurerCode: response.data.Result.InsuranceData.InsurerCode,
+          //   BatchNumber: response.data.Result.InsuranceData.BatchNumber,
+          //   ClaimStatus: response.data.Result.InsuranceData.ClaimStatus,
+          //   ClaimStatusDesc: response.data.Result.InsuranceData.ClaimStatusDesc,
+          //   TotalApproveAmount: response.data.Result.InsuranceData.TotalApproveAmount,
+          //   PaymentDate: response.data.Result.InsuranceData.PaymentDate,
+          //   InvoiceNumber: response.data.Result.InsuranceData.InvoiceNumber,
+          //   RefId : response.data.Result.InsuranceData.RefId,
+          //   TransactionNo : response.data.Result.InsuranceData.TransactionNo,
+          //   // HN : response.data.Result.InsuranceData.HN,
+          //   // VN : response.data.Result.InsuranceData.VN,
+          // }));
 
           // axios
           // .post(process.env.NEXT_PUBLIC_URL_SV + process.env.NEXT_PUBLIC_URL_SearchTransection,{patientUpdate})
@@ -305,79 +352,78 @@ export default function chackData() {
           //           setMassError(error.message);
 
           // });
+          // setShowModal(true)
+          // setTimeout(() => {
+          //   setShowModal(false)
+            //router.push('/aia/opd/submitBilling');
+          // }, 5000);
         } else {
           setShowFormError("Error");
           setMassError(response.data.HTTPStatus.error);
         }
-      })
-      // setShowModal(true)
-      // setTimeout(() => {
-      //   setShowModal(false)
-      //   //router.push('/aia/opd/submitBilling');
-      // }, 5000);
-      // })
+
+
+       })
       .catch((error) => {
-        // console.error("Error", err)
         console.log(error);
-        //  if (err.response.request.status === 500) {
-        setShowFormError("Error");
-        setMassError(error.response.data.HTTPStatus.message);
+        // try {
+        //   const ErrorMass = error.config.url;
+        //   const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+        //   setMassError(
+        //     error.code + " - " + error.message + " - " + ErrorMass2
+        //   );
+        //   setShowFormError("Error");
+        // } catch (error) {
+        //   setMassError("Error ในการเปิดไฟล์");
+        //   setShowFormError("Error");
+        // }
       });
   };
-
+    //console.log(statusNew)
   const Detail = (data) => {
     //console.log("-Detail-")
     setShowFormError();
     const [RefId, TransactionNo, PID, PassportNumber, HN, VN] =
       data.split(" | ");
-    setDetailData({
-      RefId: RefId,
-      TransactionNo: TransactionNo,
-      HN: HN,
-      VN: VN,
-      GivenNameEN: "",
-      GivenNameTH: "",
-      IllnessType: "",
-      SurnameEN: "",
-      SurnameTH: "",
-      TitleEN: "",
-      TitleTH: "",
-      VisitDateTime: "",
-      PID: PID,
-      PassportNumber: PassportNumber,
-      SurgeryTypeCode: "",
-      FurtherClaimNo: "",
-      FurtherClaimId: "",
-      DateOfBirth: "",
-    });
-
-
-
-
-
-
-
-
-
+    // setDetailData({
+    //   RefId: RefId,
+    //   TransactionNo: TransactionNo,
+    //   HN: HN,
+    //   VN: VN,
+    //   GivenNameEN: "",
+    //   GivenNameTH: "",
+    //   IllnessType: "",
+    //   SurnameEN: "",
+    //   SurnameTH: "",
+    //   TitleEN: "",
+    //   TitleTH: "",
+    //   VisitDateTime: "",
+    //   PID: PID,
+    //   PassportNumber: PassportNumber,
+    //   SurgeryTypeCode: "",
+    //   FurtherClaimNo: "",
+    //   FurtherClaimId: "",
+    //   DateOfBirth: "",
+    // });
 
     //   dispatch(save2({
-    //     value: "มีรายชื่อ2",
+    //     value: "มีรายชื่อ",
     //     Data:
     //   {
     //     // "IdType": selectedOption,
     //     "InsurerCode": InsuranceCode,
-    //      "DateOfBirth": DateOfBirth,
+    //      "DateOfBirth": "",
     //     // "Gender": patient.Gender,
-    //     "GivenNameEN": GivenNameEN,
-    //     "GivenNameTH": GivenNameTH,
+    //     "GivenNameEN": "",
+    //     "GivenNameTH": "",
     //     "HN": HN,
     //     // "MobilePhone": patient.MobilePhone,
     //      "PID": PID,
     //     "PassportNumber": PassportNumber,
-    //     "SurnameEN": SurnameEN,
-    //     "SurnameTH": SurnameTH,
-    //     "TitleEN": TitleEN,
-    //     "TitleTH": TitleTH,
+    //     "SurnameEN": "",
+    //     "SurnameTH": "",
+    //     "TitleEN": "",
+    //     "TitleTH": "",
     //   },
     // }));
 
@@ -482,31 +528,29 @@ export default function chackData() {
   };
   const submitbilling = (event) => {
     event.preventDefault();
-    //วนลูบ DocList
+
     let filenames = {};
     filenames = billList.map((Bll) => ({ DocName: Bll.filename }));
-
+      //console.log(filenames)
     axios
       .post(
-        process.env.NEXT_PUBLIC_URL_PD2 +
-          "v1/aia-billing-submission/getbilling-submission",
+        process.env.NEXT_PUBLIC_URL_PD2 + process.env.NEXT_PUBLIC_URL_attachDocList,
         {
+          "PatientInfo": {
           InsurerCode: InsuranceCode,
           RefId: refIdL,
           TransactionNo: transactionNoL,
-          PID: "",
           HN: hNL,
-          PassportNumber: "",
-          IdType: "",
           VN: vNL,
-          ClaimNo: "",
-          Invoicenumber: "",
+          DocumenttypeCode  : "",
+          Runningdocument: randomNumber,
           AttachDocList: [filenames],
+        }
         }
       )
       .then((response) => {
         console.log(response.data);
-        document.getElementById("my_modal_3").close();
+       document.getElementById("my_modal_3").close();
         setShowModal(true);
         setTimeout(() => {
           setShowModal(false);
@@ -520,6 +564,105 @@ export default function chackData() {
         setShowFormError("Error");
         //  setMassError(err.response.data.HTTPStatus.message);
       });
+  };
+
+
+  const CancleDoc = (data) => {
+    const isConfirmed = window.confirm("แน่ใจแล้วที่จะลบเอกสารใช่ไหม");
+    if (isConfirmed) {
+    setMsg();
+    setShowDocError();
+    setProgress({ started: false, pc: 0 });
+    axios
+      .post(
+        process.env.NEXT_PUBLIC_URL_PD2 +
+          process.env.NEXT_PUBLIC_URL_DeleteDocumentByDocName,
+        {
+          "PatientInfo": {
+          RefId: refIdL,
+          TransactionNo: transactionNoL,
+          // HN: PatientInfoData.PatientInfo.HN,
+          // VN: PatientInfoData.PatientInfo.VN,
+          DocumentName: data,
+          }
+        }
+      )
+      .then((response) => {
+       // setBase64(response.data);
+
+       setMsg(
+        <div role="alert" className="alert alert-success text-base-100">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6 shrink-0 stroke-current"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          Cancel Successful
+        </div>
+      );
+
+      axios
+        .post(
+          process.env.NEXT_PUBLIC_URL_PD2 +
+            process.env.NEXT_PUBLIC_URL_getlistDocumentName,
+          {
+            "PatientInfo":{
+            RefId: refIdL,
+            TransactionNo: transactionNoL,
+            HN: hNL,
+            VN: vNL,
+            DocumenttypeCode: "",
+            DocumentName : "",
+            Runningdocument : randomNumber,
+            }
+          }
+        )
+        .then((response) => {
+          setBillList(response.data);
+          //console.log(response.data)
+        })
+        .catch((error) => {
+          console.log(error);
+          try {
+            const ErrorMass = error.config.url;
+            const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+            setMassDocError(
+              error.code + " - " + error.message + " - " + ErrorMass2
+            );
+            setShowDocError("Error");
+          } catch (error) {
+            setMassDocError(error.response.data.HTTPStatus.message);
+            setShowDocError("Error");
+          }
+        });
+
+
+
+
+      })
+      .catch((error) => {
+        console.log(error);
+        try {
+          const ErrorMass = error.config.url;
+          const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+          setMassDocError(
+            error.code + " - " + error.message + " - " + ErrorMass2
+          );
+          setShowDocError("Error");
+        } catch (error) {
+          setMassDocError("Error ในการลบไฟล์");
+          setShowDocError("Error");
+        }
+      });
+    };
   };
   const Cancel = (data) => {
      setPost();
@@ -548,20 +691,33 @@ export default function chackData() {
         .then((response) => {
           console.log(response.data);
 
+
           if (response.data.HTTPStatus.statusCode === 200) {
             setMassCancel(response.data.Result.InsuranceData.Status);
             setShowFormCancel("Cancel");
           } else {
+
             setShowFormError("Error");
             setMassError(response.data.HTTPStatus.error);
           }
+
+          axios
+          .post(process.env.NEXT_PUBLIC_URL_SV + process.env.NEXT_PUBLIC_URL_SearchTransection,patientUpdate)
+          .then((response) => {
+         //   console.log(response.data)
+            setPost(response.data);
+         //   setShowFormError();
+
+          })
+          .catch((error) => {
+            console.log(error)
+                    setShowFormError("Error");
+                    setMassError(error.message);
+          });
+
         })
-        // setShowModal(true)
-        // setTimeout(() => {
-        //   setShowModal(false)
-        //   //router.push('/aia/opd/submitBilling');
-        // }, 5000);
-        // })
+
+
         .catch((error) => {
           // console.error("Error", err)
           console.log(error);
@@ -584,6 +740,7 @@ export default function chackData() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    setBillList();
     setPost();
     setShowFormError();
     let data = {};
@@ -615,7 +772,7 @@ export default function chackData() {
     }
 
     console.log(PatientInfo);
-    setPatientUpdate(PatientInfo);
+    setPatientUpdate({PatientInfo});
     if (PatientInfo) {
       axios
         .post(
@@ -815,8 +972,8 @@ export default function chackData() {
               <tr>
                 <th></th>
                 <th>Visit Date</th>
-                <th>HN</th>
                 <th>Full Name</th>
+                <th>HN</th>
                 <th>VN</th>
                 <th>ClaimNo</th>
                 <th>Invoicenumber</th>
@@ -845,8 +1002,8 @@ export default function chackData() {
                         <a className="bg-success text-base-100 rounded-full px-3 py-2">
                           {statusNew
                             ? bill.RefId === statusNew.RefId
-                              ? statusNew.ClaimStatusDesc
-                              : bill.ClaimStatusDesc
+                              ? statusNew.ClaimStatusDesc_TH
+                              : bill.ClaimStatusDesc_TH 
                             : "Loading..."}
                         </a>
                       </td>
@@ -880,10 +1037,6 @@ export default function chackData() {
                             <IoDocumentText />
                           </h1>
                         </div>
-                        {statusNew ? (
-                          bill.RefId ? (
-                            bill.ClaimStatusDesc === "Approve" ? (
-                              <>
                                 <div
                                   className="tooltip ml-4"
                                   data-tip="Cancel Claim"
@@ -899,20 +1052,9 @@ export default function chackData() {
                                     <MdCancel />
                                   </h1>
                                 </div>
-                              </>
-                            ) : (
-                              ""
-                            )
-                          ) : (
-                            ""
-                          )
-                        ) : (
-                          ""
-                        )}
                       </td>
                       <td>
-                        {statusNew ? (
-                          bill.RefId ? (
+                  { bill.RefId ? (
                             bill.ClaimStatusDesc === "Approve" ? (
                               <>
                                 <button
@@ -931,10 +1073,7 @@ export default function chackData() {
                             )
                           ) : (
                             "Loading..."
-                          )
-                        ) : (
-                          ""
-                        )}
+                          )}
                       </td>
                     </tr>
                     )
@@ -971,16 +1110,34 @@ export default function chackData() {
           {/* {detailData ? <DetailDischarge data={detailData} /> : ""} */}
 
           <dialog id="my_modal_3" className="modal text-xl	">
-            <div className="modal-box">
+            <div className="modal-box max-w-3xl">
               <form method="dialog">
-                <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
-                  ✕
-                </button>
-
+      <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+    </form>
+    <form  onSubmit={submitbilling}> 
                 <h3 className="font-bold text-lg">ส่งเอกสาร เพิ่มเติม</h3>
                 <hr />
-                <div className="grid gap-2 w-full mt-2">
-                  <div className="px-2 rounded-md">
+                <div className="grid gap-2 sm:grid-cols-2 w-full mt-2">
+                <div className="rounded-md">
+
+                <p className="text-left">Document Type</p>
+                <select  className="select select-bordered w-full mt-2" onChange={handleSelectChange} required>
+                      <option></option>
+                      {docType
+                  ? docType.Result.map((type, index) => (
+                              <option
+                                key={index}
+                                value={type.documenttypecode}>
+                                      {type.documenttypename}
+                              </option>
+                            )
+                          )
+                        : ""}
+                      <></>
+                    </select>
+          </div>
+
+                  <div className="rounded-md mt-9">
                     <div className="flex items-center ">
                       <input
                         type="file"
@@ -1007,7 +1164,7 @@ export default function chackData() {
                   ></progress>
                 )}
                 <br />
-                <h1 className="text-center">{msg}</h1>
+               <h1 className="text-center">{msg}</h1>  
 
                 {showDocError === "Error" ? (
                   <div
@@ -1032,8 +1189,7 @@ export default function chackData() {
                 ) : (
                   ""
                 )}
-
-                <div className="flex items-center mt-3">
+                                <div className="flex items-center mt-3">
                   <table className="table table-zebra mt-2">
                     <thead>
                       <tr className="text-base-100 bg-primary py-8 text-sm w-full text-center">
@@ -1049,18 +1205,22 @@ export default function chackData() {
                               {list.filename}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
+                        
                                 <div
                                   className="btn btn-primary  mr-2 text-base-100 hover:text-primary hover:bg-base-100"
                                   type="submit"
                                   onClick={() => DocumentBase64(list.filename)}
                                 >
                                   Document
-                   
-                              </div>
-            
-                                <div className="btn btn-error text-base-100 hover:text-error hover:bg-base-100" type="submit">
-                                  Cancel
                                 </div>
+                     
+                             
+                                <div className="btn btn-error  mr-2 text-base-100 hover:text-error hover:bg-base-100" type="submit"
+                                onClick={() => CancleDoc(list.filename)}
+                                >
+                                Cancel
+                                </div>
+                      
                             </td>
                           </tr>
                         ))
@@ -1073,17 +1233,33 @@ export default function chackData() {
                     </tbody>
                   </table>
                 </div>
+          {/* {msg === "Docsucc" ? */}
                 <div className="modal-action">
-                  <div
+                  <button
                     className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100"
-                    onClick={submitbilling}
                   >
                     ส่งเอกสาร
-                  </div>
-                </div>
-              </form>
+                  </button>
+                </div> 
+{/* : ""
+} */}
+             </form> 
             </div>
           </dialog>
+
+          {showModal ? (
+        <>
+          <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
+            <div className="bg-white p-8 rounded shadow-lg">
+              <h2 className="text-4xl font-bold mb-4 text-primary">
+                ส่งเอกสารเพิ่มเติมเรียบร้อย
+              </h2>
+            </div>
+          </div>
+        </>
+      ) : (
+        ""
+      )}
         </div>
       </div>
     </>

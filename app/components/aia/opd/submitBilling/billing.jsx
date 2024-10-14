@@ -46,7 +46,7 @@ export default function chackData() {
   const [refIdL, setRefIdL] = useState("");
   const [pIDL, setPIDL] = useState("");
   const [passportNumberL, setPassportNumberL] = useState("");
-
+  const [randomNumber, setRandomNumber] = useState('');
   const [transactionNoL, setTransactionNoL] = useState("");
   const [hNL, setHNL] = useState("");
   const [vNL, setVNL] = useState("");
@@ -56,6 +56,10 @@ export default function chackData() {
   const [showDocError, setShowDocError] = useState("");
   const [massDocError, setMassDocError] = useState("");
   const [base64, setBase64] = useState("");
+
+
+
+
 
   const handleUpload = async () => {
     if (!file) {
@@ -90,6 +94,8 @@ export default function chackData() {
     formData.append("VN", vNL);
     formData.append("insurerid", 13);
     formData.append("DocumenttypeCode", "003");
+    formData.append("UploadedBy", "");
+    formData.append("Runningdocument", randomNumber);
     setMsg(
       <span className="loading loading-spinner text-info loading-lg"></span>
     );
@@ -141,6 +147,7 @@ export default function chackData() {
         VN: vNL,
         DocumenttypeCode: "003",
         DocumentName : "",
+        Runningdocument : randomNumber,
       }
       axios
         .post(
@@ -255,10 +262,22 @@ console.log(patientInfoDetail)
         .post(
           process.env.NEXT_PUBLIC_URL_SV +
             process.env.NEXT_PUBLIC_URL_SearchTransection,
-         {patientInfoDetail}  
+         {
+          "PatientInfo": {
+          "InsurerCode": patientInfoDetail.InsurerCode, 
+          "PID": patientInfoDetail.PID,
+          "PassportNumber": patientInfoDetail.PassportNumber,
+          "HN": patientInfoDetail.HN,
+          "VN": patientInfoDetail.VN,
+          "InvoiceNumber": patientInfoDetail.InvoiceNumber,
+          "StatusClaimCode": patientInfoDetail.StatusClaimCode,
+          "VisitDatefrom": patientInfoDetail.VisitDatefrom,
+          "VisitDateto": patientInfoDetail.VisitDateto
+      }
+    }  
         )
         .then((response) => {
-  //        setPost(response.data);
+          setPost(response.data);
           console.log(response.data);
     //      setShowFormError();
         })
@@ -280,7 +299,7 @@ console.log(patientInfoDetail)
   };
 
   const Detail = (data) => {
-    //console.log("-Detail-")
+  //  console.log(data)
     setShowFormError();
     const [RefId, TransactionNo, PID, PassportNumber, HN, VN] =
       data.split(" | ");
@@ -434,7 +453,6 @@ console.log(patientInfoDetail)
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   const handleSubmit = (event) => {
-    //ยังไม่วางบิล
     event.preventDefault();
     setShowFormError();
     setPost();
@@ -451,7 +469,7 @@ console.log(patientInfoDetail)
       const PatientInfo = {
         InsurerCode: InsuranceCode,
         IdType: selectedIdType,
-        Invoice: "",
+        InvoiceNumber: "",
         VN: numberValue,
         PID: ReDux.Patient.Data.PID,
         PassportNumber: ReDux.Patient.Data.PassportNumber,
@@ -487,7 +505,7 @@ console.log(patientInfoDetail)
       data = {
         Insurerid: InsuranceCode,
         IdType: selectedIdType,
-        Invoice: numberValue,
+        InvoiceNumber: numberValue,
         VN: "",
         PID: ReDux.Patient.Data.PID,
         PassportNumber: ReDux.Patient.Data.PassportNumber,
@@ -504,7 +522,7 @@ console.log(patientInfoDetail)
         Status: "09",
         IdType: "",
         VN: "",
-        Invoice: "",
+        InvoiceNumber: "",
         DateVisitFrom: dateFromValue,
         ToValue: dateToValue,
       };
@@ -550,10 +568,11 @@ console.log(patientInfoDetail)
       TransactionNo: transactionNoL,
       VN: vNL,
       Invoicenumber: invoiceNumberL,
+      Runningdocument: randomNumber,
       AttachDocList: [filenames],
     };
 
-    console.log(PatientInfo);
+   // console.log(PatientInfo);
 
     axios
       .post(
@@ -563,12 +582,12 @@ console.log(patientInfoDetail)
       )
       .then((response) => {
         console.log(response.data);
-        // document.getElementById("my_modal_3").close()
-        // setShowModal(true)
-        // setTimeout(() => {
-        //   setShowModal(false)
-        //   //router.push('/aia/opd/submitBilling');
-        // }, 2000);
+        document.getElementById("my_modal_3").close()
+        setShowModal(true)
+        setTimeout(() => {
+          setShowModal(false)
+          //router.push('/aia/opd/submitBilling');
+        }, 2000);
       })
       .catch((error) => {
         console.log(error);
@@ -638,8 +657,116 @@ console.log(patientInfoDetail)
         }
       });
   };
+  const CancleDoc = (data) => {
+    const isConfirmed = window.confirm("แน่ใจแล้วที่จะลบเอกสารใช่ไหม");
+    if (isConfirmed) {
+    setMsg();
+    setShowDocError();
+    setProgress({ started: false, pc: 0 });
+    axios
+      .post(
+        process.env.NEXT_PUBLIC_URL_PD2 +
+          process.env.NEXT_PUBLIC_URL_DeleteDocumentByDocName,
+        {
+          "PatientInfo": {
+          RefId: refIdL,
+          TransactionNo: transactionNoL,
+          DocumentName: data,
+          }
+        }
+      )
+      .then((response) => {
+       // setBase64(response.data);
+
+       setMsg(
+        <div role="alert" className="alert alert-success text-base-100">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6 shrink-0 stroke-current"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          Cancel Successful
+        </div>
+      );
+      const PatientInfo = {
+        InsurerCode: InsuranceCode,
+        RefId: refIdL,
+        TransactionNo: transactionNoL,
+        PID: pIDL,
+        HN: hNL,
+        PassportNumber: passportNumberL,
+        VN: vNL,
+        DocumenttypeCode: "003",
+        DocumentName : "",
+        Runningdocument : randomNumber,
+        
+      };
+      console.log(PatientInfo)
+      axios
+        .post(
+          process.env.NEXT_PUBLIC_URL_PD2 +
+            process.env.NEXT_PUBLIC_URL_getlistDocumentName,
+          {
+            PatientInfo
+          }
+        )
+        .then((response) => {
+          setBillList(response.data);
+          //console.log(response.data)
+        })
+        .catch((error) => {
+          console.log(error);
+          try {
+            const ErrorMass = error.config.url;
+            const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+            setMassDocError(
+              error.code + " - " + error.message + " - " + ErrorMass2
+            );
+            setShowDocError("Error");
+          } catch (error) {
+            setMassDocError(error.response.data.HTTPStatus.message);
+            setShowDocError("Error");
+          }
+        });
+
+      })
+      .catch((error) => {
+        console.log(error);
+        try {
+          const ErrorMass = error.config.url;
+          const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+          setMassDocError(
+            error.code + " - " + error.message + " - " + ErrorMass2
+          );
+          setShowDocError("Error");
+        } catch (error) {
+          setMassDocError("Error ในการลบไฟล์");
+          setShowDocError("Error");
+        }
+      });
+    };
+  };
+
+
+
 
   const handleButtonClick = (data) => {
+    const generateRandomFiveDigitNumber = () => {
+      return String(Math.floor(Math.random() * 100000)).padStart(5, '0');
+    };
+    const newRandomNumber = generateRandomFiveDigitNumber();
+    setRandomNumber(newRandomNumber);
+    console.log(newRandomNumber);
+
+
     setBillList();
     setShowDocError();
     const [
@@ -671,6 +798,8 @@ console.log(patientInfoDetail)
       VN: VN,
       DocumenttypeCode: "003",
       DocumentName : "",
+      Runningdocument : newRandomNumber,
+      
     };
     //console.log(PatientInfo)
     axios
@@ -715,14 +844,14 @@ console.log(patientInfoDetail)
                 <p className="text-left">&nbsp;VN &nbsp;</p>
                 <input
                   type="radio"
-                  id="Invoice"
+                  id="InvoiceNumber"
                   name="identity_type"
-                  value="Invoice"
+                  value="InvoiceNumber"
                   className="checkbox checkbox-info"
-                  checked={selectedIdType === "Invoice"}
+                  checked={selectedIdType === "InvoiceNumber"}
                   onChange={handleOptionChange}
                 />
-                <p className="text-left">&nbsp;Invoice &nbsp;</p>
+                <p className="text-left">&nbsp;InvoiceNumber &nbsp;</p>
                 <p className="ml-64">Visit Date</p>
               </div>
               <TextField
@@ -792,15 +921,15 @@ console.log(patientInfoDetail)
               <p className="text-left">&nbsp;VN &nbsp;</p>
               <input
                         type="radio"
-                        id="Invoice"
+                        id="InvoiceNumber"
                         name="identity_type"
-                        value="Invoice"
+                        value="InvoiceNumber"
                         className="checkbox checkbox-info"
-                        checked={selectedIdType === 'Invoice'}
+                        checked={selectedIdType === 'InvoiceNumber'}
                         onChange={handleOptionChange}
                 
               />
-              <p className="text-left">&nbsp;Invoice &nbsp;</p>
+              <p className="text-left">&nbsp;InvoiceNumber &nbsp;</p>
               <p className="ml-64">Visit Date</p>
             </div>
             <TextField
@@ -921,7 +1050,7 @@ console.log(patientInfoDetail)
                             className="text-primary text-2xl"
                             onClick={() =>
                               Refresh(
-                                `${bill.RefId} | ${bill.TransactionNo} | ${bill.PID} | ${bill.PassportNumber} | ${bill.IdType}  | ${bill.HN} | ${bill.VN} | ${bill.InvoiceNumber}`
+                                `${bill.RefId} | ${bill.TransactionNo} | ${bill.PID} | ${bill.PassportNumber} | ${bill.HN} | ${bill.VN} | ${bill.InvoiceNumber}`
                               )
                             }
                           >
@@ -933,7 +1062,7 @@ console.log(patientInfoDetail)
                             className="text-primary text-2xl"
                             onClick={() =>
                               Detail(
-                                `${bill.RefId} | ${bill.TransactionNo} | ${bill.PID} | ${bill.PassportNumber} | ${bill.IdType}  | ${bill.HN} | ${bill.VN} | ${bill.InvoiceNumber}`
+                                `${bill.RefId} | ${bill.TransactionNo} | ${bill.PID} | ${bill.PassportNumber} | ${bill.HN} | ${bill.VN} | ${bill.InvoiceNumber}`
                               )
                             }
                           >
@@ -952,7 +1081,7 @@ console.log(patientInfoDetail)
                                     className="text-primary text-2xl"
                                     onClick={() =>
                                       Cancel(
-                                        `${bill.RefId} | ${bill.TransactionNo} | ${bill.PID} | ${bill.PassportNumber} | ${bill.IdType}  | ${bill.HN} | ${bill.VN} | ${bill.InvoiceNumber}`
+                                        `${bill.RefId} | ${bill.TransactionNo} | ${bill.PID} | ${bill.PassportNumber} | ${bill.HN} | ${bill.VN} | ${bill.InvoiceNumber}`
                                       )
                                     }
                                   >
@@ -1115,7 +1244,9 @@ console.log(patientInfoDetail)
                                 </div>
                      
                              
-                                <div className="btn btn-error  mr-2 text-base-100 hover:text-error hover:bg-base-100" type="submit">
+                                <div className="btn btn-error  mr-2 text-base-100 hover:text-error hover:bg-base-100" type="submit"
+                                onClick={() => CancleDoc(list.filename)}
+                                >
                                 Cancel
                                 </div>
                       
@@ -1149,12 +1280,6 @@ console.log(patientInfoDetail)
 
       {showModal ? (
         <>
-          {/* <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
-            <div className="bg-white p-4 rounded shadow-lg">
-                <h2 className="text-lg font-bold mb-4">ส่งเคลมเรียบร้อย</h2>
-               
-            </div>
-        </div> */}
           <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
             <div className="bg-white p-8 rounded shadow-lg">
               <h2 className="text-4xl font-bold mb-4 text-primary">

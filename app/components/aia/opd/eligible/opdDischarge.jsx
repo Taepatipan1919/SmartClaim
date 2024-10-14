@@ -89,6 +89,10 @@ export default function Page({ data }) {
   const [procedure, setProcedure] = useState("");
   const [causeOfInjuryDetails, setCauseOfInjuryDetails] = useState("");
   const [injuryDetails, setInjuryDetails] = useState("");
+
+  const [randomNumber, setRandomNumber] = useState('');
+
+
   const [newRow, setNewRow] = useState({
     Icd9: "",
     ProcedureName: "",
@@ -172,14 +176,17 @@ export default function Page({ data }) {
         process.env.NEXT_PUBLIC_URL_PD2 +
           process.env.NEXT_PUBLIC_URL_getlistDocumentName,
         {
+          "PatientInfo":{
           RefId: PatientInfoData.PatientInfo.RefId,
           TransactionNo: PatientInfoData.PatientInfo.TransactionNo,
           HN: PatientInfoData.PatientInfo.HN,
           VN: PatientInfoData.PatientInfo.VN,
         }
+        }
       )
       .then((response) => {
         setBillList(response.data);
+      //  console.log(response.data)
       })
       .catch((error) => {
         console.log(error);
@@ -204,7 +211,7 @@ export default function Page({ data }) {
       )
       .then((response) => {
         setPatientInfoByPID(response.data);
-        //console.log(response.data)
+      //  console.log(response.data)
       })
       .catch((error) => {
         console.log(error);
@@ -228,6 +235,7 @@ export default function Page({ data }) {
         PatientInfoData
       )
       .then((response) => {
+        // console.log(response.data)
         setVisit(response.data);
         //const dateValue = dayjs(response.data.Result.VisitInfo.SignSymptomsDate);
         //console.log(response.data.Result.VisitInfo.SignSymptomsDate)
@@ -263,39 +271,21 @@ export default function Page({ data }) {
         process.env.NEXT_PUBLIC_URL_PD +
           process.env.NEXT_PUBLIC_URL_getOPDDischargeAccident,
         PatientInfoData
-        //  "PatientInfo": {
-        // "InsurerCode": 13,
-        // "RefId":"oljhnklefhbilubsEFJKLb651",
-        // "TransactionNo":"",
-        // "PID": "3000000580044",
-        // "HN": "437536-45",
-        // "GivenNameTH": "วนิดา",
-        // "SurnameTH": "แจ้งสกุลชัย",
-
-        // "WoundDetails":"บาดเจ็บจากโดนสารเคมีหกใส่",
-        // "PolicyTypeCode":"IB",
-        // "ServiceSettingCode": "OPD",
-        // "IllnessTypeCode": "ACC",
-        // "SurgeryTypeCode":  "N",
-        // "ChiefComplaint":"CC",
-        // "PresentIllness":"PI"
-
-        // }
       )
       .then((response) => {
-    
+     //   console.log(response.data)
          setAccidentDetail(response.data);
         if (
           response.data.Result.AccidentDetailInfo[0].CauseOfInjuryDetail[0]
             .CauseOfInjury
-        ) {
+        ){
           setCauseOfInjuryDetails(
             response.data.Result.AccidentDetailInfo.CauseOfInjuryDetail
           );
         }
         if (
           response.data.Result.AccidentDetailInfo[0].InjuryDetail[0].InjuryArea
-        ) {
+        ){
           setInjuryDetails(
             response.data.Result.AccidentDetailInfo.InjuryDetail
           );
@@ -323,6 +313,7 @@ export default function Page({ data }) {
           InsuranceCode
       )
       .then((response) => {
+     //   console.log(response.data)
         setOver45Days(response.data);
       })
       .catch((error) => {
@@ -338,6 +329,23 @@ export default function Page({ data }) {
         }
       });
   }, []);
+  
+
+
+
+
+  useEffect(() => {
+
+    const generateRandomFiveDigitNumber = () => {
+      return String(Math.floor(Math.random() * 100000)).padStart(5, '0');
+    };
+    setBillList()
+    const newRandomNumber = generateRandomFiveDigitNumber();
+    setRandomNumber(newRandomNumber);
+    console.log(newRandomNumber);
+  }, []);
+
+
   useEffect(() => {
     axios
       .get(
@@ -347,6 +355,7 @@ export default function Page({ data }) {
         PatientInfoData
       )
       .then((response) => {
+       // console.log(response.data)
         setDataaccidentPlace(response.data);
       })
       .catch((error) => {
@@ -371,6 +380,7 @@ export default function Page({ data }) {
         PatientInfoData
       )
       .then((response) => {
+      //  console.log(response.data)
         setDatainjurySide(response.data);
       })
       .catch((error) => {
@@ -396,6 +406,7 @@ export default function Page({ data }) {
         PatientInfoData
       )
       .then((response) => {
+    //    console.log(response.data)
         setDataWoundType(response.data);
       })
       .catch((error) => {
@@ -420,6 +431,7 @@ export default function Page({ data }) {
         PatientInfoData
       )
       .then((response) => {
+     //   console.log(response.data)
         setVitalsign(response.data);
       })
       .catch((error) => {
@@ -444,6 +456,7 @@ export default function Page({ data }) {
         PatientInfoData
       )
       .then((response) => {
+    //    console.log(response.data)
         setDoctor(response.data);
       })
       .catch((error) => {
@@ -468,6 +481,7 @@ export default function Page({ data }) {
         PatientInfoData
       )
       .then((response) => {
+      //  console.log(response.data)
         setDiagnosis(response.data);
       })
       .catch((error) => {
@@ -491,11 +505,12 @@ export default function Page({ data }) {
         PatientInfoData
       )
       .then((response) => {
+    //    console.log(response.data)
         setProcedure(response.data);
         if (response.data.Result.ProcedureInfo[0].Icd9) {
           setRows(response.data.Result.ProcedureInfo);
         }
-        console.log(rows);
+        //console.log(rows);
       })
       .catch((error) => {
         console.log(error);
@@ -528,8 +543,8 @@ export default function Page({ data }) {
   ////////////////////////////////
   ////////////////////////////////
   const handleChangeA1 = (index2, event) => {
-    const newcauses = causeOfInjuryDetails.map((injury, index) => {
-      if (injury === index2) {
+    const newcauses = causeOfInjuryDetails.map((cause, index) => {
+      if (index === index2) {
         return {
           ...cause,
           CauseOfInjury: event.target.value,
@@ -596,6 +611,7 @@ export default function Page({ data }) {
           PatientInfoData.PatientInfo.InsurerCode
       )
       .then((response) => {
+       // console.log(response.data)
         setInjurySideType(response.data);
       })
       .catch((error) => {
@@ -674,6 +690,7 @@ export default function Page({ data }) {
         PatientInfoData
       )
       .then((response) => {
+       // console.log(response.data)
         setInvestigation(response.data);
       })
       .catch((error) => {
@@ -698,6 +715,7 @@ export default function Page({ data }) {
         PatientInfoData
       )
       .then((response) => {
+      //  console.log(response.data)
         setOrderItemz(response.data);
       })
       .catch((error) => {
@@ -722,6 +740,7 @@ export default function Page({ data }) {
         PatientInfoData
       )
       .then((response) => {
+     //   console.log(response.data)
         setBilling(response.data);
       })
       .catch((error) => {
@@ -791,6 +810,99 @@ export default function Page({ data }) {
           setShowDocError("Error");
         }
       });
+  };
+  const CancleDoc = (data) => {
+    const isConfirmed = window.confirm("แน่ใจแล้วที่จะลบเอกสารใช่ไหม");
+    if (isConfirmed) {
+    setMsg();
+    setShowDocError();
+    setProgress({ started: false, pc: 0 });
+    axios
+      .post(
+        process.env.NEXT_PUBLIC_URL_PD2 +
+          process.env.NEXT_PUBLIC_URL_DeleteDocumentByDocName,
+        {
+          "PatientInfo": {
+          RefId: PatientInfoData.PatientInfo.RefId,
+          TransactionNo: PatientInfoData.PatientInfo.TransactionNo,
+          // HN: PatientInfoData.PatientInfo.HN,
+          // VN: PatientInfoData.PatientInfo.VN,
+          DocumentName: data,
+          }
+        }
+      )
+      .then((response) => {
+       // setBase64(response.data);
+
+       setMsg(
+        <div role="alert" className="alert alert-success text-base-100">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6 shrink-0 stroke-current"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          Cancel Successful
+        </div>
+      );
+      axios
+        .post(
+          process.env.NEXT_PUBLIC_URL_PD2 +
+            process.env.NEXT_PUBLIC_URL_getlistDocumentName,
+          {
+            "PatientInfo":{
+            RefId: PatientInfoData.PatientInfo.RefId,
+            TransactionNo: PatientInfoData.PatientInfo.TransactionNo,
+            HN: PatientInfoData.PatientInfo.HN,
+            VN: PatientInfoData.PatientInfo.VN,
+            }
+          }
+        )
+        .then((response) => {
+          setBillList(response.data);
+          //console.log(response.data)
+        })
+        .catch((error) => {
+          console.log(error);
+          try {
+            const ErrorMass = error.config.url;
+            const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+            setMassDocError(
+              error.code + " - " + error.message + " - " + ErrorMass2
+            );
+            setShowDocError("Error");
+          } catch (error) {
+            setMassDocError(error.response.data.HTTPStatus.message);
+            setShowDocError("Error");
+          }
+        });
+
+
+
+
+      })
+      .catch((error) => {
+        console.log(error);
+        try {
+          const ErrorMass = error.config.url;
+          const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+          setMassDocError(
+            error.code + " - " + error.message + " - " + ErrorMass2
+          );
+          setShowDocError("Error");
+        } catch (error) {
+          setMassDocError("Error ในการลบไฟล์");
+          setShowDocError("Error");
+        }
+      });
+    };
   };
 
   //    //    //  //กดปุ่มส่งเคลม
@@ -1005,7 +1117,7 @@ export default function Page({ data }) {
           PreviousTreatmentDate: PreviousDate,
           PreviousTreatmentDetail: PreviousDetail,
         };
-        console.log(PatientInfo);
+      //  console.log(PatientInfo);
         axios
           .post(
             process.env.NEXT_PUBLIC_URL_SV +
@@ -1055,7 +1167,7 @@ export default function Page({ data }) {
           IllnessTypeCode: PatientInfoData.PatientInfo.IllnessTypeCode,
           SurgeryTypeCode: PatientInfoData.PatientInfo.SurgeryTypeCode,
         };
-        //console.log(PatientInfo)
+       // console.log(PatientInfo)
         axios
           .post(
             process.env.NEXT_PUBLIC_URL_SV +
@@ -1063,6 +1175,7 @@ export default function Page({ data }) {
             { PatientInfo }
           )
           .then((response) => {
+        
             if (response.data.HTTPStatus.statusCode === 200) {
               document.getElementById("my_modal_3").close();
               console.log("4 Succ");
@@ -1132,6 +1245,8 @@ export default function Page({ data }) {
     formData.append("VN", PatientInfoData.PatientInfo.VN);
     formData.append("insurerid", 13);
     formData.append("DocumenttypeCode", "001");
+    formData.append("UploadedBy", "");
+    formData.append("Runningdocument", randomNumber);
     setMsg(
       <span className="loading loading-spinner text-info loading-lg"></span>
     );
@@ -1178,10 +1293,12 @@ export default function Page({ data }) {
           process.env.NEXT_PUBLIC_URL_PD2 +
             process.env.NEXT_PUBLIC_URL_getlistDocumentName,
           {
+            "PatientInfo":{
             RefId: PatientInfoData.PatientInfo.RefId,
             TransactionNo: PatientInfoData.PatientInfo.TransactionNo,
             HN: PatientInfoData.PatientInfo.HN,
             VN: PatientInfoData.PatientInfo.VN,
+            }
           }
         )
         .then((response) => {
@@ -1249,9 +1366,21 @@ export default function Page({ data }) {
       cursor: "default", // เปลี่ยนเคอร์เซอร์เป็นแบบปกติ
     },
   });
+  const [query, setQuery] = useState('');
+  const [results, setResults] = useState([]);
 
+  const handleInputChange = async (e) => {
+      const input = e.target.value.toLowerCase();
+      setQuery(input);
+
+      if (input.length < 3) return; // ถ้าพิมพ์น้อยกว่า 3 ตัวอักษร ไม่ทำการค้นหา
+
+      const response = await axios.get(`https://api.example.com/search?q=${input}`);
+      setResults(response.data.results);
+  };
   return (
     <>
+
       {showFormError === "Error" ? (
         <div role="alert" className="alert alert-error mt-2 text-base-100">
           <svg
@@ -1274,6 +1403,7 @@ export default function Page({ data }) {
       )}
       {patientInfoByPID ? (
         <>
+        
           <form onSubmit={Claim}>
             {/* <form> */}
             {patientInfoByPID ? (
@@ -1556,14 +1686,14 @@ export default function Page({ data }) {
                     </Box>
                   </div>
                   {PatientInfoData.PatientInfo.FurtherClaimNo ? (
-                    <div className="rounded-md text-black">
-                      <Box
-                        sx={{
-                          backgroundColor: "#e5e7eb",
-                          padding: 0,
-                          borderRadius: 0,
-                        }}
-                      >
+                    <div className="rounded-md text-black mt-2">
+                  <Box
+                      sx={{
+                        backgroundColor: "#e5e7eb",
+                        padding: 0,
+                        borderRadius: 0,
+                      }}
+                    >
                         <CustomTextField
                           id="disabledInput"
                           className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"
@@ -1980,7 +2110,7 @@ export default function Page({ data }) {
                           {causeOfInjuryDetails
                             ? causeOfInjuryDetails.map(
                                 (cause, index) =>
-                                  cause.CauseOfInjury !== "" && (
+                                  cause.CauseOfInjury  && (
                                     <TableRow
                                       key={index}
                                       className=" bg-neutral text-sm"
@@ -2163,7 +2293,7 @@ export default function Page({ data }) {
                           {injuryDetails
                             ? injuryDetails.map(
                                 (injury, index) =>
-                                  injury.InjuryArea !== "" && (
+                                  injury.InjuryArea  && (
                                     <TableRow
                                       key={index}
                                       className=" bg-neutral text-sm"
@@ -2291,6 +2421,7 @@ export default function Page({ data }) {
                                         )}
                                       </TableCell>
                                       {summitEditAcc === "true" ? (
+                                        
                                         <TableCell>
                                           <div
                                             onClick={() =>
@@ -2301,6 +2432,7 @@ export default function Page({ data }) {
                                             <FaCircleMinus />
                                           </div>
                                         </TableCell>
+                                        
                                       ) : (
                                         ""
                                       )}
@@ -2450,7 +2582,7 @@ export default function Page({ data }) {
                     {vitalsign ? (
                       vitalsign.Result.VitalSignInfo.map(
                         (vts, index) =>
-                          vts.VitalSignEntryDateTime !== "" && (
+                          vts.VitalSignEntryDateTime  && (
                             <tr key={index} className=" bg-neutral text-sm">
                               <td>
                                 {vts.VitalSignEntryDateTime ? index + 1 : ""}
@@ -2557,7 +2689,7 @@ export default function Page({ data }) {
                     {doctor ? (
                       doctor.Result.DoctorInfo.map(
                         (dc, index) =>
-                          dc.DoctorLicense !== "" && (
+                          dc.DoctorLicense  && (
                             <tr key={index} className=" bg-neutral text-sm">
                               <td>{dc.DoctorLicense ? index + 1 : ""}</td>
                               <td>
@@ -2612,7 +2744,7 @@ export default function Page({ data }) {
                     {diagnosis ? (
                       diagnosis.Result.DiagnosisInfo.map(
                         (dns, index) =>
-                          dns.DxCode !== "" && (
+                          dns.DxCode  && (
                             <tr key={index} className=" bg-neutral text-sm">
                               <td>{dns.DxCode ? index + 1 : ""}</td>
                               <td>
@@ -2692,7 +2824,7 @@ export default function Page({ data }) {
                         {rows
                           ? rows.map(
                               (proce, index) =>
-                                proce.Icd9 !== "" && (
+                                proce.Icd9  && (
                                   <TableRow
                                     key={index}
                                     className=" bg-neutral text-sm"
@@ -2849,7 +2981,7 @@ export default function Page({ data }) {
                     {investigation ? (
                       investigation.Result.InvestigationInfo.map(
                         (inv, index) =>
-                          inv.InvestigationCode !== "" && (
+                          (inv.InvestigationCode) && (
                             <tr key={index} className=" bg-neutral text-sm">
                               <td>
                                 {inv.InvestigationCode ? "1" : <>&nbsp;</>}
@@ -2938,6 +3070,7 @@ export default function Page({ data }) {
                   <tbody className="bg-white divide-y divide-gray-200">
                     {orderItemz ? (
                       orderItemz.Result.OrderItemInfo.map((order, index) => (
+                        (order.ItemId) && (
                         <tr key={index} className=" bg-neutral text-sm">
                           <td className="px-6 py-4 whitespace-nowrap">
                             {order.ItemId ? index + 1 : ""}
@@ -2995,7 +3128,7 @@ export default function Page({ data }) {
                             </div>
                           </td>
                         </tr>
-                      ))
+                      )) )
                     ) : (
                       <tr>
                         <td></td>
@@ -3032,6 +3165,7 @@ export default function Page({ data }) {
                   <tbody className="bg-white divide-y divide-gray-200">
                     {billing ? (
                       billing.Result.BillingInfo.map((bill, index) => (
+                        (bill.SimbBillingCode) && (
                         <tr key={index} className=" bg-neutral text-sm">
                           <td className="px-6 py-4 whitespace-nowrap">
                             {bill.SimbBillingCode ? index + 1 : ""}
@@ -3082,7 +3216,7 @@ export default function Page({ data }) {
                             </div>
                           </td>
                         </tr>
-                      ))
+                      )))
                     ) : (
                       <tr>
                         <td></td>
@@ -3091,12 +3225,14 @@ export default function Page({ data }) {
                   </tbody>
                 </table>
               </div>
-              <div className="grid gap-2 sm:grid-cols-4  bg-primary w-full whitespace-normal text-center text-base-100 text-lg">
+              <div className="grid gap-2 sm:grid-cols-6  bg-primary w-full whitespace-normal text-center text-lg">
                 <div className="rounded-md"></div>
                 <div className="rounded-md"></div>
-                <div className="rounded-md ">สรุปค่ารักษาพยาบาล</div>
-                <div className="rounded-md ">
-                  ฿ {billing ? billing.Result.TotalBillAmount : ""}
+                <div className="rounded-md"></div>
+                <div className="rounded-md"></div>
+                <div className="rounded-md px-3 py-2 border-2 bg-base-100 break-all m-1">สรุปค่ารักษาพยาบาล</div>
+                <div className="rounded-md px-3 py-2 border-2 bg-base-100 break-all m-1">
+                  { billing ? billing.Result.TotalBillAmount : "" } 
                 </div>
               </div>
             </div>
@@ -3184,7 +3320,9 @@ export default function Page({ data }) {
                               </div>
                            
                             
-                              <div className="btn btn-error text-base-100 hover:text-error hover:bg-base-100" type="submit">
+                              <div className="btn btn-error text-base-100 hover:text-error hover:bg-base-100" type="submit"
+                              onClick={() => CancleDoc(list.filename)}
+                              >
                               Cancel
                               </div>
                         

@@ -49,8 +49,12 @@ export default function chackData() {
   const router = useRouter();
   const [massError, setMassError] = useState("");
   const [showFormError, setShowFormError] = useState("");
-  const [showFormCheckEligibleError, setShowFormCheckEligibleError] =
-    useState("");
+  const [showFormCheckEligibleError, setShowFormCheckEligibleError] =useState("");
+  const [massFurtherError, setMassFurtherError] = useState("");
+  const [showFormFurtherError, setShowFormFurtherError] =useState("");
+  const [transactionNoL, setTransactionNoL] =useState("");
+  const [refIdL, setRefIdL] =useState("");
+  const [testMe, setTestMe] = useState(false);
 
   const [accidentDate, setAccidentDate] = useState("");
   const [visitDateTime, setVisitDateTime] = useState("");
@@ -62,13 +66,21 @@ export default function chackData() {
   const handleSelectChange = (event) => {
     setSelectedValue(event.target.value);
   };
-  // const router = useRouter();
-  const confirmButton = () => {
-    // console.log(ReDux)
+  const handleButtonClick = () => {
+    window.open('/aia/opd/checkeligible/pdfPage', '_blank');
+  };
+  const confirmButton = (data) => {
+    setShowFormFurtherError();
+    setMassFurtherError();
+   // console.log(ReDux)
+    // console.log(data)
+    const [RefId, TransactionNo] = data.split(" | ");
+    setRefIdL(RefId)
+    setTransactionNoL(TransactionNo)
     const PatientInfo = {
       InsurerCode: InsurerCode,
-      RefId: ReDux.DataTran.Data.RefId,
-      TransactionNo: ReDux.DataTran.Data.TransactionNo,
+      RefId: RefId,
+      TransactionNo: TransactionNo,
       PID: ReDux.Patient.Data.PID,
       HN: ReDux.Patient.Data.HN,
       GivenNameTH: ReDux.Patient.Data.GivenNameTH,
@@ -76,39 +88,56 @@ export default function chackData() {
       DateOfBirth: ReDux.Patient.Data.DateOfBirth,
       PassportNumber: ReDux.Patient.Data.PassportNumber,
       IdType: ReDux.Patient.Data.IdType,
-      VN: ReDux.DataTran.Data.VN,
-      VisitDateTime: ReDux.DataTran.Data.VisitDateTime,
-      AccidentDate: ReDux.DataTran.Data.AccidentDate,
+      VN: detailVN,
+      VisitDateTime: visitDateTime,
+      AccidentDate: accidentDate,
+      ServiceSettingCode: statusValue,
+      IllnessTypeCode: illnessTypeValue,
+      SurgeryTypeCode: surgeryTypeValue,
+      PolicyTypeCode: policyTypeValue,
     };
-    // console.log(PatientInfo);
+     console.log(PatientInfo);
     axios
       .post(
         process.env.NEXT_PUBLIC_URL_PD +
           process.env.NEXT_PUBLIC_URL_getRetrieveFurtherclaim,
         {
-          //  PatientInfo
-          PatientInfo,
+            PatientInfo
         }
       )
       .then((response) => {
-        setFurtherClaim(response.data);
-        // console.log(response.data);
+        document.getElementById("my_modal_2").showModal();
+        if(response.data.HTTPStatus.statusCode === 200){
+          setFurtherClaim(response.data);
+          console.log(response.data);
+   
+        }else{
+          setMassFurtherError(response.data.HTTPStatus.message);
+          setShowFormFurtherError("Error");
+        }
+
       })
       .catch((error) => {
+        document.getElementById("my_modal_2").showModal();
         console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
-          setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
-          setShowFormError("Error");
+          setMassFurtherError(error.code + " - " + error.message + " - " + ErrorMass2);
+          setShowFormFurtherError("Error");
         } catch (error) {
-          setMassError(error.response.data.HTTPStatus.message);
-          setShowFormError("Error");
+          setMassFurtherError(error.response.data.HTTPStatus.message);
+          setShowFormFurtherError("Error");
         }
       });
-    document.getElementById("my_modal_2").showModal();
+  
   };
-  const gourl = () => {
+
+
+
+  const gourl = (event) => {
+    event.preventDefault();
+   // console.log("5555")
     if (selectedValue) {
       const [FurtherClaimNo, FurtherClaimId] = selectedValue.split(" | ");
       dispatch(
@@ -128,8 +157,8 @@ export default function chackData() {
             // FurtherClaimNo: "",
             // FurtherClaimId: "",
 
-            RefId: result.Result.InsuranceData.RefId,
-            TransactionNo: result.Result.InsuranceData.TransactionNo,
+            RefId: refIdL,
+            TransactionNo: transactionNoL,
             VN: detailVN,
             InsurerCode: InsurerCode,
             ServiceSettingCode: statusValue,
@@ -161,8 +190,8 @@ export default function chackData() {
             // FurtherClaimNo: "",
             // FurtherClaimId: "",
 
-            RefId: result.Result.InsuranceData.RefId,
-            TransactionNo: result.Result.InsuranceData.TransactionNo,
+            RefId: refIdL,
+            TransactionNo: transactionNoL,
             VN: detailVN,
             InsurerCode: InsurerCode,
             ServiceSettingCode: statusValue,
@@ -178,7 +207,7 @@ export default function chackData() {
       );
     }
 
-    router.push("/aia/opd/eligible");
+     router.push("/aia/opd/eligible");
   };
 
   const policy = (event) => {
@@ -558,8 +587,8 @@ export default function chackData() {
         {post ? (
           post.HTTPStatus.statusCode === 200 ? (
             <>
-       {/*   <form onSubmit={gourl}>*/}
-                   <form onSubmit={check}> 
+         {/*     <form onSubmit={gourl}>*/}
+               <form onSubmit={check}> 
                 <div className="overflow-x-auto mt-2">
                   <table className="table">
                     <thead className="bg-info text-base-100 text-center text-lg">
@@ -857,35 +886,35 @@ export default function chackData() {
                   <div className="rounded-md ">&nbsp;</div>
                 </div>
                 <div className="modal-action">
-               <div
+               {/* <div
                 className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100"
-                //  onClick={gourl}
+                onClick={handleButtonClick}
               >
                 Print
-              </div>
+              </div> */}
       
                 {result
                   ? result.Result.InsuranceData.CoverageList.map(
                       (coverage, index) =>
                         coverage.Status === true ? (
-                          <div Key={index}>
-              
+              //             "5"
+              // {testMe && (
+                          <div>
                               <button
                                 className="btn btn-success text-base-100 hover:text-success hover:bg-base-100"
-                                onClick={confirmButton}
-                                // onClick={() =>
-                                //   document.getElementById("my_modal_2").showModal()
-                                // }
+                                onClick={() =>
+                                  confirmButton(
+                                    `${result.Result.InsuranceData.RefId} | ${result.Result.InsuranceData.TransactionNo}`
+                                  )
+                                }
                               >
                                 ยืนยันการเคลม
                               </button>
                   
                           </div>
-                        ) : (
-                          ""
-                        )
-                    )
-                  : ""}
+                  //       ) 
+                  //  }
+                   ) : ""): ""}
                         </div>
               </>
             )}
@@ -895,11 +924,31 @@ export default function chackData() {
 
       <dialog id="my_modal_2" className="modal text-xl">
         <div className="modal-box">
-          <form method="dialog" onSubmit={gourl}>
-            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
-              ✕
-            </button>
-
+            <form method="dialog">
+      <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+    </form>
+    {showFormFurtherError === "Error" ? (
+              <div
+                role="alert"
+                className="alert alert-error mt-2 text-base-100"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6 shrink-0 stroke-current"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                <span>{massFurtherError}</span>
+              </div>
+            ) : (
+    <form  onSubmit={gourl}> 
             <h3 className="font-bold text-2xl text-accent">ข้อมูลการส่งเคลม</h3>
             <hr />
             <div className="flex pt-3 text-xl">
@@ -927,10 +976,9 @@ export default function chackData() {
                       onChange={handleSelectChange}
                     >
                       <option></option>
-                      {/* {furtherClaim
+               {furtherClaim
                         ? furtherClaim.Result.InsuranceData.FurtherClaimList.map(
                             (ftc, index) => (
-                              // <option key={index} value={ftc.ClaimNo}>เลขกรมธรรม์: {ftc.ClaimNo}, วันที่เข้ารักษา: {ftc.VisitDateTime.split('T')[0]}</option>
                               <option
                                 key={index}
                                 value={`${ftc.ClaimNo} | ${ftc.FurtherClaimId}`}
@@ -940,7 +988,7 @@ export default function chackData() {
                               </option>
                             )
                           )
-                        : ""} */}
+                        : ""} 
                       <></>
                     </select>
                   </label>
@@ -960,6 +1008,7 @@ export default function chackData() {
               {/* </Link>  */}
             </div>
           </form>
+          )}
         </div>
       </dialog>
     </>
