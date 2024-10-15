@@ -379,14 +379,13 @@ export default function DetailDischarge({ data }) {
                   </h1>
                   <div className="flex items-center mt-2 ml-2">
                     {transactionClaimInfo ? (
-                      transactionClaimInfo.Visit.AlcoholRelated === "true" ? (
+                      transactionClaimInfo.Visit.AlcoholRelated === true ? (
                         <input
                           type="checkbox"
                           id="alcoholRelated"
                           name="alcoholRelated"
                           className="checkbox"
-                          defaultChecked
-                          disabled
+                          disabled defaultChecked
                         />
                       ) : (
                         <input
@@ -407,23 +406,24 @@ export default function DetailDischarge({ data }) {
                   </div>
                   <div className="flex items-center mt-2 ml-2">
                     {transactionClaimInfo ? (
-                      transactionClaimInfo.Visit.pregnant === "true" ? (
-                        <input
-                          type="checkbox"
-                          id="pregnant"
-                          name="pregnant"
-                          className="checkbox"
-                          defaultChecked
-                          disabled
-                        />
+                      transactionClaimInfo.Visit.Pregnant === true ? (
+                        // <input
+                        //   type="checkbox"
+                        //   id="pregnant"
+                        //   name="pregnant"
+                        //   className="checkbox"
+                        //   disabled defaultChecked
+                        // />
+                        "1"
                       ) : (
-                        <input
-                          type="checkbox"
-                          id="pregnant"
-                          name="pregnant"
-                          className="checkbox"
-                          disabled
-                        />
+                        // <input
+                        //   type="checkbox"
+                        //   id="pregnant"
+                        //   name="pregnant"
+                        //   className="checkbox"
+                        //   disabled
+                        // />
+                        "2"
                       )
                     ) : (
                       ""
@@ -435,23 +435,24 @@ export default function DetailDischarge({ data }) {
                   </div>
                   <div className="flex items-center mt-2 ml-2">
                     {transactionClaimInfo ? (
-                      transactionClaimInfo.Visit.privateCase === "true" ? (
-                        <input
-                          type="checkbox"
-                          id="privateCase"
-                          name="privateCase"
-                          className="checkbox"
-                          defaultChecked
-                          disabled
-                        />
+                      transactionClaimInfo.Visit.PrivateCase === true ? (
+                        // <input
+                        //   type="checkbox"
+                        //   id="privateCase"
+                        //   name="privateCase"
+                        //   className="checkbox"
+                        //   disabled defaultChecked
+                        // />
+                        "1"
                       ) : (
-                        <input
-                          type="checkbox"
-                          id="privateCase"
-                          name="privateCase"
-                          className="checkbox"
-                          disabled
-                        />
+                        // <input
+                        //   type="checkbox"
+                        //   id="privateCase"
+                        //   name="privateCase"
+                        //   className="checkbox"
+                        //   disabled
+                        // />
+                        "2"
                       )
                     ) : (
                       ""
@@ -464,22 +465,24 @@ export default function DetailDischarge({ data }) {
                   <div className="flex items-center mt-2 ml-2">
                     {transactionClaimInfo ? (
                       (transactionClaimInfo.Visit.PreviousTreatmentDate||transactionClaimInfo.Visit.PreviousTreatmentDetail) ? (
-                        <input
-                          type="checkbox"
-                          id="privateCase"
-                          name="privateCase"
-                          className="checkbox"
-                          defaultChecked
-                          disabled
-                        />
+                        // <input
+                        //   type="checkbox"
+                        //   id="privateCase"
+                        //   name="privateCase"
+                        //   className="checkbox"
+                        //   defaultChecked
+                        //   disabled
+                        // />
+                        "1"
                       ) : (
-                        <input
-                          type="checkbox"
-                          id="privateCase"
-                          name="privateCase"
-                          className="checkbox"
-                          disabled
-                        />
+                        // <input
+                        //   type="checkbox"
+                        //   id="privateCase"
+                        //   name="privateCase"
+                        //   className="checkbox"
+                        //   disabled
+                        // />
+                        "2"
                       )
                     ) : (
                       ""

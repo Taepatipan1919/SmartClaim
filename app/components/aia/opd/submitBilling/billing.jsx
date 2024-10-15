@@ -200,11 +200,13 @@ export default function chackData() {
   };
 
   const Refresh = (data) => {
+    setStatusNew()
     setShowFormError();
-    setPost();
+  //  setPost();
    // console.log("-Refresh-");
-    const [RefId, TransactionNo, PID, PassportNumber, HN, VN] =
-      data.split(" | ");
+    // console.log(data)
+    const [RefId, TransactionNo, PID, PassportNumber, HN, VN, 
+      InvoiceNumber,PolicyTypeCode, IdType, IllnessTypeCode, ServiceSettingCode, SurgeryTypeCode, FurtherClaimNo, FurtherClaimId, AccidentDate, VisitDateTime] = data.split(" | ");
     const PatientInfo = {
       InsurerCode: InsuranceCode,
       RefId: RefId,
@@ -222,7 +224,7 @@ export default function chackData() {
         { PatientInfo }
       )
       .then((response) => {
-        //console.log(response.data);
+        console.log(response);
 
         if (response.data.HTTPStatus.statusCode === 200) {
           setStatusNew((prevData) => ({
@@ -231,8 +233,7 @@ export default function chackData() {
             BatchNumber: response.data.Result.InsuranceData.BatchNumber,
             ClaimStatus: response.data.Result.InsuranceData.ClaimStatus,
             ClaimStatusDesc: response.data.Result.InsuranceData.ClaimStatusDesc,
-            TotalApproveAmount:
-              response.data.Result.InsuranceData.TotalApproveAmount,
+            TotalApproveAmount: response.data.Result.InsuranceData.TotalApproveAmount,
             PaymentDate: response.data.Result.InsuranceData.PaymentDate,
             InvoiceNumber: response.data.Result.InsuranceData.InvoiceNumber,
             // HN : response.data.Result.InsuranceData.HN,
@@ -257,44 +258,37 @@ export default function chackData() {
         //  setMassError(error.response.data.HTTPStatus.message);
       });
 
-console.log(patientInfoDetail)
-      axios
-        .post(
-          process.env.NEXT_PUBLIC_URL_SV +
-            process.env.NEXT_PUBLIC_URL_SearchTransection,
-         {
-          "PatientInfo": {
-          "InsurerCode": patientInfoDetail.InsurerCode, 
-          "PID": patientInfoDetail.PID,
-          "PassportNumber": patientInfoDetail.PassportNumber,
-          "HN": patientInfoDetail.HN,
-          "VN": patientInfoDetail.VN,
-          "InvoiceNumber": patientInfoDetail.InvoiceNumber,
-          "StatusClaimCode": patientInfoDetail.StatusClaimCode,
-          "VisitDatefrom": patientInfoDetail.VisitDatefrom,
-          "VisitDateto": patientInfoDetail.VisitDateto
-      }
-    }  
-        )
-        .then((response) => {
-          setPost(response.data);
-          console.log(response.data);
-    //      setShowFormError();
-        })
-        .catch((error) => {
-          // console.error("Error", error)
-          console.log(error);
+    // console.log(patientInfoDetail)
+    //   axios
+    //     .post(
+    //       process.env.NEXT_PUBLIC_URL_SV +
+    //         process.env.NEXT_PUBLIC_URL_SearchTransection,
+    //      {
+    //       "PatientInfo": {
+    //       InsurerCode: patientInfoDetail.InsurerCode, 
+    //       PID: patientInfoDetail.PID,
+    //       PassportNumber: patientInfoDetail.PassportNumber,
+    //       HN: patientInfoDetail.HN,
+    //       VN: patientInfoDetail.VN,
+    //       InvoiceNumber: patientInfoDetail.InvoiceNumber,
+    //       StatusClaimCode: patientInfoDetail.StatusClaimCode,
+    //       VisitDatefrom: patientInfoDetail.VisitDatefrom,
+    //       VisitDateto: patientInfoDetail.VisitDateto
+    //   }
+    // }  
+    //     )
+    //     .then((response) => {
+    //       setPost(response.data);
+    //       console.log(response.data);
+    // //      setShowFormError();
+    //     })
+    //     .catch((error) => {
+    //       // console.error("Error", error)
+    //       console.log(error);
 
-          setShowFormError("Error");
-          setMassError(error.message);
-        });
-
-
-
-
-
-
-
+    //       setShowFormError("Error");
+    //       setMassError(error.message);
+    //     });
 
   };
 
@@ -324,71 +318,6 @@ console.log(patientInfoDetail)
       DateOfBirth: "",
     });
 
-    //   dispatch(save2({
-    //     value: "มีรายชื่อ2",
-    //     Data:
-    //   {
-    //     // "IdType": selectedOption,
-    //     "InsurerCode": InsuranceCode,
-    //      "DateOfBirth": DateOfBirth,
-    //     // "Gender": patient.Gender,
-    //     "GivenNameEN": GivenNameEN,
-    //     "GivenNameTH": GivenNameTH,
-    //     "HN": HN,
-    //     // "MobilePhone": patient.MobilePhone,
-    //      "PID": PID,
-    //     "PassportNumber": PassportNumber,
-    //     "SurnameEN": SurnameEN,
-    //     "SurnameTH": SurnameTH,
-    //     "TitleEN": TitleEN,
-    //     "TitleTH": TitleTH,
-    //   },
-    // }));
-
-    // dispatch(
-    //   save({
-    //     value: "มีข้อมูล2",
-    //     Data: {
-    //       RefId: RefId,
-    //       TransactionNo: TransactionNo,
-    //       VN: VN,
-    //       InsurerCode: InsuranceCode,
-    //       //ServiceSettingCode: statusValue,
-    //       IllnessTypeCode: IllnessType,
-    //       SurgeryTypeCode:  SurgeryTypeCode,
-    //       //PolicyTypeCode: policyTypeValue,
-    //       //AccidentDate: accidentDate,
-    //       VisitDateTime: VisitDateTime,
-    //       FurtherClaimNo : FurtherClaimNo,
-    //       FurtherClaimId : FurtherClaimId,
-    //     },
-    //   })
-    // );
-
-    // axios
-    // .post(process.env.NEXT_PUBLIC_URL_SV + "v1/utils/detailDocment",
-    //   {
-    //     "PatientInfo": {
-    //   InsurerCode: InsuranceCode,
-    //    RefId: RefId,
-    // TransactionNo: TransactionNo,
-    //   PID: "",
-    //   HN: HN,
-    //   PassportNumber: "",
-    //   IdType:"HOSPITAL_ID",
-    //   VN: VN,
-    //   ClaimNo:""
-    //         }
-    //       }
-    // )
-    // .then((response) => {
-    //   console.log(response.data)
-    // })
-    // .catch((error) => {
-    //   console.log(error)
-    //            setShowFormError("Error");
-    //            setMassError(err.response.data.HTTPStatus.message);
-    //        })
   };
 
   const Cancel = (data) => {
@@ -1033,9 +962,9 @@ console.log(patientInfoDetail)
                       <td>
                         <a className="bg-success text-base-100 rounded-full px-3 py-2">
                           {statusNew
-                            ? bill.RefId === statusNew.RefId
-                              ? statusNew.ClaimStatusDesc
-                              : bill.ClaimStatusDesc
+                            ? bill.TransactionNo === statusNew.TransactionNo
+                            ? statusNew.ClaimStatusDesc
+                            : bill.ClaimStatusDesc_TH 
                             : "Loading..."}
                         </a>
                       </td>
@@ -1050,7 +979,7 @@ console.log(patientInfoDetail)
                             className="text-primary text-2xl"
                             onClick={() =>
                               Refresh(
-                                `${bill.RefId} | ${bill.TransactionNo} | ${bill.PID} | ${bill.PassportNumber} | ${bill.HN} | ${bill.VN} | ${bill.InvoiceNumber}`
+                                `${bill.RefId} | ${bill.TransactionNo} | ${bill.PID} | ${bill.PassportNumber} | ${bill.HN} | ${bill.VN} | ${bill.InvoiceNumber} | ${bill.PolicyTypeCode} | ${bill.IdType} | ${bill.IllnessTypeCode} | ${bill.ServiceSettingCode} | ${bill.SurgeryTypeCode} | ${bill.FurtherClaimNo} | ${bill.FurtherClaimId} | ${bill.AccidentDate} | ${bill.VisitDateTime}`
                               )
                             }
                           >

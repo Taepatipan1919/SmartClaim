@@ -55,7 +55,6 @@ export default function chackData() {
   const [vNL, setVNL] = useState("");
   const [pIDL, setPIDL] = useState("");
   const [passportNumberL, setPassportNumberL] = useState("");
-  const [detailData, setDetailData] = useState("");
   const [statusValue, setStatusValue] = useState("");
   const [claimStatus, setClaimStatus] = useState("");
   const [massDocError, setMassDocError] = useState("");
@@ -296,10 +295,11 @@ export default function chackData() {
 
   const Refresh = (data) => {
    //  setPost()
+   setStatusNew()
     setShowFormError();
    // console.log("-Refresh-");
-    const [RefId, TransactionNo, PID, PassportNumber, HN, VN] =
-      data.split(" | ");
+   const [RefId, TransactionNo, PID, PassportNumber, HN, VN, 
+    InvoiceNumber,PolicyTypeCode, IdType, IllnessTypeCode, ServiceSettingCode, SurgeryTypeCode, FurtherClaimNo, FurtherClaimId, AccidentDate, VisitDateTime, VisitDate] = data.split(" | ");
     const PatientInfo = {
       InsurerCode: InsuranceCode,
       RefId: RefId,
@@ -321,37 +321,21 @@ export default function chackData() {
 
         if (response.data.HTTPStatus.statusCode === 200) {
          // console.log("Succ")
-          setStatusNew(prevData)
-          console.log(prevData)
-          //  => ({
-          //   ...prevData,
-          //   InsurerCode: response.data.Result.InsuranceData.InsurerCode,
-          //   BatchNumber: response.data.Result.InsuranceData.BatchNumber,
-          //   ClaimStatus: response.data.Result.InsuranceData.ClaimStatus,
-          //   ClaimStatusDesc: response.data.Result.InsuranceData.ClaimStatusDesc,
-          //   TotalApproveAmount: response.data.Result.InsuranceData.TotalApproveAmount,
-          //   PaymentDate: response.data.Result.InsuranceData.PaymentDate,
-          //   InvoiceNumber: response.data.Result.InsuranceData.InvoiceNumber,
-          //   RefId : response.data.Result.InsuranceData.RefId,
-          //   TransactionNo : response.data.Result.InsuranceData.TransactionNo,
-          //   // HN : response.data.Result.InsuranceData.HN,
-          //   // VN : response.data.Result.InsuranceData.VN,
-          // }));
+          setStatusNew((prevData) => ({
+            ...prevData,
+            InsurerCode: response.data.Result.InsuranceData.InsurerCode,
+            BatchNumber: response.data.Result.InsuranceData.BatchNumber,
+            ClaimStatus: response.data.Result.InsuranceData.ClaimStatus,
+            ClaimStatusDesc: response.data.Result.InsuranceData.ClaimStatusDesc,
+            TotalApproveAmount: response.data.Result.InsuranceData.TotalApproveAmount,
+            PaymentDate: response.data.Result.InsuranceData.PaymentDate,
+            InvoiceNumber: response.data.Result.InsuranceData.InvoiceNumber,
+            RefId : response.data.Result.InsuranceData.RefId,
+            TransactionNo : response.data.Result.InsuranceData.TransactionNo,
+            // HN : response.data.Result.InsuranceData.HN,
+            // VN : response.data.Result.InsuranceData.VN,
+          }));
 
-          // axios
-          // .post(process.env.NEXT_PUBLIC_URL_SV + process.env.NEXT_PUBLIC_URL_SearchTransection,{patientUpdate})
-          // .then((response) => {
-          //   setPost(response.data);
-          //   setShowFormError();
-          // })
-          // .catch((error) => {
-
-          //   console.log(error)
-
-          //           setShowFormError("Error");
-          //           setMassError(error.message);
-
-          // });
           // setShowModal(true)
           // setTimeout(() => {
           //   setShowModal(false)
@@ -379,98 +363,93 @@ export default function chackData() {
         // }
       });
   };
-    //console.log(statusNew)
+
   const Detail = (data) => {
+      //  console.log(data)
     //console.log("-Detail-")
     setShowFormError();
-    const [RefId, TransactionNo, PID, PassportNumber, HN, VN] =
-      data.split(" | ");
-    // setDetailData({
-    //   RefId: RefId,
-    //   TransactionNo: TransactionNo,
-    //   HN: HN,
-    //   VN: VN,
-    //   GivenNameEN: "",
-    //   GivenNameTH: "",
-    //   IllnessType: "",
-    //   SurnameEN: "",
-    //   SurnameTH: "",
-    //   TitleEN: "",
-    //   TitleTH: "",
-    //   VisitDateTime: "",
-    //   PID: PID,
-    //   PassportNumber: PassportNumber,
-    //   SurgeryTypeCode: "",
-    //   FurtherClaimNo: "",
-    //   FurtherClaimId: "",
-    //   DateOfBirth: "",
-    // });
+    const [RefId, TransactionNo, PID, PassportNumber, HN, VN, 
+      InvoiceNumber,PolicyTypeCode, IdType, IllnessTypeCode, ServiceSettingCode, SurgeryTypeCode, FurtherClaimNo, FurtherClaimId, AccidentDate, VisitDateTime, VisitDate, randomNumberold] = data.split(" | ");
 
-    //   dispatch(save2({
-    //     value: "มีรายชื่อ",
-    //     Data:
-    //   {
-    //     // "IdType": selectedOption,
-    //     "InsurerCode": InsuranceCode,
-    //      "DateOfBirth": "",
-    //     // "Gender": patient.Gender,
-    //     "GivenNameEN": "",
-    //     "GivenNameTH": "",
-    //     "HN": HN,
-    //     // "MobilePhone": patient.MobilePhone,
-    //      "PID": PID,
-    //     "PassportNumber": PassportNumber,
-    //     "SurnameEN": "",
-    //     "SurnameTH": "",
-    //     "TitleEN": "",
-    //     "TitleTH": "",
-    //   },
-    // }));
+      const   PatientInfo = {
+        Insurerid: InsuranceCode,
+        PID: PID,
+        PassportNumber: PassportNumber,
+        IdType: IdType,
+        ServiceSettingCode: ServiceSettingCode,
+        VN: VN,
+        HN: HN,
+        VisitDatefrom: VisitDate,
+        VisitDateto: "",
+      }
+      console.log(PatientInfo)
 
-    // dispatch(
-    //   save({
-    //     value: "มีข้อมูล2",
-    //     Data: {
-    //       RefId: RefId,
-    //       TransactionNo: TransactionNo,
-    //       VN: VN,
-    //       InsurerCode: InsuranceCode,
-    //       //ServiceSettingCode: statusValue,
-    //       IllnessTypeCode: IllnessType,
-    //       SurgeryTypeCode:  SurgeryTypeCode,
-    //       //PolicyTypeCode: policyTypeValue,
-    //       //AccidentDate: accidentDate,
-    //       VisitDateTime: VisitDateTime,
-    //       FurtherClaimNo : FurtherClaimNo,
-    //       FurtherClaimId : FurtherClaimId,
-    //     },
-    //   })
-    // );
+      axios
+        .post(
+          process.env.NEXT_PUBLIC_URL_PD +
+            process.env.NEXT_PUBLIC_URL_getEpisodeByHN,{PatientInfo}
+        )
+        .then((response) => {
+        const  getEpisodeByHN = response.data.Result.PatientInfo;
+          console.log(getEpisodeByHN)
+          dispatch(save2({
+            value: "มีรายชื่อ",
+            Data:
+          {
+            IdType: IdType,
+            InsurerCode: InsuranceCode,
+            DateOfBirth: getEpisodeByHN.DateOfBirth,
+            Gender: getEpisodeByHN.Gender,
+            GivenNameEN: getEpisodeByHN.GivenNameEN,
+            GivenNameTH: getEpisodeByHN.GivenNameTH,
+            HN: getEpisodeByHN.HN,
+            MobilePhone: getEpisodeByHN.MobilePhone,
+             PID: getEpisodeByHN.PID,
+            PassportNumber: getEpisodeByHN.PassportNumber,
+            SurnameEN: getEpisodeByHN.SurnameEN,
+            SurnameTH: getEpisodeByHN.SurnameTH,
+            TitleEN: getEpisodeByHN.TitleEN,
+            TitleTH: getEpisodeByHN.TitleTH,
+          },
+        }));
 
-    // axios
-    // .post(process.env.NEXT_PUBLIC_URL_SV + "v1/utils/detailDocment",
-    //   {
-    //     "PatientInfo": {
-    //   InsurerCode: InsuranceCode,
-    //    RefId: RefId,
-    // TransactionNo: TransactionNo,
-    //   PID: "",
-    //   HN: HN,
-    //   PassportNumber: "",
-    //   IdType:"HOSPITAL_ID",
-    //   VN: VN,
-    //   ClaimNo:""
-    //         }
-    //       }
-    // )
-    // .then((response) => {
-    //   console.log(response.data)
-    // })
-    // .catch((err) => {
-    //   console.log(err)
-    //            setShowFormError("Error");
-    //            setMassError(err.response.data.HTTPStatus.message);
-    //        })
+        })
+        .catch((error) => {
+          console.log(error);
+          setShowFormError("Error");
+          //setMassError(error.response.data.HTTPStatus.message);
+          setMassError(error.response?.data?.HTTPStatus?.message || 'Unknown error');
+        });
+    
+    
+
+    dispatch(
+      save({
+        value: "มีข้อมูล",
+        Data: {
+          RefId: RefId,
+          TransactionNo: TransactionNo,
+          VN: VN,
+          InsurerCode: InsuranceCode,
+          ServiceSettingCode: ServiceSettingCode,
+          IllnessTypeCode: IllnessTypeCode,
+          SurgeryTypeCode:  SurgeryTypeCode,
+          PolicyTypeCode: PolicyTypeCode,
+          AccidentDate: AccidentDate,
+          VisitDateTime: VisitDateTime,
+          FurtherClaimNo : FurtherClaimNo,
+          FurtherClaimId : FurtherClaimId,
+          Runningdocument :  randomNumberold,
+
+        },
+      })
+    );
+
+
+
+    router.push("/aia/opd/eligible");
+
+
   };
   const DocumentBase64 = (data) => {
     setMsg();
@@ -741,6 +720,7 @@ export default function chackData() {
   const handleSubmit = (event) => {
     event.preventDefault();
     setBillList();
+    setStatusNew({});
     setPost();
     setShowFormError();
     let data = {};
@@ -1001,8 +981,8 @@ export default function chackData() {
                       <td>
                         <a className="bg-success text-base-100 rounded-full px-3 py-2">
                           {statusNew
-                            ? bill.RefId === statusNew.RefId
-                              ? statusNew.ClaimStatusDesc_TH
+                            ? bill.TransactionNo === statusNew.TransactionNo
+                              ? statusNew.ClaimStatusDesc
                               : bill.ClaimStatusDesc_TH 
                             : "Loading..."}
                         </a>
@@ -1018,7 +998,7 @@ export default function chackData() {
                             className="text-primary text-2xl"
                             onClick={() =>
                               Refresh(
-                                `${bill.RefId} | ${bill.TransactionNo} | ${bill.PID} | ${bill.PassportNumber} | ${bill.HN} | ${bill.VN} | ${bill.InvoiceNumber}`
+                                `${bill.RefId} | ${bill.TransactionNo} | ${bill.PID} | ${bill.PassportNumber} | ${bill.HN} | ${bill.VN} | ${bill.InvoiceNumber} | ${bill.PolicyTypeCode} | ${bill.IdType} | ${bill.IllnessTypeCode} | ${bill.ServiceSettingCode} | ${bill.SurgeryTypeCode} | ${bill.FurtherClaimNo} | ${bill.FurtherClaimId} | ${bill.AccidentDate} | ${bill.VisitDateTime} | ${bill.VisitDate}`
                               )
                             }
                           >
@@ -1030,7 +1010,7 @@ export default function chackData() {
                             className="text-primary text-2xl"
                             onClick={() =>
                               Detail(
-                                `${bill.RefId} | ${bill.TransactionNo} | ${bill.PID} | ${bill.PassportNumber} | ${bill.HN} | ${bill.VN} | ${bill.InvoiceNumber}`
+                                 `${bill.RefId} | ${bill.TransactionNo} | ${bill.PID} | ${bill.PassportNumber} | ${bill.HN} | ${bill.VN} | ${bill.InvoiceNumber} | ${bill.PolicyTypeCode} | ${bill.IdType} | ${bill.IllnessTypeCode} | ${bill.ServiceSettingCode} | ${bill.SurgeryTypeCode} | ${bill.FurtherClaimNo} | ${bill.FurtherClaimId} | ${bill.AccidentDate} | ${bill.VisitDateTime} | ${bill.VisitDate} | ${bill.Runningdocument}`
                               )
                             }
                           >
@@ -1107,7 +1087,7 @@ export default function chackData() {
             </tbody>
           </table>
 
-          {/* {detailData ? <DetailDischarge data={detailData} /> : ""} */}
+
 
           <dialog id="my_modal_3" className="modal text-xl	">
             <div className="modal-box max-w-3xl">

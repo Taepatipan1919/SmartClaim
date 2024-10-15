@@ -109,7 +109,7 @@ export default function chackData() {
         document.getElementById("my_modal_2").showModal();
         if(response.data.HTTPStatus.statusCode === 200){
           setFurtherClaim(response.data);
-          console.log(response.data);
+       //   console.log(response.data);
    
         }else{
           setMassFurtherError(response.data.HTTPStatus.message);
@@ -169,6 +169,7 @@ export default function chackData() {
             VisitDateTime: visitDateTime,
             FurtherClaimNo: FurtherClaimNo,
             FurtherClaimId: FurtherClaimId,
+            Runningdocument : "",
           },
         })
       );
@@ -202,6 +203,7 @@ export default function chackData() {
             VisitDateTime: visitDateTime,
             FurtherClaimNo: "",
             FurtherClaimId: "",
+            Runningdocument: "",
           },
         })
       );
@@ -886,12 +888,12 @@ export default function chackData() {
                   <div className="rounded-md ">&nbsp;</div>
                 </div>
                 <div className="modal-action">
-               {/* <div
+               <div
                 className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100"
                 onClick={handleButtonClick}
               >
                 Print
-              </div> */}
+              </div>
       
                 {result
                   ? result.Result.InsuranceData.CoverageList.map(

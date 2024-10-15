@@ -135,6 +135,25 @@ export default function Page({ data }) {
   const Over45 = (event) => {
     setOver45(event.target.value);
   };
+
+
+  useEffect(() => {
+    setRandomNumber();
+    if(!data.DataTran.Data.Runningdocument){
+    const generateRandomFiveDigitNumber = () => {
+      return String(Math.floor(Math.random() * 100000)).padStart(5, '0');
+    };
+    setBillList()
+    const newRandomNumber = generateRandomFiveDigitNumber();
+    setRandomNumber(newRandomNumber);
+    console.log(newRandomNumber);
+  }else{
+    setRandomNumber(data.DataTran.Data.Runningdocument)
+  }
+
+  }, []);
+
+
   const PatientInfoData = {
     PatientInfo: {
       InsurerCode: data.DataTran.Data.InsurerCode,
@@ -146,24 +165,27 @@ export default function Page({ data }) {
       SurnameTH: data.Patient.Data.SurnameTH,
       DateOfBirth: data.Patient.Data.DateOfBirth,
       PassportNumber: data.Patient.Data.PassportNumber,
-      IdType: data.Patient.Data.IdType,
+        IdType: data.Patient.Data.IdType,
       VN: data.DataTran.Data.VN,
-      VisitDateTime: data.DataTran.Data.VisitDateTime,
+        VisitDateTime: data.DataTran.Data.VisitDateTime,
       ChiefComplaint: "",
       PresentIllness: "",
-      AccidentDate: data.DataTran.Data.AccidentDate,
+        AccidentDate: data.DataTran.Data.AccidentDate,
       AccidentPlaceCode: "",
       WoundDetails: "",
       AccidentInjurySideCode: "",
       AccidentInjuryWoundtypeCode: "",
-      PolicyTypeCode: data.DataTran.Data.PolicyTypeCode,
-      ServiceSettingCode: data.DataTran.Data.ServiceSettingCode,
-      IllnessTypeCode: data.DataTran.Data.IllnessTypeCode,
-      SurgeryTypeCode: data.DataTran.Data.SurgeryTypeCode,
-      FurtherClaimNo: data.DataTran.Data.FurtherClaimNo,
-      FurtherClaimId: data.DataTran.Data.FurtherClaimId,
+        PolicyTypeCode: data.DataTran.Data.PolicyTypeCode,
+        ServiceSettingCode: data.DataTran.Data.ServiceSettingCode,
+        IllnessTypeCode: data.DataTran.Data.IllnessTypeCode,
+        SurgeryTypeCode: data.DataTran.Data.SurgeryTypeCode,
+        FurtherClaimNo: data.DataTran.Data.FurtherClaimNo,
+        FurtherClaimId: data.DataTran.Data.FurtherClaimId,
+        Runningdocument: randomNumber,
+
     },
   };
+  //console.log(PatientInfoData.PatientInfo.Runningdocument)
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.value = "";
@@ -181,6 +203,8 @@ export default function Page({ data }) {
           TransactionNo: PatientInfoData.PatientInfo.TransactionNo,
           HN: PatientInfoData.PatientInfo.HN,
           VN: PatientInfoData.PatientInfo.VN,
+          DocumenttypeCode : "001",
+          Runningdocument : PatientInfoData.PatientInfo.Runningdocument,
         }
         }
       )
@@ -273,23 +297,18 @@ export default function Page({ data }) {
         PatientInfoData
       )
       .then((response) => {
-     //   console.log(response.data)
+        //console.log(response.data)
          setAccidentDetail(response.data);
-        if (
-          response.data.Result.AccidentDetailInfo[0].CauseOfInjuryDetail[0]
-            .CauseOfInjury
-        ){
-          setCauseOfInjuryDetails(
-            response.data.Result.AccidentDetailInfo.CauseOfInjuryDetail
-          );
-        }
-        if (
-          response.data.Result.AccidentDetailInfo[0].InjuryDetail[0].InjuryArea
-        ){
-          setInjuryDetails(
-            response.data.Result.AccidentDetailInfo.InjuryDetail
-          );
-        }
+          setCauseOfInjuryDetails(response.data.Result.AccidentDetailInfo);
+          setInjuryDetails(response.data.Result.AccidentDetailInfo);
+
+
+        // if (response.data.Result.AccidentDetailInfo.CauseOfInjuryDetail.CauseOfInjury){
+        //   setCauseOfInjuryDetails(response.data.Result.AccidentDetailInfo.CauseOfInjuryDetail[0]);
+        // }
+        // if (response.data.Result.AccidentDetailInfo.InjuryDetail.InjuryArea){
+        //   setInjuryDetails(response.data.Result.AccidentDetailInfo.InjuryDetail[0]);
+        // }
       })
       .catch((error) => {
         console.log(error);
@@ -334,16 +353,7 @@ export default function Page({ data }) {
 
 
 
-  useEffect(() => {
 
-    const generateRandomFiveDigitNumber = () => {
-      return String(Math.floor(Math.random() * 100000)).padStart(5, '0');
-    };
-    setBillList()
-    const newRandomNumber = generateRandomFiveDigitNumber();
-    setRandomNumber(newRandomNumber);
-    console.log(newRandomNumber);
-  }, []);
 
 
   useEffect(() => {
@@ -862,6 +872,9 @@ export default function Page({ data }) {
             TransactionNo: PatientInfoData.PatientInfo.TransactionNo,
             HN: PatientInfoData.PatientInfo.HN,
             VN: PatientInfoData.PatientInfo.VN,
+            DocumenttypeCode : "001",
+            Runningdocument : PatientInfoData.PatientInfo.Runningdocument,
+
             }
           }
         )
@@ -1166,8 +1179,9 @@ export default function Page({ data }) {
           ServiceSettingCode: PatientInfoData.PatientInfo.ServiceSettingCode,
           IllnessTypeCode: PatientInfoData.PatientInfo.IllnessTypeCode,
           SurgeryTypeCode: PatientInfoData.PatientInfo.SurgeryTypeCode,
+          Runningdocument: PatientInfoData.PatientInfo.Runningdocument,
         };
-       // console.log(PatientInfo)
+        console.log(PatientInfo)
         axios
           .post(
             process.env.NEXT_PUBLIC_URL_SV +
@@ -1175,7 +1189,7 @@ export default function Page({ data }) {
             { PatientInfo }
           )
           .then((response) => {
-        
+        console.log(response.data)
             if (response.data.HTTPStatus.statusCode === 200) {
               document.getElementById("my_modal_3").close();
               console.log("4 Succ");
@@ -1246,7 +1260,7 @@ export default function Page({ data }) {
     formData.append("insurerid", 13);
     formData.append("DocumenttypeCode", "001");
     formData.append("UploadedBy", "");
-    formData.append("Runningdocument", randomNumber);
+    formData.append("Runningdocument", PatientInfoData.PatientInfo.Runningdocument);
     setMsg(
       <span className="loading loading-spinner text-info loading-lg"></span>
     );
@@ -1298,6 +1312,8 @@ export default function Page({ data }) {
             TransactionNo: PatientInfoData.PatientInfo.TransactionNo,
             HN: PatientInfoData.PatientInfo.HN,
             VN: PatientInfoData.PatientInfo.VN,
+            DocumenttypeCode : "001",
+            Runningdocument : PatientInfoData.PatientInfo.Runningdocument,
             }
           }
         )
@@ -1562,7 +1578,7 @@ export default function Page({ data }) {
             {/* //////////////////////////////////////////////////////////////////////////// */}
             {visit ? (
               <div className="container mx-auto justify-center border-solid w-4/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
-                <h1 className="font-black text-accent text-3xl ">Visit</h1>
+                <h1 className="font-black text-accent text-3xl ">Visit {PatientInfoData.PatientInfo.Runningdocument}</h1>
                 <div className="grid gap-2 sm:grid-cols-4 w-full mt-2">
                   <div className="rounded-md">
                     <div className="flex items-center ">
@@ -2108,7 +2124,7 @@ export default function Page({ data }) {
                         </TableHead>
                         <TableBody>
                           {causeOfInjuryDetails
-                            ? causeOfInjuryDetails.map(
+                            ? causeOfInjuryDetails.CauseOfInjuryDetail.map(
                                 (cause, index) =>
                                   cause.CauseOfInjury  && (
                                     <TableRow
@@ -2291,7 +2307,7 @@ export default function Page({ data }) {
                         </TableHead>
                         <TableBody>
                           {injuryDetails
-                            ? injuryDetails.map(
+                            ? injuryDetails.InjuryDetail.map(
                                 (injury, index) =>
                                   injury.InjuryArea  && (
                                     <TableRow
@@ -3307,7 +3323,7 @@ export default function Page({ data }) {
                       billList.map((list, index) => (
                         <tr key={index} className=" bg-neutral text-sm">
                           <td className="px-6 py-4 whitespace-nowrap">
-                            {list.filename}
+                            {list.originalname}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                           
@@ -3343,7 +3359,7 @@ export default function Page({ data }) {
                   <div className="rounded-md "></div>
                   <div className="rounded-md ">&nbsp;</div>
                 </div>
-                {billList.length === 0 ? null : (
+                {billList ? billList.length === 0 ? null : (
                   <div className="py-2">
                     <div className="text-right">
                       <button
@@ -3354,7 +3370,7 @@ export default function Page({ data }) {
                       </button>
                     </div>
                   </div>
-                )}
+                ) : ""}
               </div>
             </div>
           </form>
