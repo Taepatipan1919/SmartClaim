@@ -9,7 +9,7 @@ import { IoDocumentText } from "react-icons/io5";
 import TextField from "@mui/material/TextField";
 import { save } from "../../../../store/counterSlice";
 import { save2 } from "../../../../store/patientSlice";
-import { useSelector, useDispatch } from "react-ReDux";
+import { useSelector, useDispatch } from "react-redux";
 import { MdCancel } from "react-icons/md";
 import { IoIosDocument } from "react-icons/io";
 import { AiOutlineUnorderedList } from "react-icons/ai";

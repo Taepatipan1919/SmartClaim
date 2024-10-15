@@ -8,7 +8,6 @@ const PdfPage = () => {
   const InsurerCode = 13;
 
   useEffect(() => {
-
       axios
       .get(
         process.env.NEXT_PUBLIC_URL_PD +
@@ -21,8 +20,6 @@ const PdfPage = () => {
       .catch((error) => {
         console.log(error);
       });
-
-
   }, []);
 
   useEffect(() => {

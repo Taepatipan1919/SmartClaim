@@ -13,14 +13,16 @@ import {
 } from "@mui/material";
 
 export default function DetailDischarge({ data }) {
+  
     // console.log(data)
   const [patientInfo, setPatientInfo] = useState({});
 
   const [patien, setPatien] = useState();
   const [transactionClaimInfo, setTransactionClaimInfo] = useState();
-
+  const [visit, setVisit] = useState();
+  
   useEffect(() => {
- let DetailVisit;
+
     axios
     .post(
       process.env.NEXT_PUBLIC_URL_SV +
@@ -40,46 +42,9 @@ export default function DetailDischarge({ data }) {
     }
     )
     .then((response) => {
+      setTransactionClaimInfo();
       console.log(response.data.Result.TransactionClaimInfo[0]);
     setPatientInfo(response.data.Result.TransactionClaimInfo[0]);
-    DetailVisit = response.data.Result.TransactionClaimInfo[0];
-    //console.log(DetailVisit)
-
-
-
-
-    axios
-  .post(process.env.NEXT_PUBLIC_URL_SV + process.env.NEXT_PUBLIC_URL_ReviewOPDDischarge,{
-    "PatientInfo": {
-      "InsurerCode": 13, 
-      "RefId": DetailVisit.RefId,
-      "TransactionNo": DetailVisit.TransactionNo,   
-      "PID": DetailVisit.PID,
-      "HN": DetailVisit.HN,
-      "GivenNameTH": DetailVisit.GivenNameTH,
-      "SurnameTH": DetailVisit.SurnameTH,
-      "DateOfBirth": DetailVisit.DateOfBirth,
-      "PassportNumber": DetailVisit.PassportNumber,
-      "IdType":"HOSPITAL_ID",
-      "VN": DetailVisit.VN,
-      "VisitDateTime": DetailVisit.VisitDate+" 00:00",
-      "AccidentDate":"",
-      "PolicyTypeCode":"",
-      "ServiceSettingCode": "", 
-      "IllnessTypeCode": "",
-      "SurgeryTypeCode":  ""
-
-      }
-  })
-  .then((response) => {
-    setTransactionClaimInfo(response.data.Result.InsuranceData);
-    console.log(response.data.Result.InsuranceData)
-  })
-  .catch((error) => {
-   // console.error("Error", err)
-    console.log(error)
-  });
-
 
     })
     .catch((error) => {
@@ -97,6 +62,38 @@ export default function DetailDischarge({ data }) {
 
   useEffect(() => {
    
+    axios
+  .post(process.env.NEXT_PUBLIC_URL_SV + process.env.NEXT_PUBLIC_URL_ReviewOPDDischarge,{
+    "PatientInfo": {
+      "InsurerCode": 13, 
+      "RefId": data.RefId,
+      "TransactionNo": data.TransactionNo,   
+      "PID": data.PID,
+      "HN": data.HN,
+      "GivenNameTH": "",
+      "SurnameTH": "",
+      "DateOfBirth": "",
+      "PassportNumber": data.PassportNumber,
+      "IdType":"",
+      "VN": data.VN,
+      "VisitDateTime": "",
+      "AccidentDate":"",
+      "PolicyTypeCode":"",
+      "ServiceSettingCode": "", 
+      "IllnessTypeCode": "",
+      "SurgeryTypeCode":  ""
+
+      }
+  })
+  .then((response) => {
+    setTransactionClaimInfo(response.data.Result.InsuranceData);
+    console.log(response.data.Result.InsuranceData)
+  })
+  .catch((error) => {
+   // console.error("Error", err)
+    console.log(error)
+  });
+
   }, [data]);
 
   return (
@@ -107,110 +104,113 @@ export default function DetailDischarge({ data }) {
             <h1 className="font-black text-accent text-3xl ">Patient Info</h1>
             <div className="grid gap-2 sm:grid-cols-4 w-full mt-2">
               <div className="rounded-md">
-                <Box
-                  sx={{
-                    backgroundColor: "#e5e7eb",
-                    padding: 0,
-                    borderRadius: 0,
-                  }}
-                >
-                  <TextField
-                    disabled
-                    id="outlined-disabled"
-                    label="FirstName (TH)"
-                    defaultValue={
-                      patientInfo
-                        ? patientInfo.GivenNameTH
-                          ? patientInfo.GivenNameTH
-                          : ""
-                        : ""
-                    }
-                    className="w-full text-black border border-black rounded disabled:text-black"
-                    InputProps={{ style: { color: "black" } }}
-                  />
-                </Box>
+                  <div className="flex flex-col mb-4">
+                    <label className="text-gray-700 mb-2">FirstName (TH)</label>
+                      <input
+                          type="text"
+                          value={
+                            patientInfo
+                              ? patientInfo.GivenNameTH
+                                ? patientInfo.GivenNameTH
+                                : ""
+                              : ""
+                          }
+                          readOnly
+                          className="border-2 border-gray-300 rounded-md px-4 py-2 bg-gray-100"
+                        />
+                   </div>
               </div>
               <div className="rounded-md">
-                  <TextField
-                    disabled
-                    id="outlined-disabled"
-                    label="LastName (TH)"
-                    defaultValue={
-                      patientInfo
-                        ? patientInfo.SurnameTH
-                          ? patientInfo.SurnameTH
-                          : ""
-                        : ""
-                    }
-                    className="w-full"
-                  />
+                  <div className="flex flex-col mb-4">
+                    <label className="text-gray-700 mb-2">LastName (TH)</label>
+                      <input
+                          type="text"
+                          defaultValue={
+                            patientInfo
+                              ? patientInfo.SurnameTH
+                                ? patientInfo.SurnameTH
+                                : ""
+                              : ""
+                          }
+                          readOnly
+                          className="border-2 border-gray-300 rounded-md px-4 py-2 bg-gray-100"
+                        />
+                   </div>
               </div>
               <div className="rounded-md">
-                  <TextField
-                    disabled
-                    id="outlined-disabled"
-                    label="PID"
-                    defaultValue={patientInfo.PID}
-                    className="w-full"
-                    disabled
-                  />
+                  <div className="flex flex-col mb-4">
+                    <label className="text-gray-700 mb-2">PID</label>
+                      <input
+                          type="text"
+                          defaultValue={patientInfo.PID}
+                          readOnly
+                          className="border-2 border-gray-300 rounded-md px-4 py-2 bg-gray-100"
+                        />
+                   </div>
               </div>
               {patientInfo.PassportNumber ? (
                 <div className="rounded-md">
-                    <TextField
-                      disabled
-                      id="outlined-disabled"
-                      label="Passport"
-                      defaultValue={patientInfo.PassportNumber}
-                      className="w-full"
-                      disabled
-                    />
-        
+                          <div className="flex flex-col mb-4">
+                    <label className="text-gray-700 mb-2">Passport</label>
+                      <input
+                          type="text"
+                          defaultValue={patientInfo.PassportNumber}
+                          readOnly
+                          className="border-2 border-gray-300 rounded-md px-4 py-2 bg-gray-100"
+                        />
+                   </div>
                 </div>
               ) : (
                 ""
               )}
               <div className="rounded-md">
-                <TextField
-                      disabled
-                      id="outlined-disabled"
-                      label="Date of Birth (YYYY-MM-DD)"
-                      value="{transactionClaimInfo.Patient.Dob}"
-                      className="w-full"
-                      disabled
-                    />
+                <div className="rounded-md">
+                   <div className="flex flex-col mb-4">
+                    <label className="text-gray-700 mb-2">Date of Birth (YYYY-MM-DD)</label>
+                      <input
+                          type="text"
+                          defaultValue={transactionClaimInfo ? transactionClaimInfo.Patient.Dob : ""}
+                          readOnly
+                          className="border-2 border-gray-300 rounded-md px-4 py-2 bg-gray-100"
+                        />
+                   </div>
+                </div>
 
               </div>
               <div className="rounded-md">
-                  <TextField
-                    disabled
-                    id="outlined-disabled"
-                    label="HN"
-                    defaultValue={patientInfo.HN}
-                    className="w-full"
-                    disabled
-                  />
+                                     <div className="flex flex-col mb-4">
+                    <label className="text-gray-700 mb-2">HN</label>
+                      <input
+                          type="text"
+                          defaultValue={patientInfo.HN}
+                          readOnly
+                          className="border-2 border-gray-300 rounded-md px-4 py-2 bg-gray-100"
+                        />
+                   </div>
               </div>
               <div className="rounded-md">
-                  <TextField
-                    disabled
-                    id="outlined-disabled"
-                    label="VN"
-                    defaultValue={patientInfo.VN}
-                    className="w-full"
-                    disabled
-                  />
+              <div className="flex flex-col mb-4">
+                    <label className="text-gray-700 mb-2">VN</label>
+                      <input
+                          type="text"
+                          defaultValue={patientInfo.VN}
+                          readOnly
+                          className="border-2 border-gray-300 rounded-md px-4 py-2 bg-gray-100"
+                        />
+                   </div>
               </div>
               {patien ? (
+
                 <div className="rounded-md">
-                    <TextField
-                      disabled
-                      id="outlined-disabled"
-                      label="Sex"
-                      defaultValue={patien.Result.PatientInfo.Gender}
-                      className="w-full"
-                      disabled
-                    />
+                              <div className="flex flex-col mb-4">
+                              <label className="text-gray-700 mb-2">Sex</label>
+                                <input
+                                    type="text"
+                                    defaultValue={patien.Result.PatientInfo.Gender}
+                                    readOnly
+                                    className="border-2 border-gray-300 rounded-md px-4 py-2 bg-gray-100"
+                                  />
+                             </div>
                 </div>
               ) : (
                 ""
@@ -221,156 +221,143 @@ export default function DetailDischarge({ data }) {
             <h1 className="font-black text-accent text-3xl ">Visit</h1>
             <div className="grid gap-2 sm:grid-cols-2 w-full mt-4">
                   <div className="rounded-md mt-2">
-                    <TextField
-
-                      className="w-full"
-                      id="outlined-multiline-static"
-                      label="Cheif Complaint and duration"
-                      name="ChiefComplaint"
-                      multiline
-                      rows={4}
-                      defaultValue={transactionClaimInfo ? transactionClaimInfo.Visit.ChiefComplaint : ""}
-                      inputProps={{ maxLength: 200 }}
-                      disabled
-                    />
+                                                <div className="flex flex-col">
+                              <label className="text-gray-700 mb-2">Sex</label>
+                                <textarea
+                                    type="text"
+                                    defaultValue={transactionClaimInfo ? transactionClaimInfo.Visit.ChiefComplaint : ""}
+                                    readOnly
+                                    rows={4}
+                                    inputProps={{ maxLength: 200 }}
+                                    className="border-2 border-gray-300 rounded-md px-4 py-2 bg-gray-100"
+                                  />
+                             </div>
                   </div>
                   <div className="rounded-md mt-2">
-                    <TextField
-
-                      className="w-full"
-                      id="outlined-multiline-static"
-                      label="Chronic disease"
-                      name="UnderlyingCondition"
-                      multiline
-                      rows={4}
-                      defaultValue={transactionClaimInfo ? transactionClaimInfo.Visit.UnderlyingCondition : ""}
-                      inputProps={{ maxLength: 200 }}
-                      disabled
-                    />
+                       <div className="flex flex-col">
+                              <label className="text-gray-700 mb-2">Chronic disease</label>
+                                <textarea
+                                    type="text"
+                                    defaultValue={transactionClaimInfo ? transactionClaimInfo.Visit.UnderlyingCondition : ""}
+                                    readOnly
+                                    rows={4}
+                                    inputProps={{ maxLength: 200 }}
+                                    className="border-2 border-gray-300 rounded-md px-4 py-2 bg-gray-100"
+                                  />
+                             </div>
                   </div>
                   <div className="rounded-md mt-2">
-                    <TextField
-
-                      className="w-full"
-                      id="outlined-multiline-static"
-                      label="Diagnosis"
-                      name="Diagnosis"
-                      multiline
-                      rows={4}
-                      defaultValue={transactionClaimInfo ? transactionClaimInfo.Visit.DxFreeText : ""}
-                      inputProps={{ maxLength: 200 }}
-                      disabled
-                    />
+                  <div className="flex flex-col">
+                              <label className="text-gray-700 mb-2">Diagnosis</label>
+                                <textarea
+                                    type="text"
+                                    defaultValue={transactionClaimInfo ? transactionClaimInfo.Visit.DxFreeText : ""}
+                                    readOnly
+                                    rows={4}
+                                    inputProps={{ maxLength: 200 }}
+                                    className="border-2 border-gray-300 rounded-md px-4 py-2 bg-gray-100"
+                                  />
+                             </div>
                   </div>
                   <div className="rounded-md mt-2">
-                    <TextField
-
-                      className="w-full"
-                      id="outlined-multiline-static"
-                      label="Present illness or Cause of Injury"
-                      name="ChiefComplaint"
-                      multiline
-                      rows={4}
-                      defaultValue={transactionClaimInfo ? transactionClaimInfo.Visit.PresentIllness : ""}
-                      inputProps={{ maxLength: 200 }}
-                      disabled
-                    />
+                  <div className="flex flex-col">
+                              <label className="text-gray-700 mb-2">Present illness or Cause of Injury</label>
+                                <textarea
+                                    type="text"
+                                    defaultValue={transactionClaimInfo ? transactionClaimInfo.Visit.PresentIllness : ""}
+                                    readOnly
+                                    rows={4}
+                                    inputProps={{ maxLength: 200 }}
+                                    className="border-2 border-gray-300 rounded-md px-4 py-2 bg-gray-100"
+                                  />
+                             </div>
                   </div>
                   <div className="rounded-md mt-2">
-                    <TextField
-
-                      className="w-full"
-                      id="outlined-multiline-static"
-                      label="Physical exam"
-                      name="ChiefComplaint"
-                      multiline
-                      rows={4}
-                      defaultValue={transactionClaimInfo ? transactionClaimInfo.Visit.PhysicalExam : ""}
-                      inputProps={{ maxLength: 200 }}
-                      disabled
-                    />
+                  <div className="flex flex-col">
+                              <label className="text-gray-700 mb-2">Physical exam</label>
+                                <textarea
+                                    type="text"
+                                    defaultValue={transactionClaimInfo ? transactionClaimInfo.Visit.PhysicalExam : ""}
+                                    readOnly
+                                    rows={4}
+                                    inputProps={{ maxLength: 200 }}
+                                    className="border-2 border-gray-300 rounded-md px-4 py-2 bg-gray-100"
+                                  />
+                             </div>
                   </div>
                   <div className="rounded-md mt-2">
-                    <TextField
-
-                      className="w-full"
-                      id="outlined-multiline-static"
-                      label="Treatment"
-                      name="ChiefComplaint"
-                      multiline
-                      rows={4}
-                      defaultValue={transactionClaimInfo ? transactionClaimInfo.Visit.PlanOfTreatment : ""}
-                      inputProps={{ maxLength: 200 }}
-                      disabled
-                    />
+                  <div className="flex flex-col">
+                              <label className="text-gray-700 mb-2">Treatment</label>
+                                <textarea
+                                    type="text"
+                                    defaultValue={transactionClaimInfo ? transactionClaimInfo.Visit.PlanOfTreatment : ""}
+                                    readOnly
+                                    rows={4}
+                                    inputProps={{ maxLength: 200 }}
+                                    className="border-2 border-gray-300 rounded-md px-4 py-2 bg-gray-100"
+                                  />
+                             </div>
                   </div>
                   <div className="rounded-md mt-2">
-                    <TextField
-
-                      className="w-full"
-                      id="outlined-multiline-static"
-                      label="ProcedureFreeText"
-                      name="ChiefComplaint"
-                      multiline
-                      rows={4}
-                      defaultValue={transactionClaimInfo ? transactionClaimInfo.Visit.ProcedureFreeText : ""}
-                      inputProps={{ maxLength: 200 }}
-                      disabled
-                    />
+                                     <div className="flex flex-col">
+                              <label className="text-gray-700 mb-2">ProcedureFreeText</label>
+                                <textarea
+                                    type="text"
+                                    defaultValue={transactionClaimInfo ? transactionClaimInfo.Visit.ProcedureFreeText : ""}
+                                    readOnly
+                                    rows={4}
+                                    inputProps={{ maxLength: 200 }}
+                                    className="border-2 border-gray-300 rounded-md px-4 py-2 bg-gray-100"
+                                  />
+                             </div>
                   </div>
                   <div className="rounded-md mt-2">
-                    <TextField
-
-                      className="w-full"
-                      id="outlined-multiline-static"
-                      label="AdditionalNote"
-                      name="ChiefComplaint"
-                      multiline
-                      rows={4}
-                      defaultValue={transactionClaimInfo ? transactionClaimInfo.Visit.AdditionalNote : ""}
-                      inputProps={{ maxLength: 200 }}
-                      disabled
-                    />
+                      <div className="flex flex-col">
+                              <label className="text-gray-700 mb-2">AdditionalNote</label>
+                                <textarea
+                                    type="text"
+                                    defaultValue={transactionClaimInfo ? transactionClaimInfo.Visit.AdditionalNote : ""}
+                                    readOnly
+                                    rows={4}
+                                    inputProps={{ maxLength: 200 }}
+                                    className="border-2 border-gray-300 rounded-md px-4 py-2 bg-gray-100"
+                                  />
+                             </div>
                   </div>
             </div>
             <div className="flex  w-full mt-4">
                   <div className="w-1/5">
-                  <TextField
-
-                      className="w-full"
-                      id="outlined-multiline-static"
-                      label="วันที่เริ่มมีอาการ"
-                      name="signSymptomsDate"
-                      multiline
-                      //rows={4}
-                      defaultValue={transactionClaimInfo ? transactionClaimInfo.Visit.signSymptomsDate : ""}
-                      //inputProps={{ maxLength: 200 }}
-                      disabled
-                    />
+                  <div className="flex flex-col mb-4">
+                              <label className="text-gray-700 mb-2">วันที่เริ่มมีอาการ</label>
+                                <input
+                                    type="text"
+                                    defaultValue={transactionClaimInfo ? transactionClaimInfo.Visit.signSymptomsDate : ""}
+                                    readOnly
+                                    className="border-2 border-gray-300 rounded-md px-4 py-2 bg-gray-100"
+                                  />
+                             </div>
                   </div>
                   <div className="w-1/5 ml-2">
-                  <TextField
-
-                      className="w-full"
-                      id="outlined-multiline-static"
-                      label="ระดับความรู้สึกตัว (วัดแบบ Glascow Coma Score 3-15)"
-                      name="comaScore"
-                      multiline
-                      defaultValue={transactionClaimInfo ? transactionClaimInfo.Visit.comaScore : ""}
-                      disabled
-                    />
+                                      <div className="flex flex-col mb-4">
+                              <label className="text-gray-700 mb-2">ระดับความรู้สึกตัว</label>
+                                <input
+                                    type="text"
+                                    defaultValue={transactionClaimInfo ? transactionClaimInfo.Visit.comaScore : ""}
+                                    readOnly
+                                    className="border-2 border-gray-300 rounded-md px-4 py-2 bg-gray-100"
+                                  />
+                             </div>
                   </div>
                   <div className="w-1/5 ml-2">
-                  <TextField
-
-                      className="w-full"
-                      id="outlined-multiline-static"
-                      label="จำนวนวันพักฟื้นหลังการผ่าตัด"
-                      name="expectedDayOfRecovery"
-                      multiline
-                      defaultValue={transactionClaimInfo ? transactionClaimInfo.Visit.expectedDayOfRecovery : ""}
-                      disabled
-                    />
+                    <div className="flex flex-col mb-4">
+                              <label className="text-gray-700 mb-2">วันพักฟื้นหลังการผ่าตัด</label>
+                                <input
+                                    type="text"
+                                    defaultValue={transactionClaimInfo ? transactionClaimInfo.Visit.expectedDayOfRecovery : ""}
+                                    readOnly
+                                    className="border-2 border-gray-300 rounded-md px-4 py-2 bg-gray-100"
+                                  />
+                             </div>
                   </div>
             </div>
             <div className="border-solid border-2 mt-2">
@@ -407,23 +394,24 @@ export default function DetailDischarge({ data }) {
                   <div className="flex items-center mt-2 ml-2">
                     {transactionClaimInfo ? (
                       transactionClaimInfo.Visit.Pregnant === true ? (
-                        // <input
-                        //   type="checkbox"
-                        //   id="pregnant"
-                        //   name="pregnant"
-                        //   className="checkbox"
-                        //   disabled defaultChecked
-                        // />
-                        "1"
+                        <input
+                          type="checkbox"
+                          id="pregnant"
+                          name="pregnant"
+                          className="checkbox"
+                          disabled defaultChecked
+                        />
+
+                   
                       ) : (
-                        // <input
-                        //   type="checkbox"
-                        //   id="pregnant"
-                        //   name="pregnant"
-                        //   className="checkbox"
-                        //   disabled
-                        // />
-                        "2"
+                        <input
+                          type="checkbox"
+                          id="pregnant"
+                          name="pregnant"
+                          className="checkbox"
+                          disabled
+                        />
+                      
                       )
                     ) : (
                       ""
@@ -436,23 +424,21 @@ export default function DetailDischarge({ data }) {
                   <div className="flex items-center mt-2 ml-2">
                     {transactionClaimInfo ? (
                       transactionClaimInfo.Visit.PrivateCase === true ? (
-                        // <input
-                        //   type="checkbox"
-                        //   id="privateCase"
-                        //   name="privateCase"
-                        //   className="checkbox"
-                        //   disabled defaultChecked
-                        // />
-                        "1"
+                        <input
+                          type="checkbox"
+                          id="privateCase"
+                          name="privateCase"
+                          className="checkbox"
+                          disabled defaultChecked
+                        />
                       ) : (
-                        // <input
-                        //   type="checkbox"
-                        //   id="privateCase"
-                        //   name="privateCase"
-                        //   className="checkbox"
-                        //   disabled
-                        // />
-                        "2"
+                        <input
+                          type="checkbox"
+                          id="privateCase"
+                          name="privateCase"
+                          className="checkbox"
+                          disabled
+                        />
                       )
                     ) : (
                       ""
@@ -465,24 +451,24 @@ export default function DetailDischarge({ data }) {
                   <div className="flex items-center mt-2 ml-2">
                     {transactionClaimInfo ? (
                       (transactionClaimInfo.Visit.PreviousTreatmentDate||transactionClaimInfo.Visit.PreviousTreatmentDetail) ? (
-                        // <input
-                        //   type="checkbox"
-                        //   id="privateCase"
-                        //   name="privateCase"
-                        //   className="checkbox"
-                        //   defaultChecked
-                        //   disabled
-                        // />
-                        "1"
+                        <input
+                          type="checkbox"
+                          id="privateCase"
+                          name="privateCase"
+                          className="checkbox"
+                          defaultChecked
+                          disabled
+                        />
+                
                       ) : (
-                        // <input
-                        //   type="checkbox"
-                        //   id="privateCase"
-                        //   name="privateCase"
-                        //   className="checkbox"
-                        //   disabled
-                        // />
-                        "2"
+                        <input
+                          type="checkbox"
+                          id="privateCase"
+                          name="privateCase"
+                          className="checkbox"
+                          disabled
+                        />
+              
                       )
                     ) : (
                       ""
@@ -496,28 +482,26 @@ export default function DetailDischarge({ data }) {
                        (transactionClaimInfo.Visit.PreviousTreatmentDate||transactionClaimInfo.Visit.PreviousTreatmentDetail) ? (
                     <div className="flex  w-full mt-2">
                         <div className="w-1/4">
-                        <TextField
-
-                      className="w-full"
-                      id="outlined-multiline-static"
-                      label="วันที่เข้ารับการรักษาก่อนการรักษาครั้งนี้"
-                      name="PreviousTreatmentDate"
-                      multiline
-                      defaultValue={transactionClaimInfo ? transactionClaimInfo.Visit.PreviousTreatmentDate : ""}
-                      disabled
-                    />
+                        <div className="flex flex-col mb-4">
+                              <label className="text-gray-700 mb-2">วันที่เข้ารับการรักษาก่อนการรักษาครั้งนี้</label>
+                                <input
+                                    type="text"
+                                    defaultValue={transactionClaimInfo ? transactionClaimInfo.Visit.PreviousTreatmentDate : ""}
+                                    readOnly
+                                    className="border-2 border-gray-300 rounded-md px-4 py-2 bg-gray-100"
+                                  />
+                             </div>
                     </div>
                         <div className="w-2/5 ml-2">
-                        <TextField
-
-                      className="w-full"
-                      id="outlined-multiline-static"
-                      label="ชื่อโรงพยาบาลที่เข้ารับการรักษาก่อนการรักษาครั้งนี้"
-                      name="PreviousTreatmentDetail"
-                      multiline
-                      defaultValue={transactionClaimInfo ? transactionClaimInfo.Visit.PreviousTreatmentDetail : ""}
-                      disabled
-                    />
+                                            <div className="flex flex-col mb-4">
+                              <label className="text-gray-700 mb-2">ชื่อโรงพยาบาลที่เข้ารับการรักษาก่อนการรักษาครั้งนี้</label>
+                                <input
+                                    type="text"
+                                    defaultValue={transactionClaimInfo ? transactionClaimInfo.Visit.PreviousTreatmentDetail : ""}
+                                    readOnly
+                                    className="border-2 border-gray-300 rounded-md px-4 py-2 bg-gray-100"
+                                  />
+                             </div>
                         </div>
                       </div>
                       ): ""): ""}
@@ -528,46 +512,37 @@ export default function DetailDischarge({ data }) {
             <h1 className="font-black text-error text-3xl ">AccidentDetail</h1>
             <div className="flex  w-full mt-2">
               <div className="w-1/5 ">
-              <TextField
-
-                      className="w-full"
-                      id="outlined-multiline-static"
-                      label="AccidentDate"
-                      name="AccidentDate"
-                      multiline
-                     // rows={4}
-                      defaultValue={transactionClaimInfo ? transactionClaimInfo.AccidentDetail.AccidentDate : ""}
-                      //inputProps={{ maxLength: 200 }}
-                      disabled
-                    />
+              <div className="flex flex-col mb-4">
+                              <label className="text-gray-700 mb-2">AccidentDate</label>
+                                <input
+                                    type="text"
+                                    defaultValue={transactionClaimInfo ? transactionClaimInfo.AccidentDetail.AccidentDate : ""}
+                                    readOnly
+                                    className="border-2 border-gray-300 rounded-md px-4 py-2 bg-gray-100"
+                                  />
+                </div>
               </div>
               <div className="w-2/5 ml-2">
-              <TextField
-
-                      className="w-full"
-                      id="outlined-multiline-static"
-                      label="สถานที่เกิดอุบัติเหตุ"
-                      name="AccidentPlace"
-                      multiline
-                     // rows={4}
-                      defaultValue={transactionClaimInfo ? transactionClaimInfo.AccidentDetail.AccidentPlace : ""}
-                      //inputProps={{ maxLength: 200 }}
-                      disabled
-                    />
+                                  <div className="flex flex-col mb-4">
+                              <label className="text-gray-700 mb-2">สถานที่เกิดอุบัติเหตุ</label>
+                                <input
+                                    type="text"
+                                    defaultValue={transactionClaimInfo ? transactionClaimInfo.AccidentDetail.AccidentPlace : ""}
+                                    readOnly
+                                    className="border-2 border-gray-300 rounded-md px-4 py-2 bg-gray-100"
+                                  />
+                      </div>
               </div>
-              <div className="w-2/5 ml-2">
-              <TextField
-
-                      className="w-full"
-                      id="outlined-multiline-static"
-                      label="สาเหตุของการมารับการรักษาเกิน 45 วัน จากการเกิดอุบัติเหตุ"
-                      name="AccidentCauseOver45Days"
-                      multiline
-                     // rows={4}
-                      defaultValue={transactionClaimInfo ? transactionClaimInfo.Visit.AccidentCauseOver45Days : ""}
-                      //inputProps={{ maxLength: 200 }}
-                      disabled
-                    />
+              <div className="w-3/5 ml-2">
+              <div className="flex flex-col mb-4">
+                              <label className="text-gray-700 mb-2">สาเหตุของการมารับการรักษาเกิน 45 วัน จากการเกิดอุบัติเหตุ</label>
+                                <input
+                                    type="text"
+                                    defaultValue={transactionClaimInfo ? transactionClaimInfo.Visit.AccidentCauseOver45Days : ""}
+                                    readOnly
+                                    className="border-2 border-gray-300 rounded-md px-4 py-2 bg-gray-100"
+                                  />
+                      </div>
               </div>
             </div>
 

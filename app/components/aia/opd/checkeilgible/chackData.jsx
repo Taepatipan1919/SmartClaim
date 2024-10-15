@@ -38,6 +38,8 @@ export default function chackData() {
   const [illnessType, setIllnessType] = useState();
   const [surgeryType, setSurgeryType] = useState();
   const [showForm, setShowForm] = useState(false);
+  const [mass, setMass] = useState();
+  
   const [result, setResult] = useState();
   const [detailVN, setDetailVN] = useState();
   const [fromValue, setFromValue] = useState(null);
@@ -55,7 +57,8 @@ export default function chackData() {
   const [transactionNoL, setTransactionNoL] =useState("");
   const [refIdL, setRefIdL] =useState("");
   const [testMe, setTestMe] = useState(false);
-
+  const [patientInfo, setPatientInfo] =useState("");
+  
   const [accidentDate, setAccidentDate] = useState("");
   const [visitDateTime, setVisitDateTime] = useState("");
   const [showbutton, setShowbutton] = useState("");
@@ -67,7 +70,8 @@ export default function chackData() {
     setSelectedValue(event.target.value);
   };
   const handleButtonClick = () => {
-    window.open('/aia/opd/checkeligible/pdfPage', '_blank');
+    window.print();
+    // window.open('/aia/opd/checkeligible/pdfPage', '_blank');
   };
   const confirmButton = (data) => {
     setShowFormFurtherError();
@@ -374,7 +378,7 @@ export default function chackData() {
 
   const check = async (event) => {
     event.preventDefault();
-
+    setMass();
     setResult();
     setShowbutton();
     setShowFormCheckEligibleError();
@@ -426,6 +430,7 @@ export default function chackData() {
       SurgeryTypeCode: surgeryTypeValue,
     };
     console.log(PatientInfo);
+    setPatientInfo(PatientInfo)
     try {
       document.getElementById("my_modal_3").showModal();
       // try {
@@ -439,7 +444,19 @@ export default function chackData() {
 
       if (response.data.HTTPStatus.statusCode < 400) {
         setResult(response.data);
-        console.log(response.data);
+         console.log(response.data);
+
+
+         
+          if (response.data) {
+            setMass();
+            const hasTrueStatus = response.data.Result.InsuranceData.CoverageList.some(coverage => coverage.Status === true);
+            if (hasTrueStatus) {
+              setMass(true);
+            }
+          }
+
+
         setShowFormCheckEligibleError();
       } else {
         console.log(response.data);
@@ -796,13 +813,64 @@ export default function chackData() {
 
       {/* {showForm && ( */}
 
-      <dialog id="my_modal_3" className="modal text-xl	">
-        <div className="modal-box w-11/12 max-w-5xl">
+      <dialog id="my_modal_3" className="modal text-xl ">
+        <div className="modal-box w-full h-full max-w-7xl ">
           <form method="dialog">
             <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
               ✕
             </button>
-            {showFormCheckEligibleError === "Error" ? (
+
+                <h1 className="text-accent text-3xl text-center">ผลการตรวจสอบสิทธิ์</h1>
+
+                <div className="flex  w-full mt-4">
+        <div className="p-4 border rounded-md bg-white w-4/6 shadow-md">
+          <h2 className="text-xl font-semibold mb-2">ข้อมูลส่วนตัว</h2>
+          <p className="text-xl">รหัสประจำตัวประชาชน: <b>{patientInfo.PID}</b></p>
+          <p className="text-xl">HN: <b>{patientInfo.HN}</b></p>
+          <p className="text-xl">ชื่อ: <b>{patientInfo.GivenNameTH} {patientInfo.SurnameTH}</b></p>
+          <p className="text-xl">วันเกิด: <b>{patientInfo.DateOfBirth}</b></p>
+        </div>
+        
+        <div className="p-4 border rounded-md bg-white w-full shadow-md ml-2">
+          <h2 className="text-xl font-semibold mb-2 text-center">จากการตรวจสอบเบื้องต้น</h2>
+          <p className="text-xl text-center">
+            <b className="text-error"> 
+           {mass ? (mass === true ? "มีสิทธิ์ใช้บริการเรียกร้องสินไหม" : "คุณไม่สามารถใช้สิทธิ์เรียกร้องสินไหม") : <span className="loading loading-spinner text-error"></span>}
+           </b>
+          </p>
+          <p className="text-xl text-center">ประเภท: <b>{patientInfo.ServiceSettingCode} - {patientInfo.IllnessTypeCode}</b></p>
+          <p className="text-xl text-center"> วันที่เข้าการรักษา: <b>{patientInfo.VisitDateTime}</b></p>
+        <div className="flex justify-center mt-4">   
+          <div className="rounded-md">
+          {mass ? (mass === true ? (<>
+            <div>
+                              <button
+                                className="btn btn-success text-base-100 hover:text-success hover:bg-base-100"
+                                onClick={() =>
+                                  confirmButton(
+                                    `${result.Result.InsuranceData.RefId} | ${result.Result.InsuranceData.TransactionNo}`
+                                  )
+                                }
+                              >
+                                ลงทะเบียนใช้สิทธิ์
+                              </button>
+                          </div>
+                          </>) : "") : ""}
+
+          </div>
+          <div className="rounded-md">
+              <div
+                className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 ml-2"
+                onClick={handleButtonClick}
+              >
+                Print
+              </div>
+          </div>
+         </div>
+        </div>
+      </div>
+
+      {showFormCheckEligibleError === "Error" ? (
               <div
                 role="alert"
                 className="alert alert-error mt-2 text-base-100"
@@ -824,9 +892,7 @@ export default function chackData() {
               </div>
             ) : (
               <>
-                <h1 className="text-accent text-3xl ">รายการสิทธิ์ประกัน</h1>
-                <hr />
-                <table className="table">
+                <table className="table mt-2">
                   <thead className="bg-info text-base-100">
                     <tr>
                       <th>Type</th>
@@ -888,35 +954,8 @@ export default function chackData() {
                   <div className="rounded-md ">&nbsp;</div>
                 </div>
                 <div className="modal-action">
-               <div
-                className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100"
-                onClick={handleButtonClick}
-              >
-                Print
-              </div>
       
-                {result
-                  ? result.Result.InsuranceData.CoverageList.map(
-                      (coverage, index) =>
-                        coverage.Status === true ? (
-              //             "5"
-              // {testMe && (
-                          <div>
-                              <button
-                                className="btn btn-success text-base-100 hover:text-success hover:bg-base-100"
-                                onClick={() =>
-                                  confirmButton(
-                                    `${result.Result.InsuranceData.RefId} | ${result.Result.InsuranceData.TransactionNo}`
-                                  )
-                                }
-                              >
-                                ยืนยันการเคลม
-                              </button>
-                  
-                          </div>
-                  //       ) 
-                  //  }
-                   ) : ""): ""}
+
                         </div>
               </>
             )}
