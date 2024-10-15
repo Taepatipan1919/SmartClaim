@@ -25,7 +25,7 @@ import DetailDischarge from "../submitBilling/detailDischarge";
 import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
-
+import { HiDocumentSearch } from "react-icons/hi";
 export default function chackData() {
   const InsuranceCode = 13;
   const ReDux = useSelector((state) => ({ ...state }));
@@ -95,6 +95,58 @@ export default function chackData() {
   }, []);
   const status = (event) => {
     setStatusValue(event.target.value);
+  };
+  const DocumentList = (data) => {
+    const [
+      RefId,
+      TransactionNo,
+      PID,
+      PassportNumber,
+      HN,
+      VN,
+      InvoiceNumber,
+    ] = data.split(" | ");
+    setRefIdL(RefId);
+    setTransactionNoL(TransactionNo);
+    setHNL(HN);
+    setVNL(VN);
+    setInvoiceNumberL(InvoiceNumber);
+    setMsg(null);
+    setPIDL(PID);
+    setPassportNumberL(PassportNumber);
+
+    const PatientInfo = {
+      InsurerCode: InsuranceCode,
+      RefId: RefId,
+      TransactionNo: TransactionNo,
+      PID: PID,
+      PassportNumber: PassportNumber,
+      HN: HN,
+      VN: VN,
+      DocumenttypeCode : "",
+      Runningdocument : "",
+    };
+
+    console.log(PatientInfo);
+    axios
+      .post(
+        process.env.NEXT_PUBLIC_URL_PD2 +
+          process.env.NEXT_PUBLIC_URL_getlistDocumentName,
+        { PatientInfo }
+      )
+      .then((response) => {
+        setBillList(response.data);
+      })
+      .catch((err) => {
+        // console.error("Error", err)
+        console.log(err);
+        //  if (err.response.request.status === 500) {
+        setShowFormError("Error");
+        setMassError(err.response.data.HTTPStatus.message);
+      });
+
+
+    document.getElementById("my_modal_4").showModal();
   };
 
   const handleButtonClick = (data) => {
@@ -193,7 +245,7 @@ export default function chackData() {
     formData.append("HN", hNL);
     formData.append("DocumentName", file.name);
     formData.append("insurerid", InsuranceCode);
-    formData.append("DocumenttypeCode", selectedValue);
+    formData.append("DocumenttypeCode", "006");
     formData.append("UploadedBy", "");
     formData.append("Runningdocument", randomNumber);
     setMsg(
@@ -993,7 +1045,7 @@ export default function chackData() {
                           : ""}
                       </th>
                       <td>
-                        <div className="tooltip" data-tip="Refresh">
+                        <div className="tooltip" data-tip="รีเฟรช">
                           <h1
                             className="text-primary text-2xl"
                             onClick={() =>
@@ -1005,7 +1057,7 @@ export default function chackData() {
                             <LuRefreshCw />
                           </h1>
                         </div>
-                        <div className="tooltip ml-4" data-tip="Detail">
+                        <div className="tooltip ml-4" data-tip="ข้อมูลส่งเคลม">
                           <h1
                             className="text-primary text-2xl"
                             onClick={() =>
@@ -1017,9 +1069,9 @@ export default function chackData() {
                             <IoDocumentText />
                           </h1>
                         </div>
-                                <div
+                        <div
                                   className="tooltip ml-4"
-                                  data-tip="Cancel Claim"
+                                  data-tip="ยกเลิกการเคลม"
                                 >
                                   <h1
                                     className="text-primary text-2xl"
@@ -1032,10 +1084,27 @@ export default function chackData() {
                                     <MdCancel />
                                   </h1>
                                 </div>
+
+                        <div
+                                  className="tooltip ml-4"
+                                  data-tip="ดู เอกสารทั้งหมด"
+                                >
+                                  <h1
+                                    className="text-primary text-2xl"
+                                    onClick={() =>
+                                      DocumentList(
+                                        `${bill.RefId} | ${bill.TransactionNo} | ${bill.PID} | ${bill.PassportNumber} | ${bill.HN} | ${bill.VN} | ${bill.InvoiceNumber}`
+                                      )
+                                    }
+                                  >
+                                <HiDocumentSearch />
+                                </h1>
+                                </div>
+
                       </td>
                       <td>
                   { bill.RefId ? (
-                            bill.ClaimStatusDesc === "Approve" ? (
+                            (bill.ClaimStatusDesc === "Approve" || bill.ClaimStatusDesc === "Received") ? (
                               <>
                                 <button
                                   className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100 ml-4"
@@ -1097,7 +1166,7 @@ export default function chackData() {
     <form  onSubmit={submitbilling}> 
                 <h3 className="font-bold text-lg">ส่งเอกสาร เพิ่มเติม</h3>
                 <hr />
-                <div className="grid gap-2 sm:grid-cols-2 w-full mt-2">
+                {/* <div className="grid gap-2 sm:grid-cols-2 w-full mt-2">
                 <div className="rounded-md">
 
                 <p className="text-left">Document Type</p>
@@ -1115,7 +1184,7 @@ export default function chackData() {
                         : ""}
                       <></>
                     </select>
-          </div>
+          </div> */}
 
                   <div className="rounded-md mt-9">
                     <div className="flex items-center ">
@@ -1134,7 +1203,7 @@ export default function chackData() {
                         <FaCloudUploadAlt className="size-6" />
                       </div>
                     </div>
-                  </div>
+                  {/* </div> */}
                 </div>
                 {progress.started && (
                   <progress
@@ -1226,6 +1295,118 @@ export default function chackData() {
              </form> 
             </div>
           </dialog>
+
+
+          <dialog id="my_modal_4" className="modal text-xl	">
+            <div className="modal-box max-w-3xl">
+              <form method="dialog">
+      <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+    </form>
+                <h3 className="font-bold text-lg">เอกสารทั้งหมด</h3>
+                <hr />
+
+                  {/* <div className="rounded-md mt-9">
+                    <div className="flex items-center ">
+                      <input
+                        type="file"
+                        accept=".pdf"
+                        className="file-input file-input-bordered file-input-info w-5/6"
+                        onChange={(e) => {
+                          setFile(e.target.files[0]);
+                        }}
+                      />
+                      <div
+                        className="btn btn-success text-base-100 hover:text-success hover:bg-base-100 w-1/6 ml-2"
+                        onClick={handleUpload}
+                      >
+                        <FaCloudUploadAlt className="size-6" />
+                      </div>
+                    </div>
+                  </div> */}
+                {progress.started && (
+                  <progress
+                    max="100"
+                    value={progress.pc}
+                    className="mt-2 w-full"
+                  ></progress>
+                )}
+
+               <h1 className="text-center mt-2">{msg}</h1>  
+
+                {showDocError === "Error" ? (
+                  <div
+                    role="alert"
+                    className="alert alert-error mt-2 text-base-100"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-6 w-6 shrink-0 stroke-current"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    <span>{massDocError}</span>
+                  </div>
+                ) : (
+                  ""
+                )}
+                                <div className="flex items-center mt-3">
+                  <table className="table table-zebra mt-2">
+                    <thead>
+                      <tr className="text-base-100 bg-primary py-8 text-sm w-full text-center">
+                        <th className="w-2/5">ชื่อไฟล์</th>
+                        <th className="w-1/5"></th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {billList ? (
+                        billList.map((list, index) => (
+                          <tr key={index} className=" bg-neutral text-sm">
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              {list.filename}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                        
+                                <div
+                                  className="btn btn-primary  mr-2 text-base-100 hover:text-primary hover:bg-base-100"
+                                  type="submit"
+                                  onClick={() => DocumentBase64(list.filename)}
+                                >
+                                  Document
+                                </div>
+                     
+                             
+                                {/* <div className="btn btn-error  mr-2 text-base-100 hover:text-error hover:bg-base-100" type="submit"
+                                onClick={() => CancleDoc(list.filename)}
+                                >
+                                Cancel
+                                </div> */}
+                      
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td></td>
+                          <td></td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+            </div>
+          </dialog>
+
+
+
+
+
 
           {showModal ? (
         <>

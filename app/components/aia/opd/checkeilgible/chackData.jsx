@@ -39,7 +39,10 @@ export default function chackData() {
   const [surgeryType, setSurgeryType] = useState();
   const [showForm, setShowForm] = useState(false);
   const [mass, setMass] = useState();
-  
+  const [hS, setHS ] = useState();
+  const [hB, setHB ] = useState();
+  const [aI, setAI ] = useState();
+
   const [result, setResult] = useState();
   const [detailVN, setDetailVN] = useState();
   const [fromValue, setFromValue] = useState(null);
@@ -383,7 +386,9 @@ export default function chackData() {
     setShowbutton();
     setShowFormCheckEligibleError();
     setSelectedValue();
-
+    setHS();
+    setHB();
+    setAI();
     const [VNselectVN, VisitDateselectVN] = event.target.selectVN.value.split(" | ");
     //const [YearVN, MonthVN, DayVN] = VisitDateselectVN.split('-');
     // const Acc = accValue.split(" ");
@@ -431,12 +436,13 @@ export default function chackData() {
     };
     console.log(PatientInfo);
     setPatientInfo(PatientInfo)
-    try {
+    // try {
       document.getElementById("my_modal_3").showModal();
-      // try {
+
       const response = await axios.post(
-        process.env.NEXT_PUBLIC_URL_PD +
-          process.env.NEXT_PUBLIC_URL_checkeligible,
+       `http://localhost:3000/api/v1/check-eligible/checkeligible/`,
+        // process.env.NEXT_PUBLIC_URL_PD +
+        //   process.env.NEXT_PUBLIC_URL_checkeligible,
         {
           PatientInfo,
         }
@@ -451,9 +457,38 @@ export default function chackData() {
           if (response.data) {
             setMass();
             const hasTrueStatus = response.data.Result.InsuranceData.CoverageList.some(coverage => coverage.Status === true);
+            const HS = response.data.Result.InsuranceData.CoverageList.some(coverage => coverage.Type === "ผลประโยชน์ค่ารักษาพยาบาล" && coverage.Status === true);
+            const HB = response.data.Result.InsuranceData.CoverageList.some(coverage => coverage.Type === "ผลประโยชน์ค่าชดเชยนอนรพ" && coverage.Status === true);
+            const AI = response.data.Result.InsuranceData.CoverageList.some(coverage => coverage.Type === "ผลประโยชน์ค่าชดเชย" && coverage.Status === true);
+            // const HSBypass = response.data.Result.InsuranceData.CoverageList.some(coverage => coverage.Type === "ผลประโยชน์ค่ารักษาพยาบาลที่ต้องตรวจสอบความคุ้มครองโดยเจ้าหน้าที่ AIA" && coverage.Status === true);
             if (hasTrueStatus) {
               setMass(true);
             }
+            if(HS){
+              setHS(true);
+            
+            }else{
+              setHS(false);
+            }
+            if(HB){
+              setHB(true);
+            
+            }else{
+              setHB(false);
+            }
+            if(AI){
+              setAI(true);
+      
+            }else{
+              setAI(false);
+            }
+            // if(HSBypass){
+            //   setHSBypass(true);
+        
+            // }else{
+            //   setHSBypass(false);
+            // }
+
           }
 
 
@@ -463,22 +498,20 @@ export default function chackData() {
         setShowFormCheckEligibleError("Error");
         setMassError(response.data.HTTPStatus.message);
       }
-    } catch (error) {
-      console.log(error);
-      if (error.status !== 500) {
-        const ErrorMass = error.config.url;
-        const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
-        setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
-        setShowFormCheckEligibleError("Error");
-      } else {
-        setShowFormCheckEligibleError("Error");
-        setMassError(error.response.data.HTTPStatus.message);
-      }
+    // } catch (error) {
+    //   console.log(error);
+    //   if (error.status !== 500) {
+    //     const ErrorMass = error.config.url;
+    //     const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+    //     setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
+    //     setShowFormCheckEligibleError("Error");
+    //   } else {
+    //     setShowFormCheckEligibleError("Error");
+    //     setMassError(error.response.data.HTTPStatus.message);
+    //   }
 
-      // console.log(error)
-      //  setShowFormError("Error");
-      //  setMassError(error.response.data.HTTPStatus.message);
-    }
+
+    // }
   };
 
 
@@ -835,10 +868,19 @@ export default function chackData() {
           <h2 className="text-xl font-semibold mb-2 text-center">จากการตรวจสอบเบื้องต้น</h2>
           <p className="text-xl text-center">
             <b className="text-error"> 
-           {mass ? (mass === true ? "มีสิทธิ์ใช้บริการเรียกร้องสินไหม" : "คุณไม่สามารถใช้สิทธิ์เรียกร้องสินไหม") : <span className="loading loading-spinner text-error"></span>}
+           {mass === true ? <p className="text-success">มีสิทธิ์ใช้บริการเรียกร้องสินไหม</p> : <p className="text-error">คุณไม่สามารถใช้สิทธิ์เรียกร้องสินไหม</p>}
            </b>
           </p>
-          <p className="text-xl text-center">ประเภท: <b>{patientInfo.ServiceSettingCode} - {patientInfo.IllnessTypeCode}</b></p>
+          <p className="text-xl text-center">ประเภท: {illnessType ?
+            illnessType.Result.map((ill , index) => 
+            ill.illnesstypecode  ===  patientInfo.IllnessTypeCode ? (
+              <b key={index}>{ill.illnesstypedesc}</b>
+            ) : "") : ""
+         
+          
+          
+          
+          }</p>
           <p className="text-xl text-center"> วันที่เข้าการรักษา: <b>{patientInfo.VisitDateTime}</b></p>
         <div className="flex justify-center mt-4">   
           <div className="rounded-md">
@@ -892,46 +934,33 @@ export default function chackData() {
               </div>
             ) : (
               <>
+              <h1 className="text-2xl mt-2 flex items-center">ผลการตรวจสอบสิทธิ์ ค่ารักษาพยาบาล (HS/ME) 
+              {hS ?(hS === true ? <p className="text-success ml-2">มีสิทธิ์เรียกร้องสินไหม</p> : <p className="text-error ml-2">ไม่สามารถใช้สิทธิ์เรียกร้องสินไหม</p>) : "" } 
+              </h1>
                 <table className="table mt-2">
                   <thead className="bg-info text-base-100">
                     <tr>
-                      <th>Type</th>
-                      <th>PolicyNo</th>
-                      <th>PlanName</th>
-                      <th>MessageTh</th>
-                      <th>Chack eligible</th>
+                    <th>เลขที่กรมธรรม์</th>
+                    <th>สัญญาเพิ่มเติม</th>
+                      <th>ผลการตรวจสอบ</th>
                     </tr>
                   </thead>
                   <tbody>
                     {result ? (
                       result.Result.InsuranceData.CoverageList.map(
                         (coverage, index) =>
-                          //  coverage.Status === true ? (
+                            coverage.Type === "ผลประโยชน์ค่ารักษาพยาบาล" ? (
 
                           coverage.MessageList.map((message, msgIndex) => (
                             // <tr key={`${index}`}>
                             <tr key={`${index}-${msgIndex}`}>
-                              <td>{coverage.Type}</td>
                               <td>{message.PolicyNo}</td>
                               <td>{message.PlanName}</td>
                               <td>{message.MessageTh}</td>
-                              {coverage.Status === true ? (
-                                <>
-                                  <td className="text-success text-2xl">
-                                    <IoMdCheckmarkCircle />
-                                  </td>
-                                </>
-                              ) : (
-                                <>
-                                  <td className="text-error text-2xl">
-                                    <FaCircleXmark />
-                                  </td>
-                                </>
-                              )}
                             </tr>
                           ))
-                      )
-                    ) : (
+                      ) : ""
+                    )) : (
                       <tr>
                         <td></td>
                         <td>
@@ -953,10 +982,57 @@ export default function chackData() {
                   <div className="rounded-md "></div>
                   <div className="rounded-md ">&nbsp;</div>
                 </div>
-                <div className="modal-action">
-      
 
-                        </div>
+
+
+                <h1 className="text-2xl mt-2 flex items-center">ผลการตรวจสอบสิทธิ์ ค่ารักษาพยาบาล (AI/HB) 
+           {aI ? ((aI||hB) === true ? (<p className="text-success ml-2">มีสิทธิ์เรียกร้องสินไหม</p>) : (<p className="text-error ml-2">ไม่สามารถใช้สิทธิ์เรียกร้องสินไหม</p>)) : "" } 
+                </h1>
+                <table className="table mt-2">
+                  <thead className="bg-info text-base-100">
+                    <tr>
+                    <th>เลขที่กรมธรรม์</th>
+                    <th>สัญญาเพิ่มเติม</th>
+                      <th>ผลการตรวจสอบ</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {result ? (
+                      result.Result.InsuranceData.CoverageList.map(
+                        (coverage, index) =>
+                            (coverage.Type === "ผลประโยชน์ค่าชดเชย"||coverage.Type === "ผลประโยชน์ค่าชดเชยนอนรพ") ? (
+
+                          coverage.MessageList.map((message, msgIndex) => (
+                            // <tr key={`${index}`}>
+                            <tr key={`${index}-${msgIndex}`}>
+                              <td>{message.PolicyNo}</td>
+                              <td>{message.PlanName}</td>
+                              <td>{message.MessageTh}</td>
+                            </tr>
+                          ))
+                      ) : ""
+                    )) : (
+                      <tr>
+                        <td></td>
+                        <td>
+                          <span className="loading loading-spinner text-error size-10 "></span>
+                        </td>
+                        <td>
+                          <div className="justify-center text-4xl">
+                            Loading....
+                          </div>
+                        </td>
+                        <td></td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+                <div className="grid gap-2 sm:grid-cols-4 text-base-100 bg-info w-full whitespace-normal text-center">
+                  <div className="rounded-md"></div>
+                  <div className="rounded-md"></div>
+                  <div className="rounded-md "></div>
+                  <div className="rounded-md ">&nbsp;</div>
+                </div>
               </>
             )}
           </form>

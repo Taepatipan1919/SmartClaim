@@ -515,7 +515,7 @@ export default function SelectPatient() {
       {/* <div className="justify-center border-solid w-screen m-auto border-4 rounded-lg p-4"> */}
 
       <form onSubmit={handleSubmit}>
-        <div className="grid gap-1 sm:grid-cols-3 w-full mt-2">
+        <div className="grid gap-1 sm:grid-cols-5 w-full mt-2">
           <div className="px-2 rounded-md">
             <div className="flex items-center ">
               <input
@@ -552,8 +552,8 @@ export default function SelectPatient() {
             <TextField
               id="standard-multiline-flexible"
               label="Personal ID / Passport / HN"
-              multiline
-              maxRows={4}
+              //multiline
+            //  maxRows={1}
               variant="standard"
               className="w-full"
               name="PID"

@@ -1000,7 +1000,7 @@ export default function chackData() {
                         </div>
                         {statusNew ? (
                           bill.RefId ? (
-                            bill.ClaimStatusDesc === "Approve" ? (
+                            (bill.ClaimStatusDesc === "Approve" || bill.ClaimStatusDesc === "Received") ? (
                               <>
                                 <div
                                   className="tooltip ml-4"
@@ -1031,7 +1031,7 @@ export default function chackData() {
                       <td>
                         {statusNew ? (
                           bill.RefId ? (
-                            bill.ClaimStatusDesc === "Approve" ? (
+                            (bill.ClaimStatusDesc === "Approve" || bill.ClaimStatusDesc === "Received") ? (
                               <>
                                 <button
                                   className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100 ml-4"
