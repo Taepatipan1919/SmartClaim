@@ -385,6 +385,7 @@ export default function chackData() {
     event.preventDefault();
     setShowFormError();
     setPost();
+    setMassError();
     let data = {};
     let dateToValue = "";
     let dateFromValue = "";
@@ -428,21 +429,29 @@ export default function chackData() {
     } else if (fromValue && toValue) {
       PatientInfo = {
         InsurerCode: InsuranceCode,
+        IdType: "",
+        InvoiceNumber: "",
+        VN: "",
         PID: ReDux.Patient.Data.PID,
         PassportNumber: ReDux.Patient.Data.PassportNumber,
         HN: ReDux.Patient.Data.HN,
-        Insurerid: InsuranceCode,
-        StatusClaimCode: "09",
-        IdType: "",
-        VN: "",
-        InvoiceNumber: "",
-        DateVisitFrom: dateFromValue,
+        VisitDatefrom: dateFromValue,
         VisitDateto: dateToValue,
+        StatusClaimCode: "",
+        RefId: "",
+        TransactionNo: "",
       };
       
+    }else{
+      setPost();
+      setShowFormError("Error");
+      setMassError("กรุณากรอก ข้อความที่จะค้นหาให้ครบ");
     }
-    setPatientInfoDetail(PatientInfo)
-   console.log(PatientInfo);
+
+  
+
+    if(PatientInfo){
+      setPatientInfoDetail(PatientInfo)
 
      axios
        .post(
@@ -462,12 +471,10 @@ export default function chackData() {
          setShowFormError("Error");
          setMassError(error.message);
        });
+      }
 
 
-    // if(Object.keys(data).length === 0){
-    //   setShowFormError("Error");
-    //   setMassError("กรุณากรอก ข้อความที่จะค้นหาให้ครบ");
-    // }
+
     // else{
     //   setShowFormError()
     // console.log(data)
@@ -834,89 +841,6 @@ export default function chackData() {
           </div>
         </form>
       </div>
-      {/* 
-  <input
-    type="radio"
-    name="my_tabs_2"
-    role="tab"
-    className="tab text-success"
-    aria-label="รายการที่วางบิลแล้ว"
-     />
-  <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6 w-5/5">
-<form onSubmit={handleSubmit2}>
-<div className="grid gap-1 sm:grid-cols-1 w-full">
-          <div className="px-2 rounded-md">
-            <div className="flex items-center ">
-              <input
-                        type="radio"
-                        id="NATIONAL_ID"
-                        name="identity_type"
-                        value="NATIONAL_ID"
-                        className="checkbox checkbox-info"
-                        // defaultChecked
-                        onChange={handleOptionChange}
-              />
-              <p className="text-left">&nbsp;VN &nbsp;</p>
-              <input
-                        type="radio"
-                        id="InvoiceNumber"
-                        name="identity_type"
-                        value="InvoiceNumber"
-                        className="checkbox checkbox-info"
-                        checked={selectedIdType === 'InvoiceNumber'}
-                        onChange={handleOptionChange}
-                
-              />
-              <p className="text-left">&nbsp;InvoiceNumber &nbsp;</p>
-              <p className="ml-64">Visit Date</p>
-            </div>
-            <TextField
-          id="standard-multiline-flexible"
-          label="กรอกข้อความ"
-          multiline
-          maxRows={4}
-          variant="standard"
-          className="w-96"
-          name="number"
-          type="text"
-                      value={numberValue}
-                      onChange={(e) => setNumberValue(e.target.value)}
-        />
-      
-     
-      <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <DatePicker
-        className="ml-5 w-40"
-            label="Date From"
-            value={fromValue}
-            onChange={(newDate) => setFromValue(newDate)}
-            format="YYYY-MM-DD"
-          />
-      
-      </LocalizationProvider>
-  
-      <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <DatePicker
-        className="ml-2 w-40"
-            label="Date To"
-            value={toValue}
-            onChange={(newDate) => setToValue(newDate)}
-            format="YYYY-MM-DD"
-          />
-    </LocalizationProvider>
-                <button className="btn btn-success text-base-100 text-lg rounded-full px-3 py-2 hover:bg-base-100 hover:text-success ml-2" type="submit">
-                    <FaSearch /> ค้นหา
-                  </button>
-      
-   
-       </div>
-
-       </div>
-
-  </form>
-  </div>
-  </div> */}
-
       <div className="justify-center border-solid m-auto border-2 border-warning rounded-lg p-4 mt-6">
         <div className="overflow-x-auto">
           {showFormError === "Error" ? (
@@ -950,7 +874,8 @@ export default function chackData() {
                 <th>ClaimNo</th>
                 <th>Invoicenumber</th>
                 <th>Status</th>
-                <th>ยอดเงิน</th>
+                <th>จำนวนวงเงินที่อนุมัติ</th>
+                <th>ยอดส่วนเกิน</th>
                 <th></th>
                 <th></th>
               </tr>
@@ -980,7 +905,12 @@ export default function chackData() {
                       </td>
                       <th>
                         {bill.TotalApprovedAmount
-                          ? bill.TotalApprovedAmount + " บาท"
+                          ? bill.TotalApprovedAmount
+                          : ""}
+                      </th>
+                      <th>
+                        {bill.TotalExcessAmount
+                          ? bill.TotalExcessAmount
                           : ""}
                       </th>
                       <td>

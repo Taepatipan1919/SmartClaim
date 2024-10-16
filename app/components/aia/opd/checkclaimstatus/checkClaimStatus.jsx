@@ -799,12 +799,45 @@ export default function chackData() {
         VisitDateto: dateToValue,
         StatusClaimCode: statusValue,
       };
-    } else if (selectedIdType === "Invoice" && numberValue) {
-
+    } else if (selectedIdType === "InvoiceNumber" && numberValue) {
+      PatientInfo = {
+        InsurerCode: InsuranceCode,
+         IdType: selectedIdType,
+        InvoiceNumber: numberValue,
+        VN: "",
+        PID: ReDux.Patient.Data.PID,
+        PassportNumber: ReDux.Patient.Data.PassportNumber,
+        HN: ReDux.Patient.Data.HN,
+        VisitDatefrom: dateFromValue,
+        VisitDateto: dateToValue,
+        StatusClaimCode: statusValue,
+      };
     } else if (fromValue && toValue) {
-
+      PatientInfo = {
+        InsurerCode: InsuranceCode,
+         IdType: "",
+        InvoiceNumber: "",
+        VN: "",
+        PID: ReDux.Patient.Data.PID,
+        PassportNumber: ReDux.Patient.Data.PassportNumber,
+        HN: ReDux.Patient.Data.HN,
+        VisitDatefrom: dateFromValue,
+        VisitDateto: dateToValue,
+        StatusClaimCode: statusValue,
+      };
     } else if (statusValue) {
-
+      PatientInfo = {
+        InsurerCode: InsuranceCode,
+         IdType: "",
+        InvoiceNumber: "",
+        VN: "",
+        PID: ReDux.Patient.Data.PID,
+        PassportNumber: ReDux.Patient.Data.PassportNumber,
+        HN: ReDux.Patient.Data.HN,
+        VisitDatefrom: dateFromValue,
+        VisitDateto: dateToValue,
+        StatusClaimCode: statusValue,
+      };
     }
 
     console.log(PatientInfo);
@@ -818,7 +851,7 @@ export default function chackData() {
         )
         .then((response) => {
           setPost(response.data);
-          //console.log(response.data)
+          console.log(response.data)
           setShowFormError();
         })
         .catch((error) => {
@@ -884,11 +917,11 @@ export default function chackData() {
               <p className="text-left">&nbsp;VN &nbsp;</p>
               <input
                 type="radio"
-                id="Invoice"
+                id="InvoiceNumber"
                 name="identity_type"
-                value="Invoice"
+                value="InvoiceNumber"
                 className="checkbox checkbox-info"
-                checked={selectedIdType === "Invoice"}
+                checked={selectedIdType === "InvoiceNumber"}
                 onChange={handleOptionChange}
               />
               <p className="text-left">&nbsp;Invoice &nbsp;</p>
@@ -1014,7 +1047,8 @@ export default function chackData() {
                 <th>ClaimNo</th>
                 <th>Invoicenumber</th>
                 <th>Status</th>
-                <th>Total</th>
+                <th>จำนวนวงเงินที่อนุมัติ</th>
+                <th>ยอดส่วนเกิน</th>
                 <th></th>
                 <th></th>
               </tr>
@@ -1046,6 +1080,11 @@ export default function chackData() {
                       <th>
                         {bill.TotalApprovedAmount
                           ? bill.TotalApprovedAmount
+                          : ""}
+                      </th>
+                      <th>
+                        {bill.TotalExcessAmount
+                          ? bill.TotalExcessAmount
                           : ""}
                       </th>
                       <td>

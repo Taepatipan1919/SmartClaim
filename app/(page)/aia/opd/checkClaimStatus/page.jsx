@@ -46,8 +46,8 @@ export default function Home() {
 <li><a className="text-error underline ">สถานะการเคลม</a></li>
 </ul>
 </div>
-{/* <SubmitClaimStatus /> */}
-<SelectPatient />
+<SubmitClaimStatus />
+{/* <SelectPatient /> */}
     </>)
     }
 

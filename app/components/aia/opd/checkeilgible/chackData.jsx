@@ -38,9 +38,8 @@ export default function chackData() {
   const [illnessType, setIllnessType] = useState();
   const [surgeryType, setSurgeryType] = useState();
   const [showForm, setShowForm] = useState(false);
+  const [load, setLoad] = useState();
   const [mass, setMass] = useState();
-  const [massSucc, setMassSucc] = useState(false);
-  console.log(mass)
   const [hS, setHS ] = useState();
   const [hB, setHB ] = useState();
   const [aI, setAI ] = useState();
@@ -63,20 +62,44 @@ export default function chackData() {
   const [refIdL, setRefIdL] =useState("");
   const [testMe, setTestMe] = useState(false);
   const [patientInfo, setPatientInfo] =useState("");
-  
+  const [succFurtherClaim, setSuccFurtherClaim] = useState(false);
   const [accidentDate, setAccidentDate] = useState("");
   const [visitDateTime, setVisitDateTime] = useState("");
   const [showbutton, setShowbutton] = useState("");
   const [furtherClaim, setFurtherClaim] = useState("");
+  //console.log(furtherClaim)
   const ReDux = useSelector((state) => ({ ...state }));
   const dispatch = useDispatch();
   const [selectedValue, setSelectedValue] = useState("");
+  const [furtherClaimNo, setFurtherClaimNo] = useState("");
+  const [furtherClaimId, setFurtherClaimId] = useState("");
   const handleSelectChange = (event) => {
     setSelectedValue(event.target.value);
   };
   const handleButtonClick = () => {
+    //บันทึก Create
+    // const PatientInfo = {
+    //   RefId: refIdL,
+    //   TransactionNo: transactionNoL,
+    //   VN: detailVN,
+    //   InsurerCode: InsurerCode,
+    //   ServiceSettingCode: statusValue,
+    //   IllnessTypeCode: illnessTypeValue,
+    //   SurgeryTypeCode: surgeryTypeValue,
+    //   PolicyTypeCode: policyTypeValue,
+    //   AccidentDate: accidentDate,
+    //   VisitDateTime: visitDateTime,
+    //   FurtherClaimNo: furtherClaimNo,
+    //   FurtherClaimId: furtherClaimId,
+    //   Runningdocument : "",
+    // }
+console.log("บันทึก")
+
     window.print();
-    // window.open('/aia/opd/checkeligible/pdfPage', '_blank');
+
+  };
+  const PrintButton = () => {
+    window.print();
   };
   const confirmButton = (data) => {
     setFurtherClaim();
@@ -108,7 +131,7 @@ export default function chackData() {
     };
      console.log(PatientInfo);
 
-
+  setLoad(true)
      
     axios
       .post(
@@ -119,8 +142,8 @@ export default function chackData() {
         }
       )
       .then((response) => {
-        document.getElementById("my_modal_2").showModal();
         console.log(response.data)
+        setLoad(false)
         // if(response.data.HTTPStatus.statusCode === 200){
           setFurtherClaim(response.data);
        //   console.log(response.data);
@@ -132,7 +155,6 @@ export default function chackData() {
 
       })
       .catch((error) => {
-        document.getElementById("my_modal_2").showModal();
         console.log(error);
         try {
           const ErrorMass = error.config.url;
@@ -151,78 +173,85 @@ export default function chackData() {
 
   const gourl = (event) => {
     event.preventDefault();
-    console.log(accidentDate)
-   // console.log("5555")
     if (selectedValue) {
+      //เลือกแบบต่อเนื่อง
       const [FurtherClaimNo, FurtherClaimId] = selectedValue.split(" | ");
-      dispatch(
-        save({
-          value: "มีข้อมูล",
-          Data: {
-            // RefId: "x9v8T2G/i6pEuNughp+kX8bNr83caECQjC+vvuEaIKY=",
-            // TransactionNo: "3ba72f56-c764-43ff-9000-920453ba3d5b",
-            // VN: "O604374-65",
-            // InsurerCode: 13,
-            // ServiceSettingCode: "OPD",
-            // IllnessTypeCode: "ACC",
-            // SurgeryTypeCode: "N",
-            // PolicyTypeCode: "IB",
-            // AccidentDate: "2024-10-01",
-            // VisitDateTime:"2024-10-01 08:22",
-            // FurtherClaimNo: "",
-            // FurtherClaimId: "",
+      setFurtherClaimNo(FurtherClaimNo)
+      setFurtherClaimId(FurtherClaimId)
+      // dispatch(
+      //   save({
+      //     value: "มีข้อมูล",
+      //     Data: {
+      //       // RefId: "x9v8T2G/i6pEuNughp+kX8bNr83caECQjC+vvuEaIKY=",
+      //       // TransactionNo: "3ba72f56-c764-43ff-9000-920453ba3d5b",
+      //       // VN: "O604374-65",
+      //       // InsurerCode: 13,
+      //       // ServiceSettingCode: "OPD",
+      //       // IllnessTypeCode: "ACC",
+      //       // SurgeryTypeCode: "N",
+      //       // PolicyTypeCode: "IB",
+      //       // AccidentDate: "2024-10-01",
+      //       // VisitDateTime:"2024-10-01 08:22",
+      //       // FurtherClaimNo: "",
+      //       // FurtherClaimId: "",
 
-            RefId: refIdL,
-            TransactionNo: transactionNoL,
-            VN: detailVN,
-            InsurerCode: InsurerCode,
-            ServiceSettingCode: statusValue,
-            IllnessTypeCode: illnessTypeValue,
-            SurgeryTypeCode: surgeryTypeValue,
-            PolicyTypeCode: policyTypeValue,
-            AccidentDate: accidentDate,
-            VisitDateTime: visitDateTime,
-            FurtherClaimNo: FurtherClaimNo,
-            FurtherClaimId: FurtherClaimId,
-            Runningdocument : "",
-          },
-        })
-      );
+      //       RefId: refIdL,
+      //       TransactionNo: transactionNoL,
+      //       VN: detailVN,
+      //       InsurerCode: InsurerCode,
+      //       ServiceSettingCode: statusValue,
+      //       IllnessTypeCode: illnessTypeValue,
+      //       SurgeryTypeCode: surgeryTypeValue,
+      //       PolicyTypeCode: policyTypeValue,
+      //       AccidentDate: accidentDate,
+      //       VisitDateTime: visitDateTime,
+      //       FurtherClaimNo: FurtherClaimNo,
+      //       FurtherClaimId: FurtherClaimId,
+      //       Runningdocument : "",
+      //     },
+      //   })
+      // );
     } else {
-      dispatch(
-        save({
-          value: "มีข้อมูล",
-          Data: {
-            // RefId: "ccXwZWYmukJdvzFrWaccN8bNr83caECQjC+vvuEaIKY=",
-            // TransactionNo: "5c5aabb3-b919-4ee8-ac42-848ae4d5f55a",
-            // VN: "O477382-67",
-            // InsurerCode: 13,
-            // ServiceSettingCode: "OPD",
-            // IllnessTypeCode: "ER",
-            // SurgeryTypeCode: "N",
-            // PolicyTypeCode: "IB",
-            // AccidentDate: "2024-09-08",
-            // VisitDateTime:"2024-09-08 08:22",
-            // FurtherClaimNo: "",
-            // FurtherClaimId: "",
+      //รักษาครั้งแรก
 
-            RefId: refIdL,
-            TransactionNo: transactionNoL,
-            VN: detailVN,
-            InsurerCode: InsurerCode,
-            ServiceSettingCode: statusValue,
-            IllnessTypeCode: illnessTypeValue,
-            SurgeryTypeCode: surgeryTypeValue,
-            PolicyTypeCode: policyTypeValue,
-            AccidentDate: accidentDate,
-            VisitDateTime: visitDateTime,
-            FurtherClaimNo: "",
-            FurtherClaimId: "",
-            Runningdocument: "",
-          },
-        })
-      );
+
+      // dispatch(
+      //   save({
+      //     value: "มีข้อมูล",
+      //     Data: {
+      //       // RefId: "ccXwZWYmukJdvzFrWaccN8bNr83caECQjC+vvuEaIKY=",
+      //       // TransactionNo: "5c5aabb3-b919-4ee8-ac42-848ae4d5f55a",
+      //       // VN: "O477382-67",
+      //       // InsurerCode: 13,
+      //       // ServiceSettingCode: "OPD",
+      //       // IllnessTypeCode: "ER",
+      //       // SurgeryTypeCode: "N",
+      //       // PolicyTypeCode: "IB",
+      //       // AccidentDate: "2024-09-08",
+      //       // VisitDateTime:"2024-09-08 08:22",
+      //       // FurtherClaimNo: "",
+      //       // FurtherClaimId: "",
+
+      //       RefId: refIdL,
+      //       TransactionNo: transactionNoL,
+      //       VN: detailVN,
+      //       InsurerCode: InsurerCode,
+      //       ServiceSettingCode: statusValue,
+      //       IllnessTypeCode: illnessTypeValue,
+      //       SurgeryTypeCode: surgeryTypeValue,
+      //       PolicyTypeCode: policyTypeValue,
+      //       AccidentDate: accidentDate,
+      //       VisitDateTime: visitDateTime,
+      //       FurtherClaimNo: "",
+      //       FurtherClaimId: "",
+      //       Runningdocument: "",
+      //     },
+      //   })
+      // );
     }
+    setSuccFurtherClaim(true)
+    setFurtherClaim();
+
 
     //  router.push("/aia/opd/eligible");
   };
@@ -389,6 +418,7 @@ export default function chackData() {
 
   const check = async (event) => {
     event.preventDefault();
+    setFurtherClaim();
     setMass();
     setResult();
     setShowbutton();
@@ -397,6 +427,7 @@ export default function chackData() {
     setHS();
     setHB();
     setAI();
+    setSuccFurtherClaim(false)
     const [VNselectVN, VisitDateselectVN] = event.target.selectVN.value.split(" | ");
     //const [YearVN, MonthVN, DayVN] = VisitDateselectVN.split('-');
     // const Acc = accValue.split(" ");
@@ -448,9 +479,9 @@ export default function chackData() {
       document.getElementById("my_modal_3").showModal();
 
       const response = await axios.post(
-    //   `http://localhost:3000/api/v1/check-eligible/checkeligible/`,
-         process.env.NEXT_PUBLIC_URL_PD +
-           process.env.NEXT_PUBLIC_URL_checkeligible,
+    //  `http://localhost:3000/api/v1/check-eligible/checkeligible/`,
+          process.env.NEXT_PUBLIC_URL_PD +
+            process.env.NEXT_PUBLIC_URL_checkeligible,
         {
           PatientInfo,
         }
@@ -866,53 +897,55 @@ export default function chackData() {
                 <h1 className="text-accent text-3xl text-center">ผลการตรวจสอบสิทธิ์</h1>
 
                 <div className="flex  w-full mt-4">
-        <div className="p-4  rounded-md bg-white w-4/6 shadow-md">
-          <h2 className="text-xl font-semibold mb-2">ข้อมูลส่วนตัว</h2>
-          <p className="text-xl">รหัสประจำตัวประชาชน: <b>{patientInfo.PID}</b></p>
-          <p className="text-xl">HN: <b>{patientInfo.HN}</b></p>
-          <p className="text-xl">ชื่อ: <b>{patientInfo.GivenNameTH} {patientInfo.SurnameTH}</b></p>
-          <p className="text-xl">วันเกิด: <b>{patientInfo.DateOfBirth}</b></p>
+        <div className="p-4 border-2  rounded-md bg-white w-3/6 shadow-md">
+          <h2 className="text-xl font-semibold mb-2 text-center">ข้อมูลส่วนตัว</h2>
+          <p className="">รหัสประจำตัวประชาชน: {patientInfo.PID}</p>
+          <p className="">HN: {patientInfo.HN}</p>
+          <p className="">ชื่อ: {patientInfo.GivenNameTH} {patientInfo.SurnameTH}</p>
+          <p className="">วันเกิด: {patientInfo.DateOfBirth}</p>
         </div>
         
-        <div className="p-4  rounded-md bg-white w-2/6 shadow-md ml-2">
+        <div className="p-4 border-2  rounded-md bg-white w-3/6 shadow-md ml-2">
           <h2 className="text-xl font-semibold mb-2 text-center">จากการตรวจสอบเบื้องต้น</h2>
           <p className="text-xl text-center">
             <b className=""> 
-           {mass === true ? <p className="underline">มีสิทธิ์ใช้บริการเรียกร้องสินไหม</p> : mass === false ? <p className="text-error underline">คุณไม่สามารถใช้สิทธิ์เรียกร้องสินไหม</p> : "565555"}
+           {mass === true ? <p className="underline">** มีสิทธิ์ใช้บริการเรียกร้องสินไหม **</p> : mass === false ? <p className="text-error underline">** ไม่มีสิทธิ์ใช้บริการเรียกร้องสินไหม **</p> : <span className="loading loading-spinner text-error size-10 "></span>}
           
            </b>
           </p>
-          <p className="text-xl text-center">ประเภท: {illnessType ?
-            illnessType.Result.map((ill , index) => 
-            ill.illnesstypecode  ===  patientInfo.IllnessTypeCode ? (
-              <b key={index}>{ill.illnesstypedesc}</b>
-            ) : "") : ""
-         
-          
-          
-          
-          }</p>
-          <p className="text-xl text-center"> วันที่เข้าการรักษา: <b>{patientInfo.VisitDateTime}</b></p>
+      
+                    <div className="rounded-md">
+                    ประเภทกรมธรรม์ : {policyTypeValue === "IB" ? "ประกันรายบุคคล" : "ประกันกลุ่ม"}
+                    </div>
+                    <div className="rounded-md">
+                    ประเภทรักษา : {illnessType ?
+            illnessType.Result.map((ill) => 
+            ill.illnesstypecode  ===  patientInfo.IllnessTypeCode ? ( <>
+             {ill.illnesstypedesc} </>
+            ) : "") : ""}
+                    </div>
+                    <div className="rounded-md">
+                    การผ่าตัด : {surgeryTypeValue === "N" ? "ไม่มีการผ่าตัด" : "มีการผ่าตัด"}
+                    </div>
+                    <div className="rounded-md">
+                    วันที่เข้าการรักษา : {patientInfo.VisitDateTime}
+                    </div>
+                    {selectedValue ?
+                    <div className="rounded-md">
+                    รักษาแบบต่อเนื่อง : {selectedValue}
+                    </div>
+                    : "" }
+                    
+
         <div className="flex justify-center mt-4">   
 
           {mass ? (mass === true ? (
 
 
 
- ((patientInfo.IllnessTypeCode === "ER" || patientInfo.IllnessTypeCode === "ACC") ? (
-<div className="rounded-md">
-<div
-  className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 ml-2"
-  onClick={() =>
-    confirmButton(
-      `${result.Result.InsuranceData.RefId} | ${result.Result.InsuranceData.TransactionNo}`
-    )
-  }
->
-  {/* ลงทะเบียนใช้สิทธิ์ */} ต่อเนื่อง
-</div>
-</div>
-) : (
+ 
+  (patientInfo.IllnessTypeCode === "ER" || patientInfo.IllnessTypeCode === "ACC") ? (
+ succFurtherClaim === true ? 
   <div className="rounded-md">
   <div
     className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 ml-2"
@@ -921,193 +954,9 @@ export default function chackData() {
     ลงทะเบียนใช้สิทธิ์
   </div>
   </div> 
-))
-
-
-          ) : (
-            <div className="rounded-md">
-            <div
-              className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 ml-2"
-              onClick={handleButtonClick}
-            >
-              Print
-            </div>
-        </div>
-          )) : ""}
-
-{/* 
-{massSucc ? (massSucc === true ? (
-
-          ) : (
-""
-                      )) : ""} */}
-
-
-
-         </div>
-        </div>
-      </div>
-
-      {showFormCheckEligibleError === "Error" ? (
-              <div
-                role="alert"
-                className="alert alert-error mt-2 text-base-100"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6 shrink-0 stroke-current"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                <span>{massError}</span>
-              </div>
-            ) : (
-              <>
-              <h1 className="text-2xl mt-2 flex items-center">ผลการตรวจสอบสิทธิ์ ค่ารักษาพยาบาล (HS/ME) 
-              {hS ?(hS === true ? (<b className="underline ml-2">มีสิทธิ์เรียกร้องสินไหม</b>) : (<b className="text-error underline  ml-2">ไม่สามารถใช้สิทธิ์เรียกร้องสินไหม</b>)) : "" } 
-              </h1>
-                <table className="table mt-2">
-                  <thead className="bg-info text-base-100">
-                    <tr>
-                    <th>เลขที่กรมธรรม์</th>
-                    <th>สัญญาเพิ่มเติม</th>
-                      <th>ผลการตรวจสอบ</th>
-                      <th></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {result ? (
-                      result.Result.InsuranceData.CoverageList.map(
-                        (coverage, index) =>
-                            coverage.Type === "ผลประโยชน์ค่ารักษาพยาบาล" ? (
-
-                          coverage.MessageList.map((message, msgIndex) => (
-                            // <tr key={`${index}`}>
-                            <tr key={`${index}-${msgIndex}`}>
-                              <td>{message.PolicyNo}</td>
-                              <td>{message.PlanName}</td>
-                              <td>{message.MessageTh}</td>
-                            </tr>
-                          ))
-                      ) : ""
-                    )) : (
-                      <tr>
-                        <td></td>
-                        <td>
-                          <span className="loading loading-spinner text-error size-10 "></span>
-                        </td>
-                        <td>
-                          <div className="justify-center text-4xl">
-                            Loading....
-                          </div>
-                        </td>
-                        <td></td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-                <div className="grid gap-2 sm:grid-cols-4 text-base-100 bg-info w-full whitespace-normal text-center">
-                  <div className="rounded-md"></div>
-                  <div className="rounded-md"></div>
-                  <div className="rounded-md "></div>
-                  <div className="rounded-md ">&nbsp;</div>
-                </div>
-
-
-
-                <h1 className="text-2xl mt-2 flex items-center">ผลการตรวจสอบสิทธิ์ ค่ารักษาพยาบาล (AI/HB) 
-           {aI ? ((aI||hB) === true ? (<b className="underline ml-2">มีสิทธิ์เรียกร้องสินไหม</b>) : (<b className="text-error underline ml-2">ไม่สามารถใช้สิทธิ์เรียกร้องสินไหม</b>)) : "" } 
-                </h1>
-                <table className="table mt-2">
-                  <thead className="bg-info text-base-100">
-                    <tr>
-                    <th>เลขที่กรมธรรม์</th>
-                    <th>สัญญาเพิ่มเติม</th>
-                      <th>ผลการตรวจสอบ</th>
-                      <th></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {result ? (
-                      result.Result.InsuranceData.CoverageList.map(
-                        (coverage, index) =>
-                            (coverage.Type === "ผลประโยชน์ค่าชดเชย"||coverage.Type === "ผลประโยชน์ค่าชดเชยนอนรพ") ? (
-
-                          coverage.MessageList.map((message, msgIndex) => (
-                            // <tr key={`${index}`}>
-                            <tr key={`${index}-${msgIndex}`}>
-                              <td>{message.PolicyNo}</td>
-                              <td>{message.PlanName}</td>
-                              <td>{message.MessageTh}</td>
-                            </tr>
-                          ))
-                      ) : ""
-                    )) : (
-                      <tr>
-                        <td></td>
-                        <td>
-                          <span className="loading loading-spinner text-error size-10 "></span>
-                        </td>
-                        <td>
-                          <div className="justify-center text-4xl">
-                            Loading....
-                          </div>
-                        </td>
-                        <td></td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-                <div className="grid gap-2 sm:grid-cols-4 text-base-100 bg-info w-full whitespace-normal text-center">
-                  <div className="rounded-md"></div>
-                  <div className="rounded-md"></div>
-                  <div className="rounded-md "></div>
-                  <div className="rounded-md ">&nbsp;</div>
-                </div>
-              </>
-            )}
-          </form>
-        </div>
-      </dialog>
-
-      <dialog id="my_modal_2" className="modal text-xl">
-        <div className="modal-box">
-            <form method="dialog">
-      <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
-    </form>
-    {showFormFurtherError === "Error" ? (
-              <div
-                role="alert"
-                className="alert alert-error mt-2 text-base-100"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6 shrink-0 stroke-current"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                <span>{massFurtherError}</span>
-              </div>
-            ) : (
-    <form  onSubmit={gourl}> 
-            <h3 className="font-bold text-2xl text-accent">ข้อมูลการส่งเคลม</h3>
-            <hr />
-            <div className="flex pt-3 text-xl">
-              <div role="tablist" className="tabs-bordered">
+  : (
+  furtherClaim ? (<div className="rounded-md w-full">
+                  <div role="tablist" className="tabs-bordered">
                 <input
                   type="radio"
                   name="my_tabs_1"
@@ -1149,23 +998,180 @@ export default function chackData() {
                   </label>
                 </div>
               </div>
-            </div>
-            <div className="modal-action">
-              {/* <Link
-                                    href={`/aia/opd/opdDischarge`}
-                                  >  */}
-              <button
-                className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100"
-                //  onClick={gourl}
+              <div className="flex justify-end p-4">
+              <div
+                className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 "
+                  onClick={gourl}
               >
                 ยืนยัน
-              </button>
-              {/* </Link>  */}
+              </div>
+              </div>
+  </div>) : ( //furtherClaim===""
+
+!selectedValue ? load === true ? <span className="loading loading-spinner text-error size-10 "></span> :
+(<div className="rounded-md">
+<div
+  className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 ml-2"
+  onClick={() =>
+    confirmButton(
+      `${result.Result.InsuranceData.RefId} | ${result.Result.InsuranceData.TransactionNo}`
+    )
+  }
+>
+  {/* ต่อเนื่อง */}
+   ลงทะเบียนใช้สิทธิ์(ต่อเนื่อง)
+</div>
+
+</div>) : ("รอ")
+
+  ) )
+
+          ) : (
+  <div className="rounded-md">
+  <div
+    className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 ml-2"
+    onClick={handleButtonClick}
+  >
+    ลงทะเบียนใช้สิทธิ์
+  </div>
+  </div> 
+)
+
+ 
+          ) : (
+            <div className="rounded-md">
+            <div
+              className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 ml-2"
+              onClick={PrintButton}
+            >
+              Print
             </div>
+        </div>
+          )
+          ) : ""}
+
+         </div>
+        </div>
+      </div>
+
+      {((showFormCheckEligibleError)||(showFormFurtherError)) === "Error" ? (
+              <div
+                role="alert"
+                className="alert alert-error mt-2 text-base-100"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6 shrink-0 stroke-current"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                <span>{(massError)||(massFurtherError)}</span>
+              </div>
+            ) : (
+              <>
+              <h1 className="text-2xl mt-2 flex items-center">ผลการตรวจสอบสิทธิ์ ค่ารักษาพยาบาล (HS/ME) 
+              {hS === true ? <b className="underline ml-2">มีสิทธิ์เรียกร้องสินไหม</b> :  hS === false ? <b className="text-error underline  ml-2">ไม่สามารถใช้สิทธิ์เรียกร้องสินไหม</b> : "" } 
+              </h1>
+                <table className="table mt-2">
+                  <thead className="bg-info text-base-100">
+                    <tr>
+                    <th>เลขที่กรมธรรม์</th>
+                    <th>สัญญาเพิ่มเติม</th>
+                      <th>ผลการตรวจสอบ</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {result ? (
+                      result.Result.InsuranceData.CoverageList.map(
+                        (coverage, index) =>
+                            coverage.Type === "ผลประโยชน์ค่ารักษาพยาบาล" ? (
+
+                          coverage.MessageList.map((message, msgIndex) => (
+                            <tr key={`${index}-${msgIndex}`}>
+                              <td>{message.PolicyNo}</td>
+                              <td>{message.PlanName}</td>
+                              <td>{message.MessageTh}</td>
+                            </tr>
+                          ))
+                      ) : ""
+                    )) : (
+                      <tr>
+                        <td></td>
+                        <td>
+                          <div className="justify-center text-4xl">
+                              <span className="loading loading-bars loading-lg"></span>
+                          </div>
+                        </td>
+                        <td></td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+                <div className="grid gap-2 sm:grid-cols-4 text-base-100 bg-info w-full whitespace-normal text-center">
+                  <div className="rounded-md"></div>
+                  <div className="rounded-md"></div>
+                  <div className="rounded-md ">&nbsp;</div>
+                </div>
+
+
+
+                <h1 className="text-2xl mt-2 flex items-center">ผลการตรวจสอบสิทธิ์ ค่ารักษาพยาบาล (AI/HB) 
+           {(aI||hB) === true ? <b className="underline ml-2">มีสิทธิ์เรียกร้องสินไหม</b> : (aI||hB) === false ? <b className="text-error underline ml-2">ไม่สามารถใช้สิทธิ์เรียกร้องสินไหม</b> : "" } 
+           
+                </h1>
+                <table className="table mt-2">
+                  <thead className="bg-info text-base-100">
+                    <tr>
+                    <th>เลขที่กรมธรรม์</th>
+                    <th>สัญญาเพิ่มเติม</th>
+                      <th>ผลการตรวจสอบ</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {result ? (
+                      result.Result.InsuranceData.CoverageList.map(
+                        (coverage, index) =>
+                            (coverage.Type === "ผลประโยชน์ค่าชดเชย"||coverage.Type === "ผลประโยชน์ค่าชดเชยนอนรพ") ? (
+
+                          coverage.MessageList.map((message, msgIndex) => (
+                            <tr key={`${index}-${msgIndex}`}>
+                              <td>{message.PolicyNo}</td>
+                              <td>{message.PlanName}</td>
+                              <td>{message.MessageTh}</td>
+                            </tr>
+                          ))
+                      ) : ""
+                    )) : (
+                      <tr>
+                        <td></td>
+                        <td>
+                          <div className="justify-center text-4xl">
+                            <span className="loading loading-bars loading-lg"></span>
+                          </div>
+                        </td>
+                        <td></td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+                <div className="grid gap-2 sm:grid-cols-4 text-base-100 bg-info w-full whitespace-normal text-center">
+                  <div className="rounded-md"></div>
+                  <div className="rounded-md"></div>
+                  <div className="rounded-md ">&nbsp;</div>
+                </div>
+              </>
+            )}
           </form>
-          )}
         </div>
       </dialog>
+
     </>
   );
 }
