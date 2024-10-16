@@ -199,6 +199,7 @@ export default function chackData() {
       )
       .then((response) => {
         setBillList(response.data);
+        console.log(response.data);
       })
       .catch((err) => {
         // console.error("Error", err)
@@ -372,7 +373,7 @@ export default function chackData() {
         console.log(response.data);
 
         if (response.data.HTTPStatus.statusCode === 200) {
-         // console.log("Succ")
+         // console.log(response.data)
           setStatusNew((prevData) => ({
             ...prevData,
             InsurerCode: response.data.Result.InsuranceData.InsurerCode,
@@ -788,7 +789,7 @@ export default function chackData() {
     if (selectedIdType === "NATIONAL_ID" && numberValue) {
       PatientInfo = {
         InsurerCode: InsuranceCode,
-        // IdType: selectedIdType,
+         IdType: selectedIdType,
         InvoiceNumber: "",
         VN: numberValue,
         PID: ReDux.Patient.Data.PID,
@@ -799,8 +800,11 @@ export default function chackData() {
         StatusClaimCode: statusValue,
       };
     } else if (selectedIdType === "Invoice" && numberValue) {
+
     } else if (fromValue && toValue) {
+
     } else if (statusValue) {
+
     }
 
     console.log(PatientInfo);
@@ -814,7 +818,7 @@ export default function chackData() {
         )
         .then((response) => {
           setPost(response.data);
-          console.log(response.data)
+          //console.log(response.data)
           setShowFormError();
         })
         .catch((error) => {
@@ -1034,8 +1038,8 @@ export default function chackData() {
                         <a className="bg-success text-base-100 rounded-full px-3 py-2">
                           {statusNew
                             ? bill.TransactionNo === statusNew.TransactionNo
-                              ? statusNew.ClaimStatusDesc
-                              : bill.ClaimStatusDesc_TH 
+                              ? statusNew.ClaimStatus                           
+                              : bill.ClaimStatusDesc 
                             : "Loading..."}
                         </a>
                       </td>
@@ -1069,6 +1073,9 @@ export default function chackData() {
                             <IoDocumentText />
                           </h1>
                         </div>
+                        { bill.RefId ? (
+                            (bill.ClaimStatusDesc !== "Cancelled" && bill.ClaimStatusDesc !== "Reversed") ? (
+                        
                         <div
                                   className="tooltip ml-4"
                                   data-tip="ยกเลิกการเคลม"
@@ -1084,6 +1091,8 @@ export default function chackData() {
                                     <MdCancel />
                                   </h1>
                                 </div>
+                              
+                            ) :"" ):""}
 
                         <div
                                   className="tooltip ml-4"

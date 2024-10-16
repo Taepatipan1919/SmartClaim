@@ -935,7 +935,7 @@ export default function chackData() {
             ) : (
               <>
               <h1 className="text-2xl mt-2 flex items-center">ผลการตรวจสอบสิทธิ์ ค่ารักษาพยาบาล (HS/ME) 
-              {hS ?(hS === true ? <p className="text-success ml-2">มีสิทธิ์เรียกร้องสินไหม</p> : <p className="text-error ml-2">ไม่สามารถใช้สิทธิ์เรียกร้องสินไหม</p>) : "" } 
+              {hS ?(hS === true ? <b className="text-success ml-2">มีสิทธิ์เรียกร้องสินไหม</b> : <b className="text-error ml-2">ไม่สามารถใช้สิทธิ์เรียกร้องสินไหม</b>) : "" } 
               </h1>
                 <table className="table mt-2">
                   <thead className="bg-info text-base-100">
@@ -986,7 +986,7 @@ export default function chackData() {
 
 
                 <h1 className="text-2xl mt-2 flex items-center">ผลการตรวจสอบสิทธิ์ ค่ารักษาพยาบาล (AI/HB) 
-           {aI ? ((aI||hB) === true ? (<p className="text-success ml-2">มีสิทธิ์เรียกร้องสินไหม</p>) : (<p className="text-error ml-2">ไม่สามารถใช้สิทธิ์เรียกร้องสินไหม</p>)) : "" } 
+           {aI ? ((aI||hB) === true ? (<b className="text-success ml-2">มีสิทธิ์เรียกร้องสินไหม</b>) : (<b className="text-error ml-2">ไม่สามารถใช้สิทธิ์เรียกร้องสินไหม</b>)) : "" } 
                 </h1>
                 <table className="table mt-2">
                   <thead className="bg-info text-base-100">

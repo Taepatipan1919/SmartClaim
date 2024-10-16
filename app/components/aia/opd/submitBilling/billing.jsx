@@ -388,6 +388,7 @@ export default function chackData() {
     let data = {};
     let dateToValue = "";
     let dateFromValue = "";
+    let PatientInfo ="";
 
     if (fromValue && toValue) {
       dateFromValue = dayjs(fromValue.$d).format("YYYY-MM-DD");
@@ -395,7 +396,7 @@ export default function chackData() {
     }
 
     if (selectedIdType === "NATIONAL_ID" && numberValue) {
-      const PatientInfo = {
+      PatientInfo = {
         InsurerCode: InsuranceCode,
         IdType: selectedIdType,
         InvoiceNumber: "",
@@ -409,57 +410,65 @@ export default function chackData() {
         RefId: "",
         TransactionNo: "",
       };
-      setPatientInfoDetail(PatientInfo)
-     // console.log(PatientInfo);
-
-      axios
-        .post(
-          process.env.NEXT_PUBLIC_URL_SV +
-            process.env.NEXT_PUBLIC_URL_SearchTransection,
-          { PatientInfo }
-        )
-        .then((response) => {
-          setPost(response.data);
-         // console.log(response.data);
-          setShowFormError();
-        })
-        .catch((error) => {
-          // console.error("Error", error)
-          console.log(error);
-
-          setShowFormError("Error");
-          setMassError(error.message);
-        });
     } else if (selectedIdType === "Invoice" && numberValue) {
-      data = {
-        Insurerid: InsuranceCode,
+      PatientInfo = {
+        InsurerCode: InsuranceCode,
         IdType: selectedIdType,
         InvoiceNumber: numberValue,
         VN: "",
         PID: ReDux.Patient.Data.PID,
         PassportNumber: ReDux.Patient.Data.PassportNumber,
         HN: ReDux.Patient.Data.HN,
-        DateVisitFrom: dateFromValue,
-        ToValue: dateToValue,
+        VisitDatefrom: dateFromValue,
+        VisitDateto: dateToValue,
+        StatusClaimCode: "",
+        RefId: "",
+        TransactionNo: "",
       };
     } else if (fromValue && toValue) {
-      data = {
+      PatientInfo = {
+        InsurerCode: InsuranceCode,
         PID: ReDux.Patient.Data.PID,
         PassportNumber: ReDux.Patient.Data.PassportNumber,
         HN: ReDux.Patient.Data.HN,
         Insurerid: InsuranceCode,
-        Status: "09",
+        StatusClaimCode: "09",
         IdType: "",
         VN: "",
         InvoiceNumber: "",
         DateVisitFrom: dateFromValue,
-        ToValue: dateToValue,
+        VisitDateto: dateToValue,
       };
+      
     }
+    setPatientInfoDetail(PatientInfo)
+   console.log(PatientInfo);
+
+     axios
+       .post(
+         process.env.NEXT_PUBLIC_URL_SV +
+           process.env.NEXT_PUBLIC_URL_SearchTransection,
+         { PatientInfo }
+       )
+       .then((response) => {
+         setPost(response.data);
+        // console.log(response.data);
+         setShowFormError();
+       })
+       .catch((error) => {
+         // console.error("Error", error)
+         console.log(error);
+
+         setShowFormError("Error");
+         setMassError(error.message);
+       });
+
+
     // if(Object.keys(data).length === 0){
     //   setShowFormError("Error");
     //   setMassError("กรุณากรอก ข้อความที่จะค้นหาให้ครบ");
-    // }else{
+    // }
+    // else{
     //   setShowFormError()
     // console.log(data)
 
@@ -950,6 +959,7 @@ export default function chackData() {
               {post ? (
                 post.HTTPStatus.statusCode === 200 ? (
                   post.Result.TransactionClaimInfo.map((bill, index) => (
+                    (bill.VisitDate||bill.HN) !== "" && (
                     <tr className="hover text-center" key={index}>
                       <th>{index + 1}</th>
                       <td>{bill.VisitDateTime}</td>
@@ -964,7 +974,7 @@ export default function chackData() {
                           {statusNew
                             ? bill.TransactionNo === statusNew.TransactionNo
                             ? statusNew.ClaimStatusDesc
-                            : bill.ClaimStatusDesc_TH 
+                            : bill.ClaimStatusDesc 
                             : "Loading..."}
                         </a>
                       </td>
@@ -974,7 +984,7 @@ export default function chackData() {
                           : ""}
                       </th>
                       <td>
-                        <div className="tooltip" data-tip="Refresh">
+                        <div className="tooltip" data-tip="รีเฟรช">
                           <h1
                             className="text-primary text-2xl"
                             onClick={() =>
@@ -986,7 +996,7 @@ export default function chackData() {
                             <LuRefreshCw />
                           </h1>
                         </div>
-                        <div className="tooltip ml-4" data-tip="Detail">
+                        <div className="tooltip ml-4" data-tip="ข้อมูลส่งเคลม">
                           <h1
                             className="text-primary text-2xl"
                             onClick={() =>
@@ -1000,11 +1010,11 @@ export default function chackData() {
                         </div>
                         {statusNew ? (
                           bill.RefId ? (
-                            (bill.ClaimStatusDesc === "Approve" || bill.ClaimStatusDesc === "Received") ? (
+                            (bill.ClaimStatusDesc !== "Cancelled" && bill.ClaimStatusDesc !== "Reversed") ? (
                               <>
                                 <div
                                   className="tooltip ml-4"
-                                  data-tip="Cancel Claim"
+                                  data-tip="ยกเลิกการเคลม"
                                 >
                                   <h1
                                     className="text-primary text-2xl"
@@ -1055,8 +1065,9 @@ export default function chackData() {
                         )}
                       </td>
                     </tr>
-                  ))
-                ) : (
+                  )
+                ))
+              ) : (
                   <tr>
                     <th></th>
                     <td></td>
