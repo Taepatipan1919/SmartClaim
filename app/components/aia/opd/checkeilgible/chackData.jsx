@@ -436,13 +436,13 @@ export default function chackData() {
     };
     console.log(PatientInfo);
     setPatientInfo(PatientInfo)
-    // try {
+     try {
       document.getElementById("my_modal_3").showModal();
 
       const response = await axios.post(
-       `http://localhost:3000/api/v1/check-eligible/checkeligible/`,
-        // process.env.NEXT_PUBLIC_URL_PD +
-        //   process.env.NEXT_PUBLIC_URL_checkeligible,
+    //   `http://localhost:3000/api/v1/check-eligible/checkeligible/`,
+         process.env.NEXT_PUBLIC_URL_PD +
+           process.env.NEXT_PUBLIC_URL_checkeligible,
         {
           PatientInfo,
         }
@@ -498,20 +498,20 @@ export default function chackData() {
         setShowFormCheckEligibleError("Error");
         setMassError(response.data.HTTPStatus.message);
       }
-    // } catch (error) {
-    //   console.log(error);
-    //   if (error.status !== 500) {
-    //     const ErrorMass = error.config.url;
-    //     const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
-    //     setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
-    //     setShowFormCheckEligibleError("Error");
-    //   } else {
-    //     setShowFormCheckEligibleError("Error");
-    //     setMassError(error.response.data.HTTPStatus.message);
-    //   }
+    } catch (error) {
+      console.log(error);
+      if (error.status !== 500) {
+        const ErrorMass = error.config.url;
+        const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+        setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
+        setShowFormCheckEligibleError("Error");
+      } else {
+        setShowFormCheckEligibleError("Error");
+        setMassError(error.response.data.HTTPStatus.message);
+      }
 
 
-    // }
+     }
   };
 
 
