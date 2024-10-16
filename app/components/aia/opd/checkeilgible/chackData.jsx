@@ -39,6 +39,8 @@ export default function chackData() {
   const [surgeryType, setSurgeryType] = useState();
   const [showForm, setShowForm] = useState(false);
   const [mass, setMass] = useState();
+  const [massSucc, setMassSucc] = useState(false);
+  console.log(mass)
   const [hS, setHS ] = useState();
   const [hB, setHB ] = useState();
   const [aI, setAI ] = useState();
@@ -77,6 +79,7 @@ export default function chackData() {
     // window.open('/aia/opd/checkeligible/pdfPage', '_blank');
   };
   const confirmButton = (data) => {
+    setFurtherClaim();
     setShowFormFurtherError();
     setMassFurtherError();
    // console.log(ReDux)
@@ -104,6 +107,9 @@ export default function chackData() {
       PolicyTypeCode: policyTypeValue,
     };
      console.log(PatientInfo);
+
+
+     
     axios
       .post(
         process.env.NEXT_PUBLIC_URL_PD +
@@ -114,14 +120,15 @@ export default function chackData() {
       )
       .then((response) => {
         document.getElementById("my_modal_2").showModal();
-        if(response.data.HTTPStatus.statusCode === 200){
+        console.log(response.data)
+        // if(response.data.HTTPStatus.statusCode === 200){
           setFurtherClaim(response.data);
        //   console.log(response.data);
    
-        }else{
-          setMassFurtherError(response.data.HTTPStatus.message);
-          setShowFormFurtherError("Error");
-        }
+        // }else{
+         // setMassFurtherError(response.data.HTTPStatus.message);
+         // setShowFormFurtherError("Error");
+        // }
 
       })
       .catch((error) => {
@@ -144,6 +151,7 @@ export default function chackData() {
 
   const gourl = (event) => {
     event.preventDefault();
+    console.log(accidentDate)
    // console.log("5555")
     if (selectedValue) {
       const [FurtherClaimNo, FurtherClaimId] = selectedValue.split(" | ");
@@ -216,7 +224,7 @@ export default function chackData() {
       );
     }
 
-     router.push("/aia/opd/eligible");
+    //  router.push("/aia/opd/eligible");
   };
 
   const policy = (event) => {
@@ -463,7 +471,10 @@ export default function chackData() {
             // const HSBypass = response.data.Result.InsuranceData.CoverageList.some(coverage => coverage.Type === "ผลประโยชน์ค่ารักษาพยาบาลที่ต้องตรวจสอบความคุ้มครองโดยเจ้าหน้าที่ AIA" && coverage.Status === true);
             if (hasTrueStatus) {
               setMass(true);
+            }else{
+              setMass(false)
             }
+            
             if(HS){
               setHS(true);
             
@@ -852,11 +863,10 @@ export default function chackData() {
             <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
               ✕
             </button>
-
                 <h1 className="text-accent text-3xl text-center">ผลการตรวจสอบสิทธิ์</h1>
 
                 <div className="flex  w-full mt-4">
-        <div className="p-4 border rounded-md bg-white w-4/6 shadow-md">
+        <div className="p-4  rounded-md bg-white w-4/6 shadow-md">
           <h2 className="text-xl font-semibold mb-2">ข้อมูลส่วนตัว</h2>
           <p className="text-xl">รหัสประจำตัวประชาชน: <b>{patientInfo.PID}</b></p>
           <p className="text-xl">HN: <b>{patientInfo.HN}</b></p>
@@ -864,11 +874,12 @@ export default function chackData() {
           <p className="text-xl">วันเกิด: <b>{patientInfo.DateOfBirth}</b></p>
         </div>
         
-        <div className="p-4 border rounded-md bg-white w-full shadow-md ml-2">
+        <div className="p-4  rounded-md bg-white w-2/6 shadow-md ml-2">
           <h2 className="text-xl font-semibold mb-2 text-center">จากการตรวจสอบเบื้องต้น</h2>
           <p className="text-xl text-center">
-            <b className="text-error"> 
-           {mass === true ? <p className="text-success">มีสิทธิ์ใช้บริการเรียกร้องสินไหม</p> : <p className="text-error">คุณไม่สามารถใช้สิทธิ์เรียกร้องสินไหม</p>}
+            <b className=""> 
+           {mass === true ? <p className="underline">มีสิทธิ์ใช้บริการเรียกร้องสินไหม</p> : mass === false ? <p className="text-error underline">คุณไม่สามารถใช้สิทธิ์เรียกร้องสินไหม</p> : "565555"}
+          
            </b>
           </p>
           <p className="text-xl text-center">ประเภท: {illnessType ?
@@ -883,31 +894,56 @@ export default function chackData() {
           }</p>
           <p className="text-xl text-center"> วันที่เข้าการรักษา: <b>{patientInfo.VisitDateTime}</b></p>
         <div className="flex justify-center mt-4">   
-          <div className="rounded-md">
-          {mass ? (mass === true ? (<>
-            <div>
-                              <button
-                                className="btn btn-success text-base-100 hover:text-success hover:bg-base-100"
-                                onClick={() =>
-                                  confirmButton(
-                                    `${result.Result.InsuranceData.RefId} | ${result.Result.InsuranceData.TransactionNo}`
-                                  )
-                                }
-                              >
-                                ลงทะเบียนใช้สิทธิ์
-                              </button>
-                          </div>
-                          </>) : "") : ""}
 
-          </div>
-          <div className="rounded-md">
-              <div
-                className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 ml-2"
-                onClick={handleButtonClick}
-              >
-                Print
-              </div>
-          </div>
+          {mass ? (mass === true ? (
+
+
+
+ ((patientInfo.IllnessTypeCode === "ER" || patientInfo.IllnessTypeCode === "ACC") ? (
+<div className="rounded-md">
+<div
+  className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 ml-2"
+  onClick={() =>
+    confirmButton(
+      `${result.Result.InsuranceData.RefId} | ${result.Result.InsuranceData.TransactionNo}`
+    )
+  }
+>
+  {/* ลงทะเบียนใช้สิทธิ์ */} ต่อเนื่อง
+</div>
+</div>
+) : (
+  <div className="rounded-md">
+  <div
+    className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 ml-2"
+    onClick={handleButtonClick}
+  >
+    ลงทะเบียนใช้สิทธิ์
+  </div>
+  </div> 
+))
+
+
+          ) : (
+            <div className="rounded-md">
+            <div
+              className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 ml-2"
+              onClick={handleButtonClick}
+            >
+              Print
+            </div>
+        </div>
+          )) : ""}
+
+{/* 
+{massSucc ? (massSucc === true ? (
+
+          ) : (
+""
+                      )) : ""} */}
+
+
+
          </div>
         </div>
       </div>
@@ -935,7 +971,7 @@ export default function chackData() {
             ) : (
               <>
               <h1 className="text-2xl mt-2 flex items-center">ผลการตรวจสอบสิทธิ์ ค่ารักษาพยาบาล (HS/ME) 
-              {hS ?(hS === true ? <b className="text-success ml-2">มีสิทธิ์เรียกร้องสินไหม</b> : <b className="text-error ml-2">ไม่สามารถใช้สิทธิ์เรียกร้องสินไหม</b>) : "" } 
+              {hS ?(hS === true ? (<b className="underline ml-2">มีสิทธิ์เรียกร้องสินไหม</b>) : (<b className="text-error underline  ml-2">ไม่สามารถใช้สิทธิ์เรียกร้องสินไหม</b>)) : "" } 
               </h1>
                 <table className="table mt-2">
                   <thead className="bg-info text-base-100">
@@ -943,6 +979,7 @@ export default function chackData() {
                     <th>เลขที่กรมธรรม์</th>
                     <th>สัญญาเพิ่มเติม</th>
                       <th>ผลการตรวจสอบ</th>
+                      <th></th>
                     </tr>
                   </thead>
                   <tbody>
@@ -986,7 +1023,7 @@ export default function chackData() {
 
 
                 <h1 className="text-2xl mt-2 flex items-center">ผลการตรวจสอบสิทธิ์ ค่ารักษาพยาบาล (AI/HB) 
-           {aI ? ((aI||hB) === true ? (<b className="text-success ml-2">มีสิทธิ์เรียกร้องสินไหม</b>) : (<b className="text-error ml-2">ไม่สามารถใช้สิทธิ์เรียกร้องสินไหม</b>)) : "" } 
+           {aI ? ((aI||hB) === true ? (<b className="underline ml-2">มีสิทธิ์เรียกร้องสินไหม</b>) : (<b className="text-error underline ml-2">ไม่สามารถใช้สิทธิ์เรียกร้องสินไหม</b>)) : "" } 
                 </h1>
                 <table className="table mt-2">
                   <thead className="bg-info text-base-100">
@@ -994,6 +1031,7 @@ export default function chackData() {
                     <th>เลขที่กรมธรรม์</th>
                     <th>สัญญาเพิ่มเติม</th>
                       <th>ผลการตรวจสอบ</th>
+                      <th></th>
                     </tr>
                   </thead>
                   <tbody>

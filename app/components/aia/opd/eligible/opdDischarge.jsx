@@ -1578,7 +1578,7 @@ export default function Page({ data }) {
             {/* //////////////////////////////////////////////////////////////////////////// */}
             {visit ? (
               <div className="container mx-auto justify-center border-solid w-4/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
-                <h1 className="font-black text-accent text-3xl ">Visit {PatientInfoData.PatientInfo.Runningdocument}</h1>
+                <h1 className="font-black text-accent text-3xl ">Visit</h1>
                 <div className="grid gap-2 sm:grid-cols-4 w-full mt-2">
                   <div className="rounded-md">
                     <div className="flex items-center ">
@@ -2123,6 +2123,7 @@ export default function Page({ data }) {
                           </TableRow>
                         </TableHead>
                         <TableBody>
+                 
                           {causeOfInjuryDetails
                             ? causeOfInjuryDetails.CauseOfInjuryDetail.map(
                                 (cause, index) =>

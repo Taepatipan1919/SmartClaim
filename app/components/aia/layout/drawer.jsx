@@ -142,6 +142,7 @@ export default function Drawer() {
                     open && "hidden"
                   }`}
                 >
+                  
                   {menuitem.icon ? menuitem.icon : <AiFillHome />}
                 </button>
 
@@ -157,6 +158,7 @@ export default function Drawer() {
                   <div className="text-right">
                     {menuitem.submenu ? (
                       openMenu ? (
+                        
                         <MdKeyboardArrowUp />
                       ) : (
                         <MdKeyboardArrowDown />
@@ -174,6 +176,7 @@ export default function Drawer() {
                           {/* เมนู ย่อย */}
                           <h1 className="block text-primary rounded-lg m-0.5 mt-1 px-3 hover:text-base-100 hover:bg-secondary">
                             <div className="flex items-center ">
+                              
                               <IoArrowForwardCircleSharp />
                               &nbsp;{subItem.label}
                             </div>
