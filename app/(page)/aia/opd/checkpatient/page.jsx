@@ -1,6 +1,6 @@
 "use client";
 import React, { useContext, useEffect } from "react";
-import SelectPatient from "../../../../components/aia/opd/chackpatient/selectPatient";
+import SelectPatient from "../../../../components/aia/opd/checkpatient/selectPatient";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { save } from "../../../../store/counterSlice";

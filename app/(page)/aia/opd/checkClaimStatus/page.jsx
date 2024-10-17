@@ -1,10 +1,10 @@
 "use client";
 import { useState, createContext } from "react";
 import { useSelector } from "react-redux";
-import ChackData from "../../../../components/aia/opd/checkeilgible/chackData";
+import CheckData from "../../../../components/aia/opd/checkeilgible/checkData";
 import CheckClaimStatus from "../../../../components/aia/opd/checkClaimStatus/checkClaimStatus";
 import SubmitClaimStatus from "../../../../components/aia/opd/checkClaimStatus/submitClaimStatus";
-import SelectPatient from "../../../../components/aia/opd/chackpatient/selectPatient";
+import SelectPatient from "../../../../components/aia/opd/checkpatient/selectPatient";
 export default function Home() {
   const DataTran  = useSelector((state) => ({ ...state }));
 //console.log(DataTran)

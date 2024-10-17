@@ -1,8 +1,8 @@
 "use client";
 import { useState, createContext } from "react";
 import { useSelector } from "react-redux";
-import ChackData from "../../../../components/aia/opd/checkeilgible/chackData";
-import SelectPatient from "../../../../components/aia/opd/chackpatient/selectPatient";
+import CheckData from "../../../../components/aia/opd/checkeilgible/checkData";
+import SelectPatient from "../../../../components/aia/opd/checkpatient/selectPatient";
 
 export default function Home() {
   const DataTran  = useSelector((state) => ({ ...state }));
@@ -27,7 +27,7 @@ export default function Home() {
     <li><a className="text-error underline ">ตรวจสอบสิทธิ์</a></li>
   </ul>
 </div>
-    <ChackData />
+    <CheckData />
     {/* value : {DataTran.DataTran.value}
       <hr />
       VN : {DataTran.DataTran.Data.VN}

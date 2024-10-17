@@ -23,7 +23,7 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { FaCloudUploadAlt } from "react-icons/fa";
 import DetailDischarge from "../submitBilling/detailDischarge";
 
-export default function chackData() {
+export default function checkData() {
   const InsuranceCode = 13;
   const ReDux = useSelector((state) => ({ ...state }));
   // console.log(ReDux)

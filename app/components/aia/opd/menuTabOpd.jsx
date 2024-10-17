@@ -11,7 +11,7 @@ function MenuTabopd() {
       <ul className="menu menu-horizontal border-solid w-11/12 m-auto p-4">
         <li>
           <Link
-            href={`/aia/opd/chackpatient`}
+            href={`/aia/opd/checkpatient`}
             className="btn bg-white text-accent w-full"
           >
             ข้อมูลผู้ป่วย

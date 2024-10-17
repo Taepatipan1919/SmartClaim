@@ -19,7 +19,7 @@ import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
-export default function chackData() {
+export default function checkData() {
   const error = {
     response: {
       data: {
@@ -43,7 +43,7 @@ export default function chackData() {
   const [hS, setHS ] = useState();
   const [hB, setHB ] = useState();
   const [aI, setAI ] = useState();
-
+  const [randomNumber, setRandomNumber] = useState('');
   const [result, setResult] = useState();
   const [detailVN, setDetailVN] = useState();
   const [fromValue, setFromValue] = useState(null);
@@ -73,31 +73,84 @@ export default function chackData() {
   const [selectedValue, setSelectedValue] = useState("");
   const [furtherClaimNo, setFurtherClaimNo] = useState("");
   const [furtherClaimId, setFurtherClaimId] = useState("");
+
+
+
+
+  useEffect(() => {
+    setRandomNumber();
+    if(!ReDux.DataTran.Data.Runningdocument){
+    const generateRandomFiveDigitNumber = () => {
+      return String(Math.floor(Math.random() * 100000)).padStart(5, '0');
+    };
+    const newRandomNumber = generateRandomFiveDigitNumber();
+    setRandomNumber(newRandomNumber);
+    console.log(newRandomNumber);
+  }else{
+    setRandomNumber(ReDux.DataTran.Data.Runningdocument)
+  }
+
+  }, []);
   const handleSelectChange = (event) => {
     setSelectedValue(event.target.value);
   };
-  const handleButtonClick = () => {
+  const handleButtonClick = (data) => {
     //บันทึก Create
-    // const PatientInfo = {
-    //   RefId: refIdL,
-    //   TransactionNo: transactionNoL,
-    //   VN: detailVN,
-    //   InsurerCode: InsurerCode,
-    //   ServiceSettingCode: statusValue,
-    //   IllnessTypeCode: illnessTypeValue,
-    //   SurgeryTypeCode: surgeryTypeValue,
-    //   PolicyTypeCode: policyTypeValue,
-    //   AccidentDate: accidentDate,
-    //   VisitDateTime: visitDateTime,
-    //   FurtherClaimNo: furtherClaimNo,
-    //   FurtherClaimId: furtherClaimId,
-    //   Runningdocument : "",
-    // }
-console.log("บันทึก")
+    const [RefId, TransactionNo] = data.split(" | ");
+    setRefIdL(RefId)
+    setTransactionNoL(TransactionNo)
+console.log(RefId)
+console.log(TransactionNo)
+    const PatientInfo = {
+       InsurerCode: InsurerCode, 
+       RefId: RefId,
+       TransactionNo: TransactionNo,
+       PID: ReDux.Patient.Data.PID,
+       HN: ReDux.Patient.Data.HN,
+       GivenNameTH: ReDux.Patient.Data.GivenNameTH,
+       SurnameTH: ReDux.Patient.Data.SurnameTH,
+       DateOfBirth: ReDux.Patient.Data.DateOfBirth,
+       PassportNumber: ReDux.Patient.Data.PassportNumber,
+       IdType: ReDux.Patient.Data.IdType,
+       VN: detailVN,
+       VisitDateTime: visitDateTime,
+       AccidentDate: accidentDate,
+       PolicyTypeCode: policyTypeValue,
+       ServiceSettingCode: statusValue,
+       IllnessTypeCode: illnessTypeValue,
+       SurgeryTypeCode:  surgeryTypeValue,
+       Runningdocument: randomNumber,
+    }
+    axios
+    .post(
+      process.env.NEXT_PUBLIC_URL_PD +
+        process.env.NEXT_PUBLIC_URL_crateTransaction,
+      {
+          PatientInfo
+      }
+    )
+    .then((response) => {
+console.log(response.data)
+
+    })
+    .catch((error) => {
+      console.log(error);
+      // try {
+      //   const ErrorMass = error.config.url;
+      //   const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+      //   setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
+      //   setShowFormFurtherError("Error");
+      // } catch (error) {
+      //   setMassError(error.response.data.HTTPStatus.message);
+      //   setShowFormFurtherError("Error");
+      // }
+    });
+
 
     window.print();
 
   };
+  
   const PrintButton = () => {
     window.print();
   };
@@ -160,10 +213,10 @@ console.log("บันทึก")
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
           setMassFurtherError(error.code + " - " + error.message + " - " + ErrorMass2);
-          setShowFormFurtherError("Error");
+          setShowFormCheckEligibleError("Error");
         } catch (error) {
           setMassFurtherError(error.response.data.HTTPStatus.message);
-          setShowFormFurtherError("Error");
+          setShowFormCheckEligibleError("Error");
         }
       });
   
@@ -949,7 +1002,9 @@ console.log("บันทึก")
   <div className="rounded-md">
   <div
     className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 ml-2"
-    onClick={handleButtonClick}
+    onClick={() =>handleButtonClick(
+      `${result.Result.InsuranceData.RefId} | ${result.Result.InsuranceData.TransactionNo}`
+    )}
   >
     ลงทะเบียนใช้สิทธิ์
   </div>
@@ -1030,7 +1085,9 @@ console.log("บันทึก")
   <div className="rounded-md">
   <div
     className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 ml-2"
-    onClick={handleButtonClick}
+    onClick={() =>handleButtonClick(
+      `${result.Result.InsuranceData.RefId} | ${result.Result.InsuranceData.TransactionNo}`
+    )}
   >
     ลงทะเบียนใช้สิทธิ์
   </div>

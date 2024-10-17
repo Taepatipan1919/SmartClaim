@@ -26,7 +26,7 @@ import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import { HiDocumentSearch } from "react-icons/hi";
-export default function chackData() {
+export default function checkData() {
   const InsuranceCode = 13;
   const ReDux = useSelector((state) => ({ ...state }));
   // console.log(ReDux)
@@ -1047,8 +1047,8 @@ export default function chackData() {
                 <th>ClaimNo</th>
                 <th>Invoicenumber</th>
                 <th>Status</th>
-                <th>จำนวนวงเงินที่อนุมัติ</th>
-                <th>ยอดส่วนเกิน</th>
+                <th>ApprovedAmount</th>
+                <th>ExcessAmount</th>
                 <th></th>
                 <th></th>
               </tr>
@@ -1214,7 +1214,7 @@ export default function chackData() {
     <form  onSubmit={submitbilling}> 
                 <h3 className="font-bold text-lg">ส่งเอกสาร เพิ่มเติม</h3>
                 <hr />
-                {/* <div className="grid gap-2 sm:grid-cols-2 w-full mt-2">
+                <div className="grid gap-2 sm:grid-cols-2 w-full mt-2">
                 <div className="rounded-md">
 
                 <p className="text-left">Document Type</p>
@@ -1232,7 +1232,7 @@ export default function chackData() {
                         : ""}
                       <></>
                     </select>
-          </div> */}
+          </div>
 
                   <div className="rounded-md mt-9">
                     <div className="flex items-center ">
@@ -1251,7 +1251,7 @@ export default function chackData() {
                         <FaCloudUploadAlt className="size-6" />
                       </div>
                     </div>
-                  {/* </div> */}
+                  </div>
                 </div>
                 {progress.started && (
                   <progress

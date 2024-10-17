@@ -38,7 +38,7 @@ export default function Drawer() {
       href: "",
       spacing: false,
       submenu: [
-        { id: "1-1", label: "ข้อมูลผู้ป่วย", href: "/aia/opd/chackpatient" },
+        { id: "1-1", label: "ข้อมูลผู้ป่วย", href: "/aia/opd/checkpatient" },
         { id: "1-2", label: "ตรวจสอบสิทธิ์", href: "/aia/opd/checkeligible" },
         { id: "1-3", label: "ส่งยอดเคลม", href: "/aia/opd/eligible" },
         { id: "1-4", label: "สถานะการเคลม", href: "/aia/opd/checkClaimStatus" },

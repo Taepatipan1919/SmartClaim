@@ -26,7 +26,7 @@ import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import { HiDocumentSearch } from "react-icons/hi";
-export default function chackData() {
+export default function checkData() {
   const InsuranceCode = 13;
   const [base64, setBase64] = useState("");
   const dispatch = useDispatch();
@@ -961,7 +961,7 @@ export default function chackData() {
                 checked={selectedIdType === "PASSPORT_NO"}
                 onChange={handleOptionChange}
               />
-              <p className="text-left">&nbsp;PASSPORT &nbsp;</p>
+              <p className="text-left">&nbsp;Passport &nbsp;</p>
               <input
                 type="radio"
                 id="HOSPITAL_ID"
@@ -1114,8 +1114,8 @@ export default function chackData() {
                 <th>ClaimNo</th>
                 <th>Invoicenumber</th>
                 <th>Status</th>
-                <th>จำนวนวงเงินที่อนุมัติ</th>
-                <th>ยอดส่วนเกิน</th>
+                <th>ApprovedAmount</th>
+                <th>ExcessAmount</th>
                 <th></th>
                 <th></th>
               </tr>

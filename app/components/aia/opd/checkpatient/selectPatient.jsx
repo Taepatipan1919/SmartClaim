@@ -640,7 +640,7 @@ export default function SelectPatient() {
                               className="btn bg-white text-primary w-full hover:text-base-100 hover:bg-primary"
                               onClick={() => PatientA(patient)}
                             >
-                              Chack eligible
+                              Check eligible
                             </button>
                             {/* </Link> */}
                             <button

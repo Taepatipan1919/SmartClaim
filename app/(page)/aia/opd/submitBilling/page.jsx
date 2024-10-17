@@ -3,7 +3,7 @@ import { useState, createContext } from "react";
 import { useSelector } from "react-redux";
 import SubmitBilling from "../../../../components/aia/opd/submitBilling/submitBilling";
 import Billing from "../../../../components/aia/opd/submitBilling/billing";
-import SelectPatient from "../../../../components/aia/opd/chackpatient/selectPatient";
+import SelectPatient from "../../../../components/aia/opd/checkpatient/selectPatient";
 
 export default function Home() {
    const DataTran  = useSelector((state) => ({ ...state }));
@@ -49,8 +49,8 @@ export default function Home() {
 <li><a className="text-error underline ">วางบิล</a></li>
 </ul>
 </div>
-{/* <SubmitBilling /> */}
-<SelectPatient />
+<SubmitBilling />
+{/* <SelectPatient /> */}
 </>
 )}
 

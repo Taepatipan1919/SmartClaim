@@ -15,7 +15,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import TextField from "@mui/material/TextField";
 
-export default function chackData() {
+export default function checkData() {
   const InsuranceCode = 13;
   const [post, setPost] = useState("");
 
@@ -31,7 +31,7 @@ export default function chackData() {
     };
     console.log(search);
     //   axios
-    //     .get(process.env.NEXT_PUBLIC_URL_chackpatient)
+    //     .get(process.env.NEXT_PUBLIC_URL_checkpatient)
     //     .then((response) => {
     //       setPost(response.data);
     //     })

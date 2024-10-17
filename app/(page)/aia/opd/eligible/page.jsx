@@ -1,10 +1,10 @@
 "use client";
 import { useState, createContext } from "react";
 import { useSelector } from "react-redux";
-import SelectPatient from "../../../../components/aia/opd/chackpatient/selectPatient";
+import SelectPatient from "../../../../components/aia/opd/checkpatient/selectPatient";
 import eligible from "../../../../components/aia/opd/eligible/eligible";
 import OpdDischarge from "../../../../components/aia/opd/eligible/opdDischarge";
-import ChackData from "../../../../components/aia/opd/checkeilgible/chackData";
+import CheckData from "../../../../components/aia/opd/checkeilgible/checkData";
 
 export default function Home() {
   const DataTran = useSelector((state) => ({ ...state }));
@@ -58,7 +58,7 @@ export default function Home() {
                   </li>
                 </ul>
               </div>
-              <ChackData />
+              <CheckData />
               {/* value : {DataTran.DataTran.value}
       <hr />
       VN : {DataTran.DataTran.Data.VN}
