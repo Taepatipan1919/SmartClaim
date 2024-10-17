@@ -58,7 +58,40 @@ export default function checkData() {
   const [base64, setBase64] = useState("");
 
 
+  useEffect(() => {
 
+    const today = dayjs().format('YYYY-MM-DD');
+    const  PatientInfo = {
+      InsurerCode: InsuranceCode,
+      IdType: "",
+     InvoiceNumber: "",
+     VN: "",
+     PID: ReDux.Patient.Data.PID,
+     PassportNumber: ReDux.Patient.Data.PassportNumber,
+     HN: ReDux.Patient.Data.HN,
+     VisitDatefrom: today,
+     VisitDateto: today,
+     StatusClaimCode: "",
+      };
+      console.log(PatientInfo)
+      axios
+        .post(
+          process.env.NEXT_PUBLIC_URL_SV +
+            process.env.NEXT_PUBLIC_URL_SearchTransection,
+          { PatientInfo }
+        )
+        .then((response) => {
+          setPost(response.data);
+         // console.log(response.data)
+         // setShowFormError();
+        })
+        .catch((error) => {
+          console.log(error);
+  
+          setShowFormError("Error");
+          setMassError(error.message);
+        });
+      }, []);
 
 
   const handleUpload = async () => {

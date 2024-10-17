@@ -92,6 +92,39 @@ export default function checkData() {
         //   setMassSummitError(error.response.data.HTTPStatus.message);
         //   setShowSummitError("Error");
       });
+      const today = dayjs().format('YYYY-MM-DD');
+    const  PatientInfo = {
+        InsurerCode: InsuranceCode,
+         IdType: "",
+        InvoiceNumber: "",
+        VN: "",
+        PID: ReDux.Patient.Data.PID,
+        PassportNumber: ReDux.Patient.Data.PassportNumber,
+        HN: ReDux.Patient.Data.HN,
+        VisitDatefrom: today,
+        VisitDateto: today,
+        StatusClaimCode: "",
+      };
+      axios
+        .post(
+          process.env.NEXT_PUBLIC_URL_SV +
+            process.env.NEXT_PUBLIC_URL_SearchTransection,
+          { PatientInfo }
+        )
+        .then((response) => {
+          setPost(response.data);
+          console.log(response.data)
+         // setShowFormError();
+        })
+        .catch((error) => {
+          console.log(error);
+
+          setShowFormError("Error");
+          setMassError(error.message);
+        });
+
+
+
   }, []);
   const status = (event) => {
     setStatusValue(event.target.value);
@@ -471,7 +504,7 @@ export default function checkData() {
           console.log(error);
           setShowFormError("Error");
           //setMassError(error.response.data.HTTPStatus.message);
-          setMassError(error.response?.data?.HTTPStatus?.message || 'Unknown error');
+          setMassError((error.response?.data?.HTTPStatus?.message) || ('Unknown error'));
         });
     
     
@@ -1057,7 +1090,7 @@ export default function checkData() {
               {post ? (
                 post.HTTPStatus.statusCode === 200 ? (
                   post.Result.TransactionClaimInfo.map((bill, index) => (
-                    (bill.VisitDate||bill.HN) !== "" && (
+                    ((bill.VisitDate)||(bill.HN)) !== "" && (
                     <tr className="hover text-center" key={index}>
                       <th>{index + 1}</th>
                       <td>{bill.VisitDate}</td>
@@ -1152,7 +1185,7 @@ export default function checkData() {
                       </td>
                       <td>
                   { bill.RefId ? (
-                            (bill.ClaimStatusDesc === "Approve" || bill.ClaimStatusDesc === "Received") ? (
+                            ((bill.ClaimStatusDesc === "Approve") || (bill.ClaimStatusDesc === "Received")) ? (
                               <>
                                 <button
                                   className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100 ml-4"
@@ -1300,6 +1333,7 @@ export default function checkData() {
                           <tr key={index} className=" bg-neutral text-sm">
                             <td className="px-6 py-4 whitespace-nowrap">
                               {list.filename}
+                              <br/>{list.originalname}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                         
@@ -1418,6 +1452,7 @@ export default function checkData() {
                           <tr key={index} className=" bg-neutral text-sm">
                             <td className="px-6 py-4 whitespace-nowrap">
                               {list.filename}
+                              <br/>{list.originalname}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                         

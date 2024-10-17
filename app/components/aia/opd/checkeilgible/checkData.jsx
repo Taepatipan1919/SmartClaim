@@ -73,7 +73,8 @@ export default function checkData() {
   const [selectedValue, setSelectedValue] = useState("");
   const [furtherClaimNo, setFurtherClaimNo] = useState("");
   const [furtherClaimId, setFurtherClaimId] = useState("");
-
+  const [claimNoL, setClaimNoL] = useState("");
+  const [visitDateTimeL, setVisitDateTimeL] = useState("");
 
 
 
@@ -92,19 +93,29 @@ export default function checkData() {
 
   }, []);
   const handleSelectChange = (event) => {
+
+
     setSelectedValue(event.target.value);
+
+
+    const [RefId, TransactionNo , ClaimNo , VisitDateTime] = event.target.value.split(" | ");
+    setRefIdL(RefId)
+    setTransactionNoL(TransactionNo)
+    setClaimNoL(ClaimNo)
+    setVisitDateTimeL(VisitDateTime) 
+
+    console.log(ClaimNo)
+    console.log(VisitDateTime)
   };
   const handleButtonClick = (data) => {
     //บันทึก Create
-    const [RefId, TransactionNo] = data.split(" | ");
-    setRefIdL(RefId)
-    setTransactionNoL(TransactionNo)
-console.log(RefId)
-console.log(TransactionNo)
+
+console.log(refIdL)
+console.log(transactionNoL)
     const PatientInfo = {
        InsurerCode: InsurerCode, 
-       RefId: RefId,
-       TransactionNo: TransactionNo,
+       RefId: refIdL,
+       TransactionNo: transactionNoL,
        PID: ReDux.Patient.Data.PID,
        HN: ReDux.Patient.Data.HN,
        GivenNameTH: ReDux.Patient.Data.GivenNameTH,
@@ -181,6 +192,8 @@ console.log(response.data)
       IllnessTypeCode: illnessTypeValue,
       SurgeryTypeCode: surgeryTypeValue,
       PolicyTypeCode: policyTypeValue,
+      FurtherClaimNo: furtherClaimNo,
+      FurtherClaimId: furtherClaimId,
     };
      console.log(PatientInfo);
 
@@ -985,9 +998,12 @@ console.log(response.data)
                     </div>
                     {selectedValue ?
                     <div className="rounded-md">
-                    รักษาแบบต่อเนื่อง : {selectedValue}
-                    </div>
-                    : "" }
+                    รักษาแบบต่อเนื่อง : 
+                    <br/>- เลขกรมธรรม์: {claimNoL} 
+                    <br/>- วันที่เข้ารักษา: {visitDateTimeL} 
+                                    
+                                    </div> : ""}
+
                     
 
         <div className="flex justify-center mt-4">   
@@ -1040,7 +1056,7 @@ console.log(response.data)
                             (ftc, index) => (
                               <option
                                 key={index}
-                                value={`${ftc.ClaimNo} | ${ftc.FurtherClaimId}`}
+                                value={`${ftc.ClaimNo} | ${ftc.FurtherClaimId} | ${ftc.ClaimNo} | ${ftc.VisitDateTime}`}
                               >
                                 เลขกรมธรรม์: {ftc.ClaimNo}, วันที่เข้ารักษา:{" "}
                                 {ftc.VisitDateTime.split("T")[0]}

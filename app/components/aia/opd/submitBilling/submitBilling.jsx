@@ -21,8 +21,11 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { FaCloudUploadAlt } from "react-icons/fa";
-import DetailDischarge from "../submitBilling/detailDischarge";
 
+import DetailDischarge from "../submitBilling/detailDischarge";
+import InputLabel from "@mui/material/InputLabel";
+import FormControl from "@mui/material/FormControl";
+import Select from "@mui/material/Select";
 export default function checkData() {
   const InsuranceCode = 13;
   //const ReDux = useSelector((state) => ({ ...state }));
@@ -38,6 +41,7 @@ export default function checkData() {
   const [billList, setBillList] = useState("");
   const [showModal, setShowModal] = useState(false);
   const router = useRouter();
+  const [claimStatus, setClaimStatus] = useState("");
   const [patientInfoDetail, setPatientInfoDetail] = useState();
   const [statusNew, setStatusNew] = useState({});
   const [file, setFile] = useState(null);
@@ -45,6 +49,7 @@ export default function checkData() {
   const [msg, setMsg] = useState(null);
   const [refIdL, setRefIdL] = useState("");
   const [pIDL, setPIDL] = useState("");
+  const [statusValue, setStatusValue] = useState("");
   const [passportNumberL, setPassportNumberL] = useState("");
   const [randomNumber, setRandomNumber] = useState('');
   const [transactionNoL, setTransactionNoL] = useState("");
@@ -60,7 +65,68 @@ export default function checkData() {
 
 
 
+  useEffect(() => {
 
+    axios
+      .get(
+        process.env.NEXT_PUBLIC_URL_SV +
+          process.env.NEXT_PUBLIC_URL_claimStatus +
+          InsuranceCode
+      )
+      .then((response) => {
+        setClaimStatus(response.data);
+        //console.log(response.data)
+      })
+      .catch((error) => {
+        console.log(error);
+        // try{
+        //   const ErrorMass = error.config.url
+        //   const [ErrorMass1, ErrorMass2] = ErrorMass.split('v1/');
+        //   setMassSummitError(error.code +" - "+error.message +" - "+ErrorMass2);
+        //   setShowSummitError("Error")
+        // }
+        // catch (error) {
+        //   setMassSummitError(error.response.data.HTTPStatus.message);
+        //   setShowSummitError("Error");
+      });
+
+
+  const today = dayjs().format('YYYY-MM-DD');
+  const  PatientInfo = {
+      InsurerCode: InsuranceCode,
+       IdType: "",
+      InvoiceNumber: "",
+      VN: "",
+      PID: "",
+      PassportNumber: "",
+      HN: "",
+      VisitDatefrom: today,
+      VisitDateto: today,
+      StatusClaimCode: "",
+    };
+    console.log(PatientInfo)
+    axios
+      .post(
+        process.env.NEXT_PUBLIC_URL_SV +
+          process.env.NEXT_PUBLIC_URL_SearchTransection,
+        { PatientInfo }
+      )
+      .then((response) => {
+        setPost(response.data);
+       // console.log(response.data)
+       // setShowFormError();
+      })
+      .catch((error) => {
+        console.log(error);
+
+        setShowFormError("Error");
+        setMassError(error.message);
+      });
+    }, []);
+
+    const status = (event) => {
+      setStatusValue(event.target.value);
+    };
   const handleUpload = async () => {
     if (!file) {
       setMsg(
@@ -702,7 +768,7 @@ console.log(PatientInfo)
         )
         .then((response) => {
           setBillList(response.data);
-          //console.log(response.data)
+       //   console.log(response.data)
         })
         .catch((error) => {
           console.log(error);
@@ -792,7 +858,7 @@ console.log(PatientInfo)
       )
       .then((response) => {
         setBillList(response.data);
-      //  console.log(response.data)
+        console.log(response.data)
       })
       .catch((error) => {
         // console.error("Error", error)
@@ -898,6 +964,27 @@ console.log(PatientInfo)
                   format="YYYY-MM-DD"
                 />
               </LocalizationProvider>
+              <FormControl className="ml-2 w-80">
+              <InputLabel id="demo-simple-select-label">
+                Claim Status
+              </InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={statusValue}
+                label="Claim Status"
+                onChange={status}
+              >
+                {claimStatus
+                  ? claimStatus.Result.map((status, index) => (
+                      <MenuItem key={index} value={status.claimstatuscode}>
+                        {status.claimstatusdesc_en} -{" "}
+                        {status.claimstatusdesc_th}
+                      </MenuItem>
+                    ))
+                  : ""}
+              </Select>
+            </FormControl>
               <button
                 className="btn btn-error text-base-100 text-lg rounded-full px-3 py-2 hover:bg-base-100 hover:text-error ml-2"
                 type="submit"
@@ -1005,7 +1092,7 @@ console.log(PatientInfo)
                             <IoDocumentText />
                           </h1>
                         </div>
-                        {statusNew ? (
+                        {/* {statusNew ? (
                           bill.RefId ? (
                             (bill.ClaimStatusDesc !== "Cancelled" && bill.ClaimStatusDesc !== "Reversed") ? (
                               <>
@@ -1033,7 +1120,7 @@ console.log(PatientInfo)
                           )
                         ) : (
                           ""
-                        )}
+                        )} */}
                       </td>
                       <td>
                         {statusNew ? (
@@ -1164,6 +1251,7 @@ console.log(PatientInfo)
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
+              
                       {billList ? (
                         billList.map((list, index) => (
                           <tr key={index} className=" bg-neutral text-sm">
