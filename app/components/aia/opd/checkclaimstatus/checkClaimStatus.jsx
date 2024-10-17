@@ -935,7 +935,8 @@ export default function checkData() {
   return (
     <>
       <form onSubmit={handleSubmit}>
-        <div className="grid gap-1 sm:grid-cols-1 w-full">
+        {/* <div className="grid gap-1 sm:grid-cols-1 w-full"> */}
+        <div className="flex items-center  w-full">
           <div className="px-2 rounded-md">
             <div className="flex items-center ">
               <input
@@ -1102,22 +1103,28 @@ export default function checkData() {
                       <td>{bill.ClaimNo}</td>
                       <td>{bill.InvoiceNumber}</td>
                       <td>
-                        <a className="bg-success text-base-100 rounded-full px-3 py-2">
-                          {statusNew
+                      <div className="grid gap-1 sm:grid-cols-1 w-full">
+                      {statusNew
                             ? bill.TransactionNo === statusNew.TransactionNo
-                              ? statusNew.ClaimStatus                           
-                              : bill.ClaimStatusDesc 
+                            ? statusNew.ClaimStatusDesc ? <a className="bg-success text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatusDesc}</a> : ""
+                            : bill.ClaimStatusDesc ? <a className="bg-success text-base-100 rounded-full px-3 py-2">{bill.ClaimStatusDesc}</a> : ""
                             : "Loading..."}
-                        </a>
+                       
+                        {((bill.FurtherClaimNo)||(bill.FurtherClaimId) ? <a className="bg-warning rounded-full px-3 py-2">( แบบต่อเนื่อง )</a> : "")}
+                      </div>
                       </td>
                       <th>
-                        {bill.TotalApprovedAmount
-                          ? bill.TotalApprovedAmount
+                      {bill.TotalApprovedAmount
+                          ? parseFloat(bill.TotalApprovedAmount).toLocaleString('en-US', {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })
                           : ""}
+                          
                       </th>
                       <th>
                         {bill.TotalExcessAmount
-                          ? bill.TotalExcessAmount
+                          ? parseFloat(bill.TotalExcessAmount).toLocaleString('en-US', {minimumFractionDigits: 2,maximumFractionDigits: 2,})
                           : ""}
                       </th>
                       <td>

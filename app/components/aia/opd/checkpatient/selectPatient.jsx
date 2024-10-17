@@ -515,7 +515,8 @@ export default function SelectPatient() {
       {/* <div className="justify-center border-solid w-screen m-auto border-4 rounded-lg p-4"> */}
 
       <form onSubmit={handleSubmit}>
-        <div className="grid gap-1 sm:grid-cols-5 w-full mt-2">
+        {/* <div className="grid gap-1 sm:grid-cols-5 w-full mt-2"> */}
+        <div className="flex items-center  w-full mt-2">
           <div className="px-2 rounded-md">
             <div className="flex items-center ">
               <input

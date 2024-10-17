@@ -299,8 +299,8 @@ export default function Page({ data }) {
       .then((response) => {
         //console.log(response.data)
          setAccidentDetail(response.data);
-          setCauseOfInjuryDetails(response.data.Result.AccidentDetailInfo);
-          setInjuryDetails(response.data.Result.AccidentDetailInfo);
+          setCauseOfInjuryDetails(response.data.Result.AccidentDetailInfo.CauseOfInjuryDetail);
+          setInjuryDetails(response.data.Result.AccidentDetailInfo.InjuryDetail);
 
 
         // if (response.data.Result.AccidentDetailInfo.CauseOfInjuryDetail.CauseOfInjury){
@@ -2125,7 +2125,7 @@ export default function Page({ data }) {
                         <TableBody>
                  
                           {causeOfInjuryDetails
-                            ? causeOfInjuryDetails.CauseOfInjuryDetail.map(
+                            ? causeOfInjuryDetails.map(
                                 (cause, index) =>
                                   cause.CauseOfInjury  && (
                                     <TableRow
@@ -2308,7 +2308,7 @@ export default function Page({ data }) {
                         </TableHead>
                         <TableBody>
                           {injuryDetails
-                            ? injuryDetails.InjuryDetail.map(
+                            ? injuryDetails.map(
                                 (injury, index) =>
                                   injury.InjuryArea  && (
                                     <TableRow

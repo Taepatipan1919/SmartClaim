@@ -870,6 +870,12 @@ console.log(PatientInfo)
 
     document.getElementById("my_modal_3").showModal();
   };
+  const formatNumber = (value) => {
+    return value.toLocaleString('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+  };
 
   return (
     <>
@@ -877,7 +883,8 @@ console.log(PatientInfo)
       <input type="radio" name="my_tabs_2" role="tab" className="tab text-error" aria-label="รายการที่ยังไม่วางบิล" defaultChecked/> */}
       <div className="bg-base-100 border-base-300 rounded-box w-5/5">
         <form onSubmit={handleSubmit}>
-          <div className="grid gap-1 sm:grid-cols-1 w-full">
+          {/* <div className="grid gap-1 sm:grid-cols-1 w-full"> */}
+          <div className="flex items-center  w-full">
             <div className="px-2 rounded-md">
               <div className="flex items-center ">
               <input
@@ -929,8 +936,8 @@ console.log(PatientInfo)
                   checked={selectedIdType === "InvoiceNumber"}
                   onChange={handleOptionChange}
                 />
-                <p className="text-left">&nbsp;InvoiceNumber &nbsp;</p>
-                <p className="ml-64">Visit Date</p>
+                <p className="text-left">&nbsp;Invoice&nbsp;</p>
+                <p className="ml-2">Visit Date</p>
               </div>
               <TextField
                 id="standard-multiline-flexible"
@@ -947,7 +954,7 @@ console.log(PatientInfo)
 
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DatePicker
-                  className="ml-5 w-40"
+                  className="ml-10 w-40"
                   label="Date From"
                   value={fromValue}
                   onChange={(newDate) => setFromValue(newDate)}
@@ -1027,6 +1034,7 @@ console.log(PatientInfo)
                 <th>VN</th>
                 <th>ClaimNo</th>
                 <th>Invoicenumber</th>
+                <td>BatchNumber</td>
                 <th>Status</th>
                 <th>ApprovedAmount</th>
                 <th>ExcessAmount</th>
@@ -1048,23 +1056,30 @@ console.log(PatientInfo)
                       <td>{bill.VN}</td>
                       <td>{bill.ClaimNo}</td>
                       <td>{bill.InvoiceNumber}</td>
+                      <td>{bill.BatchNumber}</td>
                       <td>
-                        <a className="bg-success text-base-100 rounded-full px-3 py-2">
-                          {statusNew
+                      <div className="grid gap-1 sm:grid-cols-1 w-full">
+                      {statusNew
                             ? bill.TransactionNo === statusNew.TransactionNo
-                            ? statusNew.ClaimStatusDesc
-                            : bill.ClaimStatusDesc 
+                            ? statusNew.ClaimStatusDesc ? <a className="bg-success text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatusDesc}</a> : ""
+                            : bill.ClaimStatusDesc ? <a className="bg-success text-base-100 rounded-full px-3 py-2">{bill.ClaimStatusDesc}</a> : ""
                             : "Loading..."}
-                        </a>
+                       
+                        {((bill.FurtherClaimNo)||(bill.FurtherClaimId) ? <a className="bg-warning rounded-full px-3 py-2">( แบบต่อเนื่อง )</a> : "")}
+                      </div>
                       </td>
                       <th>
-                        {bill.TotalApprovedAmount
-                          ? bill.TotalApprovedAmount
+                      {bill.TotalApprovedAmount
+                          ? parseFloat(bill.TotalApprovedAmount).toLocaleString('en-US', {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })
                           : ""}
+                          
                       </th>
                       <th>
                         {bill.TotalExcessAmount
-                          ? bill.TotalExcessAmount
+                          ? parseFloat(bill.TotalExcessAmount).toLocaleString('en-US', {minimumFractionDigits: 2,maximumFractionDigits: 2,})
                           : ""}
                       </th>
                       <td>
