@@ -1172,10 +1172,11 @@ export default function checkData() {
                       <td>{bill.InvoiceNumber}</td>
                       <td>
                       <div className="grid gap-1 sm:grid-cols-1 w-full">
-                      {statusNew
+                        {console.log(statusNew)}
+                        {statusNew
                             ? bill.TransactionNo === statusNew.TransactionNo
-                            ? statusNew.ClaimStatusDesc ? <a className="bg-success text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatusDesc}</a> : ""
-                            : bill.ClaimStatusDesc ? <a className="bg-success text-base-100 rounded-full px-3 py-2">{bill.ClaimStatusDesc}</a> : ""
+                            ? statusNew.ClaimStatusDesc ? <a className="bg-success text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatus}</a> : ""
+                            : bill.ClaimStatusDesc ? <a className="bg-success text-base-100 rounded-full px-3 py-2">{bill.ClaimStatusDesc_EN}</a> : ""
                             : "Loading..."}
                        
                         {((bill.FurtherClaimNo)||(bill.FurtherClaimId) ? <a className="bg-warning rounded-full px-3 py-2">( แบบต่อเนื่อง )</a> : "")}
@@ -1196,6 +1197,7 @@ export default function checkData() {
                           : ""}
                       </th>
                       <td>
+                        
                         <div className="tooltip" data-tip="รีเฟรช">
                           <h1
                             className="text-primary text-2xl"

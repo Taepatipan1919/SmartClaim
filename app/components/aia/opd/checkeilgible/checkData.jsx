@@ -108,12 +108,17 @@ export default function checkData() {
   const handleButtonClick = (data) => {
     //บันทึก Create
 
+
+    const [RefId, TransactionNo] = data.split(" | ");
+    // setRefIdL(RefId)
+    // setTransactionNoL(TransactionNo)
+
 console.log(refIdL)
 console.log(transactionNoL)
     const PatientInfo = {
        InsurerCode: InsurerCode, 
-       RefId: refIdL,
-       TransactionNo: transactionNoL,
+       RefId: RefId,
+       TransactionNo: TransactionNo,
        PID: ReDux.Patient.Data.PID,
        HN: ReDux.Patient.Data.HN,
        GivenNameTH: ReDux.Patient.Data.GivenNameTH,

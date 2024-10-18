@@ -25,6 +25,7 @@ import { FaCloudUploadAlt } from "react-icons/fa";
 import DetailDischarge from "../submitBilling/detailDischarge";
 import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
+import { HiDocumentSearch } from "react-icons/hi";
 import Select from "@mui/material/Select";
 export default function checkData() {
   const InsuranceCode = 13;
@@ -264,7 +265,58 @@ export default function checkData() {
       );
     }
   };
+  const DocumentList = (data) => {
+    const [
+      RefId,
+      TransactionNo,
+      PID,
+      PassportNumber,
+      HN,
+      VN,
+      InvoiceNumber,
+    ] = data.split(" | ");
+    setRefIdL(RefId);
+    setTransactionNoL(TransactionNo);
+    setHNL(HN);
+    setVNL(VN);
+    setInvoiceNumberL(InvoiceNumber);
+    setMsg(null);
+    setPIDL(PID);
+    setPassportNumberL(PassportNumber);
 
+    const PatientInfo = {
+      InsurerCode: InsuranceCode,
+      RefId: RefId,
+      TransactionNo: TransactionNo,
+      PID: PID,
+      PassportNumber: PassportNumber,
+      HN: HN,
+      VN: VN,
+      DocumenttypeCode : "",
+      Runningdocument : "",
+    };
+
+    console.log(PatientInfo);
+    axios
+      .post(
+        process.env.NEXT_PUBLIC_URL_PD2 +
+          process.env.NEXT_PUBLIC_URL_getlistDocumentName,
+        { PatientInfo }
+      )
+      .then((response) => {
+        setBillList(response.data);
+      })
+      .catch((err) => {
+        // console.error("Error", err)
+        console.log(err);
+        //  if (err.response.request.status === 500) {
+        setShowFormError("Error");
+        setMassError(err.response.data.HTTPStatus.message);
+      });
+
+
+    document.getElementById("my_modal_4").showModal();
+  };
   const Refresh = (data) => {
     setStatusNew()
     setShowFormError();
@@ -609,18 +661,19 @@ console.log(PatientInfo)
     //วนลูบ DocList
     let filenames = {};
     filenames = billList.map((Bll) => ({ DocName: Bll.filename }));
-
+    
     const PatientInfo = {
       InsurerCode: InsuranceCode,
       RefId: refIdL,
       TransactionNo: transactionNoL,
       VN: vNL,
-      Invoicenumber: invoiceNumberL,
+      InvoiceNumber: invoiceNumberL,
+      DocumenttypeCode  : "003",
       Runningdocument: randomNumber,
       AttachDocList: [filenames],
     };
 
-   // console.log(PatientInfo);
+    console.log(PatientInfo);
 
     axios
       .post(
@@ -630,12 +683,18 @@ console.log(PatientInfo)
       )
       .then((response) => {
         console.log(response.data);
+        if(response.data.HTTPStatus.statusCode === 200){
         document.getElementById("my_modal_3").close()
         setShowModal(true)
         setTimeout(() => {
           setShowModal(false)
           //router.push('/aia/opd/submitBilling');
         }, 2000);
+      }else{
+          console.log("Error")
+          setShowDocError("Error")
+          setMassDocError(response.data.HTTPStatus.message)
+      }
       })
       .catch((error) => {
         console.log(error);
@@ -1061,8 +1120,8 @@ console.log(PatientInfo)
                       <div className="grid gap-1 sm:grid-cols-1 w-full">
                       {statusNew
                             ? bill.TransactionNo === statusNew.TransactionNo
-                            ? statusNew.ClaimStatusDesc ? <a className="bg-success text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatusDesc}</a> : ""
-                            : bill.ClaimStatusDesc ? <a className="bg-success text-base-100 rounded-full px-3 py-2">{bill.ClaimStatusDesc}</a> : ""
+                            ? statusNew.ClaimStatusDesc ? <a className="bg-success text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatus}</a> : ""
+                            : bill.ClaimStatusDesc ? <a className="bg-success text-base-100 rounded-full px-3 py-2">{bill.ClaimStatusDesc_EN}</a> : ""
                             : "Loading..."}
                        
                         {((bill.FurtherClaimNo)||(bill.FurtherClaimId) ? <a className="bg-warning rounded-full px-3 py-2">( แบบต่อเนื่อง )</a> : "")}
@@ -1083,6 +1142,7 @@ console.log(PatientInfo)
                           : ""}
                       </th>
                       <td>
+                      {bill.ClaimNo ?
                         <div className="tooltip" data-tip="รีเฟรช">
                           <h1
                             className="text-primary text-2xl"
@@ -1095,6 +1155,7 @@ console.log(PatientInfo)
                             <LuRefreshCw />
                           </h1>
                         </div>
+                        : "" }
                         <div className="tooltip ml-4" data-tip="ข้อมูลส่งเคลม">
                           <h1
                             className="text-primary text-2xl"
@@ -1107,6 +1168,21 @@ console.log(PatientInfo)
                             <IoDocumentText />
                           </h1>
                         </div>
+                        <div
+                                  className="tooltip ml-4"
+                                  data-tip="ดู เอกสารทั้งหมด"
+                                >
+                                  <h1
+                                    className="text-primary text-2xl"
+                                    onClick={() =>
+                                      DocumentList(
+                                        `${bill.RefId} | ${bill.TransactionNo} | ${bill.PID} | ${bill.PassportNumber} | ${bill.HN} | ${bill.VN} | ${bill.InvoiceNumber}`
+                                      )
+                                    }
+                                  >
+                                <HiDocumentSearch />
+                                </h1>
+                                </div>
                         {/* {statusNew ? (
                           bill.RefId ? (
                             (bill.ClaimStatusDesc !== "Cancelled" && bill.ClaimStatusDesc !== "Reversed") ? (
@@ -1318,6 +1394,116 @@ console.log(PatientInfo)
           {detailData ? <DetailDischarge data={detailData} /> : ""}
         </div>
       </div>
+
+
+
+      <dialog id="my_modal_4" className="modal text-xl	">
+            <div className="modal-box max-w-3xl">
+              <form method="dialog">
+      <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+    </form>
+                <h3 className="font-bold text-lg">เอกสารทั้งหมด</h3>
+                <hr />
+
+                  {/* <div className="rounded-md mt-9">
+                    <div className="flex items-center ">
+                      <input
+                        type="file"
+                        accept=".pdf"
+                        className="file-input file-input-bordered file-input-info w-5/6"
+                        onChange={(e) => {
+                          setFile(e.target.files[0]);
+                        }}
+                      />
+                      <div
+                        className="btn btn-success text-base-100 hover:text-success hover:bg-base-100 w-1/6 ml-2"
+                        onClick={handleUpload}
+                      >
+                        <FaCloudUploadAlt className="size-6" />
+                      </div>
+                    </div>
+                  </div> */}
+                {progress.started && (
+                  <progress
+                    max="100"
+                    value={progress.pc}
+                    className="mt-2 w-full"
+                  ></progress>
+                )}
+
+               <h1 className="text-center mt-2">{msg}</h1>  
+
+                {showDocError === "Error" ? (
+                  <div
+                    role="alert"
+                    className="alert alert-error mt-2 text-base-100"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-6 w-6 shrink-0 stroke-current"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    <span>{massDocError}</span>
+                  </div>
+                ) : (
+                  ""
+                )}
+                                <div className="flex items-center mt-3">
+                  <table className="table table-zebra mt-2">
+                    <thead>
+                      <tr className="text-base-100 bg-primary py-8 text-sm w-full text-center">
+                        <th className="w-2/5">ชื่อไฟล์</th>
+                        <th className="w-1/5"></th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {billList ? (
+                        billList.map((list, index) => (
+                          <tr key={index} className=" bg-neutral text-sm">
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              {list.filename}
+                              <br/>{list.originalname}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                        
+                                <div
+                                  className="btn btn-primary  mr-2 text-base-100 hover:text-primary hover:bg-base-100"
+                                  type="submit"
+                                  onClick={() => DocumentBase64(list.filename)}
+                                >
+                                  Document
+                                </div>
+                     
+                             
+                                {/* <div className="btn btn-error  mr-2 text-base-100 hover:text-error hover:bg-base-100" type="submit"
+                                onClick={() => CancleDoc(list.filename)}
+                                >
+                                Cancel
+                                </div> */}
+                      
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td></td>
+                          <td></td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+            </div>
+          </dialog>
+
 
       {showModal ? (
         <>

@@ -2,7 +2,6 @@
 import { useState, createContext } from "react";
 import { useSelector } from "react-redux";
 import CheckData from "../../../../components/aia/opd/checkeilgible/checkData";
-import CheckClaimStatus from "../../../../components/aia/opd/checkClaimStatus/checkClaimStatus";
 import SubmitClaimStatus from "../../../../components/aia/opd/checkClaimStatus/submitClaimStatus";
 import SelectPatient from "../../../../components/aia/opd/checkpatient/selectPatient";
 export default function Home() {
@@ -12,8 +11,8 @@ export default function Home() {
 
   return (
     <>
-    {DataTran.Patient.value === "มีรายชื่อ" ? (
-    <>
+    {/* {DataTran.Patient.value === "มีรายชื่อ" ? (
+    <> */}
                  <h1
         className="font-black text-accent text-3xl "
         data-theme="mytheme"
@@ -27,15 +26,7 @@ export default function Home() {
     <li><a className="text-error underline ">สถานะการเคลม</a></li>
   </ul>
 </div>
-<CheckClaimStatus />
-    {/* value : {DataTran.DataTran.value}
-      <hr />
-      VN : {DataTran.DataTran.Data.VN}
-      <br />
-      RefId : {DataTran.DataTran.Data.RefId}
-      <br />
-      TransactionNo : {DataTran.DataTran.Data.TransactionNo}
-      <br /> */}
+{/* <CheckClaimStatus />
     </>) : 
     (
     <>
@@ -45,11 +36,11 @@ export default function Home() {
 <ul>
 <li><a className="text-error underline ">สถานะการเคลม</a></li>
 </ul>
-</div>
+</div> */}
 <SubmitClaimStatus />
 {/* <SelectPatient /> */}
-    </>)
-    }
+    {/* </>)
+    } */}
 
     
 

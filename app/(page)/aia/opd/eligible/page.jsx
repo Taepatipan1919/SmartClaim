@@ -2,7 +2,6 @@
 import { useState, createContext } from "react";
 import { useSelector } from "react-redux";
 import SelectPatient from "../../../../components/aia/opd/checkpatient/selectPatient";
-import eligible from "../../../../components/aia/opd/eligible/eligible";
 import OpdDischarge from "../../../../components/aia/opd/eligible/opdDischarge";
 import CheckData from "../../../../components/aia/opd/checkeilgible/checkData";
 
@@ -33,16 +32,9 @@ export default function Home() {
                 </ul>
               </div>
               <OpdDischarge data={DataTran} />
-              {/* value : {DataTran.DataTran.value}
-          <hr />
-          VN : {DataTran.DataTran.Data.VN}
-          <br />
-          RefId : {DataTran.DataTran.Data.RefId}
-          <br /> */}
             </>
           ) : (
             <>
-              {/* <eligible /> */}
               <h1
                 className="font-black text-accent text-3xl "
                 data-theme="mytheme"
@@ -59,14 +51,7 @@ export default function Home() {
                 </ul>
               </div>
               <CheckData />
-              {/* value : {DataTran.DataTran.value}
-      <hr />
-      VN : {DataTran.DataTran.Data.VN}
-      <br />
-      RefId : {DataTran.DataTran.Data.RefId}
-      <br />
-      TransactionNo : {DataTran.DataTran.Data.TransactionNo}
-      <br />  */}
+      <br />  
             </>
           )}
         </>

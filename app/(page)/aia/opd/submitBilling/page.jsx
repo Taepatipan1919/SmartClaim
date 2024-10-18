@@ -2,7 +2,6 @@
 import { useState, createContext } from "react";
 import { useSelector } from "react-redux";
 import SubmitBilling from "../../../../components/aia/opd/submitBilling/submitBilling";
-import Billing from "../../../../components/aia/opd/submitBilling/billing";
 import SelectPatient from "../../../../components/aia/opd/checkpatient/selectPatient";
 
 export default function Home() {
@@ -15,8 +14,8 @@ export default function Home() {
 
   return (
     <>
-        {DataTran.Patient.value === "มีรายชื่อ" ? (
-    <>
+        {/* {DataTran.Patient.value === "มีรายชื่อ" ? (
+    <> */}
                                  <h1
         className="font-black text-accent text-3xl "
         data-theme="mytheme"
@@ -32,13 +31,7 @@ export default function Home() {
     <li><a className="text-error underline ">วางบิล</a></li>
   </ul>
 </div>
-  <Billing />
-  {/* value : {DataTran.DataTran.value}
-          <hr />
-          VN : {DataTran.DataTran.Data.VN}
-          <br />
-          RefId : {DataTran.DataTran.Data.RefId}
-          <br /> */}
+  {/* <Billing />
     </>
     ) : (
       <>
@@ -48,11 +41,11 @@ export default function Home() {
 <ul>
 <li><a className="text-error underline ">วางบิล</a></li>
 </ul>
-</div>
+</div> */}
 <SubmitBilling />
 {/* <SelectPatient /> */}
-</>
-)}
+{/* </>
+)} */}
 
 </>
   );
