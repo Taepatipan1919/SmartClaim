@@ -1272,6 +1272,7 @@ console.log(PatientInfo)
                           <tr key={index} className=" bg-neutral text-sm">
                             <td className="px-6 py-4 whitespace-nowrap">
                               {list.filename}
+                              <br/>{list.originalname}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                         

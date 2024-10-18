@@ -66,15 +66,15 @@ export default function checkData() {
   const [accidentDate, setAccidentDate] = useState("");
   const [visitDateTime, setVisitDateTime] = useState("");
   const [showbutton, setShowbutton] = useState("");
-  const [furtherClaim, setFurtherClaim] = useState("");
-  //console.log(furtherClaim)
   const ReDux = useSelector((state) => ({ ...state }));
   const dispatch = useDispatch();
   const [selectedValue, setSelectedValue] = useState("");
+  const [furtherClaim, setFurtherClaim] = useState("");
   const [furtherClaimNo, setFurtherClaimNo] = useState("");
   const [furtherClaimId, setFurtherClaimId] = useState("");
-  const [claimNoL, setClaimNoL] = useState("");
   const [visitDateTimeL, setVisitDateTimeL] = useState("");
+  const [claimNoL, setClaimNoL] = useState("");
+
 
 
 
@@ -97,15 +97,13 @@ export default function checkData() {
 
     setSelectedValue(event.target.value);
 
+  //console.log(event.target.value)
+    const [ClaimNo, FurtherClaimId , VisitDateTime] = event.target.value.split(" | ");
 
-    const [RefId, TransactionNo , ClaimNo , VisitDateTime] = event.target.value.split(" | ");
-    setRefIdL(RefId)
-    setTransactionNoL(TransactionNo)
-    setClaimNoL(ClaimNo)
+    setFurtherClaimId(FurtherClaimId)
+    setFurtherClaimNo(ClaimNo)
     setVisitDateTimeL(VisitDateTime) 
 
-    console.log(ClaimNo)
-    console.log(VisitDateTime)
   };
   const handleButtonClick = (data) => {
     //บันทึก Create
@@ -131,7 +129,10 @@ console.log(transactionNoL)
        IllnessTypeCode: illnessTypeValue,
        SurgeryTypeCode:  surgeryTypeValue,
        Runningdocument: randomNumber,
+       FurtherClaimNo: furtherClaimNo,
+       FurtherClaimId: furtherClaimId,
     }
+    console.log(PatientInfo)
     axios
     .post(
       process.env.NEXT_PUBLIC_URL_PD +
@@ -171,6 +172,7 @@ console.log(response.data)
     setMassFurtherError();
    // console.log(ReDux)
     // console.log(data)
+
     const [RefId, TransactionNo] = data.split(" | ");
     setRefIdL(RefId)
     setTransactionNoL(TransactionNo)
@@ -213,7 +215,6 @@ console.log(response.data)
         // if(response.data.HTTPStatus.statusCode === 200){
           setFurtherClaim(response.data);
        //   console.log(response.data);
-   
         // }else{
          // setMassFurtherError(response.data.HTTPStatus.message);
          // setShowFormFurtherError("Error");
@@ -239,82 +240,7 @@ console.log(response.data)
 
   const gourl = (event) => {
     event.preventDefault();
-    if (selectedValue) {
-      //เลือกแบบต่อเนื่อง
-      const [FurtherClaimNo, FurtherClaimId] = selectedValue.split(" | ");
-      setFurtherClaimNo(FurtherClaimNo)
-      setFurtherClaimId(FurtherClaimId)
-      // dispatch(
-      //   save({
-      //     value: "มีข้อมูล",
-      //     Data: {
-      //       // RefId: "x9v8T2G/i6pEuNughp+kX8bNr83caECQjC+vvuEaIKY=",
-      //       // TransactionNo: "3ba72f56-c764-43ff-9000-920453ba3d5b",
-      //       // VN: "O604374-65",
-      //       // InsurerCode: 13,
-      //       // ServiceSettingCode: "OPD",
-      //       // IllnessTypeCode: "ACC",
-      //       // SurgeryTypeCode: "N",
-      //       // PolicyTypeCode: "IB",
-      //       // AccidentDate: "2024-10-01",
-      //       // VisitDateTime:"2024-10-01 08:22",
-      //       // FurtherClaimNo: "",
-      //       // FurtherClaimId: "",
 
-      //       RefId: refIdL,
-      //       TransactionNo: transactionNoL,
-      //       VN: detailVN,
-      //       InsurerCode: InsurerCode,
-      //       ServiceSettingCode: statusValue,
-      //       IllnessTypeCode: illnessTypeValue,
-      //       SurgeryTypeCode: surgeryTypeValue,
-      //       PolicyTypeCode: policyTypeValue,
-      //       AccidentDate: accidentDate,
-      //       VisitDateTime: visitDateTime,
-      //       FurtherClaimNo: FurtherClaimNo,
-      //       FurtherClaimId: FurtherClaimId,
-      //       Runningdocument : "",
-      //     },
-      //   })
-      // );
-    } else {
-      //รักษาครั้งแรก
-
-
-      // dispatch(
-      //   save({
-      //     value: "มีข้อมูล",
-      //     Data: {
-      //       // RefId: "ccXwZWYmukJdvzFrWaccN8bNr83caECQjC+vvuEaIKY=",
-      //       // TransactionNo: "5c5aabb3-b919-4ee8-ac42-848ae4d5f55a",
-      //       // VN: "O477382-67",
-      //       // InsurerCode: 13,
-      //       // ServiceSettingCode: "OPD",
-      //       // IllnessTypeCode: "ER",
-      //       // SurgeryTypeCode: "N",
-      //       // PolicyTypeCode: "IB",
-      //       // AccidentDate: "2024-09-08",
-      //       // VisitDateTime:"2024-09-08 08:22",
-      //       // FurtherClaimNo: "",
-      //       // FurtherClaimId: "",
-
-      //       RefId: refIdL,
-      //       TransactionNo: transactionNoL,
-      //       VN: detailVN,
-      //       InsurerCode: InsurerCode,
-      //       ServiceSettingCode: statusValue,
-      //       IllnessTypeCode: illnessTypeValue,
-      //       SurgeryTypeCode: surgeryTypeValue,
-      //       PolicyTypeCode: policyTypeValue,
-      //       AccidentDate: accidentDate,
-      //       VisitDateTime: visitDateTime,
-      //       FurtherClaimNo: "",
-      //       FurtherClaimId: "",
-      //       Runningdocument: "",
-      //     },
-      //   })
-      // );
-    }
     setSuccFurtherClaim(true)
     setFurtherClaim();
 
@@ -1056,7 +982,7 @@ console.log(response.data)
                             (ftc, index) => (
                               <option
                                 key={index}
-                                value={`${ftc.ClaimNo} | ${ftc.FurtherClaimId} | ${ftc.ClaimNo} | ${ftc.VisitDateTime}`}
+                                value={`${ftc.ClaimNo} | ${ftc.FurtherClaimId} | ${ftc.VisitDateTime}`}
                               >
                                 เลขกรมธรรม์: {ftc.ClaimNo}, วันที่เข้ารักษา:{" "}
                                 {ftc.VisitDateTime.split("T")[0]}
