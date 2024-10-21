@@ -60,14 +60,16 @@ export default function SelectPatient() {
   const { Patient } = useSelector((state) => ({ ...state }));
   // console.log(Patient)
   const dispatch = useDispatch();
-
+  const status = (event) => {
+    setStatusValue(event.target.value);
+  };
   const PatientA = (patient) => {
     // console.log(patient)
     dispatch(
       save2({
         value: "มีรายชื่อ",
         Data: {
-          IdType: selectedOption,
+          //IdType: selectedOption,
           InsurerCode: InsurerCode,
           DateOfBirth: patient.DateOfBirth,
           Gender: patient.Gender,
@@ -885,7 +887,9 @@ export default function SelectPatient() {
                 <div className="rounded-md ">
                   {create ? create.Result.PatientInfo.MobilePhone : ""}
                 </div>
-                <div className="rounded-md "></div>
+      <div className="rounded-md ">
+ 
+         </div> 
                 <div className="rounded-md ">
                   {create ? (
                     create.HTTPStatus.statusCode === 200 ? (

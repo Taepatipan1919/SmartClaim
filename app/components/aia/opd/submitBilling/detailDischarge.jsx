@@ -20,7 +20,11 @@ export default function DetailDischarge({ data }) {
   const [patien, setPatien] = useState();
   const [transactionClaimInfo, setTransactionClaimInfo] = useState();
   const [visit, setVisit] = useState();
-  
+  const [fileList, setFileList] = useState("")
+  const [massDocError, setMassDocError] = useState("");
+  const [showDocError, setShowDocError] = useState("");
+
+
   useEffect(() => {
 
     axios
@@ -45,6 +49,36 @@ export default function DetailDischarge({ data }) {
       setTransactionClaimInfo();
       console.log(response.data.Result.TransactionClaimInfo[0]);
     setPatientInfo(response.data.Result.TransactionClaimInfo[0]);
+
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+
+
+  }, [data]);
+
+  useEffect(() => {
+    setMassDocError();
+    setShowDocError();
+    axios
+    .post(
+      process.env.NEXT_PUBLIC_URL_SV +
+        process.env.NEXT_PUBLIC_URL_getlistDocumentName,
+     {
+      "PatientInfo": {
+        InsurerCode: 13, 
+        RefId: data.RefId,
+        TransactionNo: data.TransactionNo,
+        HN: data.HN,
+        VN: data.VN,
+        DocumenttypeCode : "",
+        Runningdocument: "",
+        }
+    }
+    )
+    .then((response) => {
+      setFileList(response.data);
 
     })
     .catch((error) => {
@@ -96,10 +130,69 @@ export default function DetailDischarge({ data }) {
 
   }, [data]);
 
+  const DocumentBase64 = (docname) => {
+    console.log(data.VN)
+    console.log(docname)
+    setMassDocError();
+    setShowDocError();
+    axios
+      .post(
+        process.env.NEXT_PUBLIC_URL_PD2 +
+          process.env.NEXT_PUBLIC_URL_getDocumentByDocname,
+        {
+          DocumentName: docname,
+        //  RefId: data.RefId,
+        //  TransactionNo: data.TransactionNo,
+        //  HN: data.HN,
+          VN: data.VN,
+        }
+      )
+      .then((response) => {
+     //   setBase64(response.data);
+
+        const base64ToBlob = (base64, type = "application/pdf") => {
+          const byteCharacters = atob(base64);
+          const byteNumbers = new Array(byteCharacters.length);
+          for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+          }
+          const byteArray = new Uint8Array(byteNumbers);
+          return new Blob([byteArray], { type });
+        };
+        const blob = base64ToBlob(response.data.base64);
+        const url = URL.createObjectURL(blob);
+        window.open(url);
+
+        //         const base64String = response.data.base64;
+        // console.log(base64String)
+        //       const linkSource = `data:application/pdf;base64,${base64String}`;
+        //         const pdfWindow = window.open();
+        //         pdfWindow.document.write(
+        //             `<iframe width='100%' height='99%' src='${linkSource}'></iframe>`
+        //        );
+      })
+      .catch((error) => {
+        console.log(error);
+        try {
+          const ErrorMass = error.config.url;
+          const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+          setMassDocError(
+            error.code + " - " + error.message + " - " + ErrorMass2
+          );
+          setShowDocError("Error");
+        } catch (error) {
+          setMassDocError("Error ในการเปิดไฟล์");
+          setShowDocError("Error");
+        }
+      });
+  };
+
+
+
   return (
     <>
       <dialog id="my_modal_4" className="modal">
-        <div className="modal-box w-11/12 max-w-5xl">
+        <div className="modal-box w-11/12 max-w-7xl">
           <div className="justify-center border-solid m-auto border-2 border-warning rounded-lg p-4">
             <h1 className="font-black text-accent text-3xl ">Patient Info</h1>
             <div className="grid gap-2 sm:grid-cols-4 w-full mt-2">
@@ -222,7 +315,7 @@ export default function DetailDischarge({ data }) {
             <div className="grid gap-2 sm:grid-cols-2 w-full mt-4">
                   <div className="rounded-md mt-2">
                                                 <div className="flex flex-col">
-                              <label className="text-gray-700 mb-2">Sex</label>
+                              <label className="text-gray-700 mb-2">ChiefComplaint</label>
                                 <textarea
                                     type="text"
                                     defaultValue={transactionClaimInfo ? transactionClaimInfo.Visit.ChiefComplaint : ""}
@@ -597,12 +690,6 @@ export default function DetailDischarge({ data }) {
                           : ""}
                         </TableBody>
                     </Table>
-                      <div className="grid gap-2 sm:grid-cols-4 text-base-100 bg-primary w-full whitespace-normal text-center">
-                        <div className="rounded-md"></div>
-                        <div className="rounded-md"></div>
-                        <div className="rounded-md "></div>
-                        <div className="rounded-md ">&nbsp;</div>
-                      </div>
             </TableContainer>
             <TableContainer component={Paper} className="mt-2">
                       <Table className="table">
@@ -669,18 +756,780 @@ export default function DetailDischarge({ data }) {
                           : ""}
                         </TableBody>
                     </Table>
-                    <div className="grid gap-2 sm:grid-cols-4 text-base-100 bg-primary w-full whitespace-normal text-center">
-                        <div className="rounded-md"></div>
-                        <div className="rounded-md"></div>
-                        <div className="rounded-md "></div>
-                        <div className="rounded-md ">&nbsp;</div>
-                      </div>
             </TableContainer>
           </div>
+ {/* //////////////////////////////////////////////////////////////////////////// */}
+    <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
+              <h1 className="font-black text-accent text-3xl ">VitalSign</h1>
+              <div className="overflow-x-auto">
+          <TableContainer component={Paper} className="mt-2">
+                      <Table className="table">
+                        <TableHead>
+                          <TableRow className="bg-primary">
+                            <TableCell className="w-2"></TableCell>
+                            <TableCell>
+                              <h1 className="text-base-100 bg-primary text-sm w-full text-center">
+                              วันเวลาที่วัดสัญญาณชีพ
+                              </h1>
+                            </TableCell>
+                            <TableCell>
+                              <h1 className="text-base-100 bg-primary text-sm w-full text-center">
+                              การเต้นของชีพจร
+                              </h1>
+                            </TableCell>
+                            <TableCell>
+                              <h1 className="text-base-100 bg-primary text-sm w-full text-center">
+                              ความเข้มข้นของออกซิเจนในเลือด
+                              </h1>
+                            </TableCell>
+                            <TableCell>
+                              <h1 className="text-base-100 bg-primary text-sm w-full text-center">
+                              คะแนนระดับของความเจ็บปวด
+                              </h1>
+                            </TableCell>
+                            <TableCell>
+                              <h1 className="text-base-100 bg-primary text-sm w-full text-center">
+                              อัตราการหายใจ
+                              </h1>
+                            </TableCell>
+                            <TableCell>
+                              <h1 className="text-base-100 bg-primary text-sm w-full text-center">
+                              ค่าความดันโลหิต
+                              </h1>
+                            </TableCell>
+                            <TableCell>
+                              <h1 className="text-base-100 bg-primary text-sm w-full text-center">
+                              อุณหภูมิร่างกาย
+                              </h1>
+                            </TableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {transactionClaimInfo
+                            ? transactionClaimInfo.VitalSign.map(
+                                (vts, index) =>
+                                  vts.VitalSignEntryDateTime && (
+                                    <TableRow
+                                      key={index}
+                                      className=" bg-neutral text-sm"
+                                    >
+                                      <TableCell>{index + 1}</TableCell>
+                                      <TableCell>
+                                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                                              {vts.VitalSignEntryDateTime ? (
+                                                vts.VitalSignEntryDateTime
+                                              ) : (
+                                                <>&nbsp;</>
+                                              )}
+                                            </div>
+                                      </TableCell>
+                                      <TableCell>
+                                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                                              {vts.HeartRate ? (
+                                                vts.HeartRate
+                                              ) : (
+                                                <>&nbsp;</>
+                                              )}
+                                            </div>
+                                      </TableCell>
+                                      <TableCell>
+                                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                                              {vts.OxygenSaturation ? (
+                                                vts.OxygenSaturation
+                                              ) : (
+                                                <>&nbsp;</>
+                                              )}
+                                            </div>
+                                      </TableCell>
+                                      <TableCell>
+                                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                                              {vts.PainScore ? (
+                                                vts.PainScore
+                                              ) : (
+                                                <>&nbsp;</>
+                                              )}
+                                            </div>
+                                      </TableCell>
+                                      <TableCell>
+                                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                                              {vts.RespiratoryRate ? (
+                                                vts.RespiratoryRate
+                                              ) : (
+                                                <>&nbsp;</>
+                                              )}
+                                            </div>
+                                      </TableCell>
+                                      <TableCell>
+                                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                                              {vts.SystolicBp ? (
+                                                vts.SystolicBp 
+                                              ) : (
+                                                <>&nbsp;</>
+                                              )}
+                                              &nbsp;/&nbsp;
+                                              {vts.DiastolicBp ? (
+                                              vts.DiastolicBp
+                                              ) : (
+                                                <>&nbsp;</>
+                                              )}
+                                            </div>
+                                      </TableCell>
+                                      <TableCell>
+                                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                                              {vts.Temperature ? (
+                                                vts.Temperature
+                                              ) : (
+                                                <>&nbsp;</>
+                                              )}
+                                            </div>
+                                      </TableCell>
+                                      </TableRow>
+                                )
+                            )
+                          : ""}
+                        </TableBody>
+                    </Table>
+            </TableContainer>
+        </div>
+      </div>
+ {/* //////////////////////////////////////////////////////////////////////////// */}
+ <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
+              <h1 className="font-black text-accent text-3xl ">Doctor</h1>
+              <div className="overflow-x-auto">
+ <TableContainer component={Paper} className="mt-2">
+                      <Table className="table">
+                        <TableHead>
+                          <TableRow className="bg-primary">
+                            <TableCell className="w-2"></TableCell>
+                            <TableCell>
+                              <h1 className="text-base-100 bg-primary text-sm w-full text-center">
+                              เลขใบประกอบวิชาชีพแพทย์ผู้ให้การรักษา
+                              </h1>
+                            </TableCell>
+                            <TableCell>
+                              <h1 className="text-base-100 bg-primary text-sm w-full text-center">
+                              ชื่อ - นามสกุล แพทย์ผู้ให้การรักษา
+                              </h1>
+                            </TableCell>
+                            <TableCell>
+                              <h1 className="text-base-100 bg-primary text-sm w-full text-center">
+                              สถานะของแพทย์ผู้ให้การรักษา
+                              </h1>
+                            </TableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {transactionClaimInfo
+                            ? transactionClaimInfo.Doctor.map(
+                                (dc, index) =>
+                                  dc.DoctorLicense  && (
+                                    <TableRow
+                                      key={index}
+                                      className=" bg-neutral text-sm"
+                                    >
+                                      <TableCell>{index + 1}</TableCell>
+                                      <TableCell>
+                                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                                              {dc.DoctorLicense ? (
+                                                dc.DoctorLicense
+                                              ) : (
+                                                <>&nbsp;</>
+                                              )}
+                                            </div>
+                                      </TableCell>
+                                      <TableCell>
+                                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                                              {dc.DoctorFirstName ? (
+                                                dc.DoctorFirstName
+                                              ) : (
+                                                <>&nbsp;</>
+                                              )}
+                                            </div>
+                                      </TableCell>
+                                      <TableCell>
+                                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                                              {dc.DoctorRole ? (
+                                                dc.DoctorRole
+                                              ) : (
+                                                <>&nbsp;</>
+                                              )}
+                                            </div>
+                                      </TableCell>
+                                      </TableRow>
+                                )
+                            )
+                          : ""}
+                        </TableBody>
+                    </Table>
+            </TableContainer>
+            </div>
+          </div>
+ {/* //////////////////////////////////////////////////////////////////////////// */}
+ <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
+              <h1 className="font-black text-accent text-3xl ">Diagnosis</h1>
+              <div className="overflow-x-auto">
+ <TableContainer component={Paper} className="mt-2">
+                      <Table className="table">
+                        <TableHead>
+                          <TableRow className="bg-primary">
+                            <TableCell className="w-2"></TableCell>
+                            <TableCell>
+                              <h1 className="text-base-100 bg-primary text-sm w-full text-center">
+                              รหัส
+                              </h1>
+                            </TableCell>
+                            <TableCell>
+                              <h1 className="text-base-100 bg-primary text-sm w-full text-center">
+                              ชื่อของการวินิจฉัยโรค
+                              </h1>
+                            </TableCell>
+                            <TableCell>
+                              <h1 className="text-base-100 bg-primary text-sm w-full text-center">
+                              ชนิดของการวินิจฉัยโรค
+                              </h1>
+                            </TableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {transactionClaimInfo
+                            ? transactionClaimInfo.Diagnosis.map(
+                                (diagnosis, index) =>
+                                  diagnosis.Icd10  && (
+                                    <TableRow
+                                      key={index}
+                                      className=" bg-neutral text-sm"
+                                    >
+                                      <TableCell>{index + 1}</TableCell>
+                                      <TableCell>
+                                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                                              {diagnosis.Icd10 ? (
+                                                diagnosis.Icd10
+                                              ) : (
+                                                <>&nbsp;</>
+                                              )}
+                                            </div>
+                                      </TableCell>
+                                      <TableCell>
+                                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                                              {diagnosis.DxName ? (
+                                                diagnosis.DxName
+                                              ) : (
+                                                <>&nbsp;</>
+                                              )}
+                                            </div>
+                                      </TableCell>
+                                      <TableCell>
+                                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                                              {diagnosis.DxType ? (
+                                                diagnosis.DxType
+                                              ) : (
+                                                <>&nbsp;</>
+                                              )}
+                                            </div>
+                                      </TableCell>
+                                      </TableRow>
+                                )
+                            )
+                          : ""}
+                        </TableBody>
+                    </Table>
+            </TableContainer>
+            </div>
+          </div>
+     {/* //////////////////////////////////////////////////////////////////////////// */}
+ <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
+              <h1 className="font-black text-accent text-3xl ">Procedure</h1>
+              <div className="overflow-x-auto">
+ <TableContainer component={Paper} className="mt-2">
+                      <Table className="table">
+                        <TableHead>
+                          <TableRow className="bg-primary">
+                            <TableCell className="w-2"></TableCell>
+                            <TableCell>
+                              <h1 className="text-base-100 bg-primary text-sm w-full text-center">
+                              Icd 9 Code ของหัตถการหรือการผ่าตัด
+                              </h1>
+                            </TableCell>
+                            <TableCell>
+                              <h1 className="text-base-100 bg-primary text-sm w-full text-center">
+                              ชื่อของหัตถการหรือการผ่าตัด
+                              </h1>
+                            </TableCell>
+                            <TableCell>
+                              <h1 className="text-base-100 bg-primary text-sm w-full text-center">
+                              วันที่ทำหัตถการหรือทำการผ่าตัด
+                              </h1>
+                            </TableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {transactionClaimInfo
+                            ? transactionClaimInfo.Procedure.map(
+                                (proce, index) =>
+                                  proce.Icd9  && (
+                                    <TableRow
+                                      key={index}
+                                      className=" bg-neutral text-sm"
+                                    >
+                                      <TableCell>{index + 1}</TableCell>
+                                      <TableCell>
+                                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                                              {proce.Icd9 ? (
+                                                proce.Icd9
+                                              ) : (
+                                                <>&nbsp;</>
+                                              )}
+                                            </div>
+                                      </TableCell>
+                                      <TableCell>
+                                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                                              {proce.ProcedureName ? (
+                                                proce.ProcedureName
+                                              ) : (
+                                                <>&nbsp;</>
+                                              )}
+                                            </div>
+                                      </TableCell>
+                                      <TableCell>
+                                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                                              {proce.ProcedureDate ? (
+                                                proce.ProcedureDate
+                                              ) : (
+                                                <>&nbsp;</>
+                                              )}
+                                            </div>
+                                      </TableCell>
+                                      </TableRow>
+                                )
+                            )
+                          : ""}
+                        </TableBody>
+                    </Table>
+            </TableContainer>
+            </div>
+          </div>
+ {/* //////////////////////////////////////////////////////////////////////////// */}
+ <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
+              <h1 className="font-black text-accent text-3xl ">Investigation</h1>
+              <div className="overflow-x-auto">
+ <TableContainer component={Paper} className="mt-2">
+                      <Table className="table">
+                        <TableHead>
+                          <TableRow className="bg-primary">
+                            <TableCell className="w-2"></TableCell>
+                            <TableCell>
+                              <h1 className="text-base-100 bg-primary text-sm w-full text-center">
+                              รหัสอ้างอิง
+                              </h1>
+                            </TableCell>
+                            <TableCell>
+                              <h1 className="text-base-100 bg-primary text-sm w-full text-center">
+                              ชื่อกลุ่มของการตรวจทางห้องปฏิบัติการ
+                              </h1>
+                            </TableCell>
+                            <TableCell>
+                              <h1 className="text-base-100 bg-primary text-sm w-full text-center">
+                              ชื่อของการตรวจทางห้องปฏิบัติการ
+                              </h1>
+                            </TableCell>
+                            <TableCell>
+                              <h1 className="text-base-100 bg-primary text-sm w-full text-center">
+                              ผลของการตรวจทางห้องปฏิบัติการ
+                              </h1>
+                            </TableCell>
+                            <TableCell>
+                              <h1 className="text-base-100 bg-primary text-sm w-full text-center">
+                              วันเวลาที่แสดงผลของการตรวจทางห้องปฏิบัติการ
+                              </h1>
+                            </TableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {transactionClaimInfo
+                            ? transactionClaimInfo.Investigation.map(
+                                (Investigation, index) =>
+                                  Investigation.InvestigationCode  && (
+                                    <TableRow
+                                      key={index}
+                                      className=" bg-neutral text-sm"
+                                    >
+                                      <TableCell>{index + 1}</TableCell>
+                                      <TableCell>
+                                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                                              {Investigation.InvestigationCode ? (
+                                                Investigation.InvestigationCode
+                                              ) : (
+                                                <>&nbsp;</>
+                                              )}
+                                            </div>
+                                      </TableCell>
+                                      <TableCell>
+                                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                                              {Investigation.InvestigationGroup ? (
+                                                Investigation.InvestigationGroup
+                                              ) : (
+                                                <>&nbsp;</>
+                                              )}
+                                            </div>
+                                      </TableCell>
+                                      <TableCell>
+                                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                                              {Investigation.InvestigationName ? (
+                                                Investigation.InvestigationName
+                                              ) : (
+                                                <>&nbsp;</>
+                                              )}
+                                            </div>
+                                      </TableCell>
+                                      <TableCell>
+                                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                                              {Investigation.InvestigationResult ? (
+                                                Investigation.InvestigationResult
+                                              ) : (
+                                                <>&nbsp;</>
+                                              )}
+                                            </div>
+                                      </TableCell>
+                                      <TableCell>
+                                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                                              {Investigation.ResultDateTime ? (
+                                                Investigation.ResultDateTime
+                                              ) : (
+                                                <>&nbsp;</>
+                                              )}
+                                            </div>
+                                      </TableCell>
+                                      </TableRow>
+                                )
+                            )
+                          : ""}
+                        </TableBody>
+                    </Table>
+            </TableContainer>
+            </div>
+          </div>
+ {/* //////////////////////////////////////////////////////////////////////////// */}
+ <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
+              <h1 className="font-black text-accent text-3xl ">OrderItem</h1>
+              <div className="overflow-x-auto">
+ <TableContainer component={Paper} className="mt-2">
+                      <Table className="table">
+                        <TableHead>
+                          <TableRow className="bg-primary w-full">
+                            <TableCell className="w-2"></TableCell>
+                            <TableCell>
+                              <h1 className="text-base-100 bg-primary text-sm w-full text-center w-48">
+                              รหัสของรายการ
+                              </h1>
+                            </TableCell>
+                            <TableCell>
+                              <h1 className="text-base-100 bg-primary text-sm w-full text-center w-48">
+                              ชื่อรายการ
+                              </h1>
+                            </TableCell>
+                            <TableCell>
+                              <h1 className="text-base-100 bg-primary text-sm w-full text-center">
+                              Code ของรายการ
+                              </h1>
+                            </TableCell>
+                            <TableCell>
+                              <h1 className="text-base-100 bg-primary text-sm w-full text-center w-48">
+                              ชื่อของรายการ
+                              </h1>
+                            </TableCell>
+                            <TableCell>
+                              <h1 className="text-base-100 bg-primary text-sm w-full text-center w-24 text-wrap">
+                              จำนวนปริมาณของรายการ
+                              </h1>
+                            </TableCell>
+                            <TableCell>
+                              <h1 className="text-base-100 bg-primary text-sm w-full text-center w-24 text-wrap">
+                              จำนวนเงินตั้งต้นของรายการ
+                              </h1>
+                            </TableCell>
+                            <TableCell>
+                              <h1 className="text-base-100 bg-primary text-sm w-full text-center w-24 text-wrap">
+                              จำนวนส่วนลดของรายการ
+                              </h1>
+                            </TableCell>
+                            <TableCell>
+                              <h1 className="text-base-100 bg-primary text-sm w-full text-center w-24 text-wrap">
+                              จำนวนเงินหลังหักส่วนลดของรายการ
+                              </h1>
+                            </TableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {transactionClaimInfo
+                            ? transactionClaimInfo.OrderItem.map(
+                                (OrderItem, index) =>
+                                  OrderItem.ItemId  && (
+                                    <TableRow
+                                      key={index}
+                                      className=" bg-neutral text-sm"
+                                    >
+                                      <TableCell>{index + 1}</TableCell>
+                                      <TableCell>
+                                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                                              {OrderItem.ItemId ? (
+                                                OrderItem.ItemId
+                                              ) : (
+                                                <>&nbsp;</>
+                                              )}
+                                            </div>
+                                      </TableCell>
+                                      <TableCell>
+                                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                                              {OrderItem.ItemName ? (
+                                                OrderItem.ItemName
+                                              ) : (
+                                                <>&nbsp;</>
+                                              )}
+                                            </div>
+                                      </TableCell>
+                                      <TableCell>
+                                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                                              {OrderItem.LocalBillingCode ? (
+                                                OrderItem.LocalBillingCode
+                                              ) : (
+                                                <>&nbsp;</>
+                                              )}
+                                            </div>
+                                      </TableCell>
+                                      <TableCell>
+                                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                                              {OrderItem.LocalBillingName ? (
+                                                OrderItem.LocalBillingName
+                                              ) : (
+                                                <>&nbsp;</>
+                                              )}
+                                            </div>
+                                      </TableCell>
+                                      <TableCell>
+                                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                                              {OrderItem.ItemAmount ? (
+                                                OrderItem.ItemAmount
+                                              ) : (
+                                                <>&nbsp;</>
+                                              )}
+                                            </div>
+                                      </TableCell>
+                                      <TableCell>
+                                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                                              {OrderItem.Initial ? (
+                                                OrderItem.Initial
+                                              ) : (
+                                                <>&nbsp;</>
+                                              )}
+                                            </div>
+                                      </TableCell>
+                                      <TableCell>
+                                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                                              {OrderItem.Discount ? (
+                                                OrderItem.Discount
+                                              ) : (
+                                                <>&nbsp;</>
+                                              )}
+                                            </div>
+                                      </TableCell>
+                                      <TableCell>
+                                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                                              {OrderItem.NetAmount ? (
+                                                OrderItem.NetAmount
+                                              ) : (
+                                                <>&nbsp;</>
+                                              )}
+                                            </div>
+                                      </TableCell>
+                                      </TableRow>
+                                )
+                            )
+                          : ""}
+                        </TableBody>
+                    </Table>
+            </TableContainer>
+            </div>
+          </div>
+ {/* //////////////////////////////////////////////////////////////////////////// */}
+ <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
+              <h1 className="font-black text-accent text-3xl ">รายละเอียดค่ารักษาพยาบาล</h1>
+              <div className="overflow-x-auto">
+ <TableContainer component={Paper} className="mt-2">
+                      <Table className="table">
+                        <TableHead>
+                          <TableRow className="bg-primary">
+                            <TableCell className="w-2"></TableCell>
+                            <TableCell>
+                              <h1 className="text-base-100 bg-primary text-sm w-full text-center w-48">
+                              SIMB
+                              </h1>
+                            </TableCell>
+                            <TableCell>
+                              <h1 className="text-base-100 bg-primary text-sm w-full text-center w-48">
+                              รายละเอียดค่ารักษาพยาบาล
+                              </h1>
+                            </TableCell>
+                            <TableCell>
+                              <h1 className="text-base-100 bg-primary text-sm w-full text-center">
+                              จำนวนเงิน (ก่อนหักส่วนลด)
+                              </h1>
+                            </TableCell>
+                            <TableCell>
+                              <h1 className="text-base-100 bg-primary text-sm w-full text-center w-48">
+                              ส่วนลด
+                              </h1>
+                            </TableCell>
+                            <TableCell>
+                              <h1 className="text-base-100 bg-primary text-sm w-full text-center">
+                              จำนวนเงิน (หลังหักส่วนลด)
+                              </h1>
+                            </TableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {transactionClaimInfo
+                            ? transactionClaimInfo.Billing.map(
+                                (bill, index) =>
+                                  bill.SimbBillingCode  && (
+                                    <TableRow
+                                      key={index}
+                                      className=" bg-neutral text-sm"
+                                    >
+                                      <TableCell>{index + 1}</TableCell>
+                                      <TableCell>
+                                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                                              {bill.SimbBillingCode ? (
+                                                bill.SimbBillingCode
+                                              ) : (
+                                                <>&nbsp;</>
+                                              )}
+                                            </div>
+                                      </TableCell>
+                                      <TableCell>
+                                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                                              {bill.LocalBillingName ? (
+                                                bill.LocalBillingName
+                                              ) : (
+                                                <>&nbsp;</>
+                                              )}
+                                            </div>
+                                      </TableCell>
+                                      <TableCell>
+                                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                                              {bill.BillingInitial ? (
+                                                bill.BillingInitial
+                                              ) : (
+                                                <>&nbsp;</>
+                                              )}
+                                            </div>
+                                      </TableCell>
+                                      <TableCell>
+                                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                                              {bill.BillingDiscount ? (
+                                                bill.BillingDiscount
+                                              ) : (
+                                                <>&nbsp;</>
+                                              )}
+                                            </div>
+                                      </TableCell>
+                                      <TableCell>
+                                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                                              {bill.BillingNetAmount ? (
+                                                bill.BillingNetAmount
+                                              ) : (
+                                                <>&nbsp;</>
+                                              )}
+                                            </div>
+                                      </TableCell>
+                                      </TableRow>
+                                )
+                            )
+                          : ""}
+                        </TableBody>
+                    </Table>
+            </TableContainer>
+            <div className="grid gap-2 sm:grid-cols-6  bg-primary w-full whitespace-normal text-center text-lg">
+                <div className="rounded-md"></div>
+                <div className="rounded-md"></div>
+                <div className="rounded-md"></div>
+                <div className="rounded-md"></div>
+                <div className="rounded-md px-3 py-2 border-2 bg-base-100 break-all m-1">สรุปค่ารักษาพยาบาล</div>
+                <div className="rounded-md px-3 py-2 border-2 bg-base-100 break-all m-1">
+                  { transactionClaimInfo ? transactionClaimInfo.TotalBillAmount : "" } 
+                </div>
+              </div>
+            </div>
+          </div>
+ {/* //////////////////////////////////////////////////////////////////////////// */}
+  <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
+              <h1 className="font-black text-accent text-3xl ">Upload File</h1>
+              <div className="overflow-x-auto mt-6">
+              {showDocError === "Error" ? (
+                  <div
+                    role="alert"
+                    className="alert alert-error mt-2 text-base-100"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-6 w-6 shrink-0 stroke-current"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    <span>{massDocError}</span>
+                  </div>
+                ) : (
+                  ""
+                )}
+                <div className="flex items-center ">
+
+                <table className="table  mt-2">
+                  <thead>
+                    <tr className="text-base-100 bg-primary py-8 text-sm w-full text-center">
+                      <th className="w-2/5">ชื่อไฟล์</th>
+                      <th className="w-1/5"></th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {fileList ? (
+                      fileList.map((list, index) => (
+                        <tr key={index} className=" bg-neutral text-sm">
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            {list.originalname}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                          
+                              <div
+                                className="btn btn-primary  mr-2 text-base-100 hover:text-primary hover:bg-base-100"
+                                type="submit"
+                                onClick={() => DocumentBase64(list.filename)}
+                              >
+                                Document
+                              </div>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td></td>
+                        <td></td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+                </div>
+                </div>
+  </div>
 
 
 
-
+          
         </div>
         <form method="dialog" className="modal-backdrop">
           <button>close</button>

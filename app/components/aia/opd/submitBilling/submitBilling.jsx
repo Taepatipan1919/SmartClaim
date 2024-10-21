@@ -21,7 +21,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { FaCloudUploadAlt } from "react-icons/fa";
-
+import { BiFirstPage, BiLastPage  } from "react-icons/bi";
 import DetailDischarge from "../submitBilling/detailDischarge";
 import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
@@ -42,6 +42,7 @@ export default function checkData() {
   const [billList, setBillList] = useState("");
   const [showModal, setShowModal] = useState(false);
   const router = useRouter();
+  const [currentData, setCurrentData] = useState("");
   const [claimStatus, setClaimStatus] = useState("");
   const [patientInfoDetail, setPatientInfoDetail] = useState();
   const [statusNew, setStatusNew] = useState({});
@@ -114,6 +115,7 @@ export default function checkData() {
       )
       .then((response) => {
         setPost(response.data);
+        setCurrentData(response.data.Result.TransactionClaimInfo)
        // console.log(response.data)
        // setShowFormError();
       })
@@ -305,6 +307,7 @@ export default function checkData() {
       )
       .then((response) => {
         setBillList(response.data);
+        document.getElementById("my_modal_4").showModal();
       })
       .catch((err) => {
         // console.error("Error", err)
@@ -315,7 +318,7 @@ export default function checkData() {
       });
 
 
-    document.getElementById("my_modal_4").showModal();
+ 
   };
   const Refresh = (data) => {
     setStatusNew()
@@ -592,6 +595,19 @@ export default function checkData() {
         VisitDateto: dateToValue,
         StatusClaimCode: "",
       };
+    }else if (statusValue) {
+      PatientInfo = {
+        InsurerCode: InsuranceCode,
+         IdType: "",
+        InvoiceNumber: "",
+        VN: "",
+        PID: "",
+        PassportNumber: "",
+        HN: "",
+        VisitDatefrom: dateFromValue,
+        VisitDateto: dateToValue,
+        StatusClaimCode: statusValue,
+      };
     }
       
     // else{
@@ -613,7 +629,8 @@ console.log(PatientInfo)
        )
        .then((response) => {
          setPost(response.data);
-         console.log(response.data);
+       //  console.log(response.data);
+         setCurrentData(response.data.Result.TransactionClaimInfo)
          setShowFormError();
        })
        .catch((error) => {
@@ -656,6 +673,7 @@ console.log(PatientInfo)
   };
 
   const submitbilling = (event) => {
+    setMsg();
     setShowDocError();
     event.preventDefault();
     //วนลูบ DocList
@@ -714,7 +732,50 @@ console.log(PatientInfo)
   const DocumentBase64 = (data) => {
     setMsg();
     setProgress({ started: false, pc: 0 });
+//Update Doc
+const PatientInfo = {
+  RefId: refIdL,
+  TransactionNo: transactionNoL,
+  VN: "",
+  HN: "",
+  DocumentName: data,
+  DocumenttypeCode: "",
+};
+axios
+.post(
+  process.env.NEXT_PUBLIC_URL_PD2 +
+    process.env.NEXT_PUBLIC_URL_UpdateDocumentTypeCode,
+  {
+    PatientInfo
+  }
+)
+.then((response) => {
+ // setBillList();
+   console.log(response.data)
+})
+.catch((error) => {
+  console.log(error);
+  try {
+    const ErrorMass = error.config.url;
+    const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+    setMassDocError(
+      error.code + " - " + error.message + " - " + ErrorMass2
+    );
+    setShowDocError("Error");
+  } catch (error) {
+    setMassDocError(error.response.data.HTTPStatus.message);
+    setShowDocError("Error");
+  }
+});
 
+
+
+
+
+
+
+
+/////////////////////////////////////////////////////
     axios
       .post(
         process.env.NEXT_PUBLIC_URL_PD2 +
@@ -811,7 +872,7 @@ console.log(PatientInfo)
         HN: hNL,
         PassportNumber: passportNumberL,
         VN: vNL,
-        DocumenttypeCode: "003",
+        DocumenttypeCode: "",
         DocumentName : "",
         Runningdocument : randomNumber,
         
@@ -903,9 +964,10 @@ console.log(PatientInfo)
       HN: HN,
       PassportNumber: PassportNumber,
       VN: VN,
-      DocumenttypeCode: "003",
+      DocumenttypeCode: "",
       DocumentName : "",
-      Runningdocument : newRandomNumber,
+      // Runningdocument : newRandomNumber,
+      Runningdocument : "",
       
     };
     //console.log(PatientInfo)
@@ -936,6 +998,28 @@ console.log(PatientInfo)
     });
   };
 
+  
+  ////////////////////////// ตัวเลื่อน ตารางซ้าย - ขวา ///////////////////////////////////////////
+  const ITEMS_PER_PAGE = 10
+    const [currentPage, setCurrentPage] = useState(1);
+    const [count, setCount] = useState(0);
+    const handleNextPage = () => {
+      setCurrentPage(currentPage + 1);
+    };
+  
+    const handlePreviousPage = () => {
+      setCurrentPage(currentPage - 1);
+    };
+
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+ 
+    const endIndex = startIndex + ITEMS_PER_PAGE;
+ //console.log(endIndex +"="+startIndex+"+"+ITEMS_PER_PAGE) 
+   const data = currentData.slice(startIndex, endIndex);
+   useEffect(() => {
+    setCount(data.length);
+  }, [data]);
+/////////////////////////////////////////////////////////////////////
   return (
     <>
       {/* <div role="tablist" className="tabs tabs-lifted">
@@ -1102,10 +1186,12 @@ console.log(PatientInfo)
               </tr>
             </thead>
             <tbody>
-              {post ? (
-                post.HTTPStatus.statusCode === 200 ? (
-                  post.Result.TransactionClaimInfo.map((bill, index) => (
-                    (bill.VisitDate||bill.HN) !== "" && (
+              {/* {console.log(post)} */}
+            {post ? (
+    post.HTTPStatus.statusCode === 200 ? (
+      data.map((bill, index) => (
+      
+        (bill.VisitDate||bill.HN) !== "" && (
                     <tr className="hover text-center" key={index}>
                       <th>{index + 1}</th>
                       <td>{bill.VisitDateTime}</td>
@@ -1142,7 +1228,9 @@ console.log(PatientInfo)
                           : ""}
                       </th>
                       <td>
-                      {bill.ClaimNo ?
+                      {bill.RefId ? (
+                            ((bill.ClaimStatusDesc !== "Cancelled to AIA")) ? (
+                              <>
                         <div className="tooltip" data-tip="รีเฟรช">
                           <h1
                             className="text-primary text-2xl"
@@ -1155,7 +1243,11 @@ console.log(PatientInfo)
                             <LuRefreshCw />
                           </h1>
                         </div>
-                        : "" }
+                        </>) : ("")) : ("")}
+                  {/* {statusNew ? (
+                          bill.RefId ? (
+                            (bill.ClaimStatusDesc === "Approve" || bill.ClaimStatusDesc === "Received") ? (
+                              <> */}
                         <div className="tooltip ml-4" data-tip="ข้อมูลส่งเคลม">
                           <h1
                             className="text-primary text-2xl"
@@ -1168,6 +1260,16 @@ console.log(PatientInfo)
                             <IoDocumentText />
                           </h1>
                         </div>
+                        {/* </>
+                         ) : (
+                          ""
+                        )
+                      ) : (
+                        "Loading..."
+                      )
+                    ) : (
+                      ""
+                    )} */}
                         <div
                                   className="tooltip ml-4"
                                   data-tip="ดู เอกสารทั้งหมด"
@@ -1238,38 +1340,59 @@ console.log(PatientInfo)
                         ) : (
                           ""
                         )}
-                      </td>
+                        </td>
                     </tr>
-                  )
-                ))
-              ) : (
+                    ))
+                  )) : ""
+                ) : (
                   <tr>
                     <th></th>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <th></th>
                     <th></th>
                   </tr>
                 )
-              ) : (
-                <tr>
-                  <th></th>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <th></th>
-                </tr>
-              )}
+            }
             </tbody>
-          </table>
+          </table> 
+
+          {post ?
+      <div className="grid gap-1 sm:grid-cols-2 w-full mt-4">
+      <div className="flex justify-between text-right">
+        <div className="text-right">
+          <h1 className="text-lg">Showing {startIndex+1} to {endIndex} of {post ? post.Result.TransactionClaimInfo.length : ""} entries.</h1>
+        </div>
+      </div>
+      <div className="text-right text-base-100 ">
+        {/* <div className="text-left text-base-100"> */}
+        
+        {currentPage > 1 && (
+          <button onClick={handlePreviousPage} className="btn btn-primary ">
+            <BiFirstPage className="text-base-100 text-xl text-right" />
+          </button>
+        )}
+        {/* </div>
+        <div className="text-center"> */}
+
+        {/* {console.log(endIndex)}
+        {console.log(startIndex)}
+        {console.log(ITEMS_PER_PAGE)} */}
+
+
+        {/* </div>
+        <div className="text-right"> */}
+        {endIndex < currentData.length && (
+          <button onClick={handleNextPage} className="btn btn-primary ml-2">
+           <BiLastPage className="text-base-100 text-xl" /> 
+          </button>
+        )}
+      </div>
+</div>
+ : ""}
+
+
+
+
+
           <dialog id="my_modal_3" className="modal text-xl	">
             <div className="modal-box">
               <form method="dialog">

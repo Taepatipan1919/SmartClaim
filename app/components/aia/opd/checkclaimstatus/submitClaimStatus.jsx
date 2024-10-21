@@ -22,6 +22,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { FaCloudUploadAlt } from "react-icons/fa";
 import DetailDischarge from "../submitBilling/detailDischarge";
+import { BiFirstPage , BiLastPage  } from "react-icons/bi";
 import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
@@ -31,6 +32,7 @@ export default function checkData() {
   const [base64, setBase64] = useState("");
   const dispatch = useDispatch();
   const [post, setPost] = useState("");
+  const [currentData, setCurrentData] = useState("");
   const [selectedIdType, setSelectedIdType] = useState("");
   const [numberValue, setNumberValue] = useState("");
   const [fromValue, setFromValue] = useState(null);
@@ -67,7 +69,17 @@ export default function checkData() {
   };
 
   useEffect(() => {
+    // const fetchData = async () => {
+    // try {
+    //   await stepOne();
+    //   await stepTwo();
 
+    // } catch (error) {
+    //   console.log(error);
+    // }
+
+
+    // function stepOne() {
     axios
       .get(
         process.env.NEXT_PUBLIC_URL_SV +
@@ -103,6 +115,8 @@ export default function checkData() {
           HN: "",
           VisitDatefrom: today,
           VisitDateto: today,
+          //  VisitDatefrom: "2024-09-01",
+          //  VisitDateto: "2024-10-20",
           StatusClaimCode: "",
         };
         console.log(PatientInfo)
@@ -114,8 +128,9 @@ export default function checkData() {
           )
           .then((response) => {
             setPost(response.data);
-           // console.log(response.data)
+            console.log(response.data)
            // setShowFormError();
+           setCurrentData(response.data.Result.TransactionClaimInfo)
           })
           .catch((error) => {
             console.log(error);
@@ -167,6 +182,7 @@ export default function checkData() {
       )
       .then((response) => {
         setBillList(response.data);
+        document.getElementById("my_modal_4").showModal();
       })
       .catch((err) => {
         // console.error("Error", err)
@@ -177,7 +193,7 @@ export default function checkData() {
       });
 
 
-    document.getElementById("my_modal_4").showModal();
+
   };
 
   const handleButtonClick = (data) => {
@@ -475,7 +491,7 @@ export default function checkData() {
         )
         .then((response) => {
         const  getEpisodeByHN = response.data.Result.PatientInfo;
-          console.log(getEpisodeByHN)
+          console.log(response.data)
           dispatch(save2({
             value: "มีรายชื่อ",
             Data:
@@ -922,6 +938,7 @@ export default function checkData() {
         .then((response) => {
           setPost(response.data);
           console.log(response.data)
+          setCurrentData(response.data.Result.TransactionClaimInfo)
           setShowFormError();
         })
         .catch((error) => {
@@ -968,6 +985,85 @@ export default function checkData() {
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+  // const data = {
+  //   datadetail : [
+  //     {
+  //       HN: "1",
+  //       VN: "111111"
+  //     },
+  //     {
+  //       HN: "2",
+  //       VN: "222222"
+  //     },
+  //     {
+  //       HN: "3",
+  //       VN: "333333"
+  //     },
+  //     {
+  //       HN: "4",
+  //       VN: "444444"
+  //     },
+  //     {
+  //       HN: "5",
+  //       VN: "555555"
+  //     },
+  //     {
+  //       HN: "6",
+  //       VN: "666666"
+  //     },
+  //     {
+  //       HN: "7",
+  //       VN: "777777"
+  //     },
+
+  //   ],
+
+
+  // };
+    
+
+
+  ////////////////////////// ตัวเลื่อน ตารางซ้าย - ขวา ///////////////////////////////////////////
+  const ITEMS_PER_PAGE = 2
+    const [currentPage, setCurrentPage] = useState(1);
+    const [count, setCount] = useState(0);
+    const handleNextPage = () => {
+      setCurrentPage(currentPage + 1);
+    };
+  
+    const handlePreviousPage = () => {
+      setCurrentPage(currentPage - 1);
+    };
+
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+ 
+    const endIndex = startIndex + ITEMS_PER_PAGE;
+ //console.log(endIndex +"="+startIndex+"+"+ITEMS_PER_PAGE) 
+   const data = currentData.slice(startIndex, endIndex);
+
+   //////////////////// Chack Status (20data)///////////////////////////
+   console.log(data)
+
+
+    ///////////////////////////////////////////////
+  
+   useEffect(() => {
+    setCount(data.length);
+  }, [data]);
+/////////////////////////////////////////////////////////////////////
+
+
+    
+
+
+
+
+
+
+
+
 
   return (
     <>
@@ -1137,7 +1233,7 @@ export default function checkData() {
             ""
           )}
 
-          <table className="table mt-2">
+        <table className="table mt-2">
             <thead className="bg-info text-base-100 text-center text-lg ">
               <tr>
                 <th></th>
@@ -1155,13 +1251,13 @@ export default function checkData() {
               </tr>
             </thead>
             <tbody>
-              {console.log(post)}
-              {post ? (
-                post.HTTPStatus.statusCode === 200 ? (
-                  post.Result.TransactionClaimInfo.map((bill, index) => (
-                    ((bill.VisitDate)||(bill.HN)) !== "" && (
+            {post ? (
+    post.HTTPStatus.statusCode === 200 ? (
+      data.map((bill, index) => (
+      
+        (bill.VisitDate||bill.HN) !== "" && (
                     <tr className="hover text-center" key={index}>
-                      <th>{index + 1}</th>
+                      <th>{startIndex + index+1}</th>
                       <td>{bill.VisitDate}</td>
                       <td>
                         {bill.TitleTH} {bill.GivenNameTH} {bill.SurnameTH}
@@ -1172,7 +1268,7 @@ export default function checkData() {
                       <td>{bill.InvoiceNumber}</td>
                       <td>
                       <div className="grid gap-1 sm:grid-cols-1 w-full">
-                        {console.log(statusNew)}
+                        {/* {console.log(statusNew)} */}
                         {statusNew
                             ? bill.TransactionNo === statusNew.TransactionNo
                             ? statusNew.ClaimStatusDesc ? <a className="bg-success text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatus}</a> : ""
@@ -1197,7 +1293,9 @@ export default function checkData() {
                           : ""}
                       </th>
                       <td>
-                        
+                      {bill.RefId ? (
+                            ((bill.ClaimStatusDesc !== "Cancelled to AIA")&&(bill.ClaimNo)) ? (
+                              <>
                         <div className="tooltip" data-tip="รีเฟรช">
                           <h1
                             className="text-primary text-2xl"
@@ -1210,6 +1308,10 @@ export default function checkData() {
                             <LuRefreshCw />
                           </h1>
                         </div>
+                        </>) : ("")) : ("")}
+                        {bill.RefId ? (
+                            ((((bill.ClaimStatusDesc === "Approve")||(bill.ClaimStatusDesc === "waitting for discharge"))&&(bill.ClaimStatusDesc !== "Cancelled to AIA")) || (((bill.ClaimStatusDesc === "Received")||(bill.ClaimStatusDesc === "waitting for discharge"))&&(bill.ClaimStatusDesc !== "Cancelled to AIA")) || (((bill.ClaimStatusDesc === "waitting discharge")||(bill.ClaimStatusDesc === "waitting for discharge"))&&(bill.ClaimStatusDesc !== "Cancelled to AIA"))) ? (
+                              <>
                         <div className="tooltip ml-4" data-tip="ข้อมูลส่งเคลม">
                           <h1
                             className="text-primary text-2xl"
@@ -1222,9 +1324,9 @@ export default function checkData() {
                             <IoDocumentText />
                           </h1>
                         </div>
-                        { bill.RefId ? (
-                            (bill.ClaimStatusDesc !== "Cancelled" && bill.ClaimStatusDesc !== "Reversed") ? (
-                        
+                        {bill.RefId ? 
+                            (bill.ClaimStatusDesc !== "waitting for discharge" ? (
+                              <>
                         <div
                                   className="tooltip ml-4"
                                   data-tip="ยกเลิกการเคลม"
@@ -1240,8 +1342,11 @@ export default function checkData() {
                                     <MdCancel />
                                   </h1>
                                 </div>
-                              
-                            ) :"" ):""}
+                                </>
+                            ): ("")) : ("")}
+                                                      </>
+                                                    ) : ( "")) : ( "")}
+        
 
                         <div
                                   className="tooltip ml-4"
@@ -1279,40 +1384,67 @@ export default function checkData() {
                               ""
                             )
                           ) : (
-                            "Loading..."
+                            ""
                           )}
                       </td>
                     </tr>
-                    )
-                  ))
+                    ))
+                  )) : ""
                 ) : (
                   <tr>
                     <th></th>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <th></th>
                     <th></th>
                   </tr>
                 )
-              ) : (
-                <tr>
-                  <th></th>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <th></th>
-                </tr>
-              )}
+            }
             </tbody>
-          </table>
+          </table> 
+
+
+
+ {post ?
+      <div className="grid gap-1 sm:grid-cols-2 w-full mt-4">
+      <div className="flex justify-between text-right">
+        <div className="text-right">
+          <h1 className="text-lg">Showing {startIndex+1} to {endIndex} of {post ? post.Result.TransactionClaimInfo.length : ""} entries.</h1>
+        </div>
+      </div>
+      <div className="text-right text-base-100 ">
+        {/* <div className="text-left text-base-100"> */}
+        
+        {currentPage > 1 && (
+          <button onClick={handlePreviousPage} className="btn btn-primary ">
+            <BiFirstPage className="text-base-100 text-xl text-right" />
+          </button>
+        )}
+        {/* </div>
+        <div className="text-center"> */}
+
+        {/* {console.log(endIndex)}
+        {console.log(startIndex)}
+        {console.log(ITEMS_PER_PAGE)} */}
+
+
+        {/* </div>
+        <div className="text-right"> */}
+        {endIndex < currentData.length && (
+          <button onClick={handleNextPage} className="btn btn-primary ml-2">
+           <BiLastPage className="text-base-100 text-xl" /> 
+          </button>
+        )}
+      </div>
+</div>
+ : ""}
+
+    
+
+
+
+
+
+
+
 
 
 

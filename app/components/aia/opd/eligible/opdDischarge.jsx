@@ -79,7 +79,7 @@ export default function Page({ data }) {
   const [msg, setMsg] = useState(null);
   const [massDocError, setMassDocError] = useState("");
   const [showDocError, setShowDocError] = useState("");
-  const [billList, setBillList] = useState("");
+  const [fileList, setFileList] = useState("");
   const [base64, setBase64] = useState("");
   const [massSummitError, setMassSummitError] = useState("");
   const [showSummitError, setShowSummitError] = useState("");
@@ -143,7 +143,7 @@ export default function Page({ data }) {
     const generateRandomFiveDigitNumber = () => {
       return String(Math.floor(Math.random() * 100000)).padStart(5, '0');
     };
-    setBillList()
+    setFileList()
     const newRandomNumber = generateRandomFiveDigitNumber();
     setRandomNumber(newRandomNumber);
     console.log(newRandomNumber);
@@ -192,7 +192,7 @@ export default function Page({ data }) {
     }
     setProgress({ started: false, pc: 0 });
     setMsg(null);
-    setBillList("");
+    setFileList("");
     axios
       .post(
         process.env.NEXT_PUBLIC_URL_PD2 +
@@ -209,7 +209,7 @@ export default function Page({ data }) {
         }
       )
       .then((response) => {
-        setBillList(response.data);
+        setFileList(response.data);
       //  console.log(response.data)
       })
       .catch((error) => {
@@ -879,7 +879,7 @@ export default function Page({ data }) {
           }
         )
         .then((response) => {
-          setBillList(response.data);
+          setFileList(response.data);
           //console.log(response.data)
         })
         .catch((error) => {
@@ -964,10 +964,24 @@ export default function Page({ data }) {
     let HavecauseOfInjuryDetailsCount;
     let HaveinjuryDetailsCount;
     let HaveProcedureCount;
+    let injuryDetailsCount;
+    let causeOfInjuryDetailsCount;
+    let ProcedureInfoCount;
 
-    const injuryDetailsCount = injuryDetails.length;
-    const causeOfInjuryDetailsCount = causeOfInjuryDetails.length;
-    const ProcedureInfoCount = rows.length;
+console.log(injuryDetails)
+console.log(causeOfInjuryDetails)
+console.log(rows)
+
+if(injuryDetails){
+  injuryDetailsCount = injuryDetails.length;
+}
+if(causeOfInjuryDetails){
+  causeOfInjuryDetailsCount = causeOfInjuryDetails.length;
+} 
+if(rows){
+  ProcedureInfoCount = rows.length;
+}   
+ 
 
     if (causeOfInjuryDetailsCount >= 1) {
       HavecauseOfInjuryDetailsCount = true;
@@ -1318,7 +1332,7 @@ export default function Page({ data }) {
           }
         )
         .then((response) => {
-          setBillList(response.data);
+          setFileList(response.data);
           //console.log(response.data)
         })
         .catch((error) => {
@@ -3320,8 +3334,8 @@ export default function Page({ data }) {
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {billList ? (
-                      billList.map((list, index) => (
+                    {fileList ? (
+                      fileList.map((list, index) => (
                         <tr key={index} className=" bg-neutral text-sm">
                           <td className="px-6 py-4 whitespace-nowrap">
                             {list.originalname}
@@ -3360,7 +3374,7 @@ export default function Page({ data }) {
                   <div className="rounded-md "></div>
                   <div className="rounded-md ">&nbsp;</div>
                 </div>
-                {billList ? billList.length === 0 ? null : (
+                {fileList ? fileList.length === 0 ? null : (
                   <div className="py-2">
                     <div className="text-right">
                       <button

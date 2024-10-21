@@ -35,10 +35,13 @@ export default function checkData() {
   const [post, setPost] = useState("");
   const [serviceSetting, setServiceSetting] = useState();
   const [policyType, setPolicyType] = useState();
+  const [idType, setIdType] = useState();
   const [illnessType, setIllnessType] = useState();
   const [surgeryType, setSurgeryType] = useState();
   const [showForm, setShowForm] = useState(false);
   const [load, setLoad] = useState();
+  const [numberValue, setNumberValue] = useState("");
+  const [vNValue, setVNValue] = useState("");
   const [mass, setMass] = useState();
   const [hS, setHS ] = useState();
   const [hB, setHB ] = useState();
@@ -50,6 +53,7 @@ export default function checkData() {
   const [accValue, setAccValue] = useState(null);
   const [statusValue, setStatusValue] = useState("OPD");
   const [policyTypeValue, setPolicyTypeValue] = useState("");
+  const [idTypeValue, setIdTypeValue] = useState("");
   const [surgeryTypeValue, setSurgeryTypeValue] = useState("");
   const [illnessTypeValue, setIllnessTypeValue] = useState("");
   const router = useRouter();
@@ -63,6 +67,7 @@ export default function checkData() {
   const [testMe, setTestMe] = useState(false);
   const [patientInfo, setPatientInfo] =useState("");
   const [succFurtherClaim, setSuccFurtherClaim] = useState(false);
+  const [succFurtherClaim2, setSuccFurtherClaim2] = useState(false);
   const [accidentDate, setAccidentDate] = useState("");
   const [visitDateTime, setVisitDateTime] = useState("");
   const [showbutton, setShowbutton] = useState("");
@@ -74,9 +79,10 @@ export default function checkData() {
   const [furtherClaimId, setFurtherClaimId] = useState("");
   const [visitDateTimeL, setVisitDateTimeL] = useState("");
   const [claimNoL, setClaimNoL] = useState("");
+  const [patientDB, setPatientDB] = useState("");
+  
 
-
-
+console.log(patientDB)
 
   useEffect(() => {
     setRandomNumber();
@@ -91,6 +97,52 @@ export default function checkData() {
     setRandomNumber(ReDux.DataTran.Data.Runningdocument)
   }
 
+
+  const PatientInfo = {
+    InsurerCode: InsurerCode,
+    IdType: "HOSPITAL_ID",
+    PID: ReDux.Patient.Data.PID,
+    HN: ReDux.Patient.Data.HN,
+    PassportNumber: "",
+  };
+
+  axios
+    .post(
+      process.env.NEXT_PUBLIC_URL_PD +
+        process.env.NEXT_PUBLIC_URL_PatientSearch,
+      {
+        PatientInfo,
+      }
+    )
+    .then(function (response) {
+      //console.log(response.data);
+      if (response.data.HTTPStatus.statusCode === 200) {
+        setShowFormError("");
+        setPatientDB(response.data.Result.PatientInfo[0]);
+      } else {
+        setMassError(response.data.HTTPStatus.message);
+        setShowFormError("Error");
+      }
+    })
+    .catch(function (error) {
+      console.log(error);
+      try {
+        const ErrorMass = error.config.url;
+        const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+        setMassError(
+          error.code + " - " + error.message + " - " + ErrorMass2
+        );
+        setShowFormError("Error");
+      } catch (error) {
+        setShowFormError("Error");
+        setMassError(error.response.data.HTTPStatus.message);
+      }
+    });
+
+
+
+
+  
   }, []);
   const handleSelectChange = (event) => {
 
@@ -105,13 +157,18 @@ export default function checkData() {
     setVisitDateTimeL(VisitDateTime) 
 
   };
+  const handleButtonVNClick = (data) => {
+setSuccFurtherClaim2(true)
+  }
+
+  const handleButtonBlackVNClick = (data) => {
+    setSuccFurtherClaim2(false)
+      }
   const handleButtonClick = (data) => {
     //บันทึก Create
 
 
     const [RefId, TransactionNo] = data.split(" | ");
-    // setRefIdL(RefId)
-    // setTransactionNoL(TransactionNo)
 
 console.log(refIdL)
 console.log(transactionNoL)
@@ -119,13 +176,10 @@ console.log(transactionNoL)
        InsurerCode: InsurerCode, 
        RefId: RefId,
        TransactionNo: TransactionNo,
-       PID: ReDux.Patient.Data.PID,
        HN: ReDux.Patient.Data.HN,
        GivenNameTH: ReDux.Patient.Data.GivenNameTH,
        SurnameTH: ReDux.Patient.Data.SurnameTH,
        DateOfBirth: ReDux.Patient.Data.DateOfBirth,
-       PassportNumber: ReDux.Patient.Data.PassportNumber,
-       IdType: ReDux.Patient.Data.IdType,
        VN: detailVN,
        VisitDateTime: visitDateTime,
        AccidentDate: accidentDate,
@@ -134,8 +188,18 @@ console.log(transactionNoL)
        IllnessTypeCode: illnessTypeValue,
        SurgeryTypeCode:  surgeryTypeValue,
        Runningdocument: randomNumber,
+
+       IdType: idTypeValue,
+       // PID: numberValue,
+       PID: "2200000506774",
+       PassportNumber: "",
+       MembershipId:"",  
+       CustomerId : "",
+       PolicyNumber:"",
+       FurtherClaimVN: vNValue,
        FurtherClaimNo: furtherClaimNo,
        FurtherClaimId: furtherClaimId,
+       //VNselect : vNValue,
     }
     console.log(PatientInfo)
     axios
@@ -191,7 +255,7 @@ console.log(response.data)
       SurnameTH: ReDux.Patient.Data.SurnameTH,
       DateOfBirth: ReDux.Patient.Data.DateOfBirth,
       PassportNumber: ReDux.Patient.Data.PassportNumber,
-      IdType: ReDux.Patient.Data.IdType,
+      IdType: numberValue,
       VN: detailVN,
       VisitDateTime: visitDateTime,
       AccidentDate: accidentDate,
@@ -215,11 +279,12 @@ console.log(response.data)
         }
       )
       .then((response) => {
+   
         console.log(response.data)
         setLoad(false)
         // if(response.data.HTTPStatus.statusCode === 200){
           setFurtherClaim(response.data);
-       //   console.log(response.data);
+          console.log(response.data);
         // }else{
          // setMassFurtherError(response.data.HTTPStatus.message);
          // setShowFormFurtherError("Error");
@@ -252,7 +317,9 @@ console.log(response.data)
 
     //  router.push("/aia/opd/eligible");
   };
-
+  const idtype = (event) => {
+    setIdTypeValue(event.target.value);
+  };
   const policy = (event) => {
     setPolicyTypeValue(event.target.value);
   };
@@ -349,6 +416,30 @@ console.log(response.data)
   useEffect(() => {
     axios
       .get(
+       `http://localhost:3000/api/v1/utils/idtype/13`
+        // process.env.NEXT_PUBLIC_URL_PD +
+        //   process.env.NEXT_PUBLIC_URL_idtype +
+        //  InsurerCode
+      )
+      .then((response) => {
+        setIdType(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+        try {
+          const ErrorMass = error.config.url;
+          const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+          setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
+          setShowFormError("Error");
+        } catch (error) {
+          setMassError(error.response.data.HTTPStatus.message);
+          setShowFormError("Error");
+        }
+      });
+  }, []);
+  useEffect(() => {
+    axios
+      .get(
         process.env.NEXT_PUBLIC_URL_PD +
           process.env.NEXT_PUBLIC_URL_ServiceSetting +
           InsurerCode
@@ -380,7 +471,7 @@ console.log(response.data)
         Insurerid: InsurerCode,
         PID: ReDux.Patient.Data.PID,
         PassportNumber: ReDux.Patient.Data.PassportNumber,
-        IdType: ReDux.Patient.Data.IdType,
+        IdType: numberValue,
         ServiceSettingCode: statusValue,
         HN: ReDux.Patient.Data.HN,
         VisitDatefrom: DatefromValue,
@@ -414,11 +505,14 @@ console.log(response.data)
   };
 
   const check = async (event) => {
+    // console.log(idTypeValue)
+    // console.log(numberValue)
     event.preventDefault();
     setFurtherClaim();
     setMass();
     setResult();
     setShowbutton();
+    setSuccFurtherClaim2(false);
     setShowFormCheckEligibleError();
     setSelectedValue();
     setHS();
@@ -431,7 +525,7 @@ console.log(response.data)
     // setVisitDate(VisitDateTime)
     let DateAccValue;
     let TypeValue;
-
+    let PatientInfo;
     if(accValue){
     DateAccValue = dayjs(accValue.$d).format("YYYY-MM-DD");
     }else{
@@ -450,35 +544,48 @@ console.log(response.data)
       TypeValue = "OPD";
     }
 
-    const PatientInfo = {
-      InsurerCode: InsurerCode, // ควรเป็น integer ไม่ใช่ string
-      RefID: "",
-      TransactionNo: "",
-      PID: ReDux.Patient.Data.PID,
-      HN: ReDux.Patient.Data.HN,
-      GivenNameTH: ReDux.Patient.Data.GivenNameTH,
-      SurnameTH: ReDux.Patient.Data.SurnameTH,
-      DateOfBirth: ReDux.Patient.Data.DateOfBirth,
-      PassportNumber: ReDux.Patient.Data.PassportNumber,
-      IdType: ReDux.Patient.Data.IdType,
-      VN: VNselectVN,
-      VisitDateTime: VisitDateselectVN,
-      // AccidentDate: Acc[0],
-      AccidentDate: DateAccValue,
-      PolicyTypeCode: policyTypeValue,
-      ServiceSettingCode: TypeValue,
-      IllnessTypeCode: illnessTypeValue,
-      SurgeryTypeCode: surgeryTypeValue,
-    };
+    if(idTypeValue === "NATIONAL_ID"){
+      PatientInfo = {
+        InsurerCode: InsurerCode, 
+        RefID: "",
+        TransactionNo: "",
+        HN: ReDux.Patient.Data.HN,
+        GivenNameTH: ReDux.Patient.Data.GivenNameTH,
+        SurnameTH: ReDux.Patient.Data.SurnameTH,
+        DateOfBirth: ReDux.Patient.Data.DateOfBirth,
+        VN: VNselectVN,
+        VisitDateTime: VisitDateselectVN,
+        // AccidentDate: Acc[0],
+        AccidentDate: DateAccValue,
+        PolicyTypeCode: policyTypeValue,
+        ServiceSettingCode: TypeValue,
+        IllnessTypeCode: illnessTypeValue,
+        SurgeryTypeCode: surgeryTypeValue,
+  
+        IdType: idTypeValue,
+        // PID: numberValue,
+        PID: "2200000506774",
+        PassportNumber: "",
+        MembershipId:"",  
+        CustomerId : "",
+        PolicyNumber:"",
+        FurtherClaimVN:"",
+        FurtherClaimNo: "",
+        FurtherClaimId: ""
+      };
+    }else{
+
+    }
+   
     console.log(PatientInfo);
     setPatientInfo(PatientInfo)
      try {
       document.getElementById("my_modal_3").showModal();
 
       const response = await axios.post(
-    //  `http://localhost:3000/api/v1/check-eligible/checkeligible/`,
-          process.env.NEXT_PUBLIC_URL_PD +
-            process.env.NEXT_PUBLIC_URL_checkeligible,
+   // `http://localhost:3000/api/v1/check-eligible/checkeligible/`,
+            process.env.NEXT_PUBLIC_URL_PD +
+              process.env.NEXT_PUBLIC_URL_checkeligible,
         {
           PatientInfo,
         }
@@ -566,32 +673,33 @@ console.log(response.data)
       <div className="justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4">
         <h1 className="font-black text-accent text-3xl ">Patient Details</h1>
         <div className="grid grid-cols-4 gap-2 ">
-          <div></div>
           <div>FullName (TH)</div>
           <div>
             {ReDux.Patient.Data.TitleTH} {ReDux.Patient.Data.GivenNameTH}{" "}
             {ReDux.Patient.Data.SurnameTH}
           </div>
-          <div></div>
-          <div></div>
+          <div>หมายเลขบัตรประจำตัวประชาชน</div>
+          <div>{ReDux.Patient.Data.HN}</div>
           <div>FullName (EN)</div>
           <div>
             {ReDux.Patient.Data.TitleEN} {ReDux.Patient.Data.GivenNameEN}{" "}
             {ReDux.Patient.Data.SurnameEN}
           </div>
-          <div></div>
-          <div></div>
+          <div>หมายเลข Passport</div>
+          <div>{ReDux.Patient.Data.HN}</div>
           <div>Date Of Birth</div>
           <div>{ReDux.Patient.Data.DateOfBirth}</div>
-          <div></div>
-          <div></div>
+          <div>หมายเลขประจำตัวสมาชิก</div>
+          <div>{ReDux.Patient.Data.HN}</div>
           <div>Gender</div>
           <div>{ReDux.Patient.Data.Gender}</div>
-          <div></div>
-          <div></div>
+          <div>หมายเลขกรมธรรม์</div>
+          <div>{ReDux.Patient.Data.HN}</div>
           <div>HN</div>
           <div>{ReDux.Patient.Data.HN}</div>
-          <div></div>
+          <div>รหัสลูกค้า</div>
+          <div>{ReDux.Patient.Data.HN}</div>
+
         </div>
 
         <h1 className="font-black text-accent text-3xl ">Visit Details</h1>
@@ -602,6 +710,7 @@ console.log(response.data)
               <div className="">
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DatePicker
+                  
                     label="วันที่เข้ารับการรักษา"
                     value={fromValue}
                     onChange={(newDate) => setFromValue(newDate)}
@@ -736,14 +845,59 @@ console.log(response.data)
                     <div className="rounded-md ">&nbsp;</div>
                   </div>
                 </div>
-                <div className="grid grid-cols-7 gap-2 mt-4">
+                <div className="grid grid-cols-8 gap-2 mt-4">
                   <div></div>
+                  <div>
+                  <FormControl fullWidth>
+                      <InputLabel id="policyTypeValue">
+                        Select Type
+                      </InputLabel>
+                      <Select
+                      error
+                        labelId="policyTypeValue"
+                        id="demo-simple-select"
+                        value={idTypeValue}
+                        label="Select Type"
+                        onChange={idtype}
+                        className=""
+                        required
+                      >
+                        {idType
+                          ? idType.Result.map((id, index) => (
+                              <MenuItem
+                                key={index}
+                                value={id.idtypecode}
+                              >
+                                {id.idtypedesc_th}
+                              </MenuItem>
+                            ))
+                          : ""}
+                      </Select>
+                    </FormControl>
+                  </div>
+                  <div>
+                  <TextField
+                  error
+              id="outlined-basic"
+              label="กรอกข้อความ"
+              // multiline
+              // maxRows={4}
+              variant="outlined"
+              className="w-full"
+              name="number"
+              type="text"
+              value={numberValue}
+              onChange={(e) => setNumberValue(e.target.value)}
+            />
+
+                  </div>
                   <div>
                     <FormControl fullWidth>
                       <InputLabel id="policyTypeValue">
                         ประเภทกรมธรรม์
                       </InputLabel>
                       <Select
+                      error
                         labelId="policyTypeValue"
                         id="demo-simple-select"
                         value={policyTypeValue}
@@ -771,6 +925,7 @@ console.log(response.data)
                         ประเภทของการรักษา
                       </InputLabel>
                       <Select
+                      error
                         labelId="illnessTypeValue"
                         id="demo-simple-select"
                         value={illnessTypeValue}
@@ -844,7 +999,6 @@ console.log(response.data)
                       Check Eligible
                     </button>
                   </div>
-                  <div></div>
                 </div>
               </form>
             </>
@@ -946,7 +1100,42 @@ console.log(response.data)
  
   (patientInfo.IllnessTypeCode === "ER" || patientInfo.IllnessTypeCode === "ACC") ? (
  succFurtherClaim === true ? 
+
+ (succFurtherClaim2 === false ? 
+ <div className="rounded-md">
+                    <TextField
+                  error
+              id="outlined-basic"
+              label="เคลมต่อเนื่อง (VN First Claim form)"
+              // multiline
+              // maxRows={4}
+              variant="outlined"
+              className="w-full"
+              name="VN"
+              type="text"
+              value={vNValue}
+              onChange={(e) => setVNValue(e.target.value)}
+            />
+ <div
+   className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 ml-2 mt-2"
+   onClick={() =>handleButtonVNClick(
+     `${result.Result.InsuranceData.RefId} | ${result.Result.InsuranceData.TransactionNo}`
+   )}
+ >
+   ยืนยันเลือก
+ </div>
+ </div> 
+ :
+
   <div className="rounded-md">
+      <div
+    className="btn btn-error text-base-100 hover:text-error hover:bg-base-100 ml-2"
+    onClick={() =>handleButtonBlackVNClick(
+      `${result.Result.InsuranceData.RefId} | ${result.Result.InsuranceData.TransactionNo}`
+    )}
+  >
+    ย้อนกลับ
+  </div>
   <div
     className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 ml-2"
     onClick={() =>handleButtonClick(
@@ -956,6 +1145,12 @@ console.log(response.data)
     ลงทะเบียนใช้สิทธิ์
   </div>
   </div> 
+ )
+
+
+
+
+
   : (
   furtherClaim ? (<div className="rounded-md w-full">
                   <div role="tablist" className="tabs-bordered">
@@ -1008,8 +1203,8 @@ console.log(response.data)
                 ยืนยัน
               </div>
               </div>
-  </div>) : ( //furtherClaim===""
-
+  </div>) : ( 
+    //furtherClaim===""s
 !selectedValue ? load === true ? <span className="loading loading-spinner text-error size-10 "></span> :
 (<div className="rounded-md">
 <div
@@ -1029,16 +1224,53 @@ console.log(response.data)
   ) )
 
           ) : (
-  <div className="rounded-md">
-  <div
-    className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 ml-2"
-    onClick={() =>handleButtonClick(
+
+
+            (succFurtherClaim2 === false ? 
+              <div className="rounded-md">
+                                    <TextField
+                  error
+              id="outlined-basic"
+              label="เคลมต่อเนื่อง (VN First Claim form)"
+              // multiline
+              // maxRows={4}
+              variant="outlined"
+              className="w-full"
+              name="vn"
+              type="text"
+              value={vNValue}
+              onChange={(e) => setVNValue(e.target.value)}
+            />
+              <div
+                className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 ml-2 mt-2 "
+                onClick={() =>handleButtonVNClick(
+                  `${result.Result.InsuranceData.RefId} | ${result.Result.InsuranceData.TransactionNo}`
+                )}
+              >
+                ยืนยันเลือก
+              </div>
+              </div> 
+              :
+             
+               <div className="rounded-md">
+                      <div
+    className="btn btn-error text-base-100 hover:text-error hover:bg-base-100 ml-2"
+    onClick={() =>handleButtonBlackVNClick(
       `${result.Result.InsuranceData.RefId} | ${result.Result.InsuranceData.TransactionNo}`
     )}
   >
-    ลงทะเบียนใช้สิทธิ์
+    ย้อนกลับ
   </div>
-  </div> 
+               <div
+                 className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 ml-2"
+                 onClick={() =>handleButtonClick(
+                   `${result.Result.InsuranceData.RefId} | ${result.Result.InsuranceData.TransactionNo}`
+                 )}
+               >
+                 ลงทะเบียนใช้สิทธิ์
+               </div>
+               </div> 
+              )
 )
 
  
