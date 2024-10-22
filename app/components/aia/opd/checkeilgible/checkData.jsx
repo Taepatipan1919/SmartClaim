@@ -51,7 +51,7 @@ export default function checkData() {
   const [detailVN, setDetailVN] = useState();
   const [fromValue, setFromValue] = useState(null);
   const [accValue, setAccValue] = useState(null);
-  const [statusValue, setStatusValue] = useState("OPD");
+  const [statusValue, setStatusValue] = useState("");
   const [policyTypeValue, setPolicyTypeValue] = useState("");
   const [idTypeValue, setIdTypeValue] = useState("");
   const [surgeryTypeValue, setSurgeryTypeValue] = useState("");
@@ -76,13 +76,12 @@ export default function checkData() {
   const [selectedValue, setSelectedValue] = useState("");
   const [furtherClaim, setFurtherClaim] = useState("");
   const [furtherClaimNo, setFurtherClaimNo] = useState("");
+  const [furtherVN, setFurtherVN] = useState("");
   const [furtherClaimId, setFurtherClaimId] = useState("");
   const [visitDateTimeL, setVisitDateTimeL] = useState("");
   const [claimNoL, setClaimNoL] = useState("");
   const [patientDB, setPatientDB] = useState("");
   
-
-console.log(patientDB)
 
   useEffect(() => {
     setRandomNumber();
@@ -115,7 +114,7 @@ console.log(patientDB)
       }
     )
     .then(function (response) {
-      //console.log(response.data);
+      console.log(response.data);
       if (response.data.HTTPStatus.statusCode === 200) {
         setShowFormError("");
         setPatientDB(response.data.Result.PatientInfo[0]);
@@ -150,12 +149,13 @@ console.log(patientDB)
     setSelectedValue(event.target.value);
 
   //console.log(event.target.value)
-    const [ClaimNo, FurtherClaimId , VisitDateTime] = event.target.value.split(" | ");
+    const [ClaimNo, FurtherClaimId , VisitDateTime , VN] = event.target.value.split(" | ");
 
     setFurtherClaimId(FurtherClaimId)
     setFurtherClaimNo(ClaimNo)
     setVisitDateTimeL(VisitDateTime) 
-
+    setFurtherVN(VN) 
+    setVNValue(VN)
   };
   const handleButtonVNClick = (data) => {
 setSuccFurtherClaim2(true)
@@ -166,41 +166,152 @@ setSuccFurtherClaim2(true)
       }
   const handleButtonClick = (data) => {
     //บันทึก Create
-
+    let PatientInfo;
 
     const [RefId, TransactionNo] = data.split(" | ");
 
-console.log(refIdL)
-console.log(transactionNoL)
-    const PatientInfo = {
-       InsurerCode: InsurerCode, 
-       RefId: RefId,
-       TransactionNo: TransactionNo,
-       HN: ReDux.Patient.Data.HN,
-       GivenNameTH: ReDux.Patient.Data.GivenNameTH,
-       SurnameTH: ReDux.Patient.Data.SurnameTH,
-       DateOfBirth: ReDux.Patient.Data.DateOfBirth,
-       VN: detailVN,
-       VisitDateTime: visitDateTime,
-       AccidentDate: accidentDate,
-       PolicyTypeCode: policyTypeValue,
-       ServiceSettingCode: statusValue,
-       IllnessTypeCode: illnessTypeValue,
-       SurgeryTypeCode:  surgeryTypeValue,
-       Runningdocument: randomNumber,
+if(idTypeValue === "NATIONAL_ID"){
+  PatientInfo = {
+    InsurerCode: InsurerCode, 
+    RefId: RefId,
+    TransactionNo: TransactionNo,
+    HN: patientDB.HN,
+    GivenNameTH: patientDB.GivenNameTH,
+    SurnameTH: patientDB.SurnameTH,
+    DateOfBirth: patientDB.DateOfBirth,
+    VN: detailVN,
+    VisitDateTime: visitDateTime,
+    AccidentDate: accidentDate,
+    PolicyTypeCode: policyTypeValue,
+    ServiceSettingCode: statusValue,
+    IllnessTypeCode: illnessTypeValue,
+    SurgeryTypeCode:  surgeryTypeValue,
+    Runningdocument: randomNumber,
 
-       IdType: idTypeValue,
-       // PID: numberValue,
-       PID: "2200000506774",
-       PassportNumber: "",
-       MembershipId:"",  
-       CustomerId : "",
-       PolicyNumber:"",
-       FurtherClaimVN: vNValue,
-       FurtherClaimNo: furtherClaimNo,
-       FurtherClaimId: furtherClaimId,
-       //VNselect : vNValue,
-    }
+    IdType: idTypeValue,
+    PID: numberValue,
+    PassportNumber: "",
+    MembershipId:"",  
+    CustomerId : "",
+    PolicyNumber:"",
+    FurtherClaimVN: vNValue,
+    FurtherClaimNo: furtherClaimNo,
+    FurtherClaimId: furtherClaimId,
+ }
+}else if(idTypeValue === "PASSPORT"){
+  PatientInfo = {
+    InsurerCode: InsurerCode, 
+    RefId: RefId,
+    TransactionNo: TransactionNo,
+    HN: patientDB.HN,
+    GivenNameTH: patientDB.GivenNameTH,
+    SurnameTH: patientDB.SurnameTH,
+    DateOfBirth: patientDB.DateOfBirth,
+    VN: detailVN,
+    VisitDateTime: visitDateTime,
+    AccidentDate: accidentDate,
+    PolicyTypeCode: policyTypeValue,
+    ServiceSettingCode: statusValue,
+    IllnessTypeCode: illnessTypeValue,
+    SurgeryTypeCode:  surgeryTypeValue,
+    Runningdocument: randomNumber,
+
+    IdType: idTypeValue,
+    PID: "",
+    PassportNumber: numberValue,
+    MembershipId:"",  
+    CustomerId : "",
+    PolicyNumber:"",
+    FurtherClaimVN: vNValue,
+    FurtherClaimNo: furtherClaimNo,
+    FurtherClaimId: furtherClaimId,
+ }
+}else if(idTypeValue === "MEMBERSHIP_ID"){
+  PatientInfo = {
+    InsurerCode: InsurerCode, 
+    RefId: RefId,
+    TransactionNo: TransactionNo,
+    HN: patientDB.HN,
+    GivenNameTH: patientDB.GivenNameTH,
+    SurnameTH: patientDB.SurnameTH,
+    DateOfBirth: patientDB.DateOfBirth,
+    VN: detailVN,
+    VisitDateTime: visitDateTime,
+    AccidentDate: accidentDate,
+    PolicyTypeCode: policyTypeValue,
+    ServiceSettingCode: statusValue,
+    IllnessTypeCode: illnessTypeValue,
+    SurgeryTypeCode:  surgeryTypeValue,
+    Runningdocument: randomNumber,
+
+    IdType: idTypeValue,
+    PID: "",
+    PassportNumber: "",
+    MembershipId: numberValue,  
+    CustomerId : "",
+    PolicyNumber:"",
+    FurtherClaimVN: vNValue,
+    FurtherClaimNo: furtherClaimNo,
+    FurtherClaimId: furtherClaimId,
+ }
+}else if(idTypeValue === "POLICY_NUMBER"){
+  PatientInfo = {
+    InsurerCode: InsurerCode, 
+    RefId: RefId,
+    TransactionNo: TransactionNo,
+    HN: patientDB.HN,
+    GivenNameTH: patientDB.GivenNameTH,
+    SurnameTH: patientDB.SurnameTH,
+    DateOfBirth: patientDB.DateOfBirth,
+    VN: detailVN,
+    VisitDateTime: visitDateTime,
+    AccidentDate: accidentDate,
+    PolicyTypeCode: policyTypeValue,
+    ServiceSettingCode: statusValue,
+    IllnessTypeCode: illnessTypeValue,
+    SurgeryTypeCode:  surgeryTypeValue,
+    Runningdocument: randomNumber,
+
+    IdType: idTypeValue,
+    PID: "",
+    PassportNumber: "",
+    MembershipId: "",  
+    CustomerId : "",
+    PolicyNumber: numberValue,
+    FurtherClaimVN: vNValue,
+    FurtherClaimNo: furtherClaimNo,
+    FurtherClaimId: furtherClaimId,
+ }
+}else if(idTypeValue === "CUSTOMER_ID"){
+  PatientInfo = {
+    InsurerCode: InsurerCode, 
+    RefId: RefId,
+    TransactionNo: TransactionNo,
+    HN: patientDB.HN,
+    GivenNameTH: patientDB.GivenNameTH,
+    SurnameTH: patientDB.SurnameTH,
+    DateOfBirth: patientDB.DateOfBirth,
+    VN: detailVN,
+    VisitDateTime: visitDateTime,
+    AccidentDate: accidentDate,
+    PolicyTypeCode: policyTypeValue,
+    ServiceSettingCode: statusValue,
+    IllnessTypeCode: illnessTypeValue,
+    SurgeryTypeCode:  surgeryTypeValue,
+    Runningdocument: randomNumber,
+
+    IdType: idTypeValue,
+    PID: "",
+    PassportNumber: "",
+    MembershipId: "",  
+    CustomerId : numberValue,
+    PolicyNumber: "",
+    FurtherClaimVN: vNValue,
+    FurtherClaimNo: furtherClaimNo,
+    FurtherClaimId: furtherClaimId,
+ }
+}
+    
     console.log(PatientInfo)
     axios
     .post(
@@ -211,7 +322,7 @@ console.log(transactionNoL)
       }
     )
     .then((response) => {
-console.log(response.data)
+      console.log(response.data)
 
     })
     .catch((error) => {
@@ -249,12 +360,12 @@ console.log(response.data)
       InsurerCode: InsurerCode,
       RefId: RefId,
       TransactionNo: TransactionNo,
-      PID: ReDux.Patient.Data.PID,
-      HN: ReDux.Patient.Data.HN,
-      GivenNameTH: ReDux.Patient.Data.GivenNameTH,
-      SurnameTH: ReDux.Patient.Data.SurnameTH,
-      DateOfBirth: ReDux.Patient.Data.DateOfBirth,
-      PassportNumber: ReDux.Patient.Data.PassportNumber,
+      PID: patientDB.PID,
+      HN: patientDB.HN,
+      GivenNameTH: patientDB.GivenNameTH,
+      SurnameTH: patientDB.SurnameTH,
+      DateOfBirth: patientDB.DateOfBirth,
+      PassportNumber: patientDB.PassportNumber,
       IdType: numberValue,
       VN: detailVN,
       VisitDateTime: visitDateTime,
@@ -318,7 +429,35 @@ console.log(response.data)
     //  router.push("/aia/opd/eligible");
   };
   const idtype = (event) => {
+    console.log(event.target.value)
     setIdTypeValue(event.target.value);
+    if(event.target.value === "NATIONAL_ID"){
+      setNumberValue(patientDB.PID)
+      if(!patientDB.PID){
+        setNumberValue("");
+      }
+    }else if(event.target.value === "PASSPORT"){
+      setNumberValue(patientDB.PassportNumber)
+      if(!patientDB.PassportNumber){
+        setNumberValue("");
+      }
+    }else if(event.target.value === "MEMBERSHIP_ID"){
+      setNumberValue(patientDB.MembershipId)
+      if(!patientDB.MembershipId){
+        setNumberValue("");
+      }
+    }else if(event.target.value === "POLICY_NUMBER"){
+      setNumberValue(patientDB.PolicyNumber)
+      if(!patientDB.PolicyNumber){
+        setNumberValue("");
+      }
+    }else if(event.target.value === "CUSTOMER_ID"){
+      setNumberValue(patientDB.CustomerId)
+      if(!patientDB.CustomerId){
+        setNumberValue("");
+      }
+    }
+   
   };
   const policy = (event) => {
     setPolicyTypeValue(event.target.value);
@@ -416,10 +555,9 @@ console.log(response.data)
   useEffect(() => {
     axios
       .get(
-       `http://localhost:3000/api/v1/utils/idtype/13`
-        // process.env.NEXT_PUBLIC_URL_PD +
-        //   process.env.NEXT_PUBLIC_URL_idtype +
-        //  InsurerCode
+        process.env.NEXT_PUBLIC_URL_PD +
+          process.env.NEXT_PUBLIC_URL_idtype +
+         InsurerCode
       )
       .then((response) => {
         setIdType(response.data);
@@ -469,15 +607,15 @@ console.log(response.data)
       setShowFormError();
       const PatientInfo = {
         Insurerid: InsurerCode,
-        PID: ReDux.Patient.Data.PID,
-        PassportNumber: ReDux.Patient.Data.PassportNumber,
+        PID: patientDB.PID,
+        PassportNumber: patientDB.PassportNumber,
         IdType: numberValue,
         ServiceSettingCode: statusValue,
-        HN: ReDux.Patient.Data.HN,
+        HN: patientDB.HN,
         VisitDatefrom: DatefromValue,
         VisitDateto: "",
       };
-      // console.log(PatientInfo)
+       console.log(PatientInfo)
       axios
         .post(
           process.env.NEXT_PUBLIC_URL_PD +
@@ -505,7 +643,7 @@ console.log(response.data)
   };
 
   const check = async (event) => {
-    // console.log(idTypeValue)
+
     // console.log(numberValue)
     event.preventDefault();
     setFurtherClaim();
@@ -549,13 +687,12 @@ console.log(response.data)
         InsurerCode: InsurerCode, 
         RefID: "",
         TransactionNo: "",
-        HN: ReDux.Patient.Data.HN,
-        GivenNameTH: ReDux.Patient.Data.GivenNameTH,
-        SurnameTH: ReDux.Patient.Data.SurnameTH,
-        DateOfBirth: ReDux.Patient.Data.DateOfBirth,
+        HN: patientDB.HN,
+        GivenNameTH: patientDB.GivenNameTH,
+        SurnameTH: patientDB.SurnameTH,
+        DateOfBirth: patientDB.DateOfBirth,
         VN: VNselectVN,
         VisitDateTime: VisitDateselectVN,
-        // AccidentDate: Acc[0],
         AccidentDate: DateAccValue,
         PolicyTypeCode: policyTypeValue,
         ServiceSettingCode: TypeValue,
@@ -564,7 +701,7 @@ console.log(response.data)
   
         IdType: idTypeValue,
         // PID: numberValue,
-        PID: "2200000506774",
+        PID: "0480000004185",
         PassportNumber: "",
         MembershipId:"",  
         CustomerId : "",
@@ -573,11 +710,121 @@ console.log(response.data)
         FurtherClaimNo: "",
         FurtherClaimId: ""
       };
-    }else{
-
+    }else if(idTypeValue === "PASSPORT"){
+      PatientInfo = {
+        InsurerCode: InsurerCode, 
+        RefID: "",
+        TransactionNo: "",
+        HN: patientDB.HN,
+        GivenNameTH: patientDB.GivenNameTH,
+        SurnameTH: patientDB.SurnameTH,
+        DateOfBirth: patientDB.DateOfBirth,
+        VN: VNselectVN,
+        VisitDateTime: VisitDateselectVN,
+        AccidentDate: DateAccValue,
+        PolicyTypeCode: policyTypeValue,
+        ServiceSettingCode: TypeValue,
+        IllnessTypeCode: illnessTypeValue,
+        SurgeryTypeCode: surgeryTypeValue,
+  
+        IdType: idTypeValue,
+        PID: "",
+        PassportNumber: numberValue,
+        MembershipId:"",  
+        CustomerId : "",
+        PolicyNumber:"",
+        FurtherClaimVN:"",
+        FurtherClaimNo: "",
+        FurtherClaimId: ""
+      };
+    }else if(idTypeValue === "MEMBERSHIP_ID"){
+      PatientInfo = {
+        InsurerCode: InsurerCode, 
+        RefID: "",
+        TransactionNo: "",
+        HN: patientDB.HN,
+        GivenNameTH: patientDB.GivenNameTH,
+        SurnameTH: patientDB.SurnameTH,
+        DateOfBirth: patientDB.DateOfBirth,
+        VN: VNselectVN,
+        VisitDateTime: VisitDateselectVN,
+        AccidentDate: DateAccValue,
+        PolicyTypeCode: policyTypeValue,
+        ServiceSettingCode: TypeValue,
+        IllnessTypeCode: illnessTypeValue,
+        SurgeryTypeCode: surgeryTypeValue,
+  
+        IdType: idTypeValue,
+        PID: "",
+        PassportNumber: "",
+        MembershipId: numberValue,  
+        CustomerId : "",
+        PolicyNumber:"",
+        FurtherClaimVN:"",
+        FurtherClaimNo: "",
+        FurtherClaimId: ""
+      };
+    }else if(idTypeValue === "POLICY_NUMBER"){
+      PatientInfo = {
+        InsurerCode: InsurerCode, 
+        RefID: "",
+        TransactionNo: "",
+        HN: patientDB.HN,
+        GivenNameTH: patientDB.GivenNameTH,
+        SurnameTH: patientDB.SurnameTH,
+        DateOfBirth: patientDB.DateOfBirth,
+        VN: VNselectVN,
+        VisitDateTime: VisitDateselectVN,
+        AccidentDate: DateAccValue,
+        PolicyTypeCode: policyTypeValue,
+        ServiceSettingCode: TypeValue,
+        IllnessTypeCode: illnessTypeValue,
+        SurgeryTypeCode: surgeryTypeValue,
+  
+        IdType: idTypeValue,
+        PID: "",
+        PassportNumber: "",
+        MembershipId: "",  
+        CustomerId : "",
+        PolicyNumber: numberValue,
+        FurtherClaimVN: "",
+        FurtherClaimNo: "",
+        FurtherClaimId: ""
+      };
+    }else if(idTypeValue === "CUSTOMER_ID"){
+      PatientInfo = {
+        InsurerCode: InsurerCode, 
+        RefID: "",
+        TransactionNo: "",
+        HN: patientDB.HN,
+        GivenNameTH: patientDB.GivenNameTH,
+        SurnameTH: patientDB.SurnameTH,
+        DateOfBirth: patientDB.DateOfBirth,
+        VN: VNselectVN,
+        VisitDateTime: VisitDateselectVN,
+        AccidentDate: DateAccValue,
+        PolicyTypeCode: policyTypeValue,
+        ServiceSettingCode: TypeValue,
+        IllnessTypeCode: illnessTypeValue,
+        SurgeryTypeCode: surgeryTypeValue,
+  
+        IdType: idTypeValue,
+        PID: "",
+        PassportNumber: "",
+        MembershipId: "",  
+        CustomerId : numberValue,
+        PolicyNumber: "",
+        FurtherClaimVN: "",
+        FurtherClaimNo: "",
+        FurtherClaimId: ""
+      };
     }
-   
-    console.log(PatientInfo);
+
+
+
+
+
+   console.log(PatientInfo);
     setPatientInfo(PatientInfo)
      try {
       document.getElementById("my_modal_3").showModal();
@@ -675,30 +922,30 @@ console.log(response.data)
         <div className="grid grid-cols-4 gap-2 ">
           <div>FullName (TH)</div>
           <div>
-            {ReDux.Patient.Data.TitleTH} {ReDux.Patient.Data.GivenNameTH}{" "}
-            {ReDux.Patient.Data.SurnameTH}
+            {patientDB.TitleTH} {patientDB.GivenNameTH}{" "}
+            {patientDB.SurnameTH}
           </div>
           <div>หมายเลขบัตรประจำตัวประชาชน</div>
-          <div>{ReDux.Patient.Data.HN}</div>
+          <div>{patientDB.PID}</div>
           <div>FullName (EN)</div>
           <div>
-            {ReDux.Patient.Data.TitleEN} {ReDux.Patient.Data.GivenNameEN}{" "}
-            {ReDux.Patient.Data.SurnameEN}
+            {patientDB.TitleEN} {patientDB.GivenNameEN}{" "}
+            {patientDB.SurnameEN}
           </div>
           <div>หมายเลข Passport</div>
-          <div>{ReDux.Patient.Data.HN}</div>
+          <div>{patientDB.PassportNumber}</div>
           <div>Date Of Birth</div>
-          <div>{ReDux.Patient.Data.DateOfBirth}</div>
+          <div>{patientDB.DateOfBirth}</div>
           <div>หมายเลขประจำตัวสมาชิก</div>
-          <div>{ReDux.Patient.Data.HN}</div>
+          <div>{patientDB.MembershipId}</div>
           <div>Gender</div>
-          <div>{ReDux.Patient.Data.Gender}</div>
+          <div>{patientDB.Gender}</div>
           <div>หมายเลขกรมธรรม์</div>
-          <div>{ReDux.Patient.Data.HN}</div>
+          <div>{patientDB.PolicyNumber}</div>
           <div>HN</div>
-          <div>{ReDux.Patient.Data.HN}</div>
+          <div>{patientDB.HN}</div>
           <div>รหัสลูกค้า</div>
-          <div>{ReDux.Patient.Data.HN}</div>
+          <div>{patientDB.CustomerId}</div>
 
         </div>
 
@@ -1054,6 +1301,7 @@ console.log(response.data)
           <p className="">HN: {patientInfo.HN}</p>
           <p className="">ชื่อ: {patientInfo.GivenNameTH} {patientInfo.SurnameTH}</p>
           <p className="">วันเกิด: {patientInfo.DateOfBirth}</p>
+          <p className="">VN: {patientInfo.VN}</p>
         </div>
         
         <div className="p-4 border-2  rounded-md bg-white w-3/6 shadow-md ml-2">
@@ -1084,8 +1332,9 @@ console.log(response.data)
                     {selectedValue ?
                     <div className="rounded-md">
                     รักษาแบบต่อเนื่อง : 
-                    <br/>- เลขกรมธรรม์: {claimNoL} 
+                    <br/>- เลขกรมธรรม์: {furtherClaimNo} 
                     <br/>- วันที่เข้ารักษา: {visitDateTimeL} 
+                    <br/>- VN: {furtherVN}
                                     
                                     </div> : ""}
 
@@ -1177,15 +1426,16 @@ console.log(response.data)
                       onChange={handleSelectChange}
                     >
                       <option></option>
+                      {console.log(furtherClaim)}
                {furtherClaim
                         ? furtherClaim.Result.InsuranceData.FurtherClaimList.map(
                             (ftc, index) => (
                               <option
                                 key={index}
-                                value={`${ftc.ClaimNo} | ${ftc.FurtherClaimId} | ${ftc.VisitDateTime}`}
+                                value={`${ftc.ClaimNo} | ${ftc.FurtherClaimId} | ${ftc.VisitDateTime} | ${ftc.VN}`}
                               >
                                 เลขกรมธรรม์: {ftc.ClaimNo}, วันที่เข้ารักษา:{" "}
-                                {ftc.VisitDateTime.split("T")[0]}
+                                {ftc.VisitDateTime.split("T")[0]} VN: {ftc.VN}
                               </option>
                             )
                           )
@@ -1227,7 +1477,10 @@ console.log(response.data)
 
 
             (succFurtherClaim2 === false ? 
-              <div className="rounded-md">
+              (
+                <div className="flex  w-full mt-4">
+              <h1 className="text-lg">VN : </h1>
+
                                     <TextField
                   error
               id="outlined-basic"
@@ -1250,6 +1503,7 @@ console.log(response.data)
                 ยืนยันเลือก
               </div>
               </div> 
+              )
               :
              
                <div className="rounded-md">

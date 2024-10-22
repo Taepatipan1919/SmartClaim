@@ -1501,7 +1501,8 @@ export default function DetailDischarge({ data }) {
                       fileList.map((list, index) => (
                         <tr key={index} className=" bg-neutral text-sm">
                           <td className="px-6 py-4 whitespace-nowrap">
-                            {list.originalname}
+                          {list.filename}
+                          <br/>{list.originalname}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                           

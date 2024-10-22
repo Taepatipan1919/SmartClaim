@@ -628,12 +628,37 @@ export default function checkData() {
         }
       )
       .then((response) => {
+        setBillList();
         console.log(response.data);
        document.getElementById("my_modal_3").close();
         setShowModal(true);
         setTimeout(() => {
           setShowModal(false);
-          //router.push('/aia/opd/submitBilling');
+         
+          axios
+          .post(
+            process.env.NEXT_PUBLIC_URL_SV +
+              process.env.NEXT_PUBLIC_URL_SearchTransection,
+          {PatientInfo : patientUpdate}
+          )
+          .then((response) => {
+            setPost(response.data);
+           // console.log(response.data)
+          //  setCurrentData(response.data.Result.TransactionClaimInfo)
+            setShowFormError();
+          })
+          .catch((error) => {
+            console.log(error);
+  
+            setShowFormError("Error");
+            setMassError(error.message);
+          });
+
+
+
+
+
+
         }, 2000);
       })
       .catch((error) => {
@@ -667,8 +692,6 @@ export default function checkData() {
         }
       )
       .then((response) => {
-       // setBase64(response.data);
-
        setMsg(
         <div role="alert" className="alert alert-success text-base-100">
           <svg
@@ -688,6 +711,71 @@ export default function checkData() {
         </div>
       );
 
+
+
+
+      axios
+        .post(
+          process.env.NEXT_PUBLIC_URL_PD +
+            process.env.NEXT_PUBLIC_URL_getcheckclaimstatus,
+          { 
+            PatientInfo : {
+              InsurerCode: InsuranceCode,
+              RefId: refIdL,
+              TransactionNo: transactionNoL,
+              PID: pIDL,
+              PassportNumber: passportNumberL,
+              HN: hNL,
+              VN: vNL,
+            }
+
+           }
+        )
+        .then((response) => {
+          console.log(response.data);
+  
+          if (response.data.HTTPStatus.statusCode === 200) {
+           // console.log(response.data)
+            setStatusNew((prevData) => ({
+              ...prevData,
+              InsurerCode: response.data.Result.InsuranceData.InsurerCode,
+              BatchNumber: response.data.Result.InsuranceData.BatchNumber,
+              ClaimStatus: response.data.Result.InsuranceData.ClaimStatus,
+              ClaimStatusDesc: response.data.Result.InsuranceData.ClaimStatusDesc,
+              TotalApproveAmount: response.data.Result.InsuranceData.TotalApproveAmount,
+              PaymentDate: response.data.Result.InsuranceData.PaymentDate,
+              InvoiceNumber: response.data.Result.InsuranceData.InvoiceNumber,
+              RefId : response.data.Result.InsuranceData.RefId,
+              TransactionNo : response.data.Result.InsuranceData.TransactionNo,
+              // HN : response.data.Result.InsuranceData.HN,
+              // VN : response.data.Result.InsuranceData.VN,
+            }));
+  
+            // setShowModal(true)
+            // setTimeout(() => {
+            //   setShowModal(false)
+              //router.push('/aia/opd/submitBilling');
+            // }, 5000);
+          } else {
+            setShowFormError("Error");
+            setMassError(response.data.HTTPStatus.error);
+          }
+         })
+        .catch((error) => {
+          console.log(error);
+          // try {
+          //   const ErrorMass = error.config.url;
+          //   const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+          //   setMassError(
+          //     error.code + " - " + error.message + " - " + ErrorMass2
+          //   );
+          //   setShowFormError("Error");
+          // } catch (error) {
+          //   setMassError("Error ในการเปิดไฟล์");
+          //   setShowFormError("Error");
+          // }
+        });
+
       axios
         .post(
           process.env.NEXT_PUBLIC_URL_PD2 +
@@ -706,7 +794,6 @@ export default function checkData() {
         )
         .then((response) => {
           setBillList(response.data);
-          //console.log(response.data)
         })
         .catch((error) => {
           console.log(error);
@@ -987,46 +1074,8 @@ export default function checkData() {
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-  // const data = {
-  //   datadetail : [
-  //     {
-  //       HN: "1",
-  //       VN: "111111"
-  //     },
-  //     {
-  //       HN: "2",
-  //       VN: "222222"
-  //     },
-  //     {
-  //       HN: "3",
-  //       VN: "333333"
-  //     },
-  //     {
-  //       HN: "4",
-  //       VN: "444444"
-  //     },
-  //     {
-  //       HN: "5",
-  //       VN: "555555"
-  //     },
-  //     {
-  //       HN: "6",
-  //       VN: "666666"
-  //     },
-  //     {
-  //       HN: "7",
-  //       VN: "777777"
-  //     },
-
-  //   ],
-
-
-  // };
-    
-
-
   ////////////////////////// ตัวเลื่อน ตารางซ้าย - ขวา ///////////////////////////////////////////
-  const ITEMS_PER_PAGE = 2
+  const ITEMS_PER_PAGE = 10
     const [currentPage, setCurrentPage] = useState(1);
     const [count, setCount] = useState(0);
     const handleNextPage = () => {
@@ -1044,7 +1093,7 @@ export default function checkData() {
    const data = currentData.slice(startIndex, endIndex);
 
    //////////////////// Chack Status (20data)///////////////////////////
-   console.log(data)
+//   console.log(data)
 
 
     ///////////////////////////////////////////////
@@ -1053,13 +1102,6 @@ export default function checkData() {
     setCount(data.length);
   }, [data]);
 /////////////////////////////////////////////////////////////////////
-
-
-    
-
-
-
-
 
 
 
@@ -1244,6 +1286,7 @@ export default function checkData() {
                 <th>ClaimNo</th>
                 <th>Invoicenumber</th>
                 <th>Status</th>
+                <th>Totalbillamount</th>
                 <th>ApprovedAmount</th>
                 <th>ExcessAmount</th>
                 <th></th>
@@ -1268,19 +1311,32 @@ export default function checkData() {
                       <td>{bill.InvoiceNumber}</td>
                       <td>
                       <div className="grid gap-1 sm:grid-cols-1 w-full">
-                        {/* {console.log(statusNew)} */}
+                         {console.log(statusNew)} 
                         {statusNew
                             ? bill.TransactionNo === statusNew.TransactionNo
-                            ? statusNew.ClaimStatusDesc ? <a className="bg-success text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatus}</a> : ""
-                            : bill.ClaimStatusDesc ? <a className="bg-success text-base-100 rounded-full px-3 py-2">{bill.ClaimStatusDesc_EN}</a> : ""
+                            ? statusNew.ClaimStatusDesc ? 
+                            (((statusNew.ClaimStatus !== "Cancelled")&&(statusNew.ClaimStatus !== "Cancelled to AIA")&&(statusNew.ClaimStatus !== "Reversed")) ? <a className="bg-success text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatus}</a> : <a className="bg-error text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatus}</a>)
+                            : ""
+                            : bill.ClaimStatusDesc ? 
+                              (((bill.ClaimStatusDesc_EN !== "Cancelled")&&(bill.ClaimStatusDesc_EN !== "Cancelled to AIA")&&(bill.ClaimStatusDesc_EN !== "Reversed")) ? <a className="bg-success text-base-100 rounded-full px-3 py-2">{bill.ClaimStatusDesc_EN}</a> : <a className="bg-error text-base-100 rounded-full px-3 py-2">{bill.ClaimStatusDesc_EN}</a>)
+                               : ""
                             : "Loading..."}
                        
-                        {((bill.FurtherClaimNo)||(bill.FurtherClaimId) ? <a className="bg-warning rounded-full px-3 py-2">( แบบต่อเนื่อง )</a> : "")}
+                        {((bill.FurtherClaimNo)||(bill.FurtherClaimId) ? <a className="rounded-full px-3 py-2">( แบบต่อเนื่อง )</a> : "")}
                       </div>
                       </td>
                       <th>
                       {bill.TotalApprovedAmount
                           ? parseFloat(bill.TotalApprovedAmount).toLocaleString('en-US', {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })
+                          : ""}
+                          
+                      </th>
+                      <th>
+                      {bill.ApprovedAmount
+                          ? parseFloat(bill.ApprovedAmount).toLocaleString('en-US', {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 2,
                           })
@@ -1294,7 +1350,7 @@ export default function checkData() {
                       </th>
                       <td>
                       {bill.RefId ? (
-                            ((bill.ClaimStatusDesc !== "Cancelled to AIA")&&(bill.ClaimNo)) ? (
+                            (((bill.ClaimStatusDesc !== "Cancelled to AIA")&&(bill.ClaimStatusDesc !== "Cancelled")&&(bill.ClaimStatusDesc !== "Reversed"))&&(bill.ClaimNo)) ? (
                               <>
                         <div className="tooltip" data-tip="รีเฟรช">
                           <h1
@@ -1310,7 +1366,11 @@ export default function checkData() {
                         </div>
                         </>) : ("")) : ("")}
                         {bill.RefId ? (
-                            ((((bill.ClaimStatusDesc === "Approve")||(bill.ClaimStatusDesc === "waitting for discharge"))&&(bill.ClaimStatusDesc !== "Cancelled to AIA")) || (((bill.ClaimStatusDesc === "Received")||(bill.ClaimStatusDesc === "waitting for discharge"))&&(bill.ClaimStatusDesc !== "Cancelled to AIA")) || (((bill.ClaimStatusDesc === "waitting discharge")||(bill.ClaimStatusDesc === "waitting for discharge"))&&(bill.ClaimStatusDesc !== "Cancelled to AIA"))) ? (
+                            ((
+                              ((bill.ClaimStatusDesc === "Approve")||(bill.ClaimStatusDesc === "waitting for discharge"))
+                              &&(bill.ClaimStatusDesc !== "Cancelled to AIA")) || (((bill.ClaimStatusDesc === "Received")||(bill.ClaimStatusDesc === "waitting for discharge"))
+                              &&(bill.ClaimStatusDesc !== "Cancelled to AIA")) || (((bill.ClaimStatusDesc === "waitting discharge")||(bill.ClaimStatusDesc === "waitting for discharge"))
+                              &&(bill.ClaimStatusDesc !== "Cancelled to AIA"))) ? (
                               <>
                         <div className="tooltip ml-4" data-tip="ข้อมูลส่งเคลม">
                           <h1
@@ -1327,8 +1387,7 @@ export default function checkData() {
                         {bill.RefId ? 
                             (bill.ClaimStatusDesc !== "waitting for discharge" ? (
                               <>
-                        <div
-                                  className="tooltip ml-4"
+                        <div className="tooltip ml-4"
                                   data-tip="ยกเลิกการเคลม"
                                 >
                                   <h1
@@ -1344,8 +1403,7 @@ export default function checkData() {
                                 </div>
                                 </>
                             ): ("")) : ("")}
-                                                      </>
-                                                    ) : ( "")) : ( "")}
+                       </> ) : ( "")) : ( "")}
         
 
                         <div
@@ -1380,12 +1438,7 @@ export default function checkData() {
                                   ส่งเอกสารเพิ่มเติม
                                 </button>
                               </>
-                            ) : (
-                              ""
-                            )
-                          ) : (
-                            ""
-                          )}
+                            ) : ("")) : ("")}
                       </td>
                     </tr>
                     ))
@@ -1449,7 +1502,7 @@ export default function checkData() {
 
 
           <dialog id="my_modal_3" className="modal text-xl	">
-            <div className="modal-box max-w-3xl">
+            <div className="modal-box w-11/12 max-w-5xl">
               <form method="dialog">
       <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
     </form>
@@ -1540,7 +1593,7 @@ export default function checkData() {
                       {billList ? (
                         billList.map((list, index) => (
                           <tr key={index} className=" bg-neutral text-sm">
-                            <td className="px-6 py-4 whitespace-nowrap">
+                            <td className="px-6 py-4 whitespace-nowrap text-wrap">
                               {list.filename}
                               <br/>{list.originalname}
                             </td>

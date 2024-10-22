@@ -34,6 +34,7 @@ import {
 import { styled } from "@mui/material/styles";
 
 export default function Page({ data }) {
+  console.log(data)
   const error = {
     response: {
       data: {
@@ -824,6 +825,7 @@ export default function Page({ data }) {
   const CancleDoc = (data) => {
     const isConfirmed = window.confirm("แน่ใจแล้วที่จะลบเอกสารใช่ไหม");
     if (isConfirmed) {
+      setFileList();
     setMsg();
     setShowDocError();
     setProgress({ started: false, pc: 0 });
@@ -863,39 +865,38 @@ export default function Page({ data }) {
         </div>
       );
       axios
-        .post(
-          process.env.NEXT_PUBLIC_URL_PD2 +
-            process.env.NEXT_PUBLIC_URL_getlistDocumentName,
-          {
-            "PatientInfo":{
-            RefId: PatientInfoData.PatientInfo.RefId,
-            TransactionNo: PatientInfoData.PatientInfo.TransactionNo,
-            HN: PatientInfoData.PatientInfo.HN,
-            VN: PatientInfoData.PatientInfo.VN,
-            DocumenttypeCode : "001",
-            Runningdocument : PatientInfoData.PatientInfo.Runningdocument,
-
-            }
+      .post(
+        process.env.NEXT_PUBLIC_URL_PD2 +
+          process.env.NEXT_PUBLIC_URL_getlistDocumentName,
+        {
+          "PatientInfo":{
+          RefId: PatientInfoData.PatientInfo.RefId,
+          TransactionNo: PatientInfoData.PatientInfo.TransactionNo,
+          HN: PatientInfoData.PatientInfo.HN,
+          VN: PatientInfoData.PatientInfo.VN,
+          DocumenttypeCode : "001",
+          Runningdocument : PatientInfoData.PatientInfo.Runningdocument,
           }
-        )
-        .then((response) => {
-          setFileList(response.data);
-          //console.log(response.data)
-        })
-        .catch((error) => {
-          console.log(error);
-          try {
-            const ErrorMass = error.config.url;
-            const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
-            setMassDocError(
-              error.code + " - " + error.message + " - " + ErrorMass2
-            );
-            setShowDocError("Error");
-          } catch (error) {
-            setMassDocError(error.response.data.HTTPStatus.message);
-            setShowDocError("Error");
-          }
-        });
+        }
+      )
+      .then((response) => {
+        setFileList(response.data);
+        //console.log(response.data)
+      })
+      .catch((error) => {
+        console.log(error);
+        try {
+          const ErrorMass = error.config.url;
+          const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+          setMassDocError(
+            error.code + " - " + error.message + " - " + ErrorMass2
+          );
+          setShowDocError("Error");
+        } catch (error) {
+          setMassDocError(error.response.data.HTTPStatus.message);
+          setShowDocError("Error");
+        }
+      });
 
 
 
@@ -3015,7 +3016,7 @@ if(rows){
                           (inv.InvestigationCode) && (
                             <tr key={index} className=" bg-neutral text-sm">
                               <td>
-                                {inv.InvestigationCode ? "1" : <>&nbsp;</>}
+                              {index + 1}
                               </td>
                               <td>
                                 <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
@@ -3338,7 +3339,8 @@ if(rows){
                       fileList.map((list, index) => (
                         <tr key={index} className=" bg-neutral text-sm">
                           <td className="px-6 py-4 whitespace-nowrap">
-                            {list.originalname}
+                          {list.filename}
+                          <br/>{list.originalname}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                           

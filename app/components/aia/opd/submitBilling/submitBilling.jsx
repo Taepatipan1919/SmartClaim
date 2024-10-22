@@ -152,6 +152,7 @@ export default function checkData() {
       );
       return;
     }
+    setBillList();
     setMsg();
     setShowDocError();
     setProgress({ started: false, pc: 0 });
@@ -214,9 +215,9 @@ export default function checkData() {
         HN: hNL,
         PassportNumber: passportNumberL,
         VN: vNL,
-        DocumenttypeCode: "003",
+        DocumenttypeCode: "",
         DocumentName : "",
-        Runningdocument : randomNumber,
+        Runningdocument : "",
       }
       axios
         .post(
@@ -379,37 +380,6 @@ export default function checkData() {
         //  setMassError(error.response.data.HTTPStatus.message);
       });
 
-    // console.log(patientInfoDetail)
-    //   axios
-    //     .post(
-    //       process.env.NEXT_PUBLIC_URL_SV +
-    //         process.env.NEXT_PUBLIC_URL_SearchTransection,
-    //      {
-    //       "PatientInfo": {
-    //       InsurerCode: patientInfoDetail.InsurerCode, 
-    //       PID: patientInfoDetail.PID,
-    //       PassportNumber: patientInfoDetail.PassportNumber,
-    //       HN: patientInfoDetail.HN,
-    //       VN: patientInfoDetail.VN,
-    //       InvoiceNumber: patientInfoDetail.InvoiceNumber,
-    //       StatusClaimCode: patientInfoDetail.StatusClaimCode,
-    //       VisitDatefrom: patientInfoDetail.VisitDatefrom,
-    //       VisitDateto: patientInfoDetail.VisitDateto
-    //   }
-    // }  
-    //     )
-    //     .then((response) => {
-    //       setPost(response.data);
-    //       console.log(response.data);
-    // //      setShowFormError();
-    //     })
-    //     .catch((error) => {
-    //       // console.error("Error", error)
-    //       console.log(error);
-
-    //       setShowFormError("Error");
-    //       setMassError(error.message);
-    //     });
 
   };
 
@@ -640,74 +610,74 @@ console.log(PatientInfo)
          setShowFormError("Error");
          setMassError(error.message);
        });
+
+
       }else {
         setShowFormError("Error");
         setMassError("กรุณากรอก ข้อความที่จะค้นหาให้ครบ");
       }
 
-
-
-    // else{
-    //   setShowFormError()
-    // console.log(data)
-
-    // axios
-    // .post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-submitbilling/selectbilling",
-    //         //ส่งเป็น statisCode
-    //         data
-    // )
-    // .then((response) => {
-    //   setPost(response.data);
-    //   setShowFormError("");
-    // })
-    // .catch((error) => {
-    //  // console.error("Error", error)
-    //   console.log(error)
-
-    //           setShowFormError("Error");
-    //           setMassError(error.message);
-
-    // });
-
-    // }
   };
 
   const submitbilling = (event) => {
+    // // // //ส่งบิล
     setMsg();
+
     setShowDocError();
     event.preventDefault();
     //วนลูบ DocList
     let filenames = {};
-    filenames = billList.map((Bll) => ({ DocName: Bll.filename }));
+    filenames = billList.map((Bll) => Bll.documenttypecode === "003" &&({ DocName: Bll.filename }));
     
-    const PatientInfo = {
-      InsurerCode: InsuranceCode,
-      RefId: refIdL,
-      TransactionNo: transactionNoL,
-      VN: vNL,
-      InvoiceNumber: invoiceNumberL,
-      DocumenttypeCode  : "003",
-      Runningdocument: randomNumber,
-      AttachDocList: [filenames],
-    };
-
-    console.log(PatientInfo);
-
+  
     axios
       .post(
         process.env.NEXT_PUBLIC_URL_PD2 +
           process.env.NEXT_PUBLIC_URL_getbillingsubmission,
-        { PatientInfo }
+        { 
+          PatientInfo : {
+          InsurerCode: InsuranceCode,
+          RefId: refIdL,
+          TransactionNo: transactionNoL,
+          VN: vNL,
+          InvoiceNumber: invoiceNumberL,
+          DocumenttypeCode  : "003",
+          Runningdocument: "",
+          AttachDocList: filenames,
+        }
+      }
       )
       .then((response) => {
-        console.log(response.data);
+        // setPost();
+       // console.log(response.data);
         if(response.data.HTTPStatus.statusCode === 200){
         document.getElementById("my_modal_3").close()
         setShowModal(true)
         setTimeout(() => {
           setShowModal(false)
-          //router.push('/aia/opd/submitBilling');
+
+
+          axios
+          .post(
+            process.env.NEXT_PUBLIC_URL_SV +
+              process.env.NEXT_PUBLIC_URL_SearchTransection,
+             {PatientInfo : patientInfoDetail}
+          )
+          .then((response) => {
+            setPost(response.data);
+            console.log(response.data)
+          setCurrentData(response.data.Result.TransactionClaimInfo)
+           setShowFormError();
+          })
+          .catch((error) => {
+            console.log(error);
+  
+           setShowFormError("Error");
+           setMassError(error.message);
+          });
+
         }, 2000);
+
       }else{
           console.log("Error")
           setShowDocError("Error")
@@ -730,6 +700,7 @@ console.log(PatientInfo)
       });
   };
   const DocumentBase64 = (data) => {
+    setBillList();
     setMsg();
     setProgress({ started: false, pc: 0 });
 //Update Doc
@@ -739,7 +710,7 @@ const PatientInfo = {
   VN: "",
   HN: "",
   DocumentName: data,
-  DocumenttypeCode: "",
+  DocumenttypeCode: "003",
 };
 axios
 .post(
@@ -750,8 +721,40 @@ axios
   }
 )
 .then((response) => {
- // setBillList();
-   console.log(response.data)
+
+  const PatientInfo = {
+    InsurerCode: InsuranceCode,
+    RefId: refIdL,
+    TransactionNo: transactionNoL,
+    PID: pIDL,
+    HN: hNL,
+    PassportNumber: passportNumberL,
+    VN: vNL,
+    DocumenttypeCode: "",
+    DocumentName : "",
+    Runningdocument : "",
+  }
+  //console.log(PatientInfo)
+  axios
+    .post(
+      process.env.NEXT_PUBLIC_URL_PD2 +
+        process.env.NEXT_PUBLIC_URL_getlistDocumentName,
+      { PatientInfo }
+    )
+    .then((response) => {
+      setBillList(response.data);
+      console.log(response.data)
+    })
+    .catch((error) => {
+      // console.error("Error", error)
+      console.log(error);
+      //  if (err.response.request.status === 500) {
+      setShowFormError("Error");
+      setMassError(error.response.data.HTTPStatus.message);
+    });
+
+
+
 })
 .catch((error) => {
   console.log(error);
@@ -874,7 +877,7 @@ axios
         VN: vNL,
         DocumenttypeCode: "",
         DocumentName : "",
-        Runningdocument : randomNumber,
+        Runningdocument : "",
         
       };
       console.log(PatientInfo)
@@ -1179,6 +1182,7 @@ axios
                 <th>Invoicenumber</th>
                 <td>BatchNumber</td>
                 <th>Status</th>
+                <th>Totalbillamount</th>
                 <th>ApprovedAmount</th>
                 <th>ExcessAmount</th>
                 <th></th>
@@ -1206,13 +1210,26 @@ axios
                       <div className="grid gap-1 sm:grid-cols-1 w-full">
                       {statusNew
                             ? bill.TransactionNo === statusNew.TransactionNo
-                            ? statusNew.ClaimStatusDesc ? <a className="bg-success text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatus}</a> : ""
-                            : bill.ClaimStatusDesc ? <a className="bg-success text-base-100 rounded-full px-3 py-2">{bill.ClaimStatusDesc_EN}</a> : ""
+                            ? statusNew.ClaimStatusDesc ? 
+                            (((statusNew.ClaimStatus !== "Cancelled")&&(statusNew.ClaimStatus !== "Cancelled to AIA")&&(statusNew.ClaimStatus !== "Reversed")) ? <a className="bg-success text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatus}</a> : <a className="bg-error text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatus}</a>)
+                            : ""
+                            : bill.ClaimStatusDesc ? 
+                              (((bill.ClaimStatusDesc_EN !== "Cancelled")&&(bill.ClaimStatusDesc_EN !== "Cancelled to AIA")&&(bill.ClaimStatusDesc_EN !== "Reversed")) ? <a className="bg-success text-base-100 rounded-full px-3 py-2">{bill.ClaimStatusDesc_EN}</a> : <a className="bg-error text-base-100 rounded-full px-3 py-2">{bill.ClaimStatusDesc_EN}</a>)
+                               : ""
                             : "Loading..."}
                        
-                        {((bill.FurtherClaimNo)||(bill.FurtherClaimId) ? <a className="bg-warning rounded-full px-3 py-2">( แบบต่อเนื่อง )</a> : "")}
+                        {((bill.FurtherClaimNo)||(bill.FurtherClaimId) ? <a className="rounded-full px-3 py-2">( แบบต่อเนื่อง )</a> : "")}
                       </div>
                       </td>
+                      <th>
+                      {bill.TotalApprovedAmount
+                          ? parseFloat(bill.TotalApprovedAmount).toLocaleString('en-US', {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })
+                          : ""}
+                          
+                      </th>
                       <th>
                       {bill.TotalApprovedAmount
                           ? parseFloat(bill.TotalApprovedAmount).toLocaleString('en-US', {
@@ -1229,14 +1246,14 @@ axios
                       </th>
                       <td>
                       {bill.RefId ? (
-                            ((bill.ClaimStatusDesc !== "Cancelled to AIA")) ? (
+                            (((bill.ClaimStatusDesc !== "Cancelled to AIA")&&(bill.ClaimStatusDesc !== "Cancelled")&&(bill.ClaimStatusDesc !== "Reversed"))&&(bill.ClaimNo)) ? (
                               <>
                         <div className="tooltip" data-tip="รีเฟรช">
                           <h1
                             className="text-primary text-2xl"
                             onClick={() =>
                               Refresh(
-                                `${bill.RefId} | ${bill.TransactionNo} | ${bill.PID} | ${bill.PassportNumber} | ${bill.HN} | ${bill.VN} | ${bill.InvoiceNumber} | ${bill.PolicyTypeCode} | ${bill.IdType} | ${bill.IllnessTypeCode} | ${bill.ServiceSettingCode} | ${bill.SurgeryTypeCode} | ${bill.FurtherClaimNo} | ${bill.FurtherClaimId} | ${bill.AccidentDate} | ${bill.VisitDateTime}`
+                                `${bill.RefId} | ${bill.TransactionNo} | ${bill.PID} | ${bill.PassportNumber} | ${bill.HN} | ${bill.VN} | ${bill.InvoiceNumber} | ${bill.PolicyTypeCode} | ${bill.IdType} | ${bill.IllnessTypeCode} | ${bill.ServiceSettingCode} | ${bill.SurgeryTypeCode} | ${bill.FurtherClaimNo} | ${bill.FurtherClaimId} | ${bill.AccidentDate} | ${bill.VisitDateTime} | ${bill.VisitDate}`
                               )
                             }
                           >
@@ -1244,32 +1261,49 @@ axios
                           </h1>
                         </div>
                         </>) : ("")) : ("")}
-                  {/* {statusNew ? (
-                          bill.RefId ? (
-                            (bill.ClaimStatusDesc === "Approve" || bill.ClaimStatusDesc === "Received") ? (
-                              <> */}
+                        {bill.RefId ? (
+                            ((
+                              ((bill.ClaimStatusDesc === "Approve")||(bill.ClaimStatusDesc === "waitting for discharge"))
+                              &&(bill.ClaimStatusDesc !== "Cancelled to AIA")) || (((bill.ClaimStatusDesc === "Received")||(bill.ClaimStatusDesc === "waitting for discharge"))
+                              &&(bill.ClaimStatusDesc !== "Cancelled to AIA")) || (((bill.ClaimStatusDesc === "waitting discharge")||(bill.ClaimStatusDesc === "waitting for discharge"))
+                              &&(bill.ClaimStatusDesc !== "Cancelled to AIA"))) ? (
+                              <>
                         <div className="tooltip ml-4" data-tip="ข้อมูลส่งเคลม">
                           <h1
                             className="text-primary text-2xl"
                             onClick={() =>
                               Detail(
-                                `${bill.RefId} | ${bill.TransactionNo} | ${bill.PID} | ${bill.PassportNumber} | ${bill.HN} | ${bill.VN} | ${bill.InvoiceNumber}`
+                                 `${bill.RefId} | ${bill.TransactionNo} | ${bill.PID} | ${bill.PassportNumber} | ${bill.HN} | ${bill.VN} | ${bill.InvoiceNumber} | ${bill.PolicyTypeCode} | ${bill.IdType} | ${bill.IllnessTypeCode} | ${bill.ServiceSettingCode} | ${bill.SurgeryTypeCode} | ${bill.FurtherClaimNo} | ${bill.FurtherClaimId} | ${bill.AccidentDate} | ${bill.VisitDateTime} | ${bill.VisitDate} | ${bill.Runningdocument}`
                               )
                             }
                           >
                             <IoDocumentText />
                           </h1>
                         </div>
-                        {/* </>
-                         ) : (
-                          ""
-                        )
-                      ) : (
-                        "Loading..."
-                      )
-                    ) : (
-                      ""
-                    )} */}
+                        {bill.RefId ? 
+                            (bill.ClaimStatusDesc !== "waitting for discharge" ? (
+                              <>
+                        <div
+                                  className="tooltip ml-4"
+                                  data-tip="ยกเลิกการเคลม"
+                                >
+                                  <h1
+                                    className="text-primary text-2xl"
+                                    onClick={() =>
+                                      Cancel(
+                                        `${bill.RefId} | ${bill.TransactionNo} | ${bill.PID} | ${bill.PassportNumber} | ${bill.HN} | ${bill.VN} | ${bill.InvoiceNumber}`
+                                      )
+                                    }
+                                  >
+                                    <MdCancel />
+                                  </h1>
+                                </div>
+                                </>
+                            ): ("")) : ("")}
+                                                      </>
+                                                    ) : ( "")) : ( "")}
+        
+
                         <div
                                   className="tooltip ml-4"
                                   data-tip="ดู เอกสารทั้งหมด"
@@ -1285,39 +1319,10 @@ axios
                                 <HiDocumentSearch />
                                 </h1>
                                 </div>
-                        {/* {statusNew ? (
-                          bill.RefId ? (
-                            (bill.ClaimStatusDesc !== "Cancelled" && bill.ClaimStatusDesc !== "Reversed") ? (
-                              <>
-                                <div
-                                  className="tooltip ml-4"
-                                  data-tip="ยกเลิกการเคลม"
-                                >
-                                  <h1
-                                    className="text-primary text-2xl"
-                                    onClick={() =>
-                                      Cancel(
-                                        `${bill.RefId} | ${bill.TransactionNo} | ${bill.PID} | ${bill.PassportNumber} | ${bill.HN} | ${bill.VN} | ${bill.InvoiceNumber}`
-                                      )
-                                    }
-                                  >
-                                    <MdCancel />
-                                  </h1>
-                                </div>
-                              </>
-                            ) : (
-                              ""
-                            )
-                          ) : (
-                            "Loading..."
-                          )
-                        ) : (
-                          ""
-                        )} */}
+
                       </td>
                       <td>
-                        {statusNew ? (
-                          bill.RefId ? (
+                        {bill.RefId ? (
                             (bill.ClaimStatusDesc === "Approve" || bill.ClaimStatusDesc === "Received") ? (
                               <>
                                 <button
@@ -1337,9 +1342,7 @@ axios
                           ) : (
                             "Loading..."
                           )
-                        ) : (
-                          ""
-                        )}
+                      }
                         </td>
                     </tr>
                     ))
@@ -1393,8 +1396,8 @@ axios
 
 
 
-          <dialog id="my_modal_3" className="modal text-xl	">
-            <div className="modal-box">
+          <dialog id="my_modal_3" className="modal text-xl	w-full">
+            <div className="modal-box w-11/12 max-w-5xl">
               <form method="dialog">
                 <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
                   ✕
@@ -1402,7 +1405,56 @@ axios
 
                 <h3 className="font-bold text-lg">ส่งเอกสาร วางบิล</h3>
                 <hr />
-                <div className="grid gap-2 w-full mt-2">
+                <div className="flex items-center mt-3">
+                  <table className="table table-zebra mt-2">
+                    <thead>
+                      <tr className="text-base-100 bg-primary py-8 text-sm w-full text-center">
+                        <th className="w-2/5">ชื่อไฟล์ จากการเงิน</th>
+                        <th className="w-1/5"></th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+              {/* {console.log(billList)} */}
+                      {billList ? (
+                        billList.map((list, index) => 
+                          list.documenttypecode !== "003" &&
+                          (
+                          <tr key={index} className=" bg-neutral text-sm">
+                            <td className="px-6 py-4 whitespace-nowrap text-wrap">
+                              {list.filename}
+                              <br/>{list.originalname}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                        
+                                <div
+                                  className="btn btn-primary  mr-2 text-base-100 hover:text-primary hover:bg-base-100"
+                                  type="submit"
+                                  onClick={() => DocumentBase64(list.filename)}
+                                >
+                                  Document
+                                </div>
+                     
+                             
+                                <div className="btn btn-error  mr-2 text-base-100 hover:text-error hover:bg-base-100" type="submit"
+                                onClick={() => CancleDoc(list.filename)}
+                                >
+                                Cancel
+                                </div>
+                      
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td></td>
+                          <td></td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+
+                <div className="grid gap-2 w-full mt-10">
                   <div className="px-2 rounded-md">
                     <div className="flex items-center ">
                       <input
@@ -1456,20 +1508,21 @@ axios
                   ""
                 )}
 
-                <div className="flex items-center mt-3">
-                  <table className="table table-zebra mt-2">
+                <div className="flex items-center mt-3 ">
+                  <table className="table table-zebra mt-2 ">
                     <thead>
-                      <tr className="text-base-100 bg-primary py-8 text-sm w-full text-center">
-                        <th className="w-2/5">ชื่อไฟล์</th>
+                      <tr className="text-base-100 bg-primary text-sm text-center">
+                        <th className="w-2/5">ชื่อไฟล์ ส่งบิล</th>
                         <th className="w-1/5"></th>
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
               
                       {billList ? (
-                        billList.map((list, index) => (
+                        billList.map((list, index) => 
+                          list.documenttypecode === "003" &&(
                           <tr key={index} className=" bg-neutral text-sm">
-                            <td className="px-6 py-4 whitespace-nowrap">
+                            <td className="text-wrap">
                               {list.filename}
                               <br/>{list.originalname}
                             </td>
