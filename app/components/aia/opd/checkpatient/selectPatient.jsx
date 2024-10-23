@@ -261,7 +261,7 @@ export default function SelectPatient() {
         }
       )
       .then(function (response) {
-        // console.log(response.data);
+         console.log(response.data);
         setPatientFindforUpdate(response.data);
         document.getElementById("my_modal_1").showModal();
       })
@@ -977,21 +977,48 @@ export default function SelectPatient() {
                       .PassportNumber
                   : ""}
               </div>
+              
+
+
+
               <div className="rounded-md ">
-                <p className="text-left">Date of Birth</p>
+                <p className="text-left">หมายเลขประจำตัวสมาชิก</p>
               </div>
               <div className="rounded-md text-center">
                 {patientFindforUpdate
                   ? patientFindforUpdate.Result.PatientInfo.PatientDatabase
-                      .DateOfBirth
+                      .MembershipId
                   : ""}
               </div>
               <div className="rounded-md text-center">
+              </div>
+              <div className="rounded-md ">
+                <p className="text-left">หมายเลขกรมธรรม์</p>
+              </div>
+              <div className="rounded-md text-center">
                 {patientFindforUpdate
-                  ? patientFindforUpdate.Result.PatientInfo.PatientTrakcare
-                      .DateOfBirth
+                  ? patientFindforUpdate.Result.PatientInfo.PatientDatabase
+                      .PolicyNumber
                   : ""}
               </div>
+              <div className="rounded-md text-center">
+              </div>
+              <div className="rounded-md ">
+                <p className="text-left">รหัสลูกค้า</p>
+              </div>
+              <div className="rounded-md text-center">
+                {patientFindforUpdate
+                  ? patientFindforUpdate.Result.PatientInfo.PatientDatabase
+                      .CustomerId
+                  : ""}
+              </div>
+              <div className="rounded-md text-center">
+              </div>
+
+
+
+
+
               <div className="rounded-md ">
                 <p className="text-left">HN</p>
               </div>
@@ -1065,6 +1092,21 @@ export default function SelectPatient() {
                 {patientFindforUpdate
                   ? patientFindforUpdate.Result.PatientInfo.PatientTrakcare
                       .SurnameEN
+                  : ""}
+              </div>
+              <div className="rounded-md ">
+                <p className="text-left">Date of Birth</p>
+              </div>
+              <div className="rounded-md text-center">
+                {patientFindforUpdate
+                  ? patientFindforUpdate.Result.PatientInfo.PatientDatabase
+                      .DateOfBirth
+                  : ""}
+              </div>
+              <div className="rounded-md text-center">
+                {patientFindforUpdate
+                  ? patientFindforUpdate.Result.PatientInfo.PatientTrakcare
+                      .DateOfBirth
                   : ""}
               </div>
               <div className="rounded-md ">

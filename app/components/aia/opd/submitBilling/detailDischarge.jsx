@@ -14,7 +14,7 @@ import {
 
 export default function DetailDischarge({ data }) {
   
-    // console.log(data)
+     console.log(data)
   const [patientInfo, setPatientInfo] = useState({});
 
   const [patien, setPatien] = useState();
@@ -97,7 +97,8 @@ export default function DetailDischarge({ data }) {
   useEffect(() => {
    
     axios
-  .post(process.env.NEXT_PUBLIC_URL_SV + process.env.NEXT_PUBLIC_URL_ReviewOPDDischarge,{
+  .post(process.env.NEXT_PUBLIC_URL_SV + process.env.NEXT_PUBLIC_URL_ReviewOPDDischarge,
+    {
     "PatientInfo": {
       "InsurerCode": 13, 
       "RefId": data.RefId,

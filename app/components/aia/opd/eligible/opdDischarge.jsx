@@ -34,7 +34,7 @@ import {
 import { styled } from "@mui/material/styles";
 
 export default function Page({ data }) {
-  console.log(data)
+  //console.log(data)
   const error = {
     response: {
       data: {
@@ -182,11 +182,12 @@ export default function Page({ data }) {
         SurgeryTypeCode: data.DataTran.Data.SurgeryTypeCode,
         FurtherClaimNo: data.DataTran.Data.FurtherClaimNo,
         FurtherClaimId: data.DataTran.Data.FurtherClaimId,
+        FutherclaimVN: data.DataTran.Data.FutherclaimVN,
         Runningdocument: randomNumber,
 
     },
   };
-  //console.log(PatientInfoData.PatientInfo.Runningdocument)
+  console.log(PatientInfoData.PatientInfo)
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.value = "";
@@ -228,15 +229,30 @@ export default function Page({ data }) {
   }, []);
 
   useEffect(() => {
+    const PatientInfo = {
+      InsurerCode: InsuranceCode,
+      IdType: "HOSPITAL_ID",
+      PID: "",
+      HN: PatientInfoData.PatientInfo.HN,
+      PassportNumber: "",
+    }
+    console.log(PatientInfo)
     axios
-      .get(
-        process.env.NEXT_PUBLIC_URL_SV +
-          process.env.NEXT_PUBLIC_URL_PatientInfoByPID +
-          PatientInfoData.PatientInfo.PID
-      )
+      // .get(
+      //   process.env.NEXT_PUBLIC_URL_SV +
+      //     process.env.NEXT_PUBLIC_URL_PatientInfoByPID +
+      //     PatientInfoData.PatientInfo.PID
+      // ) 
+      .post(
+        process.env.NEXT_PUBLIC_URL_PD2 +
+        process.env.NEXT_PUBLIC_URL_PatientSearch,
+      {
+        PatientInfo
+      }
+    )
       .then((response) => {
-        setPatientInfoByPID(response.data);
-      //  console.log(response.data)
+        setPatientInfoByPID(response.data.Result.PatientInfo[0]);
+        console.log(response.data.Result.PatientInfo[0])
       })
       .catch((error) => {
         console.log(error);
@@ -1454,7 +1470,7 @@ if(rows){
                       <CustomTextField
                         id="disabledInput"
                         label="คำนำหน้าชื่อ"
-                        defaultValue={patientInfoByPID.PatientInfo.TitleTH}
+                        defaultValue={patientInfoByPID.TitleTHc}
                         className="w-full text-black rounded disabled:text-black disabled:bg-gray-300 cursor-not-allowed"
                         InputProps={{ readOnly: true }}
                       />
@@ -1471,7 +1487,7 @@ if(rows){
                       <CustomTextField
                         id="disabledInput"
                         label="FirstName (TH)"
-                        defaultValue={patientInfoByPID.PatientInfo.GivenNameTH}
+                        defaultValue={patientInfoByPID.GivenNameTH}
                         className="w-full text-black rounded disabled:text-black disabled:bg-gray-300 cursor-not-allowed"
                         InputProps={{ readOnly: true }}
                       />
@@ -1488,7 +1504,7 @@ if(rows){
                       <CustomTextField
                         id="disabledInput"
                         label="LastName (TH)"
-                        defaultValue={patientInfoByPID.PatientInfo.SurnameTH}
+                        defaultValue={patientInfoByPID.SurnameTH}
                         className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"
                         InputProps={{ readOnly: true }}
                       />
@@ -1505,13 +1521,13 @@ if(rows){
                       <CustomTextField
                         id="disabledInput"
                         label="PID"
-                        defaultValue={PatientInfoData.PatientInfo.PID}
+                        defaultValue={patientInfoByPID.PID}
                         className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"
                         InputProps={{ readOnly: true }}
                       />
                     </Box>
                   </div>
-                  {PatientInfoData.PatientInfo.PassportNumber ? (
+                  {patientInfoByPID.PassportNumber ? (
                     <div className="rounded-md">
                       <Box
                         sx={{
@@ -1524,7 +1540,7 @@ if(rows){
                           id="disabledInput"
                           label="Passport"
                           defaultValue={
-                            PatientInfoData.PatientInfo.PassportNumber
+                            patientInfoByPID.PassportNumber
                           }
                           className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"
                           InputProps={{ readOnly: true }}
@@ -1545,7 +1561,7 @@ if(rows){
                       <CustomTextField
                         id="disabledInput"
                         label="Date of Birth (YYYY-MM-DD)"
-                        defaultValue={patientInfoByPID.PatientInfo.DateOfBirth}
+                        defaultValue={patientInfoByPID.DateOfBirth}
                         className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"
                         InputProps={{ readOnly: true }}
                       />
@@ -1579,7 +1595,7 @@ if(rows){
                       <CustomTextField
                         id="disabledInput"
                         label="Gender"
-                        defaultValue={patientInfoByPID.PatientInfo.Gender}
+                        defaultValue={patientInfoByPID.Gender}
                         className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"
                         InputProps={{ readOnly: true }}
                       />
@@ -1739,8 +1755,12 @@ if(rows){
                   ) : (
                     ""
                   )}
+                  
                 </div>
 
+                <div className="rounded-md mt-2 text-xl text-error">
+                  Claim form จาก VN : {PatientInfoData.PatientInfo.FutherclaimVN ? PatientInfoData.PatientInfo.FutherclaimVN : PatientInfoData.PatientInfo.VN }
+                </div>
                 <div className="grid gap-2 sm:grid-cols-2 w-full mt-4">
                   <div className="rounded-md mt-2">
                     <TextField

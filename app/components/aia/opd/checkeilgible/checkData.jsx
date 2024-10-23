@@ -118,6 +118,7 @@ export default function checkData() {
       if (response.data.HTTPStatus.statusCode === 200) {
         setShowFormError("");
         setPatientDB(response.data.Result.PatientInfo[0]);
+        console.log(response.data.Result.PatientInfo[0])
       } else {
         setMassError(response.data.HTTPStatus.message);
         setShowFormError("Error");

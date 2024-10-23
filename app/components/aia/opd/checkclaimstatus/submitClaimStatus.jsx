@@ -464,12 +464,16 @@ export default function checkData() {
       });
   };
 
+
+
+
+
   const Detail = (data) => {
-      //  console.log(data)
+     //   console.log(data)
     //console.log("-Detail-")
     setShowFormError();
     const [RefId, TransactionNo, PID, PassportNumber, HN, VN, 
-      InvoiceNumber,PolicyTypeCode, IdType, IllnessTypeCode, ServiceSettingCode, SurgeryTypeCode, FurtherClaimNo, FurtherClaimId, AccidentDate, VisitDateTime, VisitDate, randomNumberold] = data.split(" | ");
+      InvoiceNumber,PolicyTypeCode, IdType, IllnessTypeCode, ServiceSettingCode, SurgeryTypeCode, FurtherClaimNo, FurtherClaimId, AccidentDate, VisitDateTime, VisitDate, randomNumberold , futherclaimVN , location] = data.split(" | ");
 
       const   PatientInfo = {
         Insurerid: InsuranceCode,
@@ -482,7 +486,7 @@ export default function checkData() {
         VisitDatefrom: VisitDate,
         VisitDateto: "",
       }
-      console.log(PatientInfo)
+    //  console.log(PatientInfo)
 
       axios
         .post(
@@ -491,7 +495,7 @@ export default function checkData() {
         )
         .then((response) => {
         const  getEpisodeByHN = response.data.Result.PatientInfo;
-          console.log(response.data)
+        //  console.log(response.data)
           dispatch(save2({
             value: "มีรายชื่อ",
             Data:
@@ -537,9 +541,11 @@ export default function checkData() {
           PolicyTypeCode: PolicyTypeCode,
           AccidentDate: AccidentDate,
           VisitDateTime: VisitDateTime,
+          FutherclaimVN: futherclaimVN,
           FurtherClaimNo : FurtherClaimNo,
           FurtherClaimId : FurtherClaimId,
           Runningdocument :  randomNumberold,
+          location : location,
 
         },
       })
@@ -547,7 +553,7 @@ export default function checkData() {
 
 
 
-    router.push("/aia/opd/eligible");
+     router.push("/aia/opd/eligible");
 
 
   };
@@ -1092,9 +1098,40 @@ export default function checkData() {
  //console.log(endIndex +"="+startIndex+"+"+ITEMS_PER_PAGE) 
    const data = currentData.slice(startIndex, endIndex);
 
-   //////////////////// Chack Status (20data)///////////////////////////
-//   console.log(data)
+   //////////////////// Chack Status All///////////////////////////
 
+   const RefreshAll = () => {
+   // console.log(data)
+
+
+  const extractedRefId = data.map(item => item.RefId);
+  const extractedTransactionNo = data.map(item => item.TransactionNo);
+
+  const PatientInfo = data.map(item => ({
+    RefId: item.RefId,
+    TransactionNo: item.TransactionNo
+  }));
+  
+  
+      
+    
+ console.log(PatientInfo)
+    //  axios
+    //    .post(
+    //      process.env.NEXT_PUBLIC_URL_PD +
+    //        process.env.NEXT_PUBLIC_URL_getcheckclaimstatus,
+    //      { PatientInfo }
+    //    )
+    //    .then((response) => {
+    //      console.log(response.data);
+
+ 
+ 
+    //     })
+    //    .catch((error) => {
+    //      console.log(error);
+    //    });
+   };
 
     ///////////////////////////////////////////////
   
@@ -1285,11 +1322,18 @@ export default function checkData() {
                 <th>VN</th>
                 <th>ClaimNo</th>
                 <th>Invoicenumber</th>
-                <th>Status</th>
+                <th className="w-40">Status</th>
                 <th>Totalbillamount</th>
                 <th>ApprovedAmount</th>
                 <th>ExcessAmount</th>
-                <th></th>
+                <th>                        
+                          <h1
+                            className="text-base-100 text-2xl"
+                            onClick={RefreshAll}
+                          >
+                            <LuRefreshCw />
+                          </h1>
+                </th>
                 <th></th>
               </tr>
             </thead>
@@ -1311,18 +1355,19 @@ export default function checkData() {
                       <td>{bill.InvoiceNumber}</td>
                       <td>
                       <div className="grid gap-1 sm:grid-cols-1 w-full">
-                         {console.log(statusNew)} 
+                         {/* {console.log(statusNew)}  */}
                         {statusNew
                             ? bill.TransactionNo === statusNew.TransactionNo
                             ? statusNew.ClaimStatusDesc ? 
-                            (((statusNew.ClaimStatus !== "Cancelled")&&(statusNew.ClaimStatus !== "Cancelled to AIA")&&(statusNew.ClaimStatus !== "Reversed")) ? <a className="bg-success text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatus}</a> : <a className="bg-error text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatus}</a>)
+                            (((statusNew.ClaimStatus !== "Cancelled")&&(statusNew.ClaimStatus !== "Cancelled to AIA")&&(statusNew.ClaimStatus !== "Reversed")) ? ((statusNew.ClaimStatus === "Approved")||(statusNew.ClaimStatus === "Settle")) ? <a className="bg-success text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatus}</a> : <a className="bg-secondary text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatus}</a> : <a className="bg-error text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatus}</a>)
                             : ""
                             : bill.ClaimStatusDesc ? 
-                              (((bill.ClaimStatusDesc_EN !== "Cancelled")&&(bill.ClaimStatusDesc_EN !== "Cancelled to AIA")&&(bill.ClaimStatusDesc_EN !== "Reversed")) ? <a className="bg-success text-base-100 rounded-full px-3 py-2">{bill.ClaimStatusDesc_EN}</a> : <a className="bg-error text-base-100 rounded-full px-3 py-2">{bill.ClaimStatusDesc_EN}</a>)
+                              (((bill.ClaimStatusDesc_EN !== "Cancelled")&&(bill.ClaimStatusDesc_EN !== "Cancelled to AIA")&&(bill.ClaimStatusDesc_EN !== "Reversed")) ? ((bill.ClaimStatus === "Approved")||(bill.ClaimStatus === "Settle")) ? <a className="bg-success text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatus}</a> : <a className="bg-secondary text-base-100 rounded-full px-3 py-2">{bill.ClaimStatusDesc_EN}</a> : <a className="bg-error text-base-100 rounded-full px-3 py-2">{bill.ClaimStatusDesc_EN}</a>)
                                : ""
                             : "Loading..."}
                        
                         {((bill.FurtherClaimNo)||(bill.FurtherClaimId) ? <a className="rounded-full px-3 py-2">( แบบต่อเนื่อง )</a> : "")}
+                        {((bill.AccidentDate)||((bill.IllnessTypeCode === "ACC")||(bill.IllnessTypeCode === "ER")) ? <a className="rounded-full px-3 py-2">( อุบัติเหตุ )</a> : "")}
                       </div>
                       </td>
                       <th>
@@ -1377,7 +1422,7 @@ export default function checkData() {
                             className="text-primary text-2xl"
                             onClick={() =>
                               Detail(
-                                 `${bill.RefId} | ${bill.TransactionNo} | ${bill.PID} | ${bill.PassportNumber} | ${bill.HN} | ${bill.VN} | ${bill.InvoiceNumber} | ${bill.PolicyTypeCode} | ${bill.IdType} | ${bill.IllnessTypeCode} | ${bill.ServiceSettingCode} | ${bill.SurgeryTypeCode} | ${bill.FurtherClaimNo} | ${bill.FurtherClaimId} | ${bill.AccidentDate} | ${bill.VisitDateTime} | ${bill.VisitDate} | ${bill.Runningdocument}`
+                                 `${bill.RefId} | ${bill.TransactionNo} | ${bill.PID} | ${bill.PassportNumber} | ${bill.HN} | ${bill.VN} | ${bill.InvoiceNumber} | ${bill.PolicyTypeCode} | ${bill.IdType} | ${bill.IllnessTypeCode} | ${bill.ServiceSettingCode} | ${bill.SurgeryTypeCode} | ${bill.FurtherClaimNo} | ${bill.FurtherClaimId} | ${bill.AccidentDate} | ${bill.VisitDateTime} | ${bill.VisitDate} | ${bill.Runningdocument} | ${bill.futherclaimVN} | ${bill.location}`
                               )
                             }
                           >
