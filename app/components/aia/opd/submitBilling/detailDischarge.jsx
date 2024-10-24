@@ -91,7 +91,7 @@ export default function DetailDischarge({ data }) {
   useEffect(() => {
     setPatien();
     // setPatientInfo();
-    document.getElementById("my_modal_4").showModal();
+    document.getElementById("my_modal_5").showModal();
   }, [data]);
 
   useEffect(() => {
@@ -99,45 +99,45 @@ export default function DetailDischarge({ data }) {
     axios
   .post(process.env.NEXT_PUBLIC_URL_SV + process.env.NEXT_PUBLIC_URL_ReviewOPDDischarge,
     {
-      // "PatientInfo" : {
-      //   "InsurerCode": 13, 
-      //   "RefId": data.RefId,
-      //   "TransactionNo": data.TransactionNo,   
-      //   "PID": data.PID,
-      //   "HN": data.HN,
-      //   "GivenNameTH": "",
-      //   "SurnameTH": "",
-      //   "DateOfBirth": "",
-      //   "PassportNumber": data.PassportNumber,
-      //   "IdType": data.IdType,
-      //   "VN": data.VN,
-      //   "VisitDateTime": data.VisitDateTime,
-      //   "AccidentDate":"",
-      //   "PolicyTypeCode":"",
-      //   "ServiceSettingCode": "", 
-      //   "IllnessTypeCode": "",
-      //   "SurgeryTypeCode":  ""
+      "PatientInfo" : {
+        "InsurerCode": 13, 
+        "RefId": data.RefId,
+        "TransactionNo": data.TransactionNo,   
+        "PID": data.PID,
+        "HN": data.HN,
+        "GivenNameTH": "",
+        "SurnameTH": "",
+        "DateOfBirth": "",
+        "PassportNumber": data.PassportNumber,
+        "IdType": data.IdType,
+        "VN": data.VN,
+        "VisitDateTime": data.VisitDateTime,
+        "AccidentDate":"",
+        "PolicyTypeCode":"",
+        "ServiceSettingCode": "", 
+        "IllnessTypeCode": "",
+        "SurgeryTypeCode":  ""
     
-      //   },
-      "PatientInfo": {
-        InsurerCode: 13, 
-        RefId: "qdJseSIsLJhkom1wvRbVWMbNr83caECQjC+vvuEaIKY=",
-        TransactionNo: "929ad67e-36a4-43d4-95a9-a20b3bbfe4e9",   
-        PID: "3101300272990",
-        HN: "377273-44",
-        GivenNameTH: "",
-        SurnameTH: "",
-        DateOfBirth: "",
-        PassportNumber:"",
-        IdType:"NATIONAL_ID",
-        VN: "O579875-67",
-        VisitDateTime: "2024-10-24 10:02",
-        AccidentDate:"",
-        PolicyTypeCode:"",
-        ServiceSettingCode: "", 
-        IllnessTypeCode: "",
-        SurgeryTypeCode:  ""
         },
+      // "PatientInfo": {
+      //   InsurerCode: 13, 
+      //   RefId: "qdJseSIsLJhkom1wvRbVWMbNr83caECQjC+vvuEaIKY=",
+      //   TransactionNo: "929ad67e-36a4-43d4-95a9-a20b3bbfe4e9",   
+      //   PID: "3101300272990",
+      //   HN: "377273-44",
+      //   GivenNameTH: "",
+      //   SurnameTH: "",
+      //   DateOfBirth: "",
+      //   PassportNumber:"",
+      //   IdType:"NATIONAL_ID",
+      //   VN: "O579875-67",
+      //   VisitDateTime: "2024-10-24 10:02",
+      //   AccidentDate:"",
+      //   PolicyTypeCode:"",
+      //   ServiceSettingCode: "", 
+      //   IllnessTypeCode: "",
+      //   SurgeryTypeCode:  ""
+      //   },
     }
       
   )
@@ -213,7 +213,7 @@ export default function DetailDischarge({ data }) {
 
   return (
     <>
-      <dialog id="my_modal_4" className="modal">
+      <dialog id="my_modal_5" className="modal">
         <div className="modal-box w-11/12 max-w-7xl">
           <div className="justify-center border-solid m-auto border-2 border-warning rounded-lg p-4">
             <h1 className="font-black text-accent text-3xl ">Patient Info</h1>
