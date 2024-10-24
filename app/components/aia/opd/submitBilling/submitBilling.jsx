@@ -648,25 +648,47 @@ console.log(PatientInfo)
       }
       )
       .then((response) => {
-        // setPost();
-       // console.log(response.data);
+     
+       console.log(response.data);
         if(response.data.HTTPStatus.statusCode === 200){
         document.getElementById("my_modal_3").close()
         setShowModal(true)
         setTimeout(() => {
           setShowModal(false)
 
+      let PatientInfo;
+if(!patientInfoDetail) {
+  const today = dayjs().format('YYYY-MM-DD');
+  
+    PatientInfo = {
+      InsurerCode: InsuranceCode,
+       IdType: "",
+      InvoiceNumber: "",
+      VN: "",
+      PID: "",
+      PassportNumber: "",
+      HN: "",
+      VisitDatefrom: today,
+      VisitDateto: today,
+      StatusClaimCode: "",
+    };
 
+  }else{
+  PatientInfo = patientInfoDetail;
+
+      }
+console.log(PatientInfo)
+setPost();
           axios
           .post(
             process.env.NEXT_PUBLIC_URL_SV +
               process.env.NEXT_PUBLIC_URL_SearchTransection,
-             {PatientInfo : patientInfoDetail}
+             {PatientInfo }
           )
           .then((response) => {
-            setPost(response.data);
+           setPost(response.data);
             console.log(response.data)
-          setCurrentData(response.data.Result.TransactionClaimInfo)
+         setCurrentData(response.data.Result.TransactionClaimInfo)
            setShowFormError();
           })
           .catch((error) => {
@@ -679,7 +701,7 @@ console.log(PatientInfo)
         }, 2000);
 
       }else{
-          console.log("Error")
+         // console.log("Error")
           setShowDocError("Error")
           setMassDocError(response.data.HTTPStatus.message)
       }
@@ -982,7 +1004,7 @@ axios
       )
       .then((response) => {
         setBillList(response.data);
-        console.log(response.data)
+        // console.log(response.data)
       })
       .catch((error) => {
         // console.error("Error", error)
@@ -1088,8 +1110,8 @@ axios
               <TextField
                 id="standard-multiline-flexible"
                 label="กรอกข้อความ"
-                multiline
-                maxRows={4}
+                //multiline
+               // maxRows={4}
                 variant="standard"
                 className="w-96"
                 name="number"
@@ -1211,10 +1233,10 @@ axios
                       {statusNew
                             ? bill.TransactionNo === statusNew.TransactionNo
                             ? statusNew.ClaimStatusDesc ? 
-                            (((statusNew.ClaimStatus !== "Cancelled")&&(statusNew.ClaimStatus !== "Cancelled to AIA")&&(statusNew.ClaimStatus !== "Reversed")) ? ((statusNew.ClaimStatus === "Approved")||(statusNew.ClaimStatus === "Settle")) ? <a className="bg-success text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatus}</a> : <a className="bg-secondary text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatus}</a> : <a className="bg-error text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatus}</a>)
+                            (((statusNew.ClaimStatus !== "Cancelled")&&(statusNew.ClaimStatus !== "Cancelled to AIA")&&(statusNew.ClaimStatus !== "Reversed")) ? ((statusNew.ClaimStatus === "Approved")||(statusNew.ClaimStatus === "Settle")) ? <a className="bg-success text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatus}</a> : <a className="bg-warning text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatus}</a> : <a className="bg-error text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatus}</a>)
                             : ""
                             : bill.ClaimStatusDesc ? 
-                              (((bill.ClaimStatusDesc_EN !== "Cancelled")&&(bill.ClaimStatusDesc_EN !== "Cancelled to AIA")&&(bill.ClaimStatusDesc_EN !== "Reversed")) ? ((bill.ClaimStatus === "Approved")||(bill.ClaimStatus === "Settle")) ? <a className="bg-success text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatus}</a> : <a className="bg-secondary text-base-100 rounded-full px-3 py-2">{bill.ClaimStatusDesc_EN}</a> : <a className="bg-error text-base-100 rounded-full px-3 py-2">{bill.ClaimStatusDesc_EN}</a>)
+                              (((bill.ClaimStatusDesc_EN !== "Cancelled")&&(bill.ClaimStatusDesc_EN !== "Cancelled to AIA")&&(bill.ClaimStatusDesc_EN !== "Reversed")) ? ((bill.ClaimStatus === "Approved")||(bill.ClaimStatus === "Settle")) ? <a className="bg-success text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatus}</a> : <a className="bg-warning text-base-100 rounded-full px-3 py-2">{bill.ClaimStatusDesc_EN}</a> : <a className="bg-error text-base-100 rounded-full px-3 py-2">{bill.ClaimStatusDesc_EN}</a>)
                                : ""
                             : "Loading..."}
                        
@@ -1274,14 +1296,14 @@ axios
                             className="text-primary text-2xl"
                             onClick={() =>
                               Detail(
-                                 `${bill.RefId} | ${bill.TransactionNo} | ${bill.PID} | ${bill.PassportNumber} | ${bill.HN} | ${bill.VN} | ${bill.InvoiceNumber} | ${bill.PolicyTypeCode} | ${bill.IdType} | ${bill.IllnessTypeCode} | ${bill.ServiceSettingCode} | ${bill.SurgeryTypeCode} | ${bill.FurtherClaimNo} | ${bill.FurtherClaimId} | ${bill.AccidentDate} | ${bill.VisitDateTime} | ${bill.VisitDate} | ${bill.Runningdocument} | ${bill.futherclaimVN} | ${bill.location}`
+                                 `${bill.RefId} | ${bill.TransactionNo} | ${bill.PID} | ${bill.PassportNumber} | ${bill.HN} | ${bill.VN} | ${bill.InvoiceNumber} | ${bill.PolicyTypeCode} | ${bill.IdType} | ${bill.IllnessTypeCode} | ${bill.ServiceSettingCode} | ${bill.SurgeryTypeCode} | ${bill.FurtherClaimNo} | ${bill.FurtherClaimId} | ${bill.AccidentDate} | ${bill.VisitDateTime} | ${bill.VisitDate} | ${bill.Runningdocument} | ${bill.futherclaimVN} | ${bill.Visitlocation}`
                               )
                             }
                           >
                             <IoDocumentText />
                           </h1>
                         </div>
-                        {bill.RefId ? 
+                        {/* {bill.RefId ? 
                             (bill.ClaimStatusDesc !== "waitting for discharge" ? (
                               <>
                         <div
@@ -1289,7 +1311,7 @@ axios
                                   data-tip="ยกเลิกการเคลม"
                                 >
                                   <h1
-                                    className="text-primary text-2xl"
+                                    className="text-error text-2xl"
                                     onClick={() =>
                                       Cancel(
                                         `${bill.RefId} | ${bill.TransactionNo} | ${bill.PID} | ${bill.PassportNumber} | ${bill.HN} | ${bill.VN} | ${bill.InvoiceNumber}`
@@ -1300,7 +1322,7 @@ axios
                                   </h1>
                                 </div>
                                 </>
-                            ): ("")) : ("")}
+                            ): ("")) : ("")} */}
                                                       </>
                                                     ) : ( "")) : ( "")}
         

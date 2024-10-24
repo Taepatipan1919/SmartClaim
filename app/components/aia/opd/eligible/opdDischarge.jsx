@@ -154,7 +154,7 @@ export default function Page({ data }) {
 
   }, []);
 
-
+  
   const PatientInfoData = {
     PatientInfo: {
       InsurerCode: data.DataTran.Data.InsurerCode,
@@ -187,7 +187,7 @@ export default function Page({ data }) {
 
     },
   };
-  console.log(PatientInfoData.PatientInfo)
+  //console.log(PatientInfoData.PatientInfo)
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.value = "";
@@ -269,11 +269,81 @@ export default function Page({ data }) {
   }, []);
 
   useEffect(() => {
+    let Data;
+    if(data.DataTran.Data.FutherclaimVN){
+      Data = {
+        PatientInfo : {
+          InsurerCode: data.DataTran.Data.InsurerCode,
+          RefId: data.DataTran.Data.RefId,
+          TransactionNo: data.DataTran.Data.TransactionNo,
+          PID: data.Patient.Data.PID,
+          HN: data.Patient.Data.HN,
+          GivenNameTH: data.Patient.Data.GivenNameTH,
+          SurnameTH: data.Patient.Data.SurnameTH,
+          DateOfBirth: data.Patient.Data.DateOfBirth,
+          PassportNumber: data.Patient.Data.PassportNumber,
+            IdType: data.Patient.Data.IdType,
+          VN: data.DataTran.Data.FutherclaimVN,
+            VisitDateTime: data.DataTran.Data.VisitDateTime,
+          ChiefComplaint: "",
+          PresentIllness: "",
+            AccidentDate: data.DataTran.Data.AccidentDate,
+          AccidentPlaceCode: "",
+          WoundDetails: "",
+          AccidentInjurySideCode: "",
+          AccidentInjuryWoundtypeCode: "",
+            PolicyTypeCode: data.DataTran.Data.PolicyTypeCode,
+            ServiceSettingCode: data.DataTran.Data.ServiceSettingCode,
+            IllnessTypeCode: data.DataTran.Data.IllnessTypeCode,
+            SurgeryTypeCode: data.DataTran.Data.SurgeryTypeCode,
+            FurtherClaimNo: data.DataTran.Data.FurtherClaimNo,
+            FurtherClaimId: data.DataTran.Data.FurtherClaimId,
+            FutherclaimVN: data.DataTran.Data.FutherclaimVN,
+            Runningdocument: randomNumber,
+    //visit doctor diagnosis acc
+        },
+      }
+    }else{
+      Data = {
+        PatientInfo : {
+          InsurerCode: data.DataTran.Data.InsurerCode,
+          RefId: data.DataTran.Data.RefId,
+          TransactionNo: data.DataTran.Data.TransactionNo,
+          PID: data.Patient.Data.PID,
+          HN: data.Patient.Data.HN,
+          GivenNameTH: data.Patient.Data.GivenNameTH,
+          SurnameTH: data.Patient.Data.SurnameTH,
+          DateOfBirth: data.Patient.Data.DateOfBirth,
+          PassportNumber: data.Patient.Data.PassportNumber,
+            IdType: data.Patient.Data.IdType,
+          VN: data.DataTran.Data.VN,
+            VisitDateTime: data.DataTran.Data.VisitDateTime,
+          ChiefComplaint: "",
+          PresentIllness: "",
+            AccidentDate: data.DataTran.Data.AccidentDate,
+          AccidentPlaceCode: "",
+          WoundDetails: "",
+          AccidentInjurySideCode: "",
+          AccidentInjuryWoundtypeCode: "",
+            PolicyTypeCode: data.DataTran.Data.PolicyTypeCode,
+            ServiceSettingCode: data.DataTran.Data.ServiceSettingCode,
+            IllnessTypeCode: data.DataTran.Data.IllnessTypeCode,
+            SurgeryTypeCode: data.DataTran.Data.SurgeryTypeCode,
+            FurtherClaimNo: data.DataTran.Data.FurtherClaimNo,
+            FurtherClaimId: data.DataTran.Data.FurtherClaimId,
+            FutherclaimVN: data.DataTran.Data.FutherclaimVN,
+            Runningdocument: randomNumber,
+
+        },
+      }
+    }
+    
+    //console.log(Data)
     axios
       .post(
         process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_getOPDDischargeVisit,
-        PatientInfoData
+        Data  
       )
       .then((response) => {
         // console.log(response.data)
@@ -282,7 +352,6 @@ export default function Page({ data }) {
         //console.log(response.data.Result.VisitInfo.SignSymptomsDate)
         // setSignSymptomsDate(dateValue);
         setComaScore(response.data.Result.VisitInfo.ComaScore);
-
         setCombinedString(
           response
             ? `${response.data.Result.VisitInfo.Weight} / ${response.data.Result.VisitInfo.Height}`
@@ -304,14 +373,82 @@ export default function Page({ data }) {
   }, []);
 
   useEffect(() => {
-    const dateValue = dayjs(PatientInfoData.PatientInfo.AccidentDate);
+    let Data;
+    if(data.DataTran.Data.FutherclaimVN){
+      Data = {
+        PatientInfo : {
+          InsurerCode: data.DataTran.Data.InsurerCode,
+          RefId: data.DataTran.Data.RefId,
+          TransactionNo: data.DataTran.Data.TransactionNo,
+          PID: data.Patient.Data.PID,
+          HN: data.Patient.Data.HN,
+          GivenNameTH: data.Patient.Data.GivenNameTH,
+          SurnameTH: data.Patient.Data.SurnameTH,
+          DateOfBirth: data.Patient.Data.DateOfBirth,
+          PassportNumber: data.Patient.Data.PassportNumber,
+            IdType: data.Patient.Data.IdType,
+          VN: data.DataTran.Data.FutherclaimVN,
+            VisitDateTime: data.DataTran.Data.VisitDateTime,
+          ChiefComplaint: "",
+          PresentIllness: "",
+            AccidentDate: data.DataTran.Data.AccidentDate,
+          AccidentPlaceCode: "",
+          WoundDetails: "",
+          AccidentInjurySideCode: "",
+          AccidentInjuryWoundtypeCode: "",
+            PolicyTypeCode: data.DataTran.Data.PolicyTypeCode,
+            ServiceSettingCode: data.DataTran.Data.ServiceSettingCode,
+            IllnessTypeCode: data.DataTran.Data.IllnessTypeCode,
+            SurgeryTypeCode: data.DataTran.Data.SurgeryTypeCode,
+            FurtherClaimNo: data.DataTran.Data.FurtherClaimNo,
+            FurtherClaimId: data.DataTran.Data.FurtherClaimId,
+            FutherclaimVN: data.DataTran.Data.FutherclaimVN,
+            Runningdocument: randomNumber,
+    //visit doctor diagnosis acc
+        },
+      }
+    }else{
+      Data = {
+        PatientInfo : {
+          InsurerCode: data.DataTran.Data.InsurerCode,
+          RefId: data.DataTran.Data.RefId,
+          TransactionNo: data.DataTran.Data.TransactionNo,
+          PID: data.Patient.Data.PID,
+          HN: data.Patient.Data.HN,
+          GivenNameTH: data.Patient.Data.GivenNameTH,
+          SurnameTH: data.Patient.Data.SurnameTH,
+          DateOfBirth: data.Patient.Data.DateOfBirth,
+          PassportNumber: data.Patient.Data.PassportNumber,
+            IdType: data.Patient.Data.IdType,
+          VN: data.DataTran.Data.VN,
+            VisitDateTime: data.DataTran.Data.VisitDateTime,
+          ChiefComplaint: "",
+          PresentIllness: "",
+            AccidentDate: data.DataTran.Data.AccidentDate,
+          AccidentPlaceCode: "",
+          WoundDetails: "",
+          AccidentInjurySideCode: "",
+          AccidentInjuryWoundtypeCode: "",
+            PolicyTypeCode: data.DataTran.Data.PolicyTypeCode,
+            ServiceSettingCode: data.DataTran.Data.ServiceSettingCode,
+            IllnessTypeCode: data.DataTran.Data.IllnessTypeCode,
+            SurgeryTypeCode: data.DataTran.Data.SurgeryTypeCode,
+            FurtherClaimNo: data.DataTran.Data.FurtherClaimNo,
+            FurtherClaimId: data.DataTran.Data.FurtherClaimId,
+            FutherclaimVN: data.DataTran.Data.FutherclaimVN,
+            Runningdocument: randomNumber,
+
+        },
+      }
+    }
+    const dateValue = dayjs(Data.PatientInfo.AccidentDate);
     setAccidentDate(dateValue);
 
     axios
       .post(
         process.env.NEXT_PUBLIC_URL_PD +
           process.env.NEXT_PUBLIC_URL_getOPDDischargeAccident,
-        PatientInfoData
+        Data
       )
       .then((response) => {
         //console.log(response.data)
@@ -451,6 +588,7 @@ export default function Page({ data }) {
   }, []);
  
   useEffect(() => {
+    
     axios
       .post(
         process.env.NEXT_PUBLIC_URL_PD +
@@ -476,11 +614,80 @@ export default function Page({ data }) {
   }, []);
 
   useEffect(() => {
+    let Data;
+    if(data.DataTran.Data.FutherclaimVN){
+      Data = {
+        PatientInfo : {
+          InsurerCode: data.DataTran.Data.InsurerCode,
+          RefId: data.DataTran.Data.RefId,
+          TransactionNo: data.DataTran.Data.TransactionNo,
+          PID: data.Patient.Data.PID,
+          HN: data.Patient.Data.HN,
+          GivenNameTH: data.Patient.Data.GivenNameTH,
+          SurnameTH: data.Patient.Data.SurnameTH,
+          DateOfBirth: data.Patient.Data.DateOfBirth,
+          PassportNumber: data.Patient.Data.PassportNumber,
+            IdType: data.Patient.Data.IdType,
+          VN: data.DataTran.Data.FutherclaimVN,
+            VisitDateTime: data.DataTran.Data.VisitDateTime,
+          ChiefComplaint: "",
+          PresentIllness: "",
+            AccidentDate: data.DataTran.Data.AccidentDate,
+          AccidentPlaceCode: "",
+          WoundDetails: "",
+          AccidentInjurySideCode: "",
+          AccidentInjuryWoundtypeCode: "",
+            PolicyTypeCode: data.DataTran.Data.PolicyTypeCode,
+            ServiceSettingCode: data.DataTran.Data.ServiceSettingCode,
+            IllnessTypeCode: data.DataTran.Data.IllnessTypeCode,
+            SurgeryTypeCode: data.DataTran.Data.SurgeryTypeCode,
+            FurtherClaimNo: data.DataTran.Data.FurtherClaimNo,
+            FurtherClaimId: data.DataTran.Data.FurtherClaimId,
+            FutherclaimVN: data.DataTran.Data.FutherclaimVN,
+            Runningdocument: randomNumber,
+    //visit doctor diagnosis acc
+        },
+      }
+    }else{
+      Data = {
+        PatientInfo : {
+          InsurerCode: data.DataTran.Data.InsurerCode,
+          RefId: data.DataTran.Data.RefId,
+          TransactionNo: data.DataTran.Data.TransactionNo,
+          PID: data.Patient.Data.PID,
+          HN: data.Patient.Data.HN,
+          GivenNameTH: data.Patient.Data.GivenNameTH,
+          SurnameTH: data.Patient.Data.SurnameTH,
+          DateOfBirth: data.Patient.Data.DateOfBirth,
+          PassportNumber: data.Patient.Data.PassportNumber,
+            IdType: data.Patient.Data.IdType,
+          VN: data.DataTran.Data.VN,
+            VisitDateTime: data.DataTran.Data.VisitDateTime,
+          ChiefComplaint: "",
+          PresentIllness: "",
+            AccidentDate: data.DataTran.Data.AccidentDate,
+          AccidentPlaceCode: "",
+          WoundDetails: "",
+          AccidentInjurySideCode: "",
+          AccidentInjuryWoundtypeCode: "",
+            PolicyTypeCode: data.DataTran.Data.PolicyTypeCode,
+            ServiceSettingCode: data.DataTran.Data.ServiceSettingCode,
+            IllnessTypeCode: data.DataTran.Data.IllnessTypeCode,
+            SurgeryTypeCode: data.DataTran.Data.SurgeryTypeCode,
+            FurtherClaimNo: data.DataTran.Data.FurtherClaimNo,
+            FurtherClaimId: data.DataTran.Data.FurtherClaimId,
+            FutherclaimVN: data.DataTran.Data.FutherclaimVN,
+            Runningdocument: randomNumber,
+
+        },
+      }
+    }
+
     axios
       .post(
         process.env.NEXT_PUBLIC_URL_PD +
           process.env.NEXT_PUBLIC_URL_getOPDDischargeDoctor,
-        PatientInfoData
+        Data
       )
       .then((response) => {
     //    console.log(response.data)
@@ -501,11 +708,79 @@ export default function Page({ data }) {
   }, []);
 
   useEffect(() => {
+    let Data;
+    if(data.DataTran.Data.FutherclaimVN){
+      Data = {
+        PatientInfo : {
+          InsurerCode: data.DataTran.Data.InsurerCode,
+          RefId: data.DataTran.Data.RefId,
+          TransactionNo: data.DataTran.Data.TransactionNo,
+          PID: data.Patient.Data.PID,
+          HN: data.Patient.Data.HN,
+          GivenNameTH: data.Patient.Data.GivenNameTH,
+          SurnameTH: data.Patient.Data.SurnameTH,
+          DateOfBirth: data.Patient.Data.DateOfBirth,
+          PassportNumber: data.Patient.Data.PassportNumber,
+            IdType: data.Patient.Data.IdType,
+          VN: data.DataTran.Data.FutherclaimVN,
+            VisitDateTime: data.DataTran.Data.VisitDateTime,
+          ChiefComplaint: "",
+          PresentIllness: "",
+            AccidentDate: data.DataTran.Data.AccidentDate,
+          AccidentPlaceCode: "",
+          WoundDetails: "",
+          AccidentInjurySideCode: "",
+          AccidentInjuryWoundtypeCode: "",
+            PolicyTypeCode: data.DataTran.Data.PolicyTypeCode,
+            ServiceSettingCode: data.DataTran.Data.ServiceSettingCode,
+            IllnessTypeCode: data.DataTran.Data.IllnessTypeCode,
+            SurgeryTypeCode: data.DataTran.Data.SurgeryTypeCode,
+            FurtherClaimNo: data.DataTran.Data.FurtherClaimNo,
+            FurtherClaimId: data.DataTran.Data.FurtherClaimId,
+            FutherclaimVN: data.DataTran.Data.FutherclaimVN,
+            Runningdocument: randomNumber,
+    //visit doctor diagnosis acc
+        },
+      }
+    }else{
+      Data = {
+        PatientInfo : {
+          InsurerCode: data.DataTran.Data.InsurerCode,
+          RefId: data.DataTran.Data.RefId,
+          TransactionNo: data.DataTran.Data.TransactionNo,
+          PID: data.Patient.Data.PID,
+          HN: data.Patient.Data.HN,
+          GivenNameTH: data.Patient.Data.GivenNameTH,
+          SurnameTH: data.Patient.Data.SurnameTH,
+          DateOfBirth: data.Patient.Data.DateOfBirth,
+          PassportNumber: data.Patient.Data.PassportNumber,
+            IdType: data.Patient.Data.IdType,
+          VN: data.DataTran.Data.VN,
+            VisitDateTime: data.DataTran.Data.VisitDateTime,
+          ChiefComplaint: "",
+          PresentIllness: "",
+            AccidentDate: data.DataTran.Data.AccidentDate,
+          AccidentPlaceCode: "",
+          WoundDetails: "",
+          AccidentInjurySideCode: "",
+          AccidentInjuryWoundtypeCode: "",
+            PolicyTypeCode: data.DataTran.Data.PolicyTypeCode,
+            ServiceSettingCode: data.DataTran.Data.ServiceSettingCode,
+            IllnessTypeCode: data.DataTran.Data.IllnessTypeCode,
+            SurgeryTypeCode: data.DataTran.Data.SurgeryTypeCode,
+            FurtherClaimNo: data.DataTran.Data.FurtherClaimNo,
+            FurtherClaimId: data.DataTran.Data.FurtherClaimId,
+            FutherclaimVN: data.DataTran.Data.FutherclaimVN,
+            Runningdocument: randomNumber,
+
+        },
+      }
+    }
     axios
       .post(
         process.env.NEXT_PUBLIC_URL_PD +
           process.env.NEXT_PUBLIC_URL_getOPDDischargeDiagnosis,
-        PatientInfoData
+        Data
       )
       .then((response) => {
       //  console.log(response.data)
@@ -952,7 +1227,7 @@ export default function Page({ data }) {
       previousTreatment === true &&
       previousTreatmentDate &&
       previousTreatmentDetail.target.value
-    ) {
+    ){
       //console.log(previousTreatmentDetail)
       PreviousDate = dayjs(previousTreatmentDate.$d).format("YYYY-MM-DD");
       PreviousDetail = previousTreatmentDetail.target.value;
@@ -1450,7 +1725,6 @@ if(rows){
       )}
       {patientInfoByPID ? (
         <>
-        
           <form onSubmit={Claim}>
             {/* <form> */}
             {patientInfoByPID ? (
@@ -1693,7 +1967,7 @@ if(rows){
                         id="disabledInput"
                         label="VN"
                         className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"
-                        defaultValue={visit.Result.VisitInfo.Vn}
+                        defaultValue={PatientInfoData.PatientInfo.VN}
                         InputProps={{ readOnly: true }}
                       />
                     </Box>
@@ -1710,7 +1984,7 @@ if(rows){
                         id="disabledInput"
                         className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"
                         label="VisitDateTime"
-                        defaultValue={visit.Result.VisitInfo.VisitDateTime}
+                        defaultValue={PatientInfoData.PatientInfo.VisitDateTime}
                         InputProps={{ readOnly: true }}
                       />
                     </Box>
@@ -1759,7 +2033,7 @@ if(rows){
                 </div>
 
                 <div className="rounded-md mt-2 text-xl text-error">
-                  Claim form จาก VN : {PatientInfoData.PatientInfo.FutherclaimVN ? PatientInfoData.PatientInfo.FutherclaimVN : PatientInfoData.PatientInfo.VN }
+                  Claim form จาก VN : {PatientInfoData.PatientInfo.FutherclaimVN ? PatientInfoData.PatientInfo.FutherclaimVN+" ( เก่า )" : PatientInfoData.PatientInfo.VN+" ( ปัจจุบัน )" }
                 </div>
                 <div className="grid gap-2 sm:grid-cols-2 w-full mt-4">
                   <div className="rounded-md mt-2">

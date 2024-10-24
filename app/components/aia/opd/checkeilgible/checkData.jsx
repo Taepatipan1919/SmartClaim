@@ -49,6 +49,8 @@ export default function checkData() {
   const [randomNumber, setRandomNumber] = useState('');
   const [result, setResult] = useState();
   const [detailVN, setDetailVN] = useState();
+  const [visitlocation, setVisitlocation] = useState();
+  
   const [fromValue, setFromValue] = useState(null);
   const [accValue, setAccValue] = useState(null);
   const [statusValue, setStatusValue] = useState("");
@@ -159,12 +161,27 @@ export default function checkData() {
     setVNValue(VN)
   };
   const handleButtonVNClick = (data) => {
+   // console.log(vNValue)
+    setFurtherVN(vNValue)
 setSuccFurtherClaim2(true)
   }
 
   const handleButtonBlackVNClick = (data) => {
     setSuccFurtherClaim2(false)
       }
+  const handleButtonFurtherBlackVNClick = (data) => {
+        setSuccFurtherClaim2(true)
+        setSuccFurtherClaim(false)
+       }
+
+  const gourl = (event) => {
+        event.preventDefault();
+    
+        setSuccFurtherClaim(true)
+        setSuccFurtherClaim2(false)
+        //setFurtherClaim();
+  
+      };
   const handleButtonClick = (data) => {
     //บันทึก Create
     let PatientInfo;
@@ -195,9 +212,10 @@ if(idTypeValue === "NATIONAL_ID"){
     MembershipId:"",  
     CustomerId : "",
     PolicyNumber:"",
-    FurtherClaimVN: vNValue,
+    FurtherClaimVN: furtherVN,
     FurtherClaimNo: furtherClaimNo,
     FurtherClaimId: furtherClaimId,
+    Visitlocation: visitlocation,
  }
 }else if(idTypeValue === "PASSPORT"){
   PatientInfo = {
@@ -223,9 +241,10 @@ if(idTypeValue === "NATIONAL_ID"){
     MembershipId:"",  
     CustomerId : "",
     PolicyNumber:"",
-    FurtherClaimVN: vNValue,
+    FurtherClaimVN: furtherVN,
     FurtherClaimNo: furtherClaimNo,
     FurtherClaimId: furtherClaimId,
+    Visitlocation: visitlocation,
  }
 }else if(idTypeValue === "MEMBERSHIP_ID"){
   PatientInfo = {
@@ -251,9 +270,10 @@ if(idTypeValue === "NATIONAL_ID"){
     MembershipId: numberValue,  
     CustomerId : "",
     PolicyNumber:"",
-    FurtherClaimVN: vNValue,
+    FurtherClaimVN: furtherVN,
     FurtherClaimNo: furtherClaimNo,
     FurtherClaimId: furtherClaimId,
+    Visitlocation: visitlocation,
  }
 }else if(idTypeValue === "POLICY_NUMBER"){
   PatientInfo = {
@@ -279,9 +299,10 @@ if(idTypeValue === "NATIONAL_ID"){
     MembershipId: "",  
     CustomerId : "",
     PolicyNumber: numberValue,
-    FurtherClaimVN: vNValue,
+    FurtherClaimVN: furtherVN,
     FurtherClaimNo: furtherClaimNo,
     FurtherClaimId: furtherClaimId,
+    Visitlocation: visitlocation,
  }
 }else if(idTypeValue === "CUSTOMER_ID"){
   PatientInfo = {
@@ -307,9 +328,10 @@ if(idTypeValue === "NATIONAL_ID"){
     MembershipId: "",  
     CustomerId : numberValue,
     PolicyNumber: "",
-    FurtherClaimVN: vNValue,
+    FurtherClaimVN: furtherVN,
     FurtherClaimNo: furtherClaimNo,
     FurtherClaimId: furtherClaimId,
+    Visitlocation: visitlocation,
  }
 }
     
@@ -420,15 +442,7 @@ if(idTypeValue === "NATIONAL_ID"){
 
 
 
-  const gourl = (event) => {
-    event.preventDefault();
 
-    setSuccFurtherClaim(true)
-    setFurtherClaim();
-
-
-    //  router.push("/aia/opd/eligible");
-  };
   const idtype = (event) => {
     console.log(event.target.value)
     setIdTypeValue(event.target.value);
@@ -658,7 +672,7 @@ if(idTypeValue === "NATIONAL_ID"){
     setHB();
     setAI();
     setSuccFurtherClaim(false)
-    const [VNselectVN, VisitDateselectVN] = event.target.selectVN.value.split(" | ");
+    const [VNselectVN, VisitDateselectVN , LocationDesc] = event.target.selectVN.value.split(" | ");
     //const [YearVN, MonthVN, DayVN] = VisitDateselectVN.split('-');
     // const Acc = accValue.split(" ");
     // setVisitDate(VisitDateTime)
@@ -674,6 +688,7 @@ if(idTypeValue === "NATIONAL_ID"){
     setAccidentDate(DateAccValue);
     setVisitDateTime(VisitDateselectVN);
     setDetailVN(VNselectVN);
+    setVisitlocation(LocationDesc)
 
     
 
@@ -702,7 +717,7 @@ if(idTypeValue === "NATIONAL_ID"){
   
         IdType: idTypeValue,
         // PID: numberValue,
-        PID: "0480000004185",
+        PID: "0480000004193",
         PassportNumber: "",
         MembershipId:"",  
         CustomerId : "",
@@ -1059,7 +1074,7 @@ if(idTypeValue === "NATIONAL_ID"){
                               <input
                                 type="radio"
                                 name="selectVN"
-                                value={`${ep.VN} | ${ep.VisitDateTime} | ${ep.AccidentDate}`}
+                                value={`${ep.VN} | ${ep.VisitDateTime} | ${ep.LocationDesc}`}
                                 className="radio checked:bg-blue-500"
                                 defaultChecked
                               />
@@ -1303,6 +1318,7 @@ if(idTypeValue === "NATIONAL_ID"){
           <p className="">ชื่อ: {patientInfo.GivenNameTH} {patientInfo.SurnameTH}</p>
           <p className="">วันเกิด: {patientInfo.DateOfBirth}</p>
           <p className="">VN: {patientInfo.VN}</p>
+          <p className="">Location: {visitlocation}</p>
         </div>
         
         <div className="p-4 border-2  rounded-md bg-white w-3/6 shadow-md ml-2">
@@ -1366,6 +1382,15 @@ if(idTypeValue === "NATIONAL_ID"){
               value={vNValue}
               onChange={(e) => setVNValue(e.target.value)}
             />
+
+      <div
+    className="btn btn-error text-base-100 hover:text-error hover:bg-base-100 ml-2"
+    onClick={() =>handleButtonFurtherBlackVNClick(
+      `${result.Result.InsuranceData.RefId} | ${result.Result.InsuranceData.TransactionNo}`
+    )}
+  >
+    ย้อนกลับ
+  </div>
  <div
    className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 ml-2 mt-2"
    onClick={() =>handleButtonVNClick(
@@ -1396,10 +1421,6 @@ if(idTypeValue === "NATIONAL_ID"){
   </div>
   </div> 
  )
-
-
-
-
 
   : (
   furtherClaim ? (<div className="rounded-md w-full">
@@ -1454,7 +1475,8 @@ if(idTypeValue === "NATIONAL_ID"){
                 ยืนยัน
               </div>
               </div>
-  </div>) : ( 
+  </div>
+  ) : ( 
     //furtherClaim===""s
 !selectedValue ? load === true ? <span className="loading loading-spinner text-error size-10 "></span> :
 (<div className="rounded-md">
@@ -1479,8 +1501,8 @@ if(idTypeValue === "NATIONAL_ID"){
 
             (succFurtherClaim2 === false ? 
               (
-                <div className="flex  w-full mt-4">
-              <h1 className="text-lg">VN : </h1>
+                <>
+                <div className="flex  w-full">
 
                                     <TextField
                   error
@@ -1495,15 +1517,17 @@ if(idTypeValue === "NATIONAL_ID"){
               value={vNValue}
               onChange={(e) => setVNValue(e.target.value)}
             />
+              </div> 
+
               <div
-                className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 ml-2 mt-2 "
+                className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 ml-2"
                 onClick={() =>handleButtonVNClick(
                   `${result.Result.InsuranceData.RefId} | ${result.Result.InsuranceData.TransactionNo}`
                 )}
               >
                 ยืนยันเลือก
               </div>
-              </div> 
+            </>
               )
               :
              

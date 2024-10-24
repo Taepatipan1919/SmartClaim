@@ -34,6 +34,7 @@ export default function checkData() {
   const [post, setPost] = useState("");
   const [currentData, setCurrentData] = useState("");
   const [selectedIdType, setSelectedIdType] = useState("");
+  const [patientInfoDetail, setPatientInfoDetail] = useState();
   const [numberValue, setNumberValue] = useState("");
   const [fromValue, setFromValue] = useState(null);
   const [toValue, setToValue] = useState(null);
@@ -409,7 +410,7 @@ export default function checkData() {
       HN: HN,
       VN: VN,
     };
-
+console.log(PatientInfo)
     axios
       .post(
         process.env.NEXT_PUBLIC_URL_PD +
@@ -469,11 +470,11 @@ export default function checkData() {
 
 
   const Detail = (data) => {
-     //   console.log(data)
+    //    console.log(data)
     //console.log("-Detail-")
     setShowFormError();
     const [RefId, TransactionNo, PID, PassportNumber, HN, VN, 
-      InvoiceNumber,PolicyTypeCode, IdType, IllnessTypeCode, ServiceSettingCode, SurgeryTypeCode, FurtherClaimNo, FurtherClaimId, AccidentDate, VisitDateTime, VisitDate, randomNumberold , futherclaimVN , location] = data.split(" | ");
+      InvoiceNumber,PolicyTypeCode, IdType, IllnessTypeCode, ServiceSettingCode, SurgeryTypeCode, FurtherClaimNo, FurtherClaimId, AccidentDate, VisitDateTime, VisitDate, randomNumberold , futherclaimVN , Visitlocation] = data.split(" | ");
 
       const   PatientInfo = {
         Insurerid: InsuranceCode,
@@ -545,7 +546,7 @@ export default function checkData() {
           FurtherClaimNo : FurtherClaimNo,
           FurtherClaimId : FurtherClaimId,
           Runningdocument :  randomNumberold,
-          location : location,
+          Visitlocation : Visitlocation,
 
         },
       })
@@ -837,7 +838,7 @@ export default function checkData() {
     };
   };
   const Cancel = (data) => {
-     setPost();
+    
     setShowFormError();
     // console.log("-Cancel-")
     const isConfirmed = window.confirm("แน่ใจแล้วที่จะยกเลิกการเคลมใช่ไหม");
@@ -865,16 +866,46 @@ export default function checkData() {
 
 
           if (response.data.HTTPStatus.statusCode === 200) {
-            setMassCancel(response.data.Result.InsuranceData.Status);
-            setShowFormCancel("Cancel");
+           setMassCancel(response.data.Result.InsuranceData.Status);
+           setShowFormCancel("Cancel");
           } else {
 
             setShowFormError("Error");
             setMassError(response.data.HTTPStatus.error);
           }
 
+let PatientInfo;
+
+          if(!patientInfoDetail) {
+            const today = dayjs().format('YYYY-MM-DD');
+            
+              PatientInfo = {
+                InsurerCode: InsuranceCode,
+                 IdType: "",
+                InvoiceNumber: "",
+                VN: "",
+                PID: "",
+                PassportNumber: "",
+                HN: "",
+                VisitDatefrom: today,
+                VisitDateto: today,
+                StatusClaimCode: "",
+              };
+          
+            }else{
+            PatientInfo = patientInfoDetail;
+          
+          }
+          console.log(PatientInfo)
+
+          setPost();
           axios
-          .post(process.env.NEXT_PUBLIC_URL_SV + process.env.NEXT_PUBLIC_URL_SearchTransection,patientUpdate)
+          .post(
+            process.env.NEXT_PUBLIC_URL_SV +
+              process.env.NEXT_PUBLIC_URL_SearchTransection,
+             { PatientInfo }
+          )
+
           .then((response) => {
             console.log(response.data)
             setPost(response.data);
@@ -888,14 +919,13 @@ export default function checkData() {
           });
 
         })
-
-
-        .catch((error) => {
+         .catch((error) => {
           // console.error("Error", err)
           console.log(error);
           //  if (err.response.request.status === 500) {
           setShowFormError("Error");
-          setMassError(error.response.data.HTTPStatus.message);
+          setMassError(error.message);
+          // setMassError(error.response.data.HTTPStatus.message);
         });
     }
   };
@@ -1022,6 +1052,7 @@ export default function checkData() {
     console.log(PatientInfo);
     setPatientUpdate({PatientInfo});
     if (PatientInfo) {
+      setPatientInfoDetail(PatientInfo)
       axios
         .post(
           process.env.NEXT_PUBLIC_URL_SV +
@@ -1116,21 +1147,54 @@ export default function checkData() {
       
     
  console.log(PatientInfo)
-    //  axios
-    //    .post(
-    //      process.env.NEXT_PUBLIC_URL_PD +
-    //        process.env.NEXT_PUBLIC_URL_getcheckclaimstatus,
-    //      { PatientInfo }
-    //    )
-    //    .then((response) => {
-    //      console.log(response.data);
+     axios
+       .post(
+         process.env.NEXT_PUBLIC_URL_PD +
+           process.env.NEXT_PUBLIC_URL_getcheckclaimstatusListAll,
+         { "PatientInfo" :   PatientInfo  }
+       )
+       .then((response) => {
+         console.log(response.data);
 
  
+         if (response.data.HTTPStatus.statusCode === 200) {
+          // console.log(response.data)
+           setStatusNew((prevData) => ({
+             ...prevData,
+             InsurerCode: response.data.Result.InsuranceData.StatusInfo.InsurerCode,
+             BatchNumber: response.data.Result.InsuranceData.BatchNumber,
+             ClaimStatus: response.data.Result.InsuranceData.ClaimStatus,
+             ClaimStatusDesc: response.data.Result.InsuranceData.ClaimStatusDesc,
+             TotalApproveAmount: response.data.Result.InsuranceData.TotalApproveAmount,
+             PaymentDate: response.data.Result.InsuranceData.PaymentDate,
+             InvoiceNumber: response.data.Result.InsuranceData.InvoiceNumber,
+             RefId : response.data.Result.InsuranceData.RefId,
+             TransactionNo : response.data.Result.InsuranceData.TransactionNo,
+             // HN : response.data.Result.InsuranceData.HN,
+             // VN : response.data.Result.InsuranceData.VN,
+           })); 
  
-    //     })
-    //    .catch((error) => {
-    //      console.log(error);
-    //    });
+           // setShowModal(true)
+           // setTimeout(() => {
+           //   setShowModal(false)
+             //router.push('/aia/opd/submitBilling');
+           // }, 5000);
+         } else {
+           setShowFormError("Error");
+           setMassError(response.data.HTTPStatus.error);
+         }
+
+
+
+
+
+ 
+        })
+       .catch((error) => {
+         console.log(error);
+         setShowFormError("Error");
+         setMassError(error.message);
+       });
    };
 
     ///////////////////////////////////////////////
@@ -1359,10 +1423,10 @@ export default function checkData() {
                         {statusNew
                             ? bill.TransactionNo === statusNew.TransactionNo
                             ? statusNew.ClaimStatusDesc ? 
-                            (((statusNew.ClaimStatus !== "Cancelled")&&(statusNew.ClaimStatus !== "Cancelled to AIA")&&(statusNew.ClaimStatus !== "Reversed")) ? ((statusNew.ClaimStatus === "Approved")||(statusNew.ClaimStatus === "Settle")) ? <a className="bg-success text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatus}</a> : <a className="bg-secondary text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatus}</a> : <a className="bg-error text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatus}</a>)
+                            (((statusNew.ClaimStatus !== "Cancelled")&&(statusNew.ClaimStatus !== "Cancelled to AIA")&&(statusNew.ClaimStatus !== "Reversed")) ? ((statusNew.ClaimStatus === "Approved")||(statusNew.ClaimStatus === "Settle")) ? <a className="bg-success text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatus}</a> : <a className="bg-warning text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatus}</a> : <a className="bg-error text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatus}</a>)
                             : ""
                             : bill.ClaimStatusDesc ? 
-                              (((bill.ClaimStatusDesc_EN !== "Cancelled")&&(bill.ClaimStatusDesc_EN !== "Cancelled to AIA")&&(bill.ClaimStatusDesc_EN !== "Reversed")) ? ((bill.ClaimStatus === "Approved")||(bill.ClaimStatus === "Settle")) ? <a className="bg-success text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatus}</a> : <a className="bg-secondary text-base-100 rounded-full px-3 py-2">{bill.ClaimStatusDesc_EN}</a> : <a className="bg-error text-base-100 rounded-full px-3 py-2">{bill.ClaimStatusDesc_EN}</a>)
+                              (((bill.ClaimStatusDesc_EN !== "Cancelled")&&(bill.ClaimStatusDesc_EN !== "Cancelled to AIA")&&(bill.ClaimStatusDesc_EN !== "Reversed")) ? ((bill.ClaimStatus === "Approved")||(bill.ClaimStatus === "Settle")) ? <a className="bg-success text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatus}</a> : <a className="bg-warning text-base-100 rounded-full px-3 py-2">{bill.ClaimStatusDesc_EN}</a> : <a className="bg-error text-base-100 rounded-full px-3 py-2">{bill.ClaimStatusDesc_EN}</a>)
                                : ""
                             : "Loading..."}
                        
@@ -1422,21 +1486,22 @@ export default function checkData() {
                             className="text-primary text-2xl"
                             onClick={() =>
                               Detail(
-                                 `${bill.RefId} | ${bill.TransactionNo} | ${bill.PID} | ${bill.PassportNumber} | ${bill.HN} | ${bill.VN} | ${bill.InvoiceNumber} | ${bill.PolicyTypeCode} | ${bill.IdType} | ${bill.IllnessTypeCode} | ${bill.ServiceSettingCode} | ${bill.SurgeryTypeCode} | ${bill.FurtherClaimNo} | ${bill.FurtherClaimId} | ${bill.AccidentDate} | ${bill.VisitDateTime} | ${bill.VisitDate} | ${bill.Runningdocument} | ${bill.futherclaimVN} | ${bill.location}`
+                                 `${bill.RefId} | ${bill.TransactionNo} | ${bill.PID} | ${bill.PassportNumber} | ${bill.HN} | ${bill.VN} | ${bill.InvoiceNumber} | ${bill.PolicyTypeCode} | ${bill.IdType} | ${bill.IllnessTypeCode} | ${bill.ServiceSettingCode} | ${bill.SurgeryTypeCode} | ${bill.FurtherClaimNo} | ${bill.FurtherClaimId} | ${bill.AccidentDate} | ${bill.VisitDateTime} | ${bill.VisitDate} | ${bill.Runningdocument} | ${bill.FurtherClaimVN} | ${bill.VisitLocation}`
                               )
                             }
                           >
                             <IoDocumentText />
                           </h1>
                         </div>
-                        {bill.RefId ? 
-                            (bill.ClaimStatusDesc !== "waitting for discharge" ? (
+                       </> ) : ( "")) : ( "")}
+                                           {bill.RefId ? 
+                            (((bill.ClaimStatusDesc !== "waitting for discharge")&&(bill.ClaimStatusDesc !== "Cancelled to AIA")&&(bill.ClaimStatusDesc !== "Cancelled")&&(bill.ClaimStatusDesc !== "Reversed")) ? (
                               <>
-                        <div className="tooltip ml-4"
+                       <div className="tooltip ml-4"
                                   data-tip="ยกเลิกการเคลม"
                                 >
                                   <h1
-                                    className="text-primary text-2xl"
+                                    className="text-error text-2xl"
                                     onClick={() =>
                                       Cancel(
                                         `${bill.RefId} | ${bill.TransactionNo} | ${bill.PID} | ${bill.PassportNumber} | ${bill.HN} | ${bill.VN} | ${bill.InvoiceNumber}`
@@ -1446,11 +1511,7 @@ export default function checkData() {
                                     <MdCancel />
                                   </h1>
                                 </div>
-                                </>
-                            ): ("")) : ("")}
-                       </> ) : ( "")) : ( "")}
-        
-
+                           </> ): ("")) : ("")}
                         <div
                                   className="tooltip ml-4"
                                   data-tip="ดู เอกสารทั้งหมด"

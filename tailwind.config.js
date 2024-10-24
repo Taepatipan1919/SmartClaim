@@ -30,7 +30,7 @@ module.exports = {
           neutral: "#F3F9FC", // ฟ้าขาวอมเทา
           "base-100": "#FFFFFF", // พื้นหลังขาว
           success: "#72d572", // เขียวพาสเทล      //ปุ่ม create save
-          warning: "#F9E79F", // เหลืองพาสเทล
+          warning: "#FCDE70", // เหลืองพาสเทล
           error: "#fe5858", // แดงพาสเทล
           "text-primary": "#333333", // ตัวหนังสือหลัก
           "text-accent": "#FFFFFF", // ตัวหนังสือบนปุ่มหรือพื้นหลังสีเข้ม
