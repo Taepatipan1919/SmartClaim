@@ -236,13 +236,8 @@ export default function Page({ data }) {
       HN: PatientInfoData.PatientInfo.HN,
       PassportNumber: "",
     }
-    console.log(PatientInfo)
+    //console.log(PatientInfo)
     axios
-      // .get(
-      //   process.env.NEXT_PUBLIC_URL_SV +
-      //     process.env.NEXT_PUBLIC_URL_PatientInfoByPID +
-      //     PatientInfoData.PatientInfo.PID
-      // ) 
       .post(
         process.env.NEXT_PUBLIC_URL_PD2 +
         process.env.NEXT_PUBLIC_URL_PatientSearch,
@@ -252,7 +247,7 @@ export default function Page({ data }) {
     )
       .then((response) => {
         setPatientInfoByPID(response.data.Result.PatientInfo[0]);
-        console.log(response.data.Result.PatientInfo[0])
+        //console.log(response.data.Result.PatientInfo[0])
       })
       .catch((error) => {
         console.log(error);
@@ -443,7 +438,7 @@ export default function Page({ data }) {
     }
     const dateValue = dayjs(Data.PatientInfo.AccidentDate);
     setAccidentDate(dateValue);
-
+        console.log(Data)
     axios
       .post(
         process.env.NEXT_PUBLIC_URL_PD +
@@ -451,7 +446,7 @@ export default function Page({ data }) {
         Data
       )
       .then((response) => {
-        //console.log(response.data)
+        console.log(response.data)
          setAccidentDetail(response.data);
           setCauseOfInjuryDetails(response.data.Result.AccidentDetailInfo.CauseOfInjuryDetail);
           setInjuryDetails(response.data.Result.AccidentDetailInfo.InjuryDetail);
@@ -1688,18 +1683,8 @@ if(rows){
       cursor: "default", // เปลี่ยนเคอร์เซอร์เป็นแบบปกติ
     },
   });
-  const [query, setQuery] = useState('');
-  const [results, setResults] = useState([]);
 
-  const handleInputChange = async (e) => {
-      const input = e.target.value.toLowerCase();
-      setQuery(input);
 
-      if (input.length < 3) return; // ถ้าพิมพ์น้อยกว่า 3 ตัวอักษร ไม่ทำการค้นหา
-
-      const response = await axios.get(`https://api.example.com/search?q=${input}`);
-      setResults(response.data.results);
-  };
   return (
     <>
 

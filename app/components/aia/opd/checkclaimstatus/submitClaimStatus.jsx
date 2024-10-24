@@ -838,7 +838,7 @@ console.log(PatientInfo)
     };
   };
   const Cancel = (data) => {
-    
+    setPost();
     setShowFormError();
     // console.log("-Cancel-")
     const isConfirmed = window.confirm("แน่ใจแล้วที่จะยกเลิกการเคลมใช่ไหม");
@@ -866,7 +866,8 @@ console.log(PatientInfo)
 
 
           if (response.data.HTTPStatus.statusCode === 200) {
-           setMassCancel(response.data.Result.InsuranceData.Status);
+          //  console.log("Cancel Succ")
+           setMassCancel(response.data.HTTPStatus.message);
            setShowFormCancel("Cancel");
           } else {
 
@@ -891,14 +892,14 @@ let PatientInfo;
                 VisitDateto: today,
                 StatusClaimCode: "",
               };
-          
+      
             }else{
             PatientInfo = patientInfoDetail;
-          
+
           }
           console.log(PatientInfo)
 
-          setPost();
+        
           axios
           .post(
             process.env.NEXT_PUBLIC_URL_SV +
@@ -907,8 +908,8 @@ let PatientInfo;
           )
 
           .then((response) => {
-            console.log(response.data)
-            setPost(response.data);
+            console.log(response.data.TransactionClaimInfo)
+            setCurrentData(response.data.TransactionClaimInfo);
          //   setShowFormError();
 
           })
@@ -923,8 +924,8 @@ let PatientInfo;
           // console.error("Error", err)
           console.log(error);
           //  if (err.response.request.status === 500) {
-          setShowFormError("Error");
-          setMassError(error.message);
+          // setShowFormError("Error");
+          // setMassError(error.message);
           // setMassError(error.response.data.HTTPStatus.message);
         });
     }
@@ -1076,32 +1077,6 @@ let PatientInfo;
       setMassError("กรุณากรอก ข้อความที่จะค้นหาให้ครบ");
     }
 
-    // if(Object.keys(data).length === 0){
-    //   setShowFormError("Error");
-    //   setMassError("กรุณากรอก ข้อความที่จะค้นหาให้ครบ");
-    // }else{
-    //   setShowFormError()
-    // console.log(data)
-
-    // // axios
-    // // .post(process.env.NEXT_PUBLIC_URL_SV + "v1/aia-submitbilling/selectbilling",
-    // //         //ส่งเป็น statisCode
-    // //         data
-    // // )
-    // // .then((response) => {
-    // //   setPost(response.data);
-    // //   setShowFormError("");
-    // // })
-    // // .catch((error) => {
-    // //  // console.error("Error", err)
-    // //   console.log(error)
-
-    // //           setShowFormError("Error");
-    // //           setMassError(error.message);
-
-    // // });
-
-    // }
   };
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1183,10 +1158,6 @@ let PatientInfo;
            setShowFormError("Error");
            setMassError(response.data.HTTPStatus.error);
          }
-
-
-
-
 
  
         })
@@ -1386,6 +1357,7 @@ let PatientInfo;
                 <th>VN</th>
                 <th>ClaimNo</th>
                 <th>Invoicenumber</th>
+                <td>BatchNumber</td>
                 <th className="w-40">Status</th>
                 <th>Totalbillamount</th>
                 <th>ApprovedAmount</th>
@@ -1417,6 +1389,7 @@ let PatientInfo;
                       <td>{bill.VN}</td>
                       <td>{bill.ClaimNo}</td>
                       <td>{bill.InvoiceNumber}</td>
+                      <td>{bill.BatchNumber}</td>
                       <td>
                       <div className="grid gap-1 sm:grid-cols-1 w-full">
                          {/* {console.log(statusNew)}  */}
@@ -1495,7 +1468,7 @@ let PatientInfo;
                         </div>
                        </> ) : ( "")) : ( "")}
                                            {bill.RefId ? 
-                            (((bill.ClaimStatusDesc !== "waitting for discharge")&&(bill.ClaimStatusDesc !== "Cancelled to AIA")&&(bill.ClaimStatusDesc !== "Cancelled")&&(bill.ClaimStatusDesc !== "Reversed")) ? (
+                            (((bill.ClaimStatusDesc !== "Cancelled to AIA")&&(bill.ClaimStatusDesc !== "Cancelled")&&(bill.ClaimStatusDesc !== "Reversed")) ? (
                               <>
                        <div className="tooltip ml-4"
                                   data-tip="ยกเลิกการเคลม"
@@ -1530,9 +1503,11 @@ let PatientInfo;
 
                       </td>
                       <td>
+                        
                   { bill.RefId ? (
-                            ((bill.ClaimStatusDesc === "Approve") || (bill.ClaimStatusDesc === "Received") ) ? (
+                            ((bill.ClaimStatusDesc === "Approve") || (bill.ClaimStatusDesc === "Received") ) ? (bill.BatchNumber ? "" : (
                               <>
+
                                 <button
                                   className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100 ml-4"
                                   onClick={() =>
@@ -1544,7 +1519,7 @@ let PatientInfo;
                                   ส่งเอกสารเพิ่มเติม
                                 </button>
                               </>
-                            ) : ("")) : ("")}
+                            )) : ("")) : ("")}
                       </td>
                     </tr>
                     ))

@@ -47,7 +47,7 @@ export default function DetailDischarge({ data }) {
     )
     .then((response) => {
       setTransactionClaimInfo();
-      console.log(response.data.Result.TransactionClaimInfo[0]);
+    //  console.log(response.data.Result.TransactionClaimInfo[0]);
     setPatientInfo(response.data.Result.TransactionClaimInfo[0]);
 
     })
@@ -95,31 +95,52 @@ export default function DetailDischarge({ data }) {
   }, [data]);
 
   useEffect(() => {
-   
+
     axios
   .post(process.env.NEXT_PUBLIC_URL_SV + process.env.NEXT_PUBLIC_URL_ReviewOPDDischarge,
     {
-    "PatientInfo": {
-      "InsurerCode": 13, 
-      "RefId": data.RefId,
-      "TransactionNo": data.TransactionNo,   
-      "PID": data.PID,
-      "HN": data.HN,
-      "GivenNameTH": "",
-      "SurnameTH": "",
-      "DateOfBirth": "",
-      "PassportNumber": data.PassportNumber,
-      "IdType":"",
-      "VN": data.VN,
-      "VisitDateTime": "",
-      "AccidentDate":"",
-      "PolicyTypeCode":"",
-      "ServiceSettingCode": "", 
-      "IllnessTypeCode": "",
-      "SurgeryTypeCode":  ""
-
-      }
-  })
+      // "PatientInfo" : {
+      //   "InsurerCode": 13, 
+      //   "RefId": data.RefId,
+      //   "TransactionNo": data.TransactionNo,   
+      //   "PID": data.PID,
+      //   "HN": data.HN,
+      //   "GivenNameTH": "",
+      //   "SurnameTH": "",
+      //   "DateOfBirth": "",
+      //   "PassportNumber": data.PassportNumber,
+      //   "IdType": data.IdType,
+      //   "VN": data.VN,
+      //   "VisitDateTime": data.VisitDateTime,
+      //   "AccidentDate":"",
+      //   "PolicyTypeCode":"",
+      //   "ServiceSettingCode": "", 
+      //   "IllnessTypeCode": "",
+      //   "SurgeryTypeCode":  ""
+    
+      //   },
+      "PatientInfo": {
+        InsurerCode: 13, 
+        RefId: "qdJseSIsLJhkom1wvRbVWMbNr83caECQjC+vvuEaIKY=",
+        TransactionNo: "929ad67e-36a4-43d4-95a9-a20b3bbfe4e9",   
+        PID: "3101300272990",
+        HN: "377273-44",
+        GivenNameTH: "",
+        SurnameTH: "",
+        DateOfBirth: "",
+        PassportNumber:"",
+        IdType:"NATIONAL_ID",
+        VN: "O579875-67",
+        VisitDateTime: "2024-10-24 10:02",
+        AccidentDate:"",
+        PolicyTypeCode:"",
+        ServiceSettingCode: "", 
+        IllnessTypeCode: "",
+        SurgeryTypeCode:  ""
+        },
+    }
+      
+  )
   .then((response) => {
     setTransactionClaimInfo(response.data.Result.InsuranceData);
     console.log(response.data.Result.InsuranceData)
@@ -132,8 +153,8 @@ export default function DetailDischarge({ data }) {
   }, [data]);
 
   const DocumentBase64 = (docname) => {
-    console.log(data.VN)
-    console.log(docname)
+    //console.log(data.VN)
+    //console.log(docname)
     setMassDocError();
     setShowDocError();
     axios

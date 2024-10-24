@@ -386,8 +386,8 @@ export default function checkData() {
   const Detail = (data) => {
   //  console.log(data)
     setShowFormError();
-    const [RefId, TransactionNo, PID, PassportNumber, HN, VN] =
-      data.split(" | ");
+    const [RefId, TransactionNo, PID, PassportNumber, HN, VN, 
+      InvoiceNumber,PolicyTypeCode, IdType, IllnessTypeCode, ServiceSettingCode, SurgeryTypeCode, FurtherClaimNo, FurtherClaimId, AccidentDate, VisitDateTime] = data.split(" | ");
     setDetailData({
       RefId: RefId,
       TransactionNo: TransactionNo,
@@ -400,7 +400,8 @@ export default function checkData() {
       SurnameTH: "",
       TitleEN: "",
       TitleTH: "",
-      VisitDateTime: "",
+      VisitDateTime: VisitDateTime,
+      IdType : IdType,
       PID: PID,
       PassportNumber: PassportNumber,
       SurgeryTypeCode: "",
@@ -1346,7 +1347,7 @@ axios
                       </td>
                       <td>
                         {bill.RefId ? (
-                            (bill.ClaimStatusDesc === "Approve" || bill.ClaimStatusDesc === "Received") ? (
+                            (bill.ClaimStatusDesc === "Approve" || bill.ClaimStatusDesc === "Received") ? bill.BatchNumber ? ("") : (
                               <>
                                 <button
                                   className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100 ml-4"
