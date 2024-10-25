@@ -14,6 +14,7 @@ import { MdCancel } from "react-icons/md";
 import { IoIosDocument } from "react-icons/io";
 import { AiOutlineUnorderedList } from "react-icons/ai";
 import { Button, Menu, MenuItem } from "@mui/material";
+import NativeSelect from '@mui/material/NativeSelect';
 import { useRouter } from "next/navigation";
 // import { RefreshIcon, ClipboardIcon, TrashIcon } from '@heroicons/react/outline';
 import dayjs from "dayjs";
@@ -33,6 +34,7 @@ export default function checkData() {
 
   const dispatch = useDispatch();
   const [post, setPost] = useState("");
+  const [statusAllNew, setStatusAllNew] = useState();
   const [selectedIdType, setSelectedIdType] = useState("");
   const [numberValue, setNumberValue] = useState("");
   const [fromValue, setFromValue] = useState(null);
@@ -43,6 +45,7 @@ export default function checkData() {
   const [showModal, setShowModal] = useState(false);
   const router = useRouter();
   const [currentData, setCurrentData] = useState("");
+  const [billtype, setBilltype] = useState("");
   const [claimStatus, setClaimStatus] = useState("");
   const [patientInfoDetail, setPatientInfoDetail] = useState();
   const [statusNew, setStatusNew] = useState({});
@@ -52,6 +55,7 @@ export default function checkData() {
   const [refIdL, setRefIdL] = useState("");
   const [pIDL, setPIDL] = useState("");
   const [statusValue, setStatusValue] = useState("");
+  const [billValue, setBillValue] = useState("ทั้งหมด")
   const [passportNumberL, setPassportNumberL] = useState("");
   const [randomNumber, setRandomNumber] = useState('');
   const [transactionNoL, setTransactionNoL] = useState("");
@@ -91,7 +95,18 @@ export default function checkData() {
         //   setMassSummitError(error.response.data.HTTPStatus.message);
         //   setShowSummitError("Error");
       });
-
+const Billtype = [
+  {
+    Desc: "ทั้งหมด"
+  },
+  {
+    Desc: "ยังไม่วางบิล"
+  },
+  {
+    Desc: "วางบิลแล้ว"
+  },
+]
+setBilltype(Billtype)
 
   const today = dayjs().format('YYYY-MM-DD');
   const  PatientInfo = {
@@ -102,8 +117,10 @@ export default function checkData() {
       PID: "",
       PassportNumber: "",
       HN: "",
-      VisitDatefrom: today,
-      VisitDateto: today,
+      // VisitDatefrom: today,
+      // VisitDateto: today,
+      VisitDatefrom: "",
+      VisitDateto: "",
       StatusClaimCode: "",
     };
     console.log(PatientInfo)
@@ -130,6 +147,10 @@ export default function checkData() {
     const status = (event) => {
       setStatusValue(event.target.value);
     };
+    const bill = (event) => {
+      setBillValue(event.target.value);
+    };
+
   const handleUpload = async () => {
     if (!file) {
       setMsg(
@@ -323,6 +344,7 @@ export default function checkData() {
   };
   const Refresh = (data) => {
     setStatusNew()
+    setStatusAllNew();
     setShowFormError();
   //  setPost();
    // console.log("-Refresh-");
@@ -476,6 +498,7 @@ export default function checkData() {
   const handleSubmit = (event) => {
     event.preventDefault();
     setShowFormError();
+    setStatusAllNew();
     setPost();
     setMassError();
     let data = {};
@@ -1042,6 +1065,84 @@ axios
     const endIndex = startIndex + ITEMS_PER_PAGE;
  //console.log(endIndex +"="+startIndex+"+"+ITEMS_PER_PAGE) 
    const data = currentData.slice(startIndex, endIndex);
+console.log(data)
+const extractedTransactionNo = data.map(item => item.TransactionNo);
+const extractedBatchNumber = data.map(item => item.BatchNumber);
+   //////////////////// Chack Status All///////////////////////////
+
+   const RefreshAll = () => {
+
+  // const extractedRefId = data.map(item => item.RefId);
+  // const extractedTransactionNo = data.map(item => item.TransactionNo);
+
+  const PatientInfo = data.map(item => ({
+    RefId: item.RefId,
+    TransactionNo: item.TransactionNo
+  }));
+  
+  
+      
+    
+    //console.log(PatientInfo)
+     axios
+       .post(
+         process.env.NEXT_PUBLIC_URL_PD +
+           process.env.NEXT_PUBLIC_URL_getcheckclaimstatusListAll,
+         { "PatientInfo" :   PatientInfo  }
+       )
+       .then((response) => {
+         console.log(response.data);
+
+        //  const All = data.map(item => item.TransactionNo);
+         const AllPatient = response.data.Result.InsuranceData.map(item => ({
+          RefId: item.RefId,
+          TransactionNo: item.TransactionNo,
+            InsurerCode: item.StatusInfo.InsurerCode,
+            BatchNumber:  item.StatusInfo.BatchNumber,
+             ClaimStatus:  item.StatusInfo.ClaimStatus,
+             ClaimStatusDesc:  item.StatusInfo.ClaimStatusDesc,
+             TotalApproveAmount:  item.StatusInfo.TotalApproveAmount,
+             PaymentDate:  item.StatusInfo.PaymentDate,
+             InvoiceNumber:  item.StatusInfo.InvoiceNumber,
+        }));
+         console.log(AllPatient)
+         setStatusAllNew(AllPatient)
+        //  if (response.data.HTTPStatus.statusCode === 200) {
+        //   // console.log(response.data)
+          //  setStatusNew((prevData) => ({
+          //    ...prevData,
+          //    InsurerCode: response.data.Result.InsuranceData.StatusInfo.InsurerCode,
+          //    BatchNumber: response.data.Result.InsuranceData.BatchNumber,
+          //    ClaimStatus: response.data.Result.InsuranceData.ClaimStatus,
+          //    ClaimStatusDesc: response.data.Result.InsuranceData.ClaimStatusDesc,
+          //    TotalApproveAmount: response.data.Result.InsuranceData.TotalApproveAmount,
+          //    PaymentDate: response.data.Result.InsuranceData.PaymentDate,
+          //    InvoiceNumber: response.data.Result.InsuranceData.InvoiceNumber,
+          //    RefId : response.data.Result.InsuranceData.RefId,
+          //    TransactionNo : response.data.Result.InsuranceData.TransactionNo,
+          //  })); 
+ 
+        //    // setShowModal(true)
+        //    // setTimeout(() => {
+        //    //   setShowModal(false)
+        //      //router.push('/aia/opd/submitBilling');
+        //    // }, 5000);
+        //  } else {
+        //    setShowFormError("Error");
+        //    setMassError(response.data.HTTPStatus.error);
+        //  }
+
+ 
+        })
+       .catch((error) => {
+         console.log(error);
+         setShowFormError("Error");
+         setMassError(error.message);
+       });
+   };
+
+    ///////////////////////////////////////////////
+  
    useEffect(() => {
     setCount(data.length);
   }, [data]);
@@ -1203,17 +1304,44 @@ axios
                 <th>VN</th>
                 <th>ClaimNo</th>
                 <th>Invoicenumber</th>
-                <td>BatchNumber</td>
+                <td>BatchNumber <br/>
+                <FormControl className="w-full bg-info">
+              {/* <InputLabel id="demo-simple-select-label">
+                TypeBill
+              </InputLabel> */}
+                <NativeSelect
+          id="demo-customized-select-native"
+          value={billValue}
+          label="TypeBill"
+          onChange={bill}
+        >
+                {billtype
+                  ? billtype.map((bill, index) => (
+                      <option key={index} value={bill.Desc}>
+                        {bill.Desc}
+                      </option>
+                    ))
+                  : ""}
+              </NativeSelect>
+            </FormControl>
+</td>
                 <th className="w-40">Status</th>
-                <th>Totalbillamount</th>
                 <th>ApprovedAmount</th>
+                <th>Totalbillamount</th>
                 <th>ExcessAmount</th>
-                <th></th>
+                <th>
+                <h1
+                            className="text-base-100 text-2xl"
+                            onClick={RefreshAll}
+                          >
+                            <LuRefreshCw />
+                          </h1>
+                          </th>
                 <th></th>
               </tr>
             </thead>
             <tbody>
-              {/* {console.log(post)} */}
+              {console.log(data)}
             {post ? (
     post.HTTPStatus.statusCode === 200 ? (
       data.map((bill, index) => (
@@ -1228,20 +1356,20 @@ axios
                       <td>{bill.VN}</td>
                       <td>{bill.ClaimNo}</td>
                       <td>{bill.InvoiceNumber}</td>
-                      <td>{bill.BatchNumber}</td>
+                      <td>
+{statusAllNew ? (statusAllNew.map(ALLnew => ((ALLnew.TransactionNo === ((bill.TransactionNo)||(statusNew.TransactionNo))) ?  (ALLnew.BatchNumber) : ((bill.BatchNumber)||(statusNew.BatchNumber)))))
+:(statusNew ? (bill.TransactionNo === statusNew.TransactionNo ? statusNew.BatchNumber : bill.BatchNumber): "Loading...")}
+                      </td>
                       <td>
                       <div className="grid gap-1 sm:grid-cols-1 w-full">
-                      {statusNew
-                            ? bill.TransactionNo === statusNew.TransactionNo
-                            ? statusNew.ClaimStatusDesc ? 
-                            (((statusNew.ClaimStatus !== "Cancelled")&&(statusNew.ClaimStatus !== "Cancelled to AIA")&&(statusNew.ClaimStatus !== "Reversed")) ? ((statusNew.ClaimStatus === "Approved")||(statusNew.ClaimStatus === "Settle")) ? <a className="bg-success text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatus}</a> : <a className="bg-warning text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatus}</a> : <a className="bg-error text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatus}</a>)
-                            : ""
-                            : bill.ClaimStatusDesc ? 
-                              (((bill.ClaimStatusDesc_EN !== "Cancelled")&&(bill.ClaimStatusDesc_EN !== "Cancelled to AIA")&&(bill.ClaimStatusDesc_EN !== "Reversed")) ? ((bill.ClaimStatus === "Approved")||(bill.ClaimStatus === "Settle")) ? <a className="bg-success text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatus}</a> : <a className="bg-warning text-base-100 rounded-full px-3 py-2">{bill.ClaimStatusDesc_EN}</a> : <a className="bg-error text-base-100 rounded-full px-3 py-2">{bill.ClaimStatusDesc_EN}</a>)
-                               : ""
-                            : "Loading..."}
+                   {/* {console.log(statusAllNew)}   */}
+                        {statusAllNew ? statusAllNew.map(ALLnew => (ALLnew.TransactionNo === ((bill.TransactionNo)||(statusNew.TransactionNo)) ? ((((ALLnew.ClaimStatus !== "Cancelled")&&(ALLnew.ClaimStatus !== "Cancelled to AIA")&&(ALLnew.ClaimStatus !== "Reversed")) ? ((ALLnew.ClaimStatus === "Approved")||(ALLnew.ClaimStatus === "Settle")) ? <a className="bg-success text-base-100 rounded-full px-3 py-2">{ALLnew.ClaimStatus}</a> : <a className="bg-warning text-base-100 rounded-full px-3 py-2">{ALLnew.ClaimStatus}</a> : <a className="bg-error text-base-100 rounded-full px-3 py-2">{ALLnew.ClaimStatus}</a>)) : ((((bill.ClaimStatusDesc_EN !== "Cancelled")&&(bill.ClaimStatusDesc_EN !== "Cancelled to AIA")&&(bill.ClaimStatusDesc_EN !== "Reversed")) ? ((bill.ClaimStatus === "Approved")||(bill.ClaimStatus === "Settle")) ? <a className="bg-success text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatus}</a> : <a className="bg-warning text-base-100 rounded-full px-3 py-2">{bill.ClaimStatusDesc_EN}</a> : <a className="bg-error text-base-100 rounded-full px-3 py-2">{bill.ClaimStatusDesc_EN}</a>))))
+                        :(statusNew ? bill.TransactionNo === statusNew.TransactionNo ? statusNew.ClaimStatusDesc ?  (((statusNew.ClaimStatus !== "Cancelled")&&(statusNew.ClaimStatus !== "Cancelled to AIA")&&(statusNew.ClaimStatus !== "Reversed")) ? ((statusNew.ClaimStatus === "Approved")||(statusNew.ClaimStatus === "Settle")) ? <a className="bg-success text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatus}</a> : <a className="bg-warning text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatus}</a> : <a className="bg-error text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatus}</a>): "": bill.ClaimStatusDesc ? 
+                              (((bill.ClaimStatusDesc_EN !== "Cancelled")&&(bill.ClaimStatusDesc_EN !== "Cancelled to AIA")&&(bill.ClaimStatusDesc_EN !== "Reversed")) ? ((bill.ClaimStatus === "Approved")||(bill.ClaimStatus === "Settle")) ? <a className="bg-success text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatus}</a> : <a className="bg-warning text-base-100 rounded-full px-3 py-2">{bill.ClaimStatusDesc_EN}</a> : <a className="bg-error text-base-100 rounded-full px-3 py-2">{bill.ClaimStatusDesc_EN}</a>): "": "Loading...")}
                        
-                       {((bill.FurtherClaimNo)||(bill.FurtherClaimId) ? <a className="rounded-full px-3 py-2">( แบบต่อเนื่อง )</a> : "")}
+
+
+                        {((bill.FurtherClaimNo)||(bill.FurtherClaimId) ? <a className="rounded-full px-3 py-2">( แบบต่อเนื่อง )</a> : "")}
                         {((bill.AccidentDate)||((bill.IllnessTypeCode === "ACC")||(bill.IllnessTypeCode === "ER")) ? <a className="rounded-full px-3 py-2">( อุบัติเหตุ )</a> : "")}
                       </div>
                       </td>
@@ -1255,13 +1383,23 @@ axios
                           
                       </th>
                       <th>
-                      {bill.TotalApprovedAmount
-                          ? parseFloat(bill.TotalApprovedAmount).toLocaleString('en-US', {
+                      {/* {bill.ApprovedAmount
+                          ? parseFloat(bill.ApprovedAmount).toLocaleString('en-US', {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })
+                          : ""} */}
+               
+                          {bill.TotalBillAmount
+                          ? parseFloat(
+                             statusAllNew ? (statusAllNew.map(ALLnew => (ALLnew.TransactionNo === ((bill.TransactionNo)||(statusNew.TransactionNo)) ? (ALLnew.TotalBillAmount) : (bill.TotalBillAmount))))
+                             :(statusNew ? bill.TransactionNo === statusNew.TransactionNo ? statusNew.TotalBillAmount : (bill.TotalBillAmount ? (bill.TotalBillAmount): ("")): "Loading...")
+                          ).toLocaleString('en-US', {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 2,
                           })
                           : ""}
-                          
+
                       </th>
                       <th>
                         {bill.TotalExcessAmount
@@ -1477,7 +1615,6 @@ axios
                     </tbody>
                   </table>
                 </div>
-
                 <div className="grid gap-2 w-full mt-10">
                   <div className="px-2 rounded-md">
                     <div className="flex items-center ">
@@ -1496,6 +1633,11 @@ axios
                         <FaCloudUploadAlt className="size-6" />
                       </div>
                     </div>
+                    <div className="label">
+                  <span className="label-text-alt text-error text-sm">
+                    ** Upload เอกสาร สำหรับเอกสารวางบิล**
+                  </span>
+                </div>
                   </div>
                 </div>
                 {progress.started && (
@@ -1586,6 +1728,12 @@ axios
                   >
                     ส่งบิล
                   </div>
+
+                </div>
+                <div className="label">
+                  <span className="label-text-alt text-base-100 text-sm bg-error px-6 py-4 w-full">
+                    หลังจากกดปุ่ม "ส่งบิล" เรียบร้อยแล้ว <br/>จะไม่สามารถยกเลิกหรือแก้ไขได้ หากยกเลิกต้องติดต่อกับสินไหม หากมีการโอนเงินแล้วจะต้องทำเรื่องโอนเงินคืนก่อน ถึงจะยกเลิกเคสนี้แล้วต้องส่งใหม่ทั้งหมด !!
+                  </span>
                 </div>
               </form>
             </div>

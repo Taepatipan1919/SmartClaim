@@ -13,16 +13,31 @@ import {
 } from "@mui/material";
 
 export default function DetailDischarge({ data }) {
-  
+  const error = {
+    response: {
+      data: {
+        HTTPStatus: {
+          statusCode: "",
+          message: "",
+          error: "",
+        },
+      },
+    },
+  };
      console.log(data)
+     const InsuranceCode = 13;
+     const [massError, setMassError] = useState("");
+     const [showFormError, setShowFormError] = useState("");
   const [patientInfo, setPatientInfo] = useState({});
-
   const [patien, setPatien] = useState();
   const [transactionClaimInfo, setTransactionClaimInfo] = useState();
   const [visit, setVisit] = useState();
   const [fileList, setFileList] = useState("")
   const [massDocError, setMassDocError] = useState("");
   const [showDocError, setShowDocError] = useState("");
+  const [over45Days, setOver45Days] = useState("");
+  const [over45, setOver45] = useState("");
+  const [dataaccidentPlace, setDataaccidentPlace] = useState("");
 
 
   useEffect(() => {
@@ -57,7 +72,55 @@ export default function DetailDischarge({ data }) {
 
 
   }, [data]);
-
+  useEffect(() => {
+    axios
+      .get(
+        process.env.NEXT_PUBLIC_URL_PD2 +
+          process.env.NEXT_PUBLIC_URL_accidentCauseOver45Day +
+          data
+      )
+      .then((response) => {
+     //   console.log(response.data)
+        setOver45Days(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+        try {
+          const ErrorMass = error.config.url;
+          const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+          setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
+          setShowFormError("Error");
+        } catch (error) {
+          setMassError(error.response.data.HTTPStatus.message);
+          setShowFormError("Error");
+        }
+      });
+  }, []);
+  useEffect(() => {
+    axios
+      .get(
+        process.env.NEXT_PUBLIC_URL_PD +
+          process.env.NEXT_PUBLIC_URL_accidentPlace +
+          InsuranceCode,
+        data
+      )
+      .then((response) => {
+       // console.log(response.data)
+        setDataaccidentPlace(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+        try {
+          const ErrorMass = error.config.url;
+          const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+          setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
+          setShowFormError("Error");
+        } catch (error) {
+          setMassError(error.response.data.HTTPStatus.message);
+          setShowFormError("Error");
+        }
+      });
+  }, []);
   useEffect(() => {
     setMassDocError();
     setShowDocError();
@@ -95,49 +158,30 @@ export default function DetailDischarge({ data }) {
   }, [data]);
 
   useEffect(() => {
+const   PatientInfo = {
+  "InsurerCode": 13, 
+  "RefId": data.RefId,
+  "TransactionNo": data.TransactionNo,   
+  "PID": data.PID,
+  "HN": data.HN,
+  "GivenNameTH": "",
+  "SurnameTH": "",
+  "DateOfBirth": "",
+  "PassportNumber": data.PassportNumber,
+  "IdType": data.IdType,
+  "VN": data.VN,
+  "VisitDateTime": data.VisitDateTime,
+  "AccidentDate":"",
+  "PolicyTypeCode":"",
+  "ServiceSettingCode": "", 
+  "IllnessTypeCode": "",
+  "SurgeryTypeCode":  ""
 
+  }
     axios
   .post(process.env.NEXT_PUBLIC_URL_SV + process.env.NEXT_PUBLIC_URL_ReviewOPDDischarge,
     {
-      "PatientInfo" : {
-        "InsurerCode": 13, 
-        "RefId": data.RefId,
-        "TransactionNo": data.TransactionNo,   
-        "PID": data.PID,
-        "HN": data.HN,
-        "GivenNameTH": "",
-        "SurnameTH": "",
-        "DateOfBirth": "",
-        "PassportNumber": data.PassportNumber,
-        "IdType": data.IdType,
-        "VN": data.VN,
-        "VisitDateTime": data.VisitDateTime,
-        "AccidentDate":"",
-        "PolicyTypeCode":"",
-        "ServiceSettingCode": "", 
-        "IllnessTypeCode": "",
-        "SurgeryTypeCode":  ""
-    
-        },
-      // "PatientInfo": {
-      //   InsurerCode: 13, 
-      //   RefId: "qdJseSIsLJhkom1wvRbVWMbNr83caECQjC+vvuEaIKY=",
-      //   TransactionNo: "929ad67e-36a4-43d4-95a9-a20b3bbfe4e9",   
-      //   PID: "3101300272990",
-      //   HN: "377273-44",
-      //   GivenNameTH: "",
-      //   SurnameTH: "",
-      //   DateOfBirth: "",
-      //   PassportNumber:"",
-      //   IdType:"NATIONAL_ID",
-      //   VN: "O579875-67",
-      //   VisitDateTime: "2024-10-24 10:02",
-      //   AccidentDate:"",
-      //   PolicyTypeCode:"",
-      //   ServiceSettingCode: "", 
-      //   IllnessTypeCode: "",
-      //   SurgeryTypeCode:  ""
-      //   },
+      PatientInfo
     }
       
   )
@@ -210,11 +254,45 @@ export default function DetailDischarge({ data }) {
   };
 
 
+  // useEffect(() => {
+  //   if (transactionClaimInfo && dataaccidentPlace) {
+  //     const place = dataaccidentPlace.Result.find(
+  //       (acc) => acc.accidentplacecode === transactionClaimInfo.AccidentDetail.AccidentPlace
+  //     );
+  //     if (place) {
+  //       setAccidentPlaceName(place.accidentplacename);
+  //     }
+  //   }
+  // }, [transactionClaimInfo, dataaccidentPlace]);
+
+
+
+
 
   return (
     <>
       <dialog id="my_modal_5" className="modal">
         <div className="modal-box w-11/12 max-w-7xl">
+        {showFormError === "Error" ? (
+        <div role="alert" className="alert alert-error mt-2 text-base-100">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6 shrink-0 stroke-current"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          <span>{massError}</span>
+        </div>
+      ) : (
+        ""
+      )}
           <div className="justify-center border-solid m-auto border-2 border-warning rounded-lg p-4">
             <h1 className="font-black text-accent text-3xl ">Patient Info</h1>
             <div className="grid gap-2 sm:grid-cols-4 w-full mt-2">
@@ -643,6 +721,7 @@ export default function DetailDischarge({ data }) {
                                 <input
                                     type="text"
                                     defaultValue={transactionClaimInfo ? transactionClaimInfo.AccidentDetail.AccidentPlace : ""}
+                                    // defaultValue={accidentPlaceName}
                                     readOnly
                                     className="border-2 border-gray-300 rounded-md px-4 py-2 bg-gray-100"
                                   />

@@ -154,7 +154,7 @@ export default function Page({ data }) {
 
   }, []);
 
-  
+
   const PatientInfoData = {
     PatientInfo: {
       InsurerCode: data.DataTran.Data.InsurerCode,
@@ -187,7 +187,7 @@ export default function Page({ data }) {
 
     },
   };
-  //console.log(PatientInfoData.PatientInfo)
+  console.log(PatientInfoData)
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.value = "";
@@ -338,16 +338,41 @@ export default function Page({ data }) {
       .post(
         process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_getOPDDischargeVisit,
-        Data  
+      //  Data 
+      PatientInfoData 
       )
       .then((response) => {
-        // console.log(response.data)
+         console.log(response.data)
         setVisit(response.data);
         //const dateValue = dayjs(response.data.Result.VisitInfo.SignSymptomsDate);
         //console.log(response.data.Result.VisitInfo.SignSymptomsDate)
         // setSignSymptomsDate(dateValue);
         setComaScore(response.data.Result.VisitInfo.ComaScore);
-        setCombinedString(
+      })
+      .catch((error) => {
+        console.log(error);
+        try {
+          const ErrorMass = error.config.url;
+          const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+          setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
+          setShowFormError("Error");
+        } catch (error) {
+          setMassError(error.response.data.HTTPStatus.message);
+          setShowFormError("Error");
+        }
+      });
+
+
+      
+      axios
+      .post(
+        process.env.NEXT_PUBLIC_URL_SV +
+          process.env.NEXT_PUBLIC_URL_getOPDDischargeVisit,
+          PatientInfoData  
+      )
+      .then((response) => {
+         console.log(response.data)
+         setCombinedString(
           response
             ? `${response.data.Result.VisitInfo.Weight} / ${response.data.Result.VisitInfo.Height}`
             : ""
@@ -365,6 +390,13 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
+
+
+
+ 
+
+
+
   }, []);
 
   useEffect(() => {
@@ -443,7 +475,8 @@ export default function Page({ data }) {
       .post(
         process.env.NEXT_PUBLIC_URL_PD +
           process.env.NEXT_PUBLIC_URL_getOPDDischargeAccident,
-        Data
+       // Data
+       PatientInfoData
       )
       .then((response) => {
         console.log(response.data)
@@ -497,14 +530,6 @@ export default function Page({ data }) {
         }
       });
   }, []);
-  
-
-
-
-
-
-
-
   useEffect(() => {
     axios
       .get(
@@ -682,7 +707,8 @@ export default function Page({ data }) {
       .post(
         process.env.NEXT_PUBLIC_URL_PD +
           process.env.NEXT_PUBLIC_URL_getOPDDischargeDoctor,
-        Data
+      //  Data
+      PatientInfoData
       )
       .then((response) => {
     //    console.log(response.data)
@@ -775,7 +801,8 @@ export default function Page({ data }) {
       .post(
         process.env.NEXT_PUBLIC_URL_PD +
           process.env.NEXT_PUBLIC_URL_getOPDDischargeDiagnosis,
-        Data
+       // Data
+        PatientInfoData
       )
       .then((response) => {
       //  console.log(response.data)
@@ -1492,6 +1519,18 @@ if(rows){
           .then((response) => {
         console.log(response.data)
             if (response.data.HTTPStatus.statusCode === 200) {
+              axios
+              .post(
+                process.env.NEXT_PUBLIC_URL_PD +
+                  process.env.NEXT_PUBLIC_URL_getcheckclaimstatus,
+                { PatientInfo }
+              )
+              .then((response) => {
+                console.log(response.data);
+              })
+              .catch((error) => {
+                console.log(error);
+              });
               document.getElementById("my_modal_3").close();
               console.log("4 Succ");
               // console.log(response.data);
