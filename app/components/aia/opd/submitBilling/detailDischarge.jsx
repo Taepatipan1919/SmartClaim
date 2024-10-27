@@ -24,7 +24,7 @@ export default function DetailDischarge({ data }) {
       },
     },
   };
-     console.log(data)
+     //console.log(data)
      const InsuranceCode = 13;
      const [massError, setMassError] = useState("");
      const [showFormError, setShowFormError] = useState("");
@@ -37,7 +37,9 @@ export default function DetailDischarge({ data }) {
   const [showDocError, setShowDocError] = useState("");
   const [over45Days, setOver45Days] = useState("");
   const [over45, setOver45] = useState("");
+  const [accidentOver45DaysName, setAccidentOver45DaysName] = useState("");
   const [dataaccidentPlace, setDataaccidentPlace] = useState("");
+  const [accidentPlaceName, setAccidentPlaceName] = useState("");
 
 
   useEffect(() => {
@@ -62,7 +64,7 @@ export default function DetailDischarge({ data }) {
     )
     .then((response) => {
       setTransactionClaimInfo();
-    //  console.log(response.data.Result.TransactionClaimInfo[0]);
+      //console.log(response.data.Result.TransactionClaimInfo[0]);
     setPatientInfo(response.data.Result.TransactionClaimInfo[0]);
 
     })
@@ -74,13 +76,13 @@ export default function DetailDischarge({ data }) {
   }, [data]);
   useEffect(() => {
     axios
-      .get(
-        process.env.NEXT_PUBLIC_URL_PD2 +
-          process.env.NEXT_PUBLIC_URL_accidentCauseOver45Day +
-          data
-      )
+    .get(
+      process.env.NEXT_PUBLIC_URL_PD2 +
+        process.env.NEXT_PUBLIC_URL_accidentCauseOver45Day +
+        InsuranceCode
+    )
       .then((response) => {
-     //   console.log(response.data)
+        console.log(response.data)
         setOver45Days(response.data);
       })
       .catch((error) => {
@@ -254,18 +256,30 @@ const   PatientInfo = {
   };
 
 
-  // useEffect(() => {
-  //   if (transactionClaimInfo && dataaccidentPlace) {
-  //     const place = dataaccidentPlace.Result.find(
-  //       (acc) => acc.accidentplacecode === transactionClaimInfo.AccidentDetail.AccidentPlace
-  //     );
-  //     if (place) {
-  //       setAccidentPlaceName(place.accidentplacename);
-  //     }
-  //   }
-  // }, [transactionClaimInfo, dataaccidentPlace]);
-
-
+  useEffect(() => {
+    if (transactionClaimInfo && dataaccidentPlace) {
+      const place = dataaccidentPlace.Result.find(
+        (acc) => acc.accidentplacecode === transactionClaimInfo.AccidentDetail.AccidentPlace
+      );
+      if (place) {
+        setAccidentPlaceName(place.accidentplacename);
+      }
+    }
+  }, [transactionClaimInfo, dataaccidentPlace]);
+// console.log(accidentPlaceName)
+useEffect(() => {
+  if (transactionClaimInfo && over45Days) {
+    //console.log(over45Days)
+    const place = over45Days.Result.find(
+       (acc) => acc.causeovercode === transactionClaimInfo.Visit.AccidentCauseOver45Days
+    );
+    //console.log(place)
+    if (place) {
+      setAccidentOver45DaysName(place.causeoverdesc);
+      console.log(place)
+    }
+  }
+}, [transactionClaimInfo, over45Days]);
 
 
 
@@ -701,7 +715,9 @@ const   PatientInfo = {
                   </div>
                   <div className="flex items-center mt-2 ml-2"></div> 
           </div>
-          <div className="justify-center border-solid m-auto border-2 border-warning rounded-lg p-4 mt-2">
+           {/* //////////////////////////////////////////////////////////////////////////// */}
+          {transactionClaimInfo ? ((transactionClaimInfo.AccidentDetail.AccidentDate !== "Invalid Date") ? (
+                      <div className="justify-center border-solid m-auto border-2 border-warning rounded-lg p-4 mt-2">
             <h1 className="font-black text-error text-3xl ">AccidentDetail</h1>
             <div className="flex  w-full mt-2">
               <div className="w-1/5 ">
@@ -720,7 +736,7 @@ const   PatientInfo = {
                               <label className="text-gray-700 mb-2">สถานที่เกิดอุบัติเหตุ</label>
                                 <input
                                     type="text"
-                                    defaultValue={transactionClaimInfo ? transactionClaimInfo.AccidentDetail.AccidentPlace : ""}
+                                    defaultValue={accidentPlaceName ? accidentPlaceName : ""}
                                     // defaultValue={accidentPlaceName}
                                     readOnly
                                     className="border-2 border-gray-300 rounded-md px-4 py-2 bg-gray-100"
@@ -732,7 +748,7 @@ const   PatientInfo = {
                               <label className="text-gray-700 mb-2">สาเหตุของการมารับการรักษาเกิน 45 วัน จากการเกิดอุบัติเหตุ</label>
                                 <input
                                     type="text"
-                                    defaultValue={transactionClaimInfo ? transactionClaimInfo.Visit.AccidentCauseOver45Days : ""}
+                                    defaultValue={accidentOver45DaysName ? accidentOver45DaysName : ""}
                                     readOnly
                                     className="border-2 border-gray-300 rounded-md px-4 py-2 bg-gray-100"
                                   />
@@ -859,6 +875,7 @@ const   PatientInfo = {
                     </Table>
             </TableContainer>
           </div>
+          ) : ""): ""}
  {/* //////////////////////////////////////////////////////////////////////////// */}
     <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
               <h1 className="font-black text-accent text-3xl ">VitalSign</h1>
@@ -1319,12 +1336,12 @@ const   PatientInfo = {
                           <TableRow className="bg-primary w-full">
                             <TableCell className="w-2"></TableCell>
                             <TableCell>
-                              <h1 className="text-base-100 bg-primary text-sm w-full text-center w-48">
+                              <h1 className="text-base-100 bg-primary text-sm text-center w-48">
                               รหัสของรายการ
                               </h1>
                             </TableCell>
                             <TableCell>
-                              <h1 className="text-base-100 bg-primary text-sm w-full text-center w-48">
+                              <h1 className="text-base-100 bg-primary text-sm text-center w-48">
                               ชื่อรายการ
                               </h1>
                             </TableCell>
@@ -1334,27 +1351,27 @@ const   PatientInfo = {
                               </h1>
                             </TableCell>
                             <TableCell>
-                              <h1 className="text-base-100 bg-primary text-sm w-full text-center w-48">
+                              <h1 className="text-base-100 bg-primary text-sm text-center w-48">
                               ชื่อของรายการ
                               </h1>
                             </TableCell>
                             <TableCell>
-                              <h1 className="text-base-100 bg-primary text-sm w-full text-center w-24 text-wrap">
+                              <h1 className="text-base-100 bg-primary text-sm text-center w-24 text-wrap">
                               จำนวนปริมาณของรายการ
                               </h1>
                             </TableCell>
                             <TableCell>
-                              <h1 className="text-base-100 bg-primary text-sm w-full text-center w-24 text-wrap">
+                              <h1 className="text-base-100 bg-primary text-sm text-center w-24 text-wrap">
                               จำนวนเงินตั้งต้นของรายการ
                               </h1>
                             </TableCell>
                             <TableCell>
-                              <h1 className="text-base-100 bg-primary text-sm w-full text-center w-24 text-wrap">
+                              <h1 className="text-base-100 bg-primary text-sm text-center w-24 text-wrap">
                               จำนวนส่วนลดของรายการ
                               </h1>
                             </TableCell>
                             <TableCell>
-                              <h1 className="text-base-100 bg-primary text-sm w-full text-center w-24 text-wrap">
+                              <h1 className="text-base-100 bg-primary text-sm text-center w-24 text-wrap">
                               จำนวนเงินหลังหักส่วนลดของรายการ
                               </h1>
                             </TableCell>
@@ -1461,12 +1478,12 @@ const   PatientInfo = {
                           <TableRow className="bg-primary">
                             <TableCell className="w-2"></TableCell>
                             <TableCell>
-                              <h1 className="text-base-100 bg-primary text-sm w-full text-center w-48">
+                              <h1 className="text-base-100 bg-primary text-sm text-center w-48">
                               SIMB
                               </h1>
                             </TableCell>
                             <TableCell>
-                              <h1 className="text-base-100 bg-primary text-sm w-full text-center w-48">
+                              <h1 className="text-base-100 bg-primary text-sm text-center w-48">
                               รายละเอียดค่ารักษาพยาบาล
                               </h1>
                             </TableCell>
@@ -1476,7 +1493,7 @@ const   PatientInfo = {
                               </h1>
                             </TableCell>
                             <TableCell>
-                              <h1 className="text-base-100 bg-primary text-sm w-full text-center w-48">
+                              <h1 className="text-base-100 bg-primary text-sm text-center w-48">
                               ส่วนลด
                               </h1>
                             </TableCell>
