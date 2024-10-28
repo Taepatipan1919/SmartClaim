@@ -348,6 +348,7 @@ export default function Page({ data }) {
         //console.log(response.data.Result.VisitInfo.SignSymptomsDate)
         // setSignSymptomsDate(dateValue);
         setComaScore(response.data.Result.VisitInfo.ComaScore);
+
       })
       .catch((error) => {
         console.log(error);
@@ -986,10 +987,8 @@ export default function Page({ data }) {
     setNewInjuryDetail({ InjuryArea: "", InjurySide: "", WoundType: "" });
   };
 
-  const handleDeleteInjuryDetail = (index) => {
-    const newInjuryDetails = injuryDetails.filter((_, i) => i !== index);
-    setInjuryDetails(newInjuryDetails);
-  };
+
+
 
   const SummitEditProce = () => {
     if (summitEditProcedure === "false") {

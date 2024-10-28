@@ -15,6 +15,16 @@ import { IoIosDocument } from "react-icons/io";
 import { AiOutlineUnorderedList } from "react-icons/ai";
 import { Button, Menu, MenuItem } from "@mui/material";
 import { useRouter } from "next/navigation";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+} from "@mui/material";
+import { FaCirclePlus, FaCircleMinus } from "react-icons/fa6";
 // import { RefreshIcon, ClipboardIcon, TrashIcon } from '@heroicons/react/outline';
 import dayjs from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -30,6 +40,12 @@ import { HiDocumentSearch } from "react-icons/hi";
 export default function checkData() {
   const InsuranceCode = 13;
   const [base64, setBase64] = useState("");
+  const [summitEditProcedure, setSummitEditProcedure] = useState("false");
+  const [summitEditAcc, setSummitEditAcc] = useState("true");
+  const [causeOfInjuryDetails, setCauseOfInjuryDetails] = useState("");
+  const [injuryDetails, setInjuryDetails] = useState("");
+  const [injuryWoundType, setInjuryWoundType] = useState();
+  const [injurySideType, setInjurySideType] = useState();
   const dispatch = useDispatch();
   const [post, setPost] = useState("");
   const [currentData, setCurrentData] = useState("");
@@ -130,11 +146,60 @@ export default function checkData() {
             setShowFormError("Error");
             setMassError(error.message);
           });
+          
+/////////////////////////////////////////////////////////////////////////////////////    
+          axios
+          .get(
+            process.env.NEXT_PUBLIC_URL_PD +
+              process.env.NEXT_PUBLIC_URL_InjurySide +
+              InsuranceCode
+          )
+          .then((response) => {
+           // console.log(response.data)
+            setInjurySideType(response.data);
+          })
+          .catch((error) => {
+            console.log(error);
+            try {
+              const ErrorMass = error.config.url;
+              const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+              setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
+              setShowFormError("Error");
+            } catch (error) {
+              setMassError(error.response.data.HTTPStatus.message);
+              setShowFormError("Error");
+            }
+          });
+        axios
+          .get(
+            process.env.NEXT_PUBLIC_URL_PD +
+              process.env.NEXT_PUBLIC_URL_InjuryWoundtype +
+              InsuranceCode
+          )
+          .then((response) => {
+            setInjuryWoundType(response.data);
+          })
+          .catch((error) => {
+            console.log(error);
+            try {
+              const ErrorMass = error.config.url;
+              const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+              setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
+              setShowFormError("Error");
+            } catch (error) {
+              setMassError(error.response.data.HTTPStatus.message);
+              setShowFormError("Error");
+            }
+          });
+/////////////////////////////////////////////////////////////////////////////////////      
+
+
   }, []);
   const status = (event) => {
     setStatusValue(event.target.value);
   };
   const DocumentList = (data) => {
+    setShowDocError();
     const [
       RefId,
       TransactionNo,
@@ -187,7 +252,166 @@ export default function checkData() {
 
 
   };
+    ///////////////////////////////////////////////////
+  ///////////////////////////////////////////////////
+  const Checkcreditlimit = (data) => {
+    const [
+      RefId,
+      TransactionNo,
+      PID,
+      PassportNumber,
+      HN,
+      VN,
+      InvoiceNumber,
+    ] = data.split(" | ");
+    setRefIdL(RefId);
+    setTransactionNoL(TransactionNo);
+    setHNL(HN);
+    setVNL(VN);
+    setInvoiceNumberL(InvoiceNumber);
+    setMsg(null);
+    setPIDL(PID);
+    setPassportNumberL(PassportNumber);
 
+    const PatientInfo = {
+      InsurerCode: InsuranceCode,
+      RefId: RefId,
+      TransactionNo: TransactionNo,
+      PID: PID,
+      PassportNumber: PassportNumber,
+      HN: HN,
+      VN: VN,
+      DocumenttypeCode : "",
+      Runningdocument : "",
+    };
+
+    console.log(PatientInfo);
+    axios
+    .post(
+      process.env.NEXT_PUBLIC_URL_PD +
+        process.env.NEXT_PUBLIC_URL_getOPDDischargeAccident,
+     // Data
+     PatientInfo
+    )
+    .then((response) => {
+      console.log(response.data)
+       setAccidentDetail(response.data);
+        setCauseOfInjuryDetails(response.data.Result.AccidentDetailInfo.CauseOfInjuryDetail);
+        setInjuryDetails(response.data.Result.AccidentDetailInfo.InjuryDetail);
+    })
+    .catch((error) => {
+      console.log(error);
+      // try {
+      //   const ErrorMass = error.config.url;
+      //   const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+      //   setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
+      //   setShowFormError("Error");
+      // } catch (error) {
+      //   setMassError("Error Accident");
+      //   setShowFormError("Error");
+      // }
+    
+    });
+ 
+
+
+        document.getElementById("DoMoney").showModal();
+    
+  };
+   ////////////////////////////////
+   const handleChangeA1 = (index2, event) => {
+    const newcauses = causeOfInjuryDetails.map((cause, index) => {
+      if (index === index2) {
+        return {
+          ...cause,
+          CauseOfInjury: event.target.value,
+        };
+      }
+      return cause;
+    });
+    setCauseOfInjuryDetails(newcauses);
+  };
+  const handleChangeA2 = (index2, event) => {
+    const newcauses = causeOfInjuryDetails.map((cause, index) => {
+      if (index === index2) {
+        return {
+          ...cause,
+          CommentOfInjury: event.target.value,
+        };
+      }
+      return cause;
+    });
+    setCauseOfInjuryDetails(newcauses);
+  };
+  const handleChangeB1 = (index2, event) => {
+    const newinjury = injuryDetails.map((injury, index) => {
+      if (index === index2) {
+        return {
+          ...injury,
+          InjuryArea: event.target.value,
+        };
+      }
+      return injury;
+    });
+    setInjuryDetails(newinjury);
+  };
+  const handleChangeB2 = (index2, event) => {
+    const newinjury = injuryDetails.map((injury, index) => {
+      if (index === index2) {
+        return {
+          ...injury,
+          InjurySide: event.target.value,
+        };
+      }
+      return injury;
+    });
+    setInjuryDetails(newinjury);
+  };
+  const handleChangeB3 = (index2, event) => {
+    const newinjury = injuryDetails.map((injury, index) => {
+      if (index === index2) {
+        return {
+          ...injury,
+          WoundType: event.target.value,
+        };
+      }
+      return injury;
+    });
+    setInjuryDetails(newinjury);
+  };
+    ////////////////////////////////
+
+    const handleDeleteCauseOfInjuryDetail = (index) => {
+      const newCauseOfInjuryDetails = causeOfInjuryDetails.filter(
+        (_, i) => i !== index
+      );
+      setCauseOfInjuryDetails(newCauseOfInjuryDetails);
+    };
+    const handleAddInjuryDetail = () => {
+      setInjuryDetails([...injuryDetails, newInjuryDetail]);
+      setNewInjuryDetail({ InjuryArea: "", InjurySide: "", WoundType: "" });
+    };
+    const handleDeleteInjuryDetail = (index) => {
+      const newInjuryDetails = injuryDetails.filter((_, i) => i !== index);
+      setInjuryDetails(newInjuryDetails);
+    };
+    /////////////////////////////////////////////////////
+    const [newCauseOfInjuryDetail, setNewCauseOfInjuryDetail] = useState({
+      CauseOfInjury: "",
+      CommentOfInjury: "",
+    });
+    const [newInjuryDetail, setNewInjuryDetail] = useState({
+      InjuryArea: "",
+      InjurySide: "",
+      WoundType: "",
+    });
+  ////////////////////////////////////////////////////////
+  const handleAddCauseOfInjuryDetail = () => {
+    setCauseOfInjuryDetails([...causeOfInjuryDetails, newCauseOfInjuryDetail]);
+    setNewCauseOfInjuryDetail({ CauseOfInjury: "", CommentOfInjury: "" });
+  };
+    ////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////
   const handleButtonClick = (data) => {
     const generateRandomFiveDigitNumber = () => {
       return String(Math.floor(Math.random() * 100000)).padStart(5, '0');
@@ -1181,10 +1405,6 @@ let PatientInfo2;
   }, [data]);
 /////////////////////////////////////////////////////////////////////
 
-
-
-
-
   return (
     <>
       <form onSubmit={handleSubmit}>
@@ -1354,7 +1574,7 @@ let PatientInfo2;
           )} */}
 
         <table className="table mt-2">
-            <thead className="bg-info text-base-100 text-center text-lg ">
+            <thead className="bg-info text-base-100 text-center text-sm">
               <tr>
                 <th></th>
                 <th>Visit Date</th>
@@ -1396,8 +1616,19 @@ let PatientInfo2;
                       <td>{bill.ClaimNo}</td>
                       <td>{bill.InvoiceNumber}</td>
                       <td>
-{statusAllNew ? (statusAllNew.map(ALLnew => ((ALLnew.TransactionNo === ((bill.TransactionNo)||(statusNew.TransactionNo))) ?  (ALLnew.BatchNumber) : ((bill.BatchNumber)||(statusNew.BatchNumber)))))
-:(statusNew ? (bill.TransactionNo === statusNew.TransactionNo ? statusNew.BatchNumber : bill.BatchNumber): "Loading...")}
+{
+//  statusAllNew ? (statusAllNew.map(ALLnew => ((ALLnew.TransactionNo === ((bill.TransactionNo)||(statusNew.TransactionNo))) ?  
+//  (ALLnew.BatchNumber) : ((bill.BatchNumber)||(statusNew.BatchNumber)))))
+// :(statusNew ? (bill.TransactionNo === statusNew.TransactionNo ? statusNew.BatchNumber : bill.BatchNumber): "Loading...")
+statusAllNew ? (statusAllNew.map(ALLnew => ((ALLnew.TransactionNo === ((bill.TransactionNo)||(statusNew.TransactionNo))) ?  
+(ALLnew.BatchNumber) : (""))))
+:(statusNew ? (bill.TransactionNo === statusNew.TransactionNo ? statusNew.BatchNumber : bill.BatchNumber): "Loading...")
+
+
+
+
+}
+
                       </td>
                       <td>
                       <div className="grid gap-1 sm:grid-cols-1 w-full">
@@ -1535,6 +1766,22 @@ let PatientInfo2;
                                 </button>
                               </>
                             )) : ("")) : ("")}
+                                              {/* { bill.RefId ? (
+                            (bill.ClaimStatusDesc === "waitting for discharge") ? (
+                              <>
+
+                                <button
+                                  className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100 ml-4"
+                                  onClick={() =>
+                                    Checkcreditlimit(
+                                      `${bill.RefId} | ${bill.TransactionNo} | ${bill.PID} | ${bill.PassportNumber} | ${bill.HN} | ${bill.VN} | ${bill.InvoiceNumber}`
+                                    )
+                                  }
+                                >
+                                  เช็ควงเงิน
+                                </button>
+                              </>
+                            ) : ("")) : ("")} */}
                       </td>
                     </tr>
                     ))
@@ -1844,7 +2091,385 @@ let PatientInfo2;
             </div>
           </dialog>
 
+  {/* <dialog id="DoMoney" className="modal text-xl	">
+            <div className="modal-box max-w-7xl">
+              <form method="dialog">
+      <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+    </form>
+                <h3 className="font-bold text-lg">เช็ควงเงิน</h3>
+                <hr />
 
+
+<TableContainer component={Paper} className="mt-2">
+                      <Table className="table">
+                        <TableHead>
+                          <TableRow className="bg-primary">
+                            <TableCell className="w-2"></TableCell>
+                            <TableCell>
+                              <h1 className="text-base-100  text-sm w-2/5 text-center">
+                                สาเหตุของการเกิดอุบัติเหตุ (ICD10 code)
+                              </h1>
+                            </TableCell>
+                            <TableCell>
+                              <h1 className="text-base-100  text-sm w-2/5 text-center">
+                                คำอธิบายอวัยวะที่ได้รับจากการเกิดอุบัติเหตุว่ามีลักษณะบาดแผลอย่างไร
+                              </h1>
+                            </TableCell>
+                            <TableCell>
+                            </TableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                 
+                          {causeOfInjuryDetails
+                            ? causeOfInjuryDetails.map(
+                                (cause, index) =>
+                                  cause.CauseOfInjury  && (
+                                    <TableRow
+                                      key={index}
+                                      className=" bg-neutral text-sm z-50"
+                                    >
+                                      <TableCell>{index + 1}</TableCell>
+                                      <TableCell>
+                                            <input
+                                              type="text"
+                                              className="rounded-full px-3 py-2 border-2 bg-base-100 break-all w-full"
+                                              value={cause.CauseOfInjury}
+                                              onChange={(e) =>
+                                                handleChangeA1(index, e)
+                                              }
+                                            />
+                                      </TableCell>
+                                      <TableCell>
+                                            <TextField
+                                              type="text"
+                                              className="bg-base-100 w-full m-2"
+                                              value={cause.CommentOfInjury}
+                                              onChange={(e) =>
+                                                handleChangeA2(index, e)
+                                              }
+                                              inputProps={{ maxLength: 200 }}
+                                              placeholder="CommentOfInjury"
+                                              multiline
+                                              rows={4}
+                                            />
+                                      </TableCell>
+                                        <TableCell>
+                                          <div
+                                            onClick={() =>
+                                              handleDeleteCauseOfInjuryDetail(
+                                                index
+                                              )
+                                            }
+                                            className="btn btn-error text-base-100 text-xl"
+                                          >
+                                            <FaCircleMinus />
+                                          </div>
+                                        </TableCell>
+                                    </TableRow>
+                                  )
+                              )
+                            : ""}
+                              <TableRow>
+                                <TableCell>
+                                  <FaCirclePlus className="text-xl" />
+                                </TableCell>
+
+                                <TableCell>
+                                  <TextField
+                                    className="bg-base-100 w-full"
+                                    value={newCauseOfInjuryDetail.CauseOfInjury}
+                                    onChange={(e) =>
+                                      setNewCauseOfInjuryDetail({
+                                        ...newCauseOfInjuryDetail,
+                                        CauseOfInjury: e.target.value,
+                                      })
+                                    }
+                                    placeholder="CauseOfInjury"
+                                  />
+                                </TableCell>
+                                <div className="m-2">
+                                  <TextField
+                                    type="text"
+                                    className="bg-base-100 w-full "
+                                    value={
+                                      newCauseOfInjuryDetail.CommentOfInjury
+                                    }
+                                    onChange={(e) =>
+                                      setNewCauseOfInjuryDetail({
+                                        ...newCauseOfInjuryDetail,
+                                        CommentOfInjury: e.target.value,
+                                      })
+                                    }
+                                    inputProps={{ maxLength: 200 }}
+                                    placeholder="CommentOfInjury"
+                                    multiline
+                                    rows={4}
+                                  />
+                                </div>
+                                {newCauseOfInjuryDetail.CauseOfInjury &&
+                                newCauseOfInjuryDetail.CommentOfInjury ? (
+                                  <>
+                                    <TableCell>
+                                      <div
+                                        onClick={handleAddCauseOfInjuryDetail}
+                                        className="btn btn-success text-base-100 text-xl"
+                                      >
+                                        <FaCirclePlus />
+                                      </div>
+                                    </TableCell>
+                                  </>
+                                ) : (
+                                  ""
+                                )}
+                              </TableRow>
+                        </TableBody>
+                      </Table>
+                      <div className="grid gap-2 sm:grid-cols-4 text-base-100 bg-primary w-full whitespace-normal text-center">
+                        <div className="rounded-md"></div>
+                        <div className="rounded-md"></div>
+                        <div className="rounded-md "></div>
+                        <div className="rounded-md ">&nbsp;</div>
+                      </div>
+                    </TableContainer>
+
+                  <TableContainer component={Paper} className="mt-2">
+                      <Table className="table">
+                        <TableHead>
+                          <TableRow className="bg-primary">
+                            <TableCell className="w-2"></TableCell>
+                            <TableCell>
+                              <h1 className="text-base-100  text-sm w-1/7 text-center">
+                                อวัยวะที่ได้บาดเจ็บจากการเกิดอุบัติเหตุ (ICD10 code)
+                              </h1>
+                            </TableCell>
+                            <TableCell>
+                              <h1 className="text-base-100  text-sm w-3/7 text-center">
+                                ข้างของอวัยวะที่ได้รับบาดเจ็บจากการเกิดอุบัติเหตุ
+                              </h1>
+                            </TableCell>
+                            <TableCell>
+                              <h1 className="text-base-100  text-sm w-3/7 text-center">
+                                ลักษณะบาดแผลที่ได้รับจากการเกิดอุบัติเหตุ
+                              </h1>
+                            </TableCell>
+                            <TableCell>
+                            </TableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {injuryDetails
+                            ? injuryDetails.map(
+                                (injury, index) =>
+                                  injury.InjuryArea  && (
+                                    <TableRow
+                                      key={index}
+                                      className=" bg-neutral text-sm"
+                                    >
+                                      <TableCell>{index + 1}</TableCell>
+
+                                      <TableCell>
+                                            <input
+                                              type="text"
+                                              className="rounded-full px-3 py-2 border-2 bg-base-100 break-all w-full"
+                                              value={injury.InjuryArea}
+                                              onChange={(e) =>
+                                                handleChangeB1(index, e)
+                                              }
+                                            />
+                                      </TableCell>
+                                      <TableCell>
+                                    <FormControl fullWidth className="relative z-50">
+                                   <select className="select select-bordered rounded-full px-3 py-2 bg-base-100 break-all w-full max-w-xs"
+                                             value={injury.InjurySide}
+                                             label=""
+                                             onChange={(e) =>
+                                               handleChangeB2(index, e)
+                                            }
+>
+                                            {injurySideType
+                                                  ? injurySideType.Result.map(
+                                                      (injury, index) => (
+                                                        <option
+                                                          key={index}
+                                                          value={
+                                                            injury.injurysidecode
+                                                          }
+                                                        >
+                                                          {
+                                                            injury.injurysidecode
+                                                          }{" "}
+                                                          -{" "}
+                                                          {
+                                                            injury.injurysidename
+                                                          }
+                                                        </option>
+                                                      )
+                                                    )
+                                                  : ""}
+                                      </select>
+                                  </FormControl> 
+                                        
+                                      </TableCell>
+                                      <TableCell>
+                        
+                              <FormControl fullWidth className="relative z-50">
+                                   <select className="select select-bordered rounded-full px-3 py-2 bg-base-100 break-all w-full max-w-xs"
+                                               value={injury.WoundType}
+                                                label=""
+                                                onChange={(e) =>
+                                                  handleChangeB3(index, e)
+                                                }
+>                                 {injuryWoundType
+                                                  ? injuryWoundType.Result.map(
+                                                      (Wound, index) => (
+                                                        <option
+                                                          key={index}
+                                                          value={
+                                                            Wound.woundtypecode
+                                                          }
+                                                        >
+                                                          {Wound.woundtypecode}{" "}
+                                                          -{" "}
+                                                          {Wound.woundtypename}
+                                                        </option>
+                                                      )
+                                                    )
+                                                  : ""}
+                                      </select>
+                                  </FormControl> 
+                                           
+                                      </TableCell>
+                        
+                                        
+                                        <TableCell>
+                                          <div
+                                            onClick={() =>
+                                              handleDeleteInjuryDetail(index)
+                                            }
+                                            className="btn btn-error text-base-100 text-xl"
+                                          >
+                                            <FaCircleMinus />
+                                          </div>
+                                        </TableCell>
+                                        
+                                     
+                                    </TableRow>
+                                  )
+                              )
+                            : ""}
+                
+                              <TableRow>
+                                <TableCell>
+                                  <FaCirclePlus className="text-xl" />
+                                </TableCell>
+
+                                <TableCell>
+                                  <TextField
+                                    className="bg-base-100 w-full"
+                                    value={newInjuryDetail.InjuryArea}
+                                    onChange={(e) =>
+                                      setNewInjuryDetail({
+                                        ...newInjuryDetail,
+                                        InjuryArea: e.target.value,
+                                      })
+                                    }
+                                    placeholder="InjuryArea"
+                                  />
+                                </TableCell>
+                                <TableCell>
+                                  <FormControl fullWidth>
+                                    <Select
+                                      className="bg-base-100 w-full m-2"
+                                      labelId="policyTypeValue"
+                                      id="demo-simple-select"
+                                      value={newInjuryDetail.InjurySide}
+                                      label=""
+                                      onChange={(e) =>
+                                        setNewInjuryDetail({
+                                          ...newInjuryDetail,
+                                          InjurySide: e.target.value,
+                                        })
+                                      }
+                                    >
+                                      {injurySideType
+                                        ? injurySideType.Result.map(
+                                            (injury, index) => (
+                                              <MenuItem
+                                                key={index}
+                                                value={injury.injurysidecode}
+                                              >
+                                                {injury.injurysidecode} -{" "}
+                                                {injury.injurysidename}
+                                              </MenuItem>
+                                            )
+                                          )
+                                        : ""}
+                                    </Select>
+                                  </FormControl>
+                                </TableCell>
+                                <TableCell>
+                                  <FormControl fullWidth>
+                                    <Select
+                                      className="bg-base-100 w-full m-2"
+                                      labelId="policyTypeValue"
+                                      id="demo-simple-select"
+                                      value={newInjuryDetail.WoundType}
+                                      label=""
+                                      onChange={(e) =>
+                                        setNewInjuryDetail({
+                                          ...newInjuryDetail,
+                                          WoundType: e.target.value,
+                                        })
+                                      }
+                                    >
+                       
+                                      {injuryWoundType
+                                        ? injuryWoundType.Result.map(
+                                            (Wound, index) => (
+                                              <MenuItem
+                                                key={index}
+                                                value={Wound.woundtypecode}
+                                              >
+                                                {Wound.woundtypecode} -{" "}
+                                                {Wound.woundtypename}
+                                              </MenuItem>
+                                            )
+                                          )
+                                        : ""}
+                                    </Select>
+                                  </FormControl>
+                                </TableCell>
+                                {newInjuryDetail.InjuryArea &&
+                                newInjuryDetail.InjurySide &&
+                                newInjuryDetail.WoundType ? (
+                                  <>
+                                    <TableCell>
+                                      <div
+                                        onClick={handleAddInjuryDetail}
+                                        className="btn btn-success text-base-100 text-xl"
+                                      >
+                                        <FaCirclePlus />
+                                      </div>
+                                    </TableCell>
+                                  </>
+                                ) : (
+                                  ""
+                                )}
+                              </TableRow>
+                
+                        </TableBody>
+                      </Table>
+                      <div className="grid gap-2 sm:grid-cols-4 text-base-100 bg-primary w-full whitespace-normal text-center">
+                        <div className="rounded-md"></div>
+                        <div className="rounded-md"></div>
+                        <div className="rounded-md "></div>
+                        <div className="rounded-md ">&nbsp;</div>
+                      </div>
+                    </TableContainer>
+
+            </div>
+          </dialog> */}
 
 
 

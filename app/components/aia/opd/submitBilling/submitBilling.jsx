@@ -291,6 +291,7 @@ setBilltype(Billtype)
     }
   };
   const DocumentList = (data) => {
+    setShowDocError();
     const [
       RefId,
       TransactionNo,
@@ -703,25 +704,25 @@ if(!patientInfoDetail) {
 
       }
 console.log(PatientInfo)
-setPost();
-          axios
-          .post(
-            process.env.NEXT_PUBLIC_URL_SV +
-              process.env.NEXT_PUBLIC_URL_SearchTransection,
-             {PatientInfo }
-          )
-          .then((response) => {
-           setPost(response.data);
-            console.log(response.data)
-         setCurrentData(response.data.Result.TransactionClaimInfo)
-           setShowFormError();
-          })
-          .catch((error) => {
-            console.log(error);
+  // setPost();
+  //         axios
+  //         .post(
+  //           process.env.NEXT_PUBLIC_URL_SV +
+  //             process.env.NEXT_PUBLIC_URL_SearchTransection,
+  //            {PatientInfo }
+  //         )
+  //         .then((response) => {
+  //          setPost(response.data);
+  //           console.log(response.data)
+  //        setCurrentData(response.data.Result.TransactionClaimInfo)
+  //          setShowFormError();
+  //         })
+  //         .catch((error) => {
+  //           console.log(error);
   
-           setShowFormError("Error");
-           setMassError(error.message);
-          });
+  //          setShowFormError("Error");
+  //          setMassError(error.message);
+  //         });
 
         }, 2000);
 
@@ -747,6 +748,7 @@ setPost();
       });
   };
   const DocumentBase64 = (data) => {
+    setShowDocError();
     setBillList();
     setMsg();
     setProgress({ started: false, pc: 0 });
@@ -1071,7 +1073,7 @@ axios
    //////////////////// Chack Status All///////////////////////////
 
    const RefreshAll = () => {
-
+    setStatusAllNew();
   // const extractedRefId = data.map(item => item.RefId);
   // const extractedTransactionNo = data.map(item => item.TransactionNo);
 
@@ -1107,30 +1109,7 @@ axios
         }));
          console.log(AllPatient)
          setStatusAllNew(AllPatient)
-        //  if (response.data.HTTPStatus.statusCode === 200) {
-        //   // console.log(response.data)
-          //  setStatusNew((prevData) => ({
-          //    ...prevData,
-          //    InsurerCode: response.data.Result.InsuranceData.StatusInfo.InsurerCode,
-          //    BatchNumber: response.data.Result.InsuranceData.BatchNumber,
-          //    ClaimStatus: response.data.Result.InsuranceData.ClaimStatus,
-          //    ClaimStatusDesc: response.data.Result.InsuranceData.ClaimStatusDesc,
-          //    TotalApproveAmount: response.data.Result.InsuranceData.TotalApproveAmount,
-          //    PaymentDate: response.data.Result.InsuranceData.PaymentDate,
-          //    InvoiceNumber: response.data.Result.InsuranceData.InvoiceNumber,
-          //    RefId : response.data.Result.InsuranceData.RefId,
-          //    TransactionNo : response.data.Result.InsuranceData.TransactionNo,
-          //  })); 
- 
-        //    // setShowModal(true)
-        //    // setTimeout(() => {
-        //    //   setShowModal(false)
-        //      //router.push('/aia/opd/submitBilling');
-        //    // }, 5000);
-        //  } else {
-        //    setShowFormError("Error");
-        //    setMassError(response.data.HTTPStatus.error);
-        //  }
+
 
  
         })
@@ -1150,8 +1129,9 @@ axios
   return (
     <>
       {/* <div role="tablist" className="tabs tabs-lifted">
-      <input type="radio" name="my_tabs_2" role="tab" className="tab text-error" aria-label="รายการที่ยังไม่วางบิล" defaultChecked/> */}
-      <div className="bg-base-100 border-base-300 rounded-box w-5/5">
+      <input type="radio" name="my_tabs_2" 
+       className="tab text-error" aria-label="รายการที่ยังไม่วางบิล" defaultChecked/> */}
+      <div className="bg-base-100 border-base-300 rounded-box w-5/5 ">
         <form onSubmit={handleSubmit}>
           {/* <div className="grid gap-1 sm:grid-cols-1 w-full"> */}
           <div className="flex items-center  w-full">
@@ -1272,7 +1252,15 @@ axios
           </div>
         </form>
       </div>
-      <div className="justify-center border-solid m-auto border-2 border-warning rounded-lg p-4 mt-6">
+
+{/* {billValue} */}
+      <div role="tablist" className="tabs tabs-lifted">
+  <input type="radio" name="my_tabs_2" role="tab"  className="tab w-[500px] text-sm" aria-label="ทั้งหมด"     defaultChecked />
+  <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6">
+   
+
+
+  {/* <div className="justify-center border-solid m-auto border-2 border-warning rounded-lg p-4 mt-6"> */}
         <div className="overflow-x-auto">
           {showFormError === "Error" ? (
             <div role="alert" className="alert alert-error mt-2 text-base-100">
@@ -1304,11 +1292,9 @@ axios
                 <th>VN</th>
                 <th>ClaimNo</th>
                 <th>Invoicenumber</th>
-                <td>BatchNumber <br/>
+                <td>BatchNumber 
+                  {/* <br/>
                 <FormControl className="w-full bg-info">
-              {/* <InputLabel id="demo-simple-select-label">
-                TypeBill
-              </InputLabel> */}
                 <NativeSelect
           id="demo-customized-select-native"
           value={billValue}
@@ -1323,8 +1309,8 @@ axios
                     ))
                   : ""}
               </NativeSelect>
-            </FormControl>
-</td>
+            </FormControl> */}
+  </td>
                 <th className="w-40">Status</th>
                 <th>ApprovedAmount</th>
                 <th>Totalbillamount</th>
@@ -1341,7 +1327,7 @@ axios
               </tr>
             </thead>
             <tbody>
-              {/* {console.log(billValue)} */}
+               {/* {console.log(billValue)} */}
             {post ? (
     post.HTTPStatus.statusCode === 200 ? (
       data.map((bill, index) => 
@@ -1357,8 +1343,8 @@ axios
                       <td>{bill.ClaimNo}</td>
                       <td>{bill.InvoiceNumber}</td>
                       <td>
-{statusAllNew ? (statusAllNew.map(ALLnew => ((ALLnew.TransactionNo === ((bill.TransactionNo)||(statusNew.TransactionNo))) ?  (ALLnew.BatchNumber) : ((bill.BatchNumber)||(statusNew.BatchNumber)))))
-:(statusNew ? (bill.TransactionNo === statusNew.TransactionNo ? statusNew.BatchNumber : bill.BatchNumber): "Loading...")}
+  {(billValue === "ทั้งหมด") ? (statusAllNew ? (statusAllNew.map(ALLnew => ((ALLnew.TransactionNo === ((bill.TransactionNo)||(statusNew.TransactionNo))) ?  (ALLnew.BatchNumber) : ((bill.BatchNumber)||(statusNew.BatchNumber)))))
+  :(statusNew ? (bill.TransactionNo === statusNew.TransactionNo ? statusNew.BatchNumber : bill.BatchNumber): "Loading...")): ""}
                       </td>
                       <td>
                       <div className="grid gap-1 sm:grid-cols-1 w-full">
@@ -1510,7 +1496,7 @@ axios
                     ) : 
         ((billValue === "ยังไม่วางบิล") ?
  (!bill.BatchNumber ? (
-//  console.log("ยังไม่วางบิล")
+  //  console.log("ยังไม่วางบิล")
   <tr className="hover text-center" key={index}>
     <th>{index + 1}</th>
     <td>{bill.VisitDateTime}</td>
@@ -1521,8 +1507,8 @@ axios
     <td>{bill.ClaimNo}</td>
     <td>{bill.InvoiceNumber}</td>
     <td>
-{statusAllNew ? (statusAllNew.map(ALLnew => ((ALLnew.TransactionNo === ((bill.TransactionNo)||(statusNew.TransactionNo))) ?  (ALLnew.BatchNumber) : ((bill.BatchNumber)||(statusNew.BatchNumber)))))
-:(statusNew ? (bill.TransactionNo === statusNew.TransactionNo ? statusNew.BatchNumber : bill.BatchNumber): "Loading...")}
+  {statusAllNew ? (statusAllNew.map(ALLnew => ((ALLnew.TransactionNo === ((bill.TransactionNo)||(statusNew.TransactionNo))) ?  (ALLnew.BatchNumber) : ((bill.BatchNumber)||(statusNew.BatchNumber)))))
+  :(statusNew ? (bill.TransactionNo === statusNew.TransactionNo ? statusNew.BatchNumber : bill.BatchNumber): "Loading...")}
     </td>
     <td>
     <div className="grid gap-1 sm:grid-cols-1 w-full">
@@ -1880,14 +1866,628 @@ axios
           </button>
         )}
       </div>
+        </div>
+        : ""}
+
+
+
+
+
+
+
+         
+        </div>
+      {/* </div> */}
+
+
 </div>
- : ""}
+
+
+
+     <input type="radio" name="my_tabs_2" role="tab"  className="tab w-[500px] text-sm inline-flex space-x-2" aria-label="รอวางบิล"     />
+     <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6">
+
+
+  {/* <div className="justify-center border-solid m-auto border-2 border-warning rounded-lg p-4 mt-6"> */}
+        <div className="overflow-x-auto">
+          {showFormError === "Error" ? (
+            <div role="alert" className="alert alert-error mt-2 text-base-100">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6 shrink-0 stroke-current"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <span>{massError}</span>
+            </div>
+          ) : (
+            ""
+          )}
+
+          <table className="table mt-2">
+            <thead className="bg-info text-base-100 text-center text-lg ">
+              <tr>
+                <th></th>
+                <th>Visit Date</th>
+                <th>Full Name</th>
+                <th>VN</th>
+                <th>ClaimNo</th>
+                <th>Invoicenumber</th>
+                <td>BatchNumber 
+                  {/* <br/>
+                <FormControl className="w-full bg-info">
+                <NativeSelect
+          id="demo-customized-select-native"
+          value={billValue}
+          label="TypeBill"
+          onChange={bill}
+        >
+                {billtype
+                  ? billtype.map((bill, index) => (
+                      <option key={index} value={bill.Desc}>
+                        {bill.Desc}
+                      </option>
+                    ))
+                  : ""}
+              </NativeSelect>
+            </FormControl> */}
+  </td>
+                <th className="w-40">Status</th>
+                <th>ApprovedAmount</th>
+                <th>Totalbillamount</th>
+                <th>ExcessAmount</th>
+                <th>
+                <h1
+                            className="text-base-100 text-2xl"
+                            onClick={RefreshAll}
+                          >
+                            <LuRefreshCw />
+                          </h1>
+                          </th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {/* {console.log(billValue)} */}
+            {post ? (
+    post.HTTPStatus.statusCode === 200 ? (
+      data.map((bill, index) => 
+      ((bill.VisitDate||bill.HN) !== "" && 
+ (!bill.BatchNumber ? (
+  //  console.log("ยังไม่วางบิล")
+  <tr className="hover text-center" key={index}>
+    <th>{index + 1}</th>
+    <td>{bill.VisitDateTime}</td>
+    <td>
+      {bill.TitleTH} {bill.GivenNameTH} {bill.SurnameTH}
+    </td>
+    <td>{bill.VN}</td>
+    <td>{bill.ClaimNo}</td>
+    <td>{bill.InvoiceNumber}</td>
+    <td>
+  {statusAllNew ? (statusAllNew.map(ALLnew => ((ALLnew.TransactionNo === ((bill.TransactionNo)||(statusNew.TransactionNo))) ?  (ALLnew.BatchNumber) : ((bill.BatchNumber)||(statusNew.BatchNumber)))))
+  :(statusNew ? (bill.TransactionNo === statusNew.TransactionNo ? statusNew.BatchNumber : bill.BatchNumber): "Loading...")}
+    </td>
+    <td>
+    <div className="grid gap-1 sm:grid-cols-1 w-full">
+ {/* {console.log(statusAllNew)}   */}
+      {statusAllNew ? statusAllNew.map(ALLnew => (ALLnew.TransactionNo === ((bill.TransactionNo)||(statusNew.TransactionNo)) ? ((((ALLnew.ClaimStatus !== "Cancelled")&&(ALLnew.ClaimStatus !== "Cancelled to AIA")&&(ALLnew.ClaimStatus !== "Reversed")) ? ((ALLnew.ClaimStatus === "Approved")||(ALLnew.ClaimStatus === "Settle")) ? <a className="bg-success text-base-100 rounded-full px-3 py-2">{ALLnew.ClaimStatus}</a> : <a className="bg-warning text-base-100 rounded-full px-3 py-2">{ALLnew.ClaimStatus}</a> : <a className="bg-error text-base-100 rounded-full px-3 py-2">{ALLnew.ClaimStatus}</a>)) : ((((bill.ClaimStatusDesc_EN !== "Cancelled")&&(bill.ClaimStatusDesc_EN !== "Cancelled to AIA")&&(bill.ClaimStatusDesc_EN !== "Reversed")) ? ((bill.ClaimStatus === "Approved")||(bill.ClaimStatus === "Settle")) ? <a className="bg-success text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatus}</a> : <a className="bg-warning text-base-100 rounded-full px-3 py-2">{bill.ClaimStatusDesc_EN}</a> : <a className="bg-error text-base-100 rounded-full px-3 py-2">{bill.ClaimStatusDesc_EN}</a>))))
+      :(statusNew ? bill.TransactionNo === statusNew.TransactionNo ? statusNew.ClaimStatusDesc ?  (((statusNew.ClaimStatus !== "Cancelled")&&(statusNew.ClaimStatus !== "Cancelled to AIA")&&(statusNew.ClaimStatus !== "Reversed")) ? ((statusNew.ClaimStatus === "Approved")||(statusNew.ClaimStatus === "Settle")) ? <a className="bg-success text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatus}</a> : <a className="bg-warning text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatus}</a> : <a className="bg-error text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatus}</a>): "": bill.ClaimStatusDesc ? 
+            (((bill.ClaimStatusDesc_EN !== "Cancelled")&&(bill.ClaimStatusDesc_EN !== "Cancelled to AIA")&&(bill.ClaimStatusDesc_EN !== "Reversed")) ? ((bill.ClaimStatus === "Approved")||(bill.ClaimStatus === "Settle")) ? <a className="bg-success text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatus}</a> : <a className="bg-warning text-base-100 rounded-full px-3 py-2">{bill.ClaimStatusDesc_EN}</a> : <a className="bg-error text-base-100 rounded-full px-3 py-2">{bill.ClaimStatusDesc_EN}</a>): "": "Loading...")}
+     
+
+
+      {((bill.FurtherClaimNo)||(bill.FurtherClaimId) ? <a className="rounded-full px-3 py-2">( แบบต่อเนื่อง )</a> : "")}
+      {((bill.AccidentDate)||((bill.IllnessTypeCode === "ACC")||(bill.IllnessTypeCode === "ER")) ? <a className="rounded-full px-3 py-2">( อุบัติเหตุ )</a> : "")}
+    </div>
+    </td>
+    <th>
+    {bill.TotalApprovedAmount
+        ? parseFloat(bill.TotalApprovedAmount).toLocaleString('en-US', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })
+        : ""}
+        
+    </th>
+    <th>
+    {/* {bill.ApprovedAmount
+        ? parseFloat(bill.ApprovedAmount).toLocaleString('en-US', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })
+        : ""} */}
+
+        {bill.TotalBillAmount
+        ? parseFloat(
+           statusAllNew ? (statusAllNew.map(ALLnew => (ALLnew.TransactionNo === ((bill.TransactionNo)||(statusNew.TransactionNo)) ? (ALLnew.TotalBillAmount) : (bill.TotalBillAmount))))
+           :(statusNew ? bill.TransactionNo === statusNew.TransactionNo ? statusNew.TotalBillAmount : (bill.TotalBillAmount ? (bill.TotalBillAmount): ("")): "Loading...")
+        ).toLocaleString('en-US', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })
+        : ""}
+
+    </th>
+    <th>
+      {bill.TotalExcessAmount
+        ? parseFloat(bill.TotalExcessAmount).toLocaleString('en-US', {minimumFractionDigits: 2,maximumFractionDigits: 2,})
+        : ""}
+    </th>
+    <td>
+    {bill.RefId ? (
+          (((bill.ClaimStatusDesc !== "Cancelled to AIA")&&(bill.ClaimStatusDesc !== "Cancelled")&&(bill.ClaimStatusDesc !== "Reversed"))&&(bill.ClaimNo)) ? (
+            <>
+      <div className="tooltip" data-tip="รีเฟรช">
+        <h1
+          className="text-primary text-2xl"
+          onClick={() =>
+            Refresh(
+              `${bill.RefId} | ${bill.TransactionNo} | ${bill.PID} | ${bill.PassportNumber} | ${bill.HN} | ${bill.VN} | ${bill.InvoiceNumber} | ${bill.PolicyTypeCode} | ${bill.IdType} | ${bill.IllnessTypeCode} | ${bill.ServiceSettingCode} | ${bill.SurgeryTypeCode} | ${bill.FurtherClaimNo} | ${bill.FurtherClaimId} | ${bill.AccidentDate} | ${bill.VisitDateTime} | ${bill.VisitDate}`
+            )
+          }
+        >
+          <LuRefreshCw />
+        </h1>
+      </div>
+      </>) : ("")) : ("")}
+      {bill.RefId ? (
+          ((
+            ((bill.ClaimStatusDesc === "Approve")||(bill.ClaimStatusDesc === "waitting for discharge"))
+            &&(bill.ClaimStatusDesc !== "Cancelled to AIA")) || (((bill.ClaimStatusDesc === "Received")||(bill.ClaimStatusDesc === "waitting for discharge"))
+            &&(bill.ClaimStatusDesc !== "Cancelled to AIA")) || (((bill.ClaimStatusDesc === "waitting discharge")||(bill.ClaimStatusDesc === "waitting for discharge"))
+            &&(bill.ClaimStatusDesc !== "Cancelled to AIA"))) ? (
+            <>
+      <div className="tooltip ml-4" data-tip="ข้อมูลส่งเคลม">
+        <h1
+          className="text-primary text-2xl"
+          onClick={() =>
+            Detail(
+               `${bill.RefId} | ${bill.TransactionNo} | ${bill.PID} | ${bill.PassportNumber} | ${bill.HN} | ${bill.VN} | ${bill.InvoiceNumber} | ${bill.PolicyTypeCode} | ${bill.IdType} | ${bill.IllnessTypeCode} | ${bill.ServiceSettingCode} | ${bill.SurgeryTypeCode} | ${bill.FurtherClaimNo} | ${bill.FurtherClaimId} | ${bill.AccidentDate} | ${bill.VisitDateTime} | ${bill.VisitDate} | ${bill.Runningdocument} | ${bill.futherclaimVN} | ${bill.Visitlocation}`
+            )
+          }
+        >
+          <IoDocumentText />
+        </h1>
+      </div>
+      {/* {bill.RefId ? 
+          (bill.ClaimStatusDesc !== "waitting for discharge" ? (
+            <>
+      <div
+                className="tooltip ml-4"
+                data-tip="ยกเลิกการเคลม"
+              >
+                <h1
+                  className="text-error text-2xl"
+                  onClick={() =>
+                    Cancel(
+                      `${bill.RefId} | ${bill.TransactionNo} | ${bill.PID} | ${bill.PassportNumber} | ${bill.HN} | ${bill.VN} | ${bill.InvoiceNumber}`
+                    )
+                  }
+                >
+                  <MdCancel />
+                </h1>
+              </div>
+              </>
+          ): ("")) : ("")} */}
+                                    </>
+                                  ) : ( "")) : ( "")}
+
+
+      <div
+                className="tooltip ml-4"
+                data-tip="ดู เอกสารทั้งหมด"
+              >
+                <h1
+                  className="text-primary text-2xl"
+                  onClick={() =>
+                    DocumentList(
+                      `${bill.RefId} | ${bill.TransactionNo} | ${bill.PID} | ${bill.PassportNumber} | ${bill.HN} | ${bill.VN} | ${bill.InvoiceNumber}`
+                    )
+                  }
+                >
+              <HiDocumentSearch />
+              </h1>
+              </div>
+
+    </td>
+    <td>
+      {bill.RefId ? (
+          (bill.ClaimStatusDesc === "Approve" || bill.ClaimStatusDesc === "Received") ? bill.BatchNumber ? ("") : (
+            <>
+              <button
+                className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100 ml-4"
+                onClick={() =>
+                  handleButtonClick(
+                    `${bill.RefId} | ${bill.TransactionNo} | ${bill.PID} | ${bill.PassportNumber} | ${bill.HN} | ${bill.VN} | ${bill.InvoiceNumber}`
+                  )
+                }
+              >
+                วางบิล
+              </button>
+            </>
+          ) : (
+            ""
+          )
+        ) : (
+          "Loading..."
+        )
+    }
+      </td>
+  </tr>
+  ): "")
+        ))
+        ) : ""): (
+                  <tr>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                  </tr>
+                )
+            }
+            </tbody>
+          </table> 
+
+          {post ?
+      <div className="grid gap-1 sm:grid-cols-2 w-full mt-4">
+      <div className="flex justify-between text-right">
+        <div className="text-right">
+          <h1 className="text-lg">Showing {startIndex+1} to {endIndex} of {post ? post.Result.TransactionClaimInfo.length : ""} entries.</h1>
+        </div>
+      </div>
+      <div className="text-right text-base-100 ">
+        {/* <div className="text-left text-base-100"> */}
+        
+        {currentPage > 1 && (
+          <button onClick={handlePreviousPage} className="btn btn-primary ">
+            <BiFirstPage className="text-base-100 text-xl text-right" />
+          </button>
+        )}
+        {/* </div>
+        <div className="text-center"> */}
+
+        {/* {console.log(endIndex)}
+        {console.log(startIndex)}
+        {console.log(ITEMS_PER_PAGE)} */}
+
+
+        {/* </div>
+        <div className="text-right"> */}
+        {endIndex < currentData.length && (
+          <button onClick={handleNextPage} className="btn btn-primary ml-2">
+           <BiLastPage className="text-base-100 text-xl" /> 
+          </button>
+        )}
+      </div>
+        </div>
+        : ""}
+
+
+        </div>
+      {/* </div> */}
+
+
+   
+  </div>
+
+  {/* <input type="radio" name="my_tabs_2" role="tab" className="tab  w-[300px]" aria-label="วางบิลแล้ว" />
+  <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6"> */}
+  <input type="radio" name="my_tabs_2" role="tab"  className="tab w-[500px]" aria-label="วางบิล"     />
+  <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6">
+
+
+
+
+  {/* <div className="justify-center border-solid m-auto border-2 border-warning rounded-lg p-4 mt-6"> */}
+        <div className="overflow-x-auto">
+          {showFormError === "Error" ? (
+            <div role="alert" className="alert alert-error mt-2 text-base-100">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6 shrink-0 stroke-current"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <span>{massError}</span>
+            </div>
+          ) : (
+            ""
+          )}
+
+          <table className="table mt-2">
+            <thead className="bg-info text-base-100 text-center text-lg ">
+              <tr>
+                <th></th>
+                <th>Visit Date</th>
+                <th>Full Name</th>
+                <th>VN</th>
+                <th>ClaimNo</th>
+                <th>Invoicenumber</th>
+                <td>BatchNumber 
+                  {/* <br/>
+                <FormControl className="w-full bg-info">
+                <NativeSelect
+          id="demo-customized-select-native"
+          value={billValue}
+          label="TypeBill"
+          onChange={bill}
+        >
+                {billtype
+                  ? billtype.map((bill, index) => (
+                      <option key={index} value={bill.Desc}>
+                        {bill.Desc}
+                      </option>
+                    ))
+                  : ""}
+              </NativeSelect>
+            </FormControl> */}
+  </td>
+                <th className="w-40">Status</th>
+                <th>ApprovedAmount</th>
+                <th>Totalbillamount</th>
+                <th>ExcessAmount</th>
+                <th>
+                <h1
+                            className="text-base-100 text-2xl"
+                            onClick={RefreshAll}
+                          >
+                            <LuRefreshCw />
+                          </h1>
+                          </th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {/* {console.log(billValue)} */}
+            {post ? (
+    post.HTTPStatus.statusCode === 200 ? (
+      data.map((bill, index) => 
+      ((bill.VisitDate||bill.HN) !== "" && 
+ (bill.BatchNumber ? (
+  //  console.log("ยังไม่วางบิล")
+  <tr className="hover text-center" key={index}>
+    <th>{index + 1}</th>
+    <td>{bill.VisitDateTime}</td>
+    <td>
+      {bill.TitleTH} {bill.GivenNameTH} {bill.SurnameTH}
+    </td>
+    <td>{bill.VN}</td>
+    <td>{bill.ClaimNo}</td>
+    <td>{bill.InvoiceNumber}</td>
+    <td>
+  {statusAllNew ? (statusAllNew.map(ALLnew => ((ALLnew.TransactionNo === ((bill.TransactionNo)||(statusNew.TransactionNo))) ?  (ALLnew.BatchNumber) : ((bill.BatchNumber)||(statusNew.BatchNumber)))))
+  :(statusNew ? (bill.TransactionNo === statusNew.TransactionNo ? statusNew.BatchNumber : bill.BatchNumber): "Loading...")}
+    </td>
+    <td>
+    <div className="grid gap-1 sm:grid-cols-1 w-full">
+ {/* {console.log(statusAllNew)}   */}
+      {statusAllNew ? statusAllNew.map(ALLnew => (ALLnew.TransactionNo === ((bill.TransactionNo)||(statusNew.TransactionNo)) ? ((((ALLnew.ClaimStatus !== "Cancelled")&&(ALLnew.ClaimStatus !== "Cancelled to AIA")&&(ALLnew.ClaimStatus !== "Reversed")) ? ((ALLnew.ClaimStatus === "Approved")||(ALLnew.ClaimStatus === "Settle")) ? <a className="bg-success text-base-100 rounded-full px-3 py-2">{ALLnew.ClaimStatus}</a> : <a className="bg-warning text-base-100 rounded-full px-3 py-2">{ALLnew.ClaimStatus}</a> : <a className="bg-error text-base-100 rounded-full px-3 py-2">{ALLnew.ClaimStatus}</a>)) : ((((bill.ClaimStatusDesc_EN !== "Cancelled")&&(bill.ClaimStatusDesc_EN !== "Cancelled to AIA")&&(bill.ClaimStatusDesc_EN !== "Reversed")) ? ((bill.ClaimStatus === "Approved")||(bill.ClaimStatus === "Settle")) ? <a className="bg-success text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatus}</a> : <a className="bg-warning text-base-100 rounded-full px-3 py-2">{bill.ClaimStatusDesc_EN}</a> : <a className="bg-error text-base-100 rounded-full px-3 py-2">{bill.ClaimStatusDesc_EN}</a>))))
+      :(statusNew ? bill.TransactionNo === statusNew.TransactionNo ? statusNew.ClaimStatusDesc ?  (((statusNew.ClaimStatus !== "Cancelled")&&(statusNew.ClaimStatus !== "Cancelled to AIA")&&(statusNew.ClaimStatus !== "Reversed")) ? ((statusNew.ClaimStatus === "Approved")||(statusNew.ClaimStatus === "Settle")) ? <a className="bg-success text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatus}</a> : <a className="bg-warning text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatus}</a> : <a className="bg-error text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatus}</a>): "": bill.ClaimStatusDesc ? 
+            (((bill.ClaimStatusDesc_EN !== "Cancelled")&&(bill.ClaimStatusDesc_EN !== "Cancelled to AIA")&&(bill.ClaimStatusDesc_EN !== "Reversed")) ? ((bill.ClaimStatus === "Approved")||(bill.ClaimStatus === "Settle")) ? <a className="bg-success text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatus}</a> : <a className="bg-warning text-base-100 rounded-full px-3 py-2">{bill.ClaimStatusDesc_EN}</a> : <a className="bg-error text-base-100 rounded-full px-3 py-2">{bill.ClaimStatusDesc_EN}</a>): "": "Loading...")}
+     
+
+
+      {((bill.FurtherClaimNo)||(bill.FurtherClaimId) ? <a className="rounded-full px-3 py-2">( แบบต่อเนื่อง )</a> : "")}
+      {((bill.AccidentDate)||((bill.IllnessTypeCode === "ACC")||(bill.IllnessTypeCode === "ER")) ? <a className="rounded-full px-3 py-2">( อุบัติเหตุ )</a> : "")}
+    </div>
+    </td>
+    <th>
+    {bill.TotalApprovedAmount
+        ? parseFloat(bill.TotalApprovedAmount).toLocaleString('en-US', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })
+        : ""}
+        
+    </th>
+    <th>
+    {/* {bill.ApprovedAmount
+        ? parseFloat(bill.ApprovedAmount).toLocaleString('en-US', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })
+        : ""} */}
+
+        {bill.TotalBillAmount
+        ? parseFloat(
+           statusAllNew ? (statusAllNew.map(ALLnew => (ALLnew.TransactionNo === ((bill.TransactionNo)||(statusNew.TransactionNo)) ? (ALLnew.TotalBillAmount) : (bill.TotalBillAmount))))
+           :(statusNew ? bill.TransactionNo === statusNew.TransactionNo ? statusNew.TotalBillAmount : (bill.TotalBillAmount ? (bill.TotalBillAmount): ("")): "Loading...")
+        ).toLocaleString('en-US', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })
+        : ""}
+
+    </th>
+    <th>
+      {bill.TotalExcessAmount
+        ? parseFloat(bill.TotalExcessAmount).toLocaleString('en-US', {minimumFractionDigits: 2,maximumFractionDigits: 2,})
+        : ""}
+    </th>
+    <td>
+    {bill.RefId ? (
+          (((bill.ClaimStatusDesc !== "Cancelled to AIA")&&(bill.ClaimStatusDesc !== "Cancelled")&&(bill.ClaimStatusDesc !== "Reversed"))&&(bill.ClaimNo)) ? (
+            <>
+      <div className="tooltip" data-tip="รีเฟรช">
+        <h1
+          className="text-primary text-2xl"
+          onClick={() =>
+            Refresh(
+              `${bill.RefId} | ${bill.TransactionNo} | ${bill.PID} | ${bill.PassportNumber} | ${bill.HN} | ${bill.VN} | ${bill.InvoiceNumber} | ${bill.PolicyTypeCode} | ${bill.IdType} | ${bill.IllnessTypeCode} | ${bill.ServiceSettingCode} | ${bill.SurgeryTypeCode} | ${bill.FurtherClaimNo} | ${bill.FurtherClaimId} | ${bill.AccidentDate} | ${bill.VisitDateTime} | ${bill.VisitDate}`
+            )
+          }
+        >
+          <LuRefreshCw />
+        </h1>
+      </div>
+      </>) : ("")) : ("")}
+      {bill.RefId ? (
+          ((
+            ((bill.ClaimStatusDesc === "Approve")||(bill.ClaimStatusDesc === "waitting for discharge"))
+            &&(bill.ClaimStatusDesc !== "Cancelled to AIA")) || (((bill.ClaimStatusDesc === "Received")||(bill.ClaimStatusDesc === "waitting for discharge"))
+            &&(bill.ClaimStatusDesc !== "Cancelled to AIA")) || (((bill.ClaimStatusDesc === "waitting discharge")||(bill.ClaimStatusDesc === "waitting for discharge"))
+            &&(bill.ClaimStatusDesc !== "Cancelled to AIA"))) ? (
+            <>
+      <div className="tooltip ml-4" data-tip="ข้อมูลส่งเคลม">
+        <h1
+          className="text-primary text-2xl"
+          onClick={() =>
+            Detail(
+               `${bill.RefId} | ${bill.TransactionNo} | ${bill.PID} | ${bill.PassportNumber} | ${bill.HN} | ${bill.VN} | ${bill.InvoiceNumber} | ${bill.PolicyTypeCode} | ${bill.IdType} | ${bill.IllnessTypeCode} | ${bill.ServiceSettingCode} | ${bill.SurgeryTypeCode} | ${bill.FurtherClaimNo} | ${bill.FurtherClaimId} | ${bill.AccidentDate} | ${bill.VisitDateTime} | ${bill.VisitDate} | ${bill.Runningdocument} | ${bill.futherclaimVN} | ${bill.Visitlocation}`
+            )
+          }
+        >
+          <IoDocumentText />
+        </h1>
+      </div>
+      {/* {bill.RefId ? 
+          (bill.ClaimStatusDesc !== "waitting for discharge" ? (
+            <>
+      <div
+                className="tooltip ml-4"
+                data-tip="ยกเลิกการเคลม"
+              >
+                <h1
+                  className="text-error text-2xl"
+                  onClick={() =>
+                    Cancel(
+                      `${bill.RefId} | ${bill.TransactionNo} | ${bill.PID} | ${bill.PassportNumber} | ${bill.HN} | ${bill.VN} | ${bill.InvoiceNumber}`
+                    )
+                  }
+                >
+                  <MdCancel />
+                </h1>
+              </div>
+              </>
+          ): ("")) : ("")} */}
+                                    </>
+                                  ) : ( "")) : ( "")}
+
+
+      <div
+                className="tooltip ml-4"
+                data-tip="ดู เอกสารทั้งหมด"
+              >
+                <h1
+                  className="text-primary text-2xl"
+                  onClick={() =>
+                    DocumentList(
+                      `${bill.RefId} | ${bill.TransactionNo} | ${bill.PID} | ${bill.PassportNumber} | ${bill.HN} | ${bill.VN} | ${bill.InvoiceNumber}`
+                    )
+                  }
+                >
+              <HiDocumentSearch />
+              </h1>
+              </div>
+
+    </td>
+    <td>
+      {bill.RefId ? (
+          (bill.ClaimStatusDesc === "Approve" || bill.ClaimStatusDesc === "Received") ? bill.BatchNumber ? ("") : (
+            <>
+              <button
+                className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100 ml-4"
+                onClick={() =>
+                  handleButtonClick(
+                    `${bill.RefId} | ${bill.TransactionNo} | ${bill.PID} | ${bill.PassportNumber} | ${bill.HN} | ${bill.VN} | ${bill.InvoiceNumber}`
+                  )
+                }
+              >
+                วางบิล
+              </button>
+            </>
+          ) : (
+            ""
+          )
+        ) : (
+          "Loading..."
+        )
+    }
+      </td>
+  </tr>
+  ): "")
+        ))
+        ) : ""): (
+                  <tr>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                  </tr>
+                )
+            }
+            </tbody>
+          </table> 
+
+          {post ?
+      <div className="grid gap-1 sm:grid-cols-2 w-full mt-4">
+      <div className="flex justify-between text-right">
+        <div className="text-right">
+          <h1 className="text-lg">Showing {startIndex+1} to {endIndex} of {post ? post.Result.TransactionClaimInfo.length : ""} entries.</h1>
+        </div>
+      </div>
+      <div className="text-right text-base-100 ">
+        {/* <div className="text-left text-base-100"> */}
+        
+        {currentPage > 1 && (
+          <button onClick={handlePreviousPage} className="btn btn-primary ">
+            <BiFirstPage className="text-base-100 text-xl text-right" />
+          </button>
+        )}
+        {/* </div>
+        <div className="text-center"> */}
+
+        {/* {console.log(endIndex)}
+        {console.log(startIndex)}
+        {console.log(ITEMS_PER_PAGE)} */}
+
+
+        {/* </div>
+        <div className="text-right"> */}
+        {endIndex < currentData.length && (
+          <button onClick={handleNextPage} className="btn btn-primary ml-2">
+           <BiLastPage className="text-base-100 text-xl" /> 
+          </button>
+        )}
+      </div>
+        </div>
+        : ""}
 
 
 
 
 
-          <dialog id="my_modal_3" className="modal text-xl	w-full">
+
+        </div>
+      {/* </div> */}
+
+
+
+
+
+
+
+
+
+
+    
+  </div>
+</div>
+
+<dialog id="my_modal_3" className="modal text-xl	w-full">
             <div className="modal-box w-11/12 max-w-5xl">
               <form method="dialog">
                 <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
@@ -1900,7 +2500,7 @@ axios
                   <table className="table table-zebra mt-2">
                     <thead>
                       <tr className="text-base-100 bg-primary py-8 text-sm w-full text-center">
-                        <th className="w-2/5">ชื่อไฟล์ จากการเงิน</th>
+                        <th className="w-2/5">ชื่อไฟล์ จากแผนกการเงิน</th>
                         <th className="w-1/5"></th>
                       </tr>
                     </thead>
@@ -1926,11 +2526,11 @@ axios
                                 </div>
                      
                              
-                                <div className="btn btn-error  mr-2 text-base-100 hover:text-error hover:bg-base-100" type="submit"
+                                {/* <div className="btn btn-error  mr-2 text-base-100 hover:text-error hover:bg-base-100" type="submit"
                                 onClick={() => CancleDoc(list.filename)}
                                 >
                                 Cancel
-                                </div>
+                                </div> */}
                       
                             </td>
                           </tr>
@@ -2007,7 +2607,7 @@ axios
                   <table className="table table-zebra mt-2 ">
                     <thead>
                       <tr className="text-base-100 bg-primary text-sm text-center">
-                        <th className="w-2/5">ชื่อไฟล์ ส่งบิล</th>
+                        <th className="w-2/5">ชื่อไฟล์ ที่จะส่งบิลให้บริษัทประกัน</th>
                         <th className="w-1/5"></th>
                       </tr>
                     </thead>
@@ -2069,8 +2669,6 @@ axios
           </dialog>
 
           {detailData ? <DetailDischarge data={detailData} /> : ""}
-        </div>
-      </div>
 
 
 
