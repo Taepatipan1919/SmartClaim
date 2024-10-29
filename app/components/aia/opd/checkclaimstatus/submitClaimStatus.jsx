@@ -1439,25 +1439,26 @@ export default function checkData() {
               type="text"
               value={numberValue}
               onChange={(e) => setNumberValue(e.target.value)}
+              focused 
             />
 
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
                 className="ml-10 w-40"
-                label="Date From"
+                label=""
                 value={fromValue}
                 onChange={(newDate) => setFromValue(newDate)}
-                format="YYYY-MM-DD"
+                  format="YYYY-MM-DD"
               />
             </LocalizationProvider>
 
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
                 className="ml-2 w-40"
-                label="Date To"
+                label=""
                 value={toValue}
                 onChange={(newDate) => setToValue(newDate)}
-                format="YYYY-MM-DD"
+                  format="YYYY-MM-DD"
               />
             </LocalizationProvider>
             <FormControl className="ml-2 w-80">
@@ -1541,7 +1542,7 @@ export default function checkData() {
             <thead className="bg-info text-base-100 text-center text-sm">
               <tr>
                 <th></th>
-                <th>Visit Date</th>
+                <th >Visit Date</th>
                 <th>Full Name</th>
                 <th>HN</th>
                 <th>VN</th>
@@ -1549,10 +1550,10 @@ export default function checkData() {
                 <th>Invoicenumber</th>
                 <td>BatchNumber</td>
                 <th className="w-40">Status</th>
-                <th>ApprovedAmount</th>
-                <th>Totalbillamount</th>
-                <th>ExcessAmount</th>
-                <th>
+                <th className="border-2 border-red-500">Approved<br/>Amount</th>
+                <th className="border-2 border-red-500">Total<br/>Billamount</th>
+                <th className="border-2 border-red-500">Excess<br/>Amount</th>
+                <th className="border-2 border-red-500">
                   <h1 className="text-base-100 text-2xl" onClick={RefreshAll}>
                     <LuRefreshCw />
                   </h1>
@@ -1568,15 +1569,15 @@ export default function checkData() {
                       (bill.VisitDate || bill.HN) !== "" && (
                         <tr className="hover text-center" key={index}>
                           <th>{startIndex + index + 1}</th>
-                          <td>{bill.VisitDate}</td>
-                          <td>
+                          <td className="whitespace-nowrap">{bill.VisitDate}</td>
+                          <td className="whitespace-nowrap">
                             {bill.TitleTH} {bill.GivenNameTH} {bill.SurnameTH}
                           </td>
-                          <td>{bill.HN}</td>
-                          <td>{bill.VN}</td>
-                          <td>{bill.ClaimNo}</td>
-                          <td>{bill.InvoiceNumber}</td>
-                          <td>
+                          <td className="whitespace-nowrap">{bill.HN}</td>
+                          <td className="whitespace-nowrap">{bill.VN}</td>
+                          <td className="whitespace-nowrap">{bill.ClaimNo}</td>
+                          <td className="whitespace-nowrap">{bill.InvoiceNumber}</td>
+                          <td className="whitespace-nowrap">
                             {
                               //  statusAllNew ? (statusAllNew.map(ALLnew => ((ALLnew.TransactionNo === ((bill.TransactionNo)||(statusNew.TransactionNo))) ?
                               //  (ALLnew.BatchNumber) : ((bill.BatchNumber)||(statusNew.BatchNumber)))))
@@ -1586,7 +1587,7 @@ export default function checkData() {
                                 statusNew ? ((bill.TransactionNo === statusNew.TransactionNo) ? statusNew.BatchNumber : bill.BatchNumber) : "Loading..."
                             }
                           </td>
-                          <td>
+                          <td className="whitespace-nowrap">
                             <div className="grid gap-1 sm:grid-cols-1 w-full">
                               {
                               // statusAllNew ? (statusAllNew.map((ALLnew) =>ALLnew.TransactionNo ===(bill.TransactionNo||statusNew.TransactionNo) ? (ALLnew.ClaimStatus !== "Cancelled" && ALLnew.ClaimStatus !== "Cancelled to AIA" &&ALLnew.ClaimStatus !== "Reversed" ? (ALLnew.ClaimStatus === "Approved" ||ALLnew.ClaimStatus === "Settle" ? (
@@ -1629,16 +1630,18 @@ export default function checkData() {
                               // ) :
                                statusNew ? (
                                 bill.TransactionNo ===statusNew.TransactionNo ? (statusNew.ClaimStatusDesc ? (statusNew.ClaimStatus !== "Cancelled" && statusNew.ClaimStatus !=="Cancelled to AIA" &&statusNew.ClaimStatus !== "Reversed" ? (statusNew.ClaimStatus === "Approved" ||statusNew.ClaimStatus === "Settle" ? (
-                                        <a className="bg-success text-base-100 rounded-full px-3 py-2">
+                                        <a className="bg-info text-base-100 rounded-full px-3 py-2 w-full border-2">
                                           {statusNew.ClaimStatus}
                                         </a>
-                                      ) : (
-                                        <a className="bg-warning text-base-100 rounded-full px-3 py-2">
-                                          {statusNew.ClaimStatus}
+                                      ) : (bill.ClaimStatusDesc_EN === "Approve") ? (
+                                        <a className="bg-success text-base-100 rounded-full px-3 py-2 w-full ">
+                                          {bill.ClaimStatusDesc_EN}
                                         </a>
-                                      )
+                                      ) : (<a className="bg-warning rounded-full px-3 py-2 w-full">
+                                        {bill.ClaimStatusDesc_EN}
+                                      </a>)
                                     ) : (
-                                      <a className="bg-error text-base-100 rounded-full px-3 py-2">
+                                      <a className="bg-error text-base-100 rounded-full px-3 py-2 w-full">
                                         {statusNew.ClaimStatus}
                                       </a>
                                     )
@@ -1652,16 +1655,18 @@ export default function checkData() {
                                   bill.ClaimStatusDesc_EN !== "Reversed" ? (
                                     bill.ClaimStatus === "Approved" ||
                                     bill.ClaimStatus === "Settle" ? (
-                                      <a className="bg-success text-base-100 rounded-full px-3 py-2">
+                                      <a className="bg-info text-base-100 rounded-full px-3 py-2 w-full">
                                         {statusNew.ClaimStatus}
                                       </a>
-                                    ) : (
-                                      <a className="bg-warning text-base-100 rounded-full px-3 py-2">
+                                    ) : (bill.ClaimStatusDesc_EN === "Approve") ? (
+                                      <a className="bg-success text-base-100 rounded-full px-3 py-2 w-full">
                                         {bill.ClaimStatusDesc_EN}
                                       </a>
-                                    )
+                                    ) : (<a className="bg-warning  rounded-full px-3 py-2 w-full">
+                                      {bill.ClaimStatusDesc_EN}
+                                    </a>)
                                   ) : (
-                                    <a className="bg-error text-base-100 rounded-full px-3 py-2">
+                                    <a className="bg-error text-base-100 rounded-full px-3 py-2 w-full">
                                       {bill.ClaimStatusDesc_EN}
                                     </a>
                                   )
@@ -1674,7 +1679,7 @@ export default function checkData() {
                               }
 
                               {bill.FurtherClaimNo || bill.FurtherClaimId ? (
-                                <a className="rounded-full px-3 py-2">
+                                <a className="rounded-full px-3 py-2 w-full">
                                   ( แบบต่อเนื่อง )
                                 </a>
                               ) : (
@@ -1683,7 +1688,7 @@ export default function checkData() {
                               {bill.AccidentDate ||
                               bill.IllnessTypeCode === "ACC" ||
                               bill.IllnessTypeCode === "ER" ? (
-                                <a className="rounded-full px-3 py-2">
+                                <a className="rounded-full px-3 py-2 w-full">
                                   ( อุบัติเหตุ )
                                 </a>
                               ) : (
@@ -1691,7 +1696,7 @@ export default function checkData() {
                               )}
                             </div>
                           </td>
-                          <th>
+                          <th className="whitespace-nowrap">
                             {bill.TotalApprovedAmount
                               ? parseFloat(
                                   bill.TotalApprovedAmount
@@ -1745,13 +1750,14 @@ export default function checkData() {
                               : ""}
                           </th>
                           <td>
+                            
                             {bill.RefId ? (
                               bill.ClaimStatusDesc !== "Cancelled to AIA" &&
                               bill.ClaimStatusDesc !== "Cancelled" &&
                               bill.ClaimStatusDesc !== "Reversed" &&
                               bill.ClaimNo ? (
                                 <>
-                                  <div className="tooltip" data-tip="รีเฟรช">
+                                  <div className="tooltip ml-4" data-tip="รีเฟรช">
                                     <h1
                                       className="text-primary text-2xl"
                                       onClick={() =>
@@ -1763,6 +1769,7 @@ export default function checkData() {
                                       <LuRefreshCw />
                                     </h1>
                                   </div>
+                                  {/* <br/> */}
                                 </>
                               ) : (
                                 ""
@@ -1770,6 +1777,7 @@ export default function checkData() {
                             ) : (
                               ""
                             )}
+                           
                             {bill.RefId ? (
                               bill.BatchNumber ? (
                                 ""
@@ -1805,6 +1813,7 @@ export default function checkData() {
                                       <IoDocumentText />
                                     </h1>
                                   </div>
+                                  <br/>
                                 </>
                               ) : (
                                 ""
@@ -1812,6 +1821,7 @@ export default function checkData() {
                             ) : (
                               ""
                             )}
+                            
                             {bill.RefId ? (
                               bill.BatchNumber ? (
                                 ""
@@ -1834,6 +1844,7 @@ export default function checkData() {
                                       <MdCancel />
                                     </h1>
                                   </div>
+                                  {/* <br/> */}
                                 </>
                               ) : (
                                 ""
@@ -1841,6 +1852,7 @@ export default function checkData() {
                             ) : (
                               ""
                             )}
+                         
                             <div
                               className="tooltip ml-4"
                               data-tip="ดู เอกสารทั้งหมด"
@@ -1866,14 +1878,14 @@ export default function checkData() {
                                 ) : (
                                   <>
                                     <button
-                                      className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100 ml-4"
+                                      className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100 ml-4 whitespace-nowrap"
                                       onClick={() =>
                                         handleButtonClick(
                                           `${bill.RefId} | ${bill.TransactionNo} | ${bill.PID} | ${bill.PassportNumber} | ${bill.HN} | ${bill.VN} | ${bill.InvoiceNumber}`
                                         )
                                       }
                                     >
-                                      ส่งเอกสารเพิ่มเติม
+                                      ส่งเอกสาร<br/>เพิ่มเติม
                                     </button>
                                   </>
                                 )
@@ -1969,7 +1981,7 @@ export default function checkData() {
                 </button>
               </form>
               <form onSubmit={submitbilling}>
-                <h3 className="font-bold text-lg">ส่งเอกสาร เพิ่มเติม</h3>
+                <h3 className="font-bold text-lg ">ส่งเอกสาร เพิ่มเติม</h3>
                 <hr />
                 {/* <div className="grid gap-2 sm:grid-cols-2 w-full mt-2">
                 <div className="rounded-md">
@@ -2187,11 +2199,11 @@ export default function checkData() {
                               Document
                             </div>
 
-                            {/* <div className="btn btn-error  mr-2 text-base-100 hover:text-error hover:bg-base-100" type="submit"
+                            <div className="btn btn-error  mr-2 text-base-100 hover:text-error hover:bg-base-100" type="submit"
                                 onClick={() => CancleDoc(list.filename)}
                                 >
                                 Cancel
-                                </div> */}
+                                </div>
                           </td>
                         </tr>
                       ))

@@ -563,6 +563,7 @@ export default function SelectPatient() {
               type="text"
               value={pidValue}
               onChange={(e) => setPidValue(e.target.value)}
+              focused 
             />
           </div>
           <div className="rounded-md pt-6">

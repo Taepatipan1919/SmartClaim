@@ -187,7 +187,7 @@ export default function Page({ data }) {
 
     },
   };
-  console.log(PatientInfoData)
+  //console.log(PatientInfoData)
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.value = "";
@@ -342,7 +342,7 @@ export default function Page({ data }) {
       PatientInfoData 
       )
       .then((response) => {
-         console.log(response.data)
+        // console.log(response.data)
         setVisit(response.data);
         //const dateValue = dayjs(response.data.Result.VisitInfo.SignSymptomsDate);
         //console.log(response.data.Result.VisitInfo.SignSymptomsDate)
@@ -372,7 +372,7 @@ export default function Page({ data }) {
           PatientInfoData  
       )
       .then((response) => {
-         console.log(response.data)
+        // console.log(response.data)
          setCombinedString(
           response
             ? `${response.data.Result.VisitInfo.Weight} / ${response.data.Result.VisitInfo.Height}`
@@ -471,7 +471,7 @@ export default function Page({ data }) {
     }
     const dateValue = dayjs(Data.PatientInfo.AccidentDate);
     setAccidentDate(dateValue);
-        console.log(Data)
+        //console.log(Data)
     axios
       .post(
         process.env.NEXT_PUBLIC_URL_PD +
@@ -480,7 +480,7 @@ export default function Page({ data }) {
        PatientInfoData
       )
       .then((response) => {
-        console.log(response.data)
+       // console.log(response.data)
          setAccidentDetail(response.data);
           setCauseOfInjuryDetails(response.data.Result.AccidentDetailInfo.CauseOfInjuryDetail);
           setInjuryDetails(response.data.Result.AccidentDetailInfo.InjuryDetail);
@@ -1281,9 +1281,9 @@ export default function Page({ data }) {
     let causeOfInjuryDetailsCount;
     let ProcedureInfoCount;
 
-console.log(injuryDetails)
-console.log(causeOfInjuryDetails)
-console.log(rows)
+//console.log(injuryDetails)
+//console.log(causeOfInjuryDetails)
+//console.log(rows)
 
 if(injuryDetails){
   injuryDetailsCount = injuryDetails.length;
@@ -1508,7 +1508,7 @@ if(rows){
           SurgeryTypeCode: PatientInfoData.PatientInfo.SurgeryTypeCode,
           Runningdocument: PatientInfoData.PatientInfo.Runningdocument,
         };
-        console.log(PatientInfo)
+       // console.log(PatientInfo)
         axios
           .post(
             process.env.NEXT_PUBLIC_URL_SV +
@@ -1516,7 +1516,7 @@ if(rows){
             { PatientInfo }
           )
           .then((response) => {
-        console.log(response.data)
+       // console.log(response.data)
             if (response.data.HTTPStatus.statusCode === 200) {
               axios
               .post(

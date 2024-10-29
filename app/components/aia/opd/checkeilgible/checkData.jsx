@@ -55,7 +55,7 @@ export default function checkData() {
   const [accValue, setAccValue] = useState(null);
   const [statusValue, setStatusValue] = useState("");
   const [policyTypeValue, setPolicyTypeValue] = useState("");
-  const [idTypeValue, setIdTypeValue] = useState("");
+  const [idTypeValue, setIdTypeValue] = useState("NATIONAL_ID");
   const [surgeryTypeValue, setSurgeryTypeValue] = useState("");
   const [illnessTypeValue, setIllnessTypeValue] = useState("");
   const router = useRouter();
@@ -120,6 +120,7 @@ export default function checkData() {
       if (response.data.HTTPStatus.statusCode === 200) {
         setShowFormError("");
         setPatientDB(response.data.Result.PatientInfo[0]);
+        setNumberValue(response.data.Result.PatientInfo[0].PID)
         console.log(response.data.Result.PatientInfo[0])
       } else {
         setMassError(response.data.HTTPStatus.message);
@@ -716,8 +717,8 @@ if(idTypeValue === "NATIONAL_ID"){
         SurgeryTypeCode: surgeryTypeValue,
   
         IdType: idTypeValue,
-        // PID: numberValue,
-        PID: "0480000004207",
+        PID: numberValue,
+       //  PID: "0480000004207",
         PassportNumber: "",
         MembershipId:"",  
         CustomerId : "",
@@ -1142,7 +1143,7 @@ if(idTypeValue === "NATIONAL_ID"){
                   <TextField
                   error
               id="outlined-basic"
-              label="กรอกข้อความ"
+              label="หมายเลขบัตร"
               // multiline
               // maxRows={4}
               variant="outlined"
