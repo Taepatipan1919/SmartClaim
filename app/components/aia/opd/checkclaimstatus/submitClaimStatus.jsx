@@ -87,6 +87,7 @@ export default function checkData() {
   };
 
   useEffect(() => {
+    setStatusNew({});
     axios
       .get(
         process.env.NEXT_PUBLIC_URL_SV +
@@ -759,7 +760,7 @@ export default function checkData() {
           PolicyTypeCode: PolicyTypeCode,
           AccidentDate: AccidentDate,
           VisitDateTime: VisitDateTime,
-          FutherclaimVN: futherclaimVN,
+          FurtherClaimVN: futherclaimVN,
           FurtherClaimNo: FurtherClaimNo,
           FurtherClaimId: FurtherClaimId,
           Runningdocument: randomNumberold,
@@ -1550,11 +1551,11 @@ export default function checkData() {
                 <th>Invoicenumber</th>
                 <td>BatchNumber</td>
                 <th className="w-40">Status</th>
-                <th className="border-2 border-red-500">Approved<br/>Amount</th>
-                <th className="border-2 border-red-500">Total<br/>Billamount</th>
-                <th className="border-2 border-red-500">Excess<br/>Amount</th>
-                <th className="border-2 border-red-500">
-                  <h1 className="text-base-100 text-2xl" onClick={RefreshAll}>
+                <th >Total<br/>Billamount</th>
+                <th >Approved<br/>Amount</th>
+                <th >Excess<br/>Amount</th>
+                <th >
+                  <h1 className="text-base-100 text-2xl flex justify-center" onClick={RefreshAll}>
                     <LuRefreshCw />
                   </h1>
                 </th>
@@ -1697,9 +1698,12 @@ export default function checkData() {
                             </div>
                           </td>
                           <th className="whitespace-nowrap">
-                            {bill.TotalApprovedAmount
+                          {/* {console.log(bill)} 
+                          {console.log(statusNew)} */}
+
+                          {bill.TotalBillAmount
                               ? parseFloat(
-                                  bill.TotalApprovedAmount
+                                    bill.TotalBillAmount
                                 ).toLocaleString("en-US", {
                                   minimumFractionDigits: 2,
                                   maximumFractionDigits: 2,
@@ -1713,32 +1717,25 @@ export default function checkData() {
                             maximumFractionDigits: 2,
                           })
                           : ""} */}
-
-                            {bill.TotalBillAmount
-                              ? parseFloat(
-                                  // statusAllNew
-                                  //   ? statusAllNew.map((ALLnew) =>
-                                  //       ALLnew.TransactionNo ===
-                                  //       (bill.TransactionNo ||
-                                  //         statusNew.TransactionNo)
-                                  //         ? ALLnew.TotalBillAmount
-                                  //         : bill.TotalBillAmount
-                                  //     )
-                                  //   : 
-                                    statusNew
-                                    ? bill.TransactionNo ===
-                                      statusNew.TransactionNo
-                                      ? statusNew.TotalBillAmount
-                                      : bill.TotalBillAmount
-                                      ? bill.TotalBillAmount
-                                      : ""
-                                    : "Loading..."
-                                ).toLocaleString("en-US", {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                                })
+                          {bill.TotalApprovedAmount
+                              ?
+                              //  parseFloat(
+                                (statusNew
+                                ? ((bill.TransactionNo ===statusNew.TransactionNo)
+                                  ? (statusNew.TotalApproveAmount ? parseFloat(statusNew.TotalApproveAmount).toLocaleString("en-US", {minimumFractionDigits: 2,maximumFractionDigits: 2,}) : parseFloat(bill.TotalApprovedAmount).toLocaleString("en-US", {minimumFractionDigits: 2,maximumFractionDigits: 2,})  )
+                                  :  parseFloat(bill.TotalApprovedAmount).toLocaleString("en-US", {minimumFractionDigits: 2,maximumFractionDigits: 2,}))
+                                  :  parseFloat(bill.TotalApprovedAmount).toLocaleString("en-US", {minimumFractionDigits: 2,maximumFractionDigits: 2,})
+                                )
+                           
+                                 
+                                // ).toLocaleString("en-US", {
+                                //   minimumFractionDigits: 2,
+                                //   maximumFractionDigits: 2,
+                                // })
                               : ""}
+                            
                           </th>
+
                           <th>
                             {bill.TotalExcessAmount
                               ? parseFloat(
@@ -1759,7 +1756,7 @@ export default function checkData() {
                                 <>
                                   <div className="tooltip ml-4" data-tip="รีเฟรช">
                                     <h1
-                                      className="text-primary text-2xl"
+                                      className="text-success text-2xl"
                                       onClick={() =>
                                         Refresh(
                                           `${bill.RefId} | ${bill.TransactionNo} | ${bill.PID} | ${bill.PassportNumber} | ${bill.HN} | ${bill.VN} | ${bill.InvoiceNumber} | ${bill.PolicyTypeCode} | ${bill.IdType} | ${bill.IllnessTypeCode} | ${bill.ServiceSettingCode} | ${bill.SurgeryTypeCode} | ${bill.FurtherClaimNo} | ${bill.FurtherClaimId} | ${bill.AccidentDate} | ${bill.VisitDateTime} | ${bill.VisitDate}`

@@ -7,6 +7,7 @@ import { IoIosDocument } from "react-icons/io";
 import { useRouter } from "next/navigation";
 import { MdCancel } from "react-icons/md";
 import dayjs from "dayjs";
+import { useSelector, useDispatch } from "react-redux";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
@@ -22,6 +23,9 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
 import { MobileDatePicker } from "@mui/x-date-pickers/MobileDatePicker";
 import { FaCloudUploadAlt } from "react-icons/fa";
+import { IoSettingsSharp } from "react-icons/io5";
+import { IoIosSave } from "react-icons/io";
+import { save } from "../../../../store/counterSlice";
 import {
   Table,
   TableBody,
@@ -46,6 +50,7 @@ export default function Page({ data }) {
       },
     },
   };
+  const dispatch = useDispatch();
   const InsuranceCode = 13;
   const [massError, setMassError] = useState("");
   const [showFormError, setShowFormError] = useState("");
@@ -84,6 +89,8 @@ export default function Page({ data }) {
   const [base64, setBase64] = useState("");
   const [massSummitError, setMassSummitError] = useState("");
   const [showSummitError, setShowSummitError] = useState("");
+  const [massSummitSucc, setMassSummitSucc] = useState("");
+  const [showSummitSucc, setShowSummitSucc] = useState("");
   const [massSummit, setMassSummit] = useState("");
   const [otherInsurer, setOtherInsurer] = useState("false");
   const [rows, setRows] = useState("");
@@ -108,6 +115,7 @@ export default function Page({ data }) {
     InjurySide: "",
     WoundType: "",
   });
+  const [numberValue, setNumberValue] = useState("");
   const [summitEditProcedure, setSummitEditProcedure] = useState("false");
   const [summitEditAcc, setSummitEditAcc] = useState("false");
   const [comaScore, setComaScore] = useState("");
@@ -123,7 +131,7 @@ export default function Page({ data }) {
   // console.log(previousTreatmentDetail.target.value)
   // const [editProcedure, setEditProcedure] = useState("false");
 
-  const [freetext, setFreeText] = useState();
+
   const AccidentPlace = (event) => {
     setAccidentPlaceValue(event.target.value);
   };
@@ -136,24 +144,6 @@ export default function Page({ data }) {
   const Over45 = (event) => {
     setOver45(event.target.value);
   };
-
-
-  useEffect(() => {
-    setRandomNumber();
-    if(!data.DataTran.Data.Runningdocument){
-    const generateRandomFiveDigitNumber = () => {
-      return String(Math.floor(Math.random() * 100000)).padStart(5, '0');
-    };
-    setFileList()
-    const newRandomNumber = generateRandomFiveDigitNumber();
-    setRandomNumber(newRandomNumber);
-    console.log(newRandomNumber);
-  }else{
-    setRandomNumber(data.DataTran.Data.Runningdocument)
-  }
-
-  }, []);
-
 
   const PatientInfoData = {
     PatientInfo: {
@@ -182,12 +172,29 @@ export default function Page({ data }) {
         SurgeryTypeCode: data.DataTran.Data.SurgeryTypeCode,
         FurtherClaimNo: data.DataTran.Data.FurtherClaimNo,
         FurtherClaimId: data.DataTran.Data.FurtherClaimId,
-        FutherclaimVN: data.DataTran.Data.FutherclaimVN,
+        FurtherClaimVN: data.DataTran.Data.FurtherClaimVN,
         Runningdocument: randomNumber,
 
     },
   };
-  //console.log(PatientInfoData)
+  //console.log(PatientInfoData.PatientInfo)
+  useEffect(() => {
+    PatientInfoData.PatientInfo.FurtherClaimVN ? setNumberValue(PatientInfoData.PatientInfo.FurtherClaimVN) : setNumberValue(PatientInfoData.PatientInfo.VN);  
+    setRandomNumber();
+    if(!data.DataTran.Data.Runningdocument){
+    const generateRandomFiveDigitNumber = () => {
+      return String(Math.floor(Math.random() * 100000)).padStart(5, '0');
+    };
+    setFileList()
+    const newRandomNumber = generateRandomFiveDigitNumber();
+    setRandomNumber(newRandomNumber);
+    console.log(newRandomNumber);
+  }else{
+    setRandomNumber(data.DataTran.Data.Runningdocument)
+  }
+
+  }, []);
+
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.value = "";
@@ -265,7 +272,7 @@ export default function Page({ data }) {
 
   useEffect(() => {
     let Data;
-    if(data.DataTran.Data.FutherclaimVN){
+    if(data.DataTran.Data.FurtherClaimVN){
       Data = {
         PatientInfo : {
           InsurerCode: data.DataTran.Data.InsurerCode,
@@ -278,7 +285,7 @@ export default function Page({ data }) {
           DateOfBirth: data.Patient.Data.DateOfBirth,
           PassportNumber: data.Patient.Data.PassportNumber,
             IdType: data.Patient.Data.IdType,
-          VN: data.DataTran.Data.FutherclaimVN,
+          VN: data.DataTran.Data.FurtherClaimVN,
             VisitDateTime: data.DataTran.Data.VisitDateTime,
           ChiefComplaint: "",
           PresentIllness: "",
@@ -293,7 +300,7 @@ export default function Page({ data }) {
             SurgeryTypeCode: data.DataTran.Data.SurgeryTypeCode,
             FurtherClaimNo: data.DataTran.Data.FurtherClaimNo,
             FurtherClaimId: data.DataTran.Data.FurtherClaimId,
-            FutherclaimVN: data.DataTran.Data.FutherclaimVN,
+            FurtherClaimVN: data.DataTran.Data.FurtherClaimVN,
             Runningdocument: randomNumber,
     //visit doctor diagnosis acc
         },
@@ -326,7 +333,7 @@ export default function Page({ data }) {
             SurgeryTypeCode: data.DataTran.Data.SurgeryTypeCode,
             FurtherClaimNo: data.DataTran.Data.FurtherClaimNo,
             FurtherClaimId: data.DataTran.Data.FurtherClaimId,
-            FutherclaimVN: data.DataTran.Data.FutherclaimVN,
+            FurtherClaimVN: data.DataTran.Data.FurtherClaimVN,
             Runningdocument: randomNumber,
 
         },
@@ -342,7 +349,7 @@ export default function Page({ data }) {
       PatientInfoData 
       )
       .then((response) => {
-        // console.log(response.data)
+         console.log(response.data)
         setVisit(response.data);
         //const dateValue = dayjs(response.data.Result.VisitInfo.SignSymptomsDate);
         //console.log(response.data.Result.VisitInfo.SignSymptomsDate)
@@ -402,7 +409,7 @@ export default function Page({ data }) {
 
   useEffect(() => {
     let Data;
-    if(data.DataTran.Data.FutherclaimVN){
+    if(data.DataTran.Data.FurtherClaimVN){
       Data = {
         PatientInfo : {
           InsurerCode: data.DataTran.Data.InsurerCode,
@@ -415,7 +422,7 @@ export default function Page({ data }) {
           DateOfBirth: data.Patient.Data.DateOfBirth,
           PassportNumber: data.Patient.Data.PassportNumber,
             IdType: data.Patient.Data.IdType,
-          VN: data.DataTran.Data.FutherclaimVN,
+          VN: data.DataTran.Data.FurtherClaimVN,
             VisitDateTime: data.DataTran.Data.VisitDateTime,
           ChiefComplaint: "",
           PresentIllness: "",
@@ -430,7 +437,7 @@ export default function Page({ data }) {
             SurgeryTypeCode: data.DataTran.Data.SurgeryTypeCode,
             FurtherClaimNo: data.DataTran.Data.FurtherClaimNo,
             FurtherClaimId: data.DataTran.Data.FurtherClaimId,
-            FutherclaimVN: data.DataTran.Data.FutherclaimVN,
+            FurtherClaimVN: data.DataTran.Data.FurtherClaimVN,
             Runningdocument: randomNumber,
     //visit doctor diagnosis acc
         },
@@ -463,7 +470,7 @@ export default function Page({ data }) {
             SurgeryTypeCode: data.DataTran.Data.SurgeryTypeCode,
             FurtherClaimNo: data.DataTran.Data.FurtherClaimNo,
             FurtherClaimId: data.DataTran.Data.FurtherClaimId,
-            FutherclaimVN: data.DataTran.Data.FutherclaimVN,
+            FurtherClaimVN: data.DataTran.Data.FurtherClaimVN,
             Runningdocument: randomNumber,
 
         },
@@ -480,7 +487,7 @@ export default function Page({ data }) {
        PatientInfoData
       )
       .then((response) => {
-       // console.log(response.data)
+        console.log(response.data)
          setAccidentDetail(response.data);
           setCauseOfInjuryDetails(response.data.Result.AccidentDetailInfo.CauseOfInjuryDetail);
           setInjuryDetails(response.data.Result.AccidentDetailInfo.InjuryDetail);
@@ -636,7 +643,7 @@ export default function Page({ data }) {
 
   useEffect(() => {
     let Data;
-    if(data.DataTran.Data.FutherclaimVN){
+    if(data.DataTran.Data.FurtherClaimVN){
       Data = {
         PatientInfo : {
           InsurerCode: data.DataTran.Data.InsurerCode,
@@ -649,7 +656,7 @@ export default function Page({ data }) {
           DateOfBirth: data.Patient.Data.DateOfBirth,
           PassportNumber: data.Patient.Data.PassportNumber,
             IdType: data.Patient.Data.IdType,
-          VN: data.DataTran.Data.FutherclaimVN,
+          VN: data.DataTran.Data.FurtherClaimVN,
             VisitDateTime: data.DataTran.Data.VisitDateTime,
           ChiefComplaint: "",
           PresentIllness: "",
@@ -664,7 +671,7 @@ export default function Page({ data }) {
             SurgeryTypeCode: data.DataTran.Data.SurgeryTypeCode,
             FurtherClaimNo: data.DataTran.Data.FurtherClaimNo,
             FurtherClaimId: data.DataTran.Data.FurtherClaimId,
-            FutherclaimVN: data.DataTran.Data.FutherclaimVN,
+            FurtherClaimVN: data.DataTran.Data.FurtherClaimVN,
             Runningdocument: randomNumber,
     //visit doctor diagnosis acc
         },
@@ -697,7 +704,7 @@ export default function Page({ data }) {
             SurgeryTypeCode: data.DataTran.Data.SurgeryTypeCode,
             FurtherClaimNo: data.DataTran.Data.FurtherClaimNo,
             FurtherClaimId: data.DataTran.Data.FurtherClaimId,
-            FutherclaimVN: data.DataTran.Data.FutherclaimVN,
+            FurtherClaimVN: data.DataTran.Data.FurtherClaimVN,
             Runningdocument: randomNumber,
 
         },
@@ -712,7 +719,7 @@ export default function Page({ data }) {
       PatientInfoData
       )
       .then((response) => {
-    //    console.log(response.data)
+        console.log(response.data)
         setDoctor(response.data);
       })
       .catch((error) => {
@@ -731,7 +738,7 @@ export default function Page({ data }) {
 
   useEffect(() => {
     let Data;
-    if(data.DataTran.Data.FutherclaimVN){
+    if(data.DataTran.Data.FurtherClaimVN){
       Data = {
         PatientInfo : {
           InsurerCode: data.DataTran.Data.InsurerCode,
@@ -744,7 +751,7 @@ export default function Page({ data }) {
           DateOfBirth: data.Patient.Data.DateOfBirth,
           PassportNumber: data.Patient.Data.PassportNumber,
             IdType: data.Patient.Data.IdType,
-          VN: data.DataTran.Data.FutherclaimVN,
+          VN: data.DataTran.Data.FurtherClaimVN,
             VisitDateTime: data.DataTran.Data.VisitDateTime,
           ChiefComplaint: "",
           PresentIllness: "",
@@ -759,7 +766,7 @@ export default function Page({ data }) {
             SurgeryTypeCode: data.DataTran.Data.SurgeryTypeCode,
             FurtherClaimNo: data.DataTran.Data.FurtherClaimNo,
             FurtherClaimId: data.DataTran.Data.FurtherClaimId,
-            FutherclaimVN: data.DataTran.Data.FutherclaimVN,
+            FurtherClaimVN: data.DataTran.Data.FurtherClaimVN,
             Runningdocument: randomNumber,
     //visit doctor diagnosis acc
         },
@@ -792,7 +799,7 @@ export default function Page({ data }) {
             SurgeryTypeCode: data.DataTran.Data.SurgeryTypeCode,
             FurtherClaimNo: data.DataTran.Data.FurtherClaimNo,
             FurtherClaimId: data.DataTran.Data.FurtherClaimId,
-            FutherclaimVN: data.DataTran.Data.FutherclaimVN,
+            FurtherClaimVN: data.DataTran.Data.FurtherClaimVN,
             Runningdocument: randomNumber,
 
         },
@@ -981,13 +988,105 @@ export default function Page({ data }) {
     );
     setCauseOfInjuryDetails(newCauseOfInjuryDetails);
   };
+  const handleDeleteInjuryDetail = (index) => {
+    const newInjuryDetails = injuryDetails.filter(
+      (_, i) => i !== index
+    );
+    setInjuryDetails(newInjuryDetails);
+  };
 
   const handleAddInjuryDetail = () => {
     setInjuryDetails([...injuryDetails, newInjuryDetail]);
     setNewInjuryDetail({ InjuryArea: "", InjurySide: "", WoundType: "" });
   };
 
+  const Editfurtherclaimvn = () => {
+    setShowSummitError();
+    setShowSummitSucc();
+    document.getElementById("Editfurtherclaimvn").showModal();
+  };
 
+  
+
+    async function Submitfurtherclaimvn() {
+  setShowSummitError();
+  setShowSummitSucc();
+  try {
+  let response = await axios.post(
+        process.env.NEXT_PUBLIC_URL_SV +
+          process.env.NEXT_PUBLIC_URL_UpdateFurtherClaimVN,
+          {
+            "PatientInfo": {
+            
+                "RefId": PatientInfoData.PatientInfo.RefId,
+                "TransactionNo": PatientInfoData.PatientInfo.TransactionNo,
+                "HN": PatientInfoData.PatientInfo.HN,
+                "VN": PatientInfoData.PatientInfo.VN,
+                "FurtherClaimVN": numberValue,
+                }
+              }
+      )
+
+      console.log(response.data)
+
+      if(response.data.HTTPStatus.statusCode === 200){
+
+        try {
+        setShowSummitSucc("Succ");
+        setMassSummitSucc(response.data.HTTPStatus.message);
+     dispatch(
+      save({
+        value: "มีข้อมูล",
+        Data: {
+          RefId: PatientInfoData.PatientInfo.RefId,
+          TransactionNo: PatientInfoData.PatientInfo.TransactionNo,
+          VN: PatientInfoData.PatientInfo.VN,
+          InsurerCode: InsuranceCode,
+          ServiceSettingCode: PatientInfoData.PatientInfo.ServiceSettingCode,
+          IllnessTypeCode: PatientInfoData.PatientInfo.IllnessTypeCode,
+          SurgeryTypeCode: PatientInfoData.PatientInfo.SurgeryTypeCode,
+          PolicyTypeCode: PatientInfoData.PatientInfo.PolicyTypeCode,
+          AccidentDate: PatientInfoData.PatientInfo.AccidentDate,
+          VisitDateTime: PatientInfoData.PatientInfo.VisitDateTime,
+          FurtherClaimVN: numberValue,
+          FurtherClaimNo: PatientInfoData.PatientInfo.FurtherClaimNo,
+          FurtherClaimId: PatientInfoData.PatientInfo.FurtherClaimId,
+          Runningdocument: PatientInfoData.PatientInfo.randomNumberold,
+        },
+      })
+    );
+
+
+      await stepOne();
+      await stepTwo();
+    } catch (error) {
+      console.log(error);
+    };
+
+    function stepOne() {
+      setTimeout(() => {
+            router.push("/aia/opd/checkClaimStatus");
+      }, 1000);
+ 
+    };
+    function stepTwo() {
+      setTimeout(() => {
+             router.push("/aia/opd/eligible");
+}, 1000);
+
+    };
+    }else{
+
+            setMassSummitError(response.data.Result);
+            setShowSummitError("Error");
+          }
+        } catch (error){
+      setMassSummitError(error.message);
+      setShowSummitError("Error");
+    }
+    
+  
+      }
 
 
   const SummitEditProce = () => {
@@ -1507,6 +1606,7 @@ if(rows){
           IllnessTypeCode: PatientInfoData.PatientInfo.IllnessTypeCode,
           SurgeryTypeCode: PatientInfoData.PatientInfo.SurgeryTypeCode,
           Runningdocument: PatientInfoData.PatientInfo.Runningdocument,
+          FurtherClaimVN: PatientInfoData.PatientInfo.FurtherClaimVN,
         };
        // console.log(PatientInfo)
         axios
@@ -2054,9 +2154,17 @@ if(rows){
                   )}
                   
                 </div>
+             
+                <div className="rounded-md mt-2 text-3xl text-error  flex ">
+               {/* <IoSettingsSharp className="mt-1 " onClick={Editfurtherclaimvn}/> */}
+               <div
+                        className="btn btn-secondary text-base-100 text-xl"
+                        onClick={Editfurtherclaimvn}
+                      >
+                        <FaEdit className="text-base-100" />
+                      </div>
+                  <div className="mt-2 ml-2">Claim form จาก VN : {PatientInfoData.PatientInfo.FurtherClaimVN ? PatientInfoData.PatientInfo.FurtherClaimVN+" ( เก่า )" : PatientInfoData.PatientInfo.VN+" ( ปัจจุบัน )" }</div>                    
 
-                <div className="rounded-md mt-2 text-xl text-error">
-                  Claim form จาก VN : {PatientInfoData.PatientInfo.FutherclaimVN ? PatientInfoData.PatientInfo.FutherclaimVN+" ( เก่า )" : PatientInfoData.PatientInfo.VN+" ( ปัจจุบัน )" }
                 </div>
                 <div className="grid gap-2 sm:grid-cols-2 w-full mt-4">
                   <div className="rounded-md mt-2">
@@ -3719,6 +3827,77 @@ if(rows){
           </div>
         </div>
       )}
+
+<dialog id="Editfurtherclaimvn" className="modal text-xl	">
+        <div className="modal-box w-11/12 max-w-sm">
+          <form method="dialog">
+            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
+              ✕
+            </button>
+            <h3 className="font-bold text-lg">แก้ไข Claim form จาก VN</h3>
+            <hr />
+            {showSummitError === "Error" ? (
+              <div
+                role="alert"
+                className="alert alert-error mt-2 text-base-100"
+              >
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    className="h-6 w-6 shrink-0 stroke-current"
+    fill="none"
+    viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="2"
+      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>{massSummitError}</span>
+              </div>
+            ) : ("")}
+           {showSummitSucc === "Succ" ? (
+      <div role="alert" className="alert alert-success text-base-100 mt-2">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="h-6 w-6 shrink-0 stroke-current"
+        fill="none"
+        viewBox="0 0 24 24">
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="2"
+          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+                <span>{massSummitSucc}</span>
+              </div>
+            ) : ("")}
+
+                {massSummit ? (
+                  massSummit
+                ) : (
+                    <div className="flex items-center text-center mt-2">
+                      <TextField
+                        id="disabledInput"
+                        className=""
+                        label=""
+                       // defaultValue={PatientInfoData.PatientInfo.FurtherClaimVN ? PatientInfoData.PatientInfo.FurtherClaimVN : PatientInfoData.PatientInfo.VN }
+                        value={numberValue}
+                        onChange={(e) => setNumberValue(e.target.value)}
+                       // InputProps={{ readOnly: true }}
+                      />
+
+                  <div
+                    className="btn btn-success text-base-100 hover:text-success hover:bg-base-100 ml-2"
+                    onClick={Submitfurtherclaimvn}
+                  >
+                    <IoIosSave  className="size-6" />
+                  </div>
+                    </div>
+                )}
+            
+          </form>
+        </div>
+      </dialog>
 
       <dialog id="my_modal_3" className="modal text-xl	">
         <div className="modal-box w-11/12 max-w-5xl">

@@ -53,7 +53,7 @@ export default function checkData() {
   
   const [fromValue, setFromValue] = useState(null);
   const [accValue, setAccValue] = useState(null);
-  const [statusValue, setStatusValue] = useState("");
+  const [statusValue, setStatusValue] = useState("OPD");
   const [policyTypeValue, setPolicyTypeValue] = useState("");
   const [idTypeValue, setIdTypeValue] = useState("NATIONAL_ID");
   const [surgeryTypeValue, setSurgeryTypeValue] = useState("");
@@ -717,8 +717,8 @@ if(idTypeValue === "NATIONAL_ID"){
         SurgeryTypeCode: surgeryTypeValue,
   
         IdType: idTypeValue,
-        PID: numberValue,
-       //  PID: "0480000004207",
+      //   PID: numberValue,
+        PID: "0480000004185",
         PassportNumber: "",
         MembershipId:"",  
         CustomerId : "",
@@ -1449,16 +1449,16 @@ if(idTypeValue === "NATIONAL_ID"){
                       onChange={handleSelectChange}
                     >
                       <option></option>
-                      {console.log(furtherClaim)}
+                      {/* {console.log(furtherClaim)} */}
                {furtherClaim
                         ? furtherClaim.Result.InsuranceData.FurtherClaimList.map(
                             (ftc, index) => (
                               <option
                                 key={index}
-                                value={`${ftc.ClaimNo} | ${ftc.FurtherClaimId} | ${ftc.VisitDateTime} | ${ftc.VN}`}
+                                value={`${ftc.ClaimNo} | ${ftc.FurtherClaimId} | ${ftc.VisitDateTime} | ${ftc.FurtherClaimVN}`}
                               >
                                 เลขกรมธรรม์: {ftc.ClaimNo}, วันที่เข้ารักษา:{" "}
-                                {ftc.VisitDateTime.split("T")[0]} VN: {ftc.VN}
+                                {ftc.VisitDateTime.split("T")[0]} VN: {ftc.FurtherClaimVN}
                               </option>
                             )
                           )

@@ -1228,7 +1228,7 @@ axios
                   label=""
                   value={fromValue}
                   onChange={(newDate) => setFromValue(newDate)}
-                  format=""
+                  format="YYYY-MM-DD"
                 />
               </LocalizationProvider>
 
@@ -1238,7 +1238,7 @@ axios
                   label=""
                   value={toValue}
                   onChange={(newDate) => setToValue(newDate)}
-                  format=""
+                  format="YYYY-MM-DD"
                 />
               </LocalizationProvider>
               <FormControl className="ml-2 w-80">
@@ -1303,46 +1303,25 @@ axios
           )}
 
           <table className="table mt-2">
-            <thead className="bg-info text-base-100 text-center text-lg ">
+          <thead className="bg-info text-base-100 text-center text-sm">
               <tr>
                 <th></th>
-                <th>Visit Date</th>
+                <th >Visit Date</th>
                 <th>Full Name</th>
                 <th>HN</th>
                 <th>VN</th>
                 <th>ClaimNo</th>
                 <th>Invoicenumber</th>
-                <td>BatchNumber 
-                  {/* <br/>
-                <FormControl className="w-full bg-info">
-                <NativeSelect
-          id="demo-customized-select-native"
-          value={billValue}
-          label="TypeBill"
-          onChange={bill}
-        >
-                {billtype
-                  ? billtype.map((bill, index) => (
-                      <option key={index} value={bill.Desc}>
-                        {bill.Desc}
-                      </option>
-                    ))
-                  : ""}
-              </NativeSelect>
-            </FormControl> */}
-  </td>
+                <td>BatchNumber</td>
                 <th className="w-40">Status</th>
-                <th>ApprovedAmount</th>
-                <th>Totalbillamount</th>
-                <th>ExcessAmount</th>
-                <th>
-                <h1
-                            className="text-base-100 text-2xl"
-                            onClick={RefreshAll}
-                          >
-                            <LuRefreshCw />
-                          </h1>
-                          </th>
+                <th >Total<br/>Billamount</th>
+                <th >Approved<br/>Amount</th>
+                <th >Excess<br/>Amount</th>
+                <th >
+                  <h1 className="text-base-100 text-2xl flex justify-center" onClick={RefreshAll}>
+                    <LuRefreshCw />
+                  </h1>
+                </th>
                 <th></th>
               </tr>
             </thead>
@@ -1355,7 +1334,7 @@ axios
         ((billValue === "ทั้งหมด") ?(
                     <tr className="hover text-center" key={index}>
                       <th>{index + 1}</th>
-                      <td>{bill.VisitDateTime}</td>
+                      <td>{bill.VisitDate}</td>
                       <td>
                         {bill.TitleTH} {bill.GivenNameTH} {bill.SurnameTH}
                       </td>
@@ -1394,12 +1373,17 @@ axios
                       </div>
                       </td>
                       <th>
-                      {bill.TotalApprovedAmount
-                          ? parseFloat(bill.TotalApprovedAmount).toLocaleString('en-US', {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          })
-                          : ""}
+                        {/* {console.log(bill)} 
+                          {console.log(statusNew)} */}
+
+{bill.TotalBillAmount
+                              ? parseFloat(
+                                    bill.TotalBillAmount
+                                ).toLocaleString("en-US", {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                                })
+                              : ""}
                           
                       </th>
                       <th>
@@ -1410,15 +1394,22 @@ axios
                           })
                           : ""} */}
                
-                          {bill.TotalBillAmount
-                          ? parseFloat(
-                            // statusAllNew ? (statusAllNew.map(ALLnew => (ALLnew.TransactionNo === ((bill.TransactionNo)||(statusNew.TransactionNo)) ? (ALLnew.TotalBillAmount) : (bill.TotalBillAmount)))):
-                             (statusNew ? bill.TransactionNo === statusNew.TransactionNo ? statusNew.TotalBillAmount : (bill.TotalBillAmount ? (bill.TotalBillAmount): ("")): "Loading...")
-                          ).toLocaleString('en-US', {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          })
-                          : ""}
+               {bill.TotalApprovedAmount
+                              ?
+                              //  parseFloat(
+                                (statusNew
+                                ? ((bill.TransactionNo ===statusNew.TransactionNo)
+                                  ? (statusNew.TotalApproveAmount ? parseFloat(statusNew.TotalApproveAmount).toLocaleString("en-US", {minimumFractionDigits: 2,maximumFractionDigits: 2,}) : parseFloat(bill.TotalApprovedAmount).toLocaleString("en-US", {minimumFractionDigits: 2,maximumFractionDigits: 2,})  )
+                                  :  parseFloat(bill.TotalApprovedAmount).toLocaleString("en-US", {minimumFractionDigits: 2,maximumFractionDigits: 2,}))
+                                  :  parseFloat(bill.TotalApprovedAmount).toLocaleString("en-US", {minimumFractionDigits: 2,maximumFractionDigits: 2,})
+                                )
+                           
+                                 
+                                // ).toLocaleString("en-US", {
+                                //   minimumFractionDigits: 2,
+                                //   maximumFractionDigits: 2,
+                                // })
+                              : ""}
 
                       </th>
                       <th>
@@ -1571,38 +1562,36 @@ axios
                       </div>
     </td>
     <th>
-    {bill.TotalApprovedAmount
-        ? parseFloat(bill.TotalApprovedAmount).toLocaleString('en-US', {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        })
-        : ""}
-        
-    </th>
-    <th>
-    {/* {bill.ApprovedAmount
-        ? parseFloat(bill.ApprovedAmount).toLocaleString('en-US', {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        })
-        : ""} */}
+                      {/* {bill.ApprovedAmount
+                          ? parseFloat(bill.ApprovedAmount).toLocaleString('en-US', {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })
+                          : ""} */}
+               
+               {bill.TotalApprovedAmount
+                              ?
+                              //  parseFloat(
+                                (statusNew
+                                ? ((bill.TransactionNo ===statusNew.TransactionNo)
+                                  ? (statusNew.TotalApproveAmount ? parseFloat(statusNew.TotalApproveAmount).toLocaleString("en-US", {minimumFractionDigits: 2,maximumFractionDigits: 2,}) : parseFloat(bill.TotalApprovedAmount).toLocaleString("en-US", {minimumFractionDigits: 2,maximumFractionDigits: 2,})  )
+                                  :  parseFloat(bill.TotalApprovedAmount).toLocaleString("en-US", {minimumFractionDigits: 2,maximumFractionDigits: 2,}))
+                                  :  parseFloat(bill.TotalApprovedAmount).toLocaleString("en-US", {minimumFractionDigits: 2,maximumFractionDigits: 2,})
+                                )
+                           
+                                 
+                                // ).toLocaleString("en-US", {
+                                //   minimumFractionDigits: 2,
+                                //   maximumFractionDigits: 2,
+                                // })
+                              : ""}
 
-        {bill.TotalBillAmount
-        ? parseFloat(
-           //statusAllNew ? (statusAllNew.map(ALLnew => (ALLnew.TransactionNo === ((bill.TransactionNo)||(statusNew.TransactionNo)) ? (ALLnew.TotalBillAmount) : (bill.TotalBillAmount)))):
-           (statusNew ? bill.TransactionNo === statusNew.TransactionNo ? statusNew.TotalBillAmount : (bill.TotalBillAmount ? (bill.TotalBillAmount): ("")): "Loading...")
-        ).toLocaleString('en-US', {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        })
-        : ""}
-
-    </th>
-    <th>
-      {bill.TotalExcessAmount
-        ? parseFloat(bill.TotalExcessAmount).toLocaleString('en-US', {minimumFractionDigits: 2,maximumFractionDigits: 2,})
-        : ""}
-    </th>
+                      </th>
+                      <th>
+                        {bill.TotalExcessAmount
+                          ? parseFloat(bill.TotalExcessAmount).toLocaleString('en-US', {minimumFractionDigits: 2,maximumFractionDigits: 2,})
+                          : ""}
+                      </th>
     <td>
     {bill.RefId ? (
           (((bill.ClaimStatusDesc !== "Cancelled to AIA")&&(bill.ClaimStatusDesc !== "Cancelled")&&(bill.ClaimStatusDesc !== "Reversed"))&&(bill.ClaimNo)) ? (
@@ -1748,38 +1737,36 @@ axios
                       </div>
           </td>
           <th>
-          {bill.TotalApprovedAmount
-              ? parseFloat(bill.TotalApprovedAmount).toLocaleString('en-US', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })
-              : ""}
-              
-          </th>
-          <th>
-          {/* {bill.ApprovedAmount
-              ? parseFloat(bill.ApprovedAmount).toLocaleString('en-US', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })
-              : ""} */}
-      
-              {bill.TotalBillAmount
-              ? parseFloat(
-                 //statusAllNew ? (statusAllNew.map(ALLnew => (ALLnew.TransactionNo === ((bill.TransactionNo)||(statusNew.TransactionNo)) ? (ALLnew.TotalBillAmount) : (bill.TotalBillAmount)))):
-                 (statusNew ? bill.TransactionNo === statusNew.TransactionNo ? statusNew.TotalBillAmount : (bill.TotalBillAmount ? (bill.TotalBillAmount): ("")): "Loading...")
-              ).toLocaleString('en-US', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })
-              : ""}
-      
-          </th>
-          <th>
-            {bill.TotalExcessAmount
-              ? parseFloat(bill.TotalExcessAmount).toLocaleString('en-US', {minimumFractionDigits: 2,maximumFractionDigits: 2,})
-              : ""}
-          </th>
+                      {/* {bill.ApprovedAmount
+                          ? parseFloat(bill.ApprovedAmount).toLocaleString('en-US', {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })
+                          : ""} */}
+               
+               {bill.TotalApprovedAmount
+                              ?
+                              //  parseFloat(
+                                (statusNew
+                                ? ((bill.TransactionNo ===statusNew.TransactionNo)
+                                  ? (statusNew.TotalApproveAmount ? parseFloat(statusNew.TotalApproveAmount).toLocaleString("en-US", {minimumFractionDigits: 2,maximumFractionDigits: 2,}) : parseFloat(bill.TotalApprovedAmount).toLocaleString("en-US", {minimumFractionDigits: 2,maximumFractionDigits: 2,})  )
+                                  :  parseFloat(bill.TotalApprovedAmount).toLocaleString("en-US", {minimumFractionDigits: 2,maximumFractionDigits: 2,}))
+                                  :  parseFloat(bill.TotalApprovedAmount).toLocaleString("en-US", {minimumFractionDigits: 2,maximumFractionDigits: 2,})
+                                )
+                           
+                                 
+                                // ).toLocaleString("en-US", {
+                                //   minimumFractionDigits: 2,
+                                //   maximumFractionDigits: 2,
+                                // })
+                              : ""}
+
+                      </th>
+                      <th>
+                        {bill.TotalExcessAmount
+                          ? parseFloat(bill.TotalExcessAmount).toLocaleString('en-US', {minimumFractionDigits: 2,maximumFractionDigits: 2,})
+                          : ""}
+                      </th>
           <td>
           {bill.RefId ? (
                 (((bill.ClaimStatusDesc !== "Cancelled to AIA")&&(bill.ClaimStatusDesc !== "Cancelled")&&(bill.ClaimStatusDesc !== "Reversed"))&&(bill.ClaimNo)) ? (
@@ -1973,46 +1960,25 @@ axios
           )}
 
           <table className="table mt-2">
-            <thead className="bg-info text-base-100 text-center text-lg ">
+          <thead className="bg-info text-base-100 text-center text-sm">
               <tr>
                 <th></th>
-                <th>Visit Date</th>
+                <th >Visit Date</th>
                 <th>Full Name</th>
                 <th>HN</th>
                 <th>VN</th>
                 <th>ClaimNo</th>
                 <th>Invoicenumber</th>
-                <td>BatchNumber 
-                  {/* <br/>
-                <FormControl className="w-full bg-info">
-                <NativeSelect
-          id="demo-customized-select-native"
-          value={billValue}
-          label="TypeBill"
-          onChange={bill}
-        >
-                {billtype
-                  ? billtype.map((bill, index) => (
-                      <option key={index} value={bill.Desc}>
-                        {bill.Desc}
-                      </option>
-                    ))
-                  : ""}
-              </NativeSelect>
-            </FormControl> */}
-  </td>
+                <td>BatchNumber</td>
                 <th className="w-40">Status</th>
-                <th>ApprovedAmount</th>
-                <th>Totalbillamount</th>
-                <th>ExcessAmount</th>
-                <th>
-                <h1
-                            className="text-base-100 text-2xl"
-                            onClick={RefreshAll}
-                          >
-                            <LuRefreshCw />
-                          </h1>
-                          </th>
+                <th >Total<br/>Billamount</th>
+                <th >Approved<br/>Amount</th>
+                <th >Excess<br/>Amount</th>
+                <th >
+                  <h1 className="text-base-100 text-2xl flex justify-center" onClick={RefreshAll}>
+                    <LuRefreshCw />
+                  </h1>
+                </th>
                 <th></th>
               </tr>
             </thead>
@@ -2285,46 +2251,25 @@ axios
           )}
 
           <table className="table mt-2">
-            <thead className="bg-info text-base-100 text-center text-lg ">
+          <thead className="bg-info text-base-100 text-center text-sm">
               <tr>
                 <th></th>
-                <th>Visit Date</th>
+                <th >Visit Date</th>
                 <th>Full Name</th>
                 <th>HN</th>
                 <th>VN</th>
                 <th>ClaimNo</th>
                 <th>Invoicenumber</th>
-                <td>BatchNumber 
-                  {/* <br/>
-                <FormControl className="w-full bg-info">
-                <NativeSelect
-          id="demo-customized-select-native"
-          value={billValue}
-          label="TypeBill"
-          onChange={bill}
-        >
-                {billtype
-                  ? billtype.map((bill, index) => (
-                      <option key={index} value={bill.Desc}>
-                        {bill.Desc}
-                      </option>
-                    ))
-                  : ""}
-              </NativeSelect>
-            </FormControl> */}
-  </td>
+                <td>BatchNumber</td>
                 <th className="w-40">Status</th>
-                <th>ApprovedAmount</th>
-                <th>Totalbillamount</th>
-                <th>ExcessAmount</th>
-                <th>
-                <h1
-                            className="text-base-100 text-2xl"
-                            onClick={RefreshAll}
-                          >
-                            <LuRefreshCw />
-                          </h1>
-                          </th>
+                <th >Total<br/>Billamount</th>
+                <th >Approved<br/>Amount</th>
+                <th >Excess<br/>Amount</th>
+                <th >
+                  <h1 className="text-base-100 text-2xl flex justify-center" onClick={RefreshAll}>
+                    <LuRefreshCw />
+                  </h1>
+                </th>
                 <th></th>
               </tr>
             </thead>
