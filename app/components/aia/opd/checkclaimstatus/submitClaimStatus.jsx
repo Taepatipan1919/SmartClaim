@@ -15,6 +15,7 @@ import { IoIosDocument } from "react-icons/io";
 import { AiOutlineUnorderedList } from "react-icons/ai";
 import { Button, Menu, MenuItem } from "@mui/material";
 import { useRouter } from "next/navigation";
+import Input from '@mui/material/Input';
 import {
   Table,
   TableBody,
@@ -40,12 +41,8 @@ import { HiDocumentSearch } from "react-icons/hi";
 export default function checkData() {
   const InsuranceCode = 13;
   const [base64, setBase64] = useState("");
-  const [summitEditProcedure, setSummitEditProcedure] = useState("false");
-  const [summitEditAcc, setSummitEditAcc] = useState("true");
-  const [causeOfInjuryDetails, setCauseOfInjuryDetails] = useState("");
-  const [injuryDetails, setInjuryDetails] = useState("");
-  const [injuryWoundType, setInjuryWoundType] = useState();
-  const [injurySideType, setInjurySideType] = useState();
+  const [itemBillingDetails, setItemBillingDetails] = useState("");
+  const [listBilling, setListBilling] = useState();
   const dispatch = useDispatch();
   const [post, setPost] = useState("");
   const [currentData, setCurrentData] = useState("");
@@ -147,75 +144,31 @@ export default function checkData() {
       });
 
     /////////////////////////////////////////////////////////////////////////////////////
-    axios
-      .get(
-        process.env.NEXT_PUBLIC_URL_PD +
-          process.env.NEXT_PUBLIC_URL_InjurySide +
-          InsuranceCode
-      )
-      .then((response) => {
-        // console.log(response.data)
-        setInjurySideType(response.data);
-      })
-      .catch((error) => {
-        console.log(error);
-        try {
-          const ErrorMass = error.config.url;
-          const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
-          setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
-          setShowFormError("Error");
-        } catch (error) {
-          setMassError(error.response.data.HTTPStatus.message);
-          setShowFormError("Error");
-        }
-      });
-    axios
-      .get(
-        process.env.NEXT_PUBLIC_URL_PD +
-          process.env.NEXT_PUBLIC_URL_InjuryWoundtype +
-          InsuranceCode
-      )
-      .then((response) => {
-        setInjuryWoundType(response.data);
-      })
-      .catch((error) => {
-        console.log(error);
-        try {
-          const ErrorMass = error.config.url;
-          const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
-          setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
-          setShowFormError("Error");
-        } catch (error) {
-          setMassError(error.response.data.HTTPStatus.message);
-          setShowFormError("Error");
-        }
-      });
-    /////////////////////////////////////////////////////////////////////////////////////
   }, []);
   const status = (event) => {
     setStatusValue(event.target.value);
   };
   const DocumentList = (data) => {
     setShowDocError();
-    const [RefId, TransactionNo, PID, PassportNumber, HN, VN, InvoiceNumber] =
-      data.split(" | ");
-    setRefIdL(RefId);
-    setTransactionNoL(TransactionNo);
-    setHNL(HN);
-    setVNL(VN);
-    setInvoiceNumberL(InvoiceNumber);
+    // const [RefId, TransactionNo, PID, PassportNumber, HN, VN, InvoiceNumber] =
+    //   data.split(" | ");
+    setRefIdL(data.RefId);
+    setTransactionNoL(data.TransactionNo);
+    setHNL(data.HN);
+    setVNL(data.VN);
+    setInvoiceNumberL(data.InvoiceNumber);
     setMsg(null);
-    setPIDL(PID);
-    setPassportNumberL(PassportNumber);
+    setPIDL(data.PID);
+    setPassportNumberL(data.PassportNumber);
 
     const PatientInfo = {
       InsurerCode: InsuranceCode,
-      RefId: RefId,
-      TransactionNo: TransactionNo,
-      PID: PID,
-      PassportNumber: PassportNumber,
-      HN: HN,
-      VN: VN,
+      RefId: data.RefId,
+      TransactionNo: data.TransactionNo,
+      PID: data.PID,
+      PassportNumber: data.PassportNumber,
+      HN: data.HN,
+      VN: data.VN,
       DocumenttypeCode: "",
       Runningdocument: "",
     };
@@ -242,152 +195,117 @@ export default function checkData() {
   ///////////////////////////////////////////////////
   ///////////////////////////////////////////////////
   const Checkcreditlimit = (data) => {
-    const [RefId, TransactionNo, PID, PassportNumber, HN, VN, InvoiceNumber] =
-      data.split(" | ");
-    setRefIdL(RefId);
-    setTransactionNoL(TransactionNo);
-    setHNL(HN);
-    setVNL(VN);
-    setInvoiceNumberL(InvoiceNumber);
+
+    setRefIdL(data.RefId);
+    setTransactionNoL(data.TransactionNo);
+    setHNL(data.HN);
+    setVNL(data.VN);
+    setInvoiceNumberL(data.InvoiceNumber);
     setMsg(null);
-    setPIDL(PID);
-    setPassportNumberL(PassportNumber);
+    setPIDL(data.PID);
+    setPassportNumberL(data.PassportNumber);
+    //console.log(data)
 
-    const PatientInfo = {
-      InsurerCode: InsuranceCode,
-      RefId: RefId,
-      TransactionNo: TransactionNo,
-      PID: PID,
-      PassportNumber: PassportNumber,
-      HN: HN,
-      VN: VN,
-      DocumenttypeCode: "",
-      Runningdocument: "",
-    };
 
-    console.log(PatientInfo);
-    axios
-      .post(
-        process.env.NEXT_PUBLIC_URL_PD +
-          process.env.NEXT_PUBLIC_URL_getOPDDischargeAccident,
-        // Data
-        PatientInfo
-      )
-      .then((response) => {
-        console.log(response.data);
-        setAccidentDetail(response.data);
-        setCauseOfInjuryDetails(
-          response.data.Result.AccidentDetailInfo.CauseOfInjuryDetail
-        );
-        setInjuryDetails(response.data.Result.AccidentDetailInfo.InjuryDetail);
-      })
-      .catch((error) => {
-        console.log(error);
-        // try {
-        //   const ErrorMass = error.config.url;
-        //   const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
-        //   setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
-        //   setShowFormError("Error");
-        // } catch (error) {
-        //   setMassError("Error Accident");
-        //   setShowFormError("Error");
-        // }
-      });
+axios
+.get(
+  process.env.NEXT_PUBLIC_URL_PD +
+    process.env.NEXT_PUBLIC_URL_listBillingCheckBalance +
+    data.VN
+)
+.then((response) => {
+  // console.log(response.data)
+  setListBilling(response.data.Result);
+})
+.catch((error) => {
+  console.log(error);
+  try {
+    const ErrorMass = error.config.url;
+    const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+    setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
+    setShowFormError("Error");
+  } catch (error) {
+    setMassError(error.response.data.HTTPStatus.message);
+    setShowFormError("Error");
+  }
+});
+
+
+
+
 
     document.getElementById("DoMoney").showModal();
   };
   ////////////////////////////////
   const handleChangeA1 = (index2, event) => {
-    const newcauses = causeOfInjuryDetails.map((cause, index) => {
+      const selectedType = JSON.parse(event.target.value); 
+    //   setNewItemBillingCheckBalance({ ...newItemBillingCheckBalance, 
+    //     LocalBillingCode: selectedType.LocalBillingCode, 
+    //     LocalBillingName: selectedType.LocalBillingName, 
+    //   }); 
+
+    const newcauses = itemBillingDetails.map((cause, index) => {
       if (index === index2) {
         return {
           ...cause,
-          CauseOfInjury: event.target.value,
+          LocalBillingCode: selectedType.LocalBillingCode,
+          LocalBillingName: selectedType.LocalBillingName,
         };
       }
       return cause;
     });
-    setCauseOfInjuryDetails(newcauses);
+    setItemBillingDetails(newcauses);
   };
   const handleChangeA2 = (index2, event) => {
-    const newcauses = causeOfInjuryDetails.map((cause, index) => {
+    const newcauses = itemBillingDetails.map((cause, index) => {
+
+      console.log(cause.BillingInitial+event.target.value)
       if (index === index2) {
         return {
           ...cause,
-          CommentOfInjury: event.target.value,
+          BillingInitial: event.target.value,
         };
       }
       return cause;
     });
-    setCauseOfInjuryDetails(newcauses);
-  };
-  const handleChangeB1 = (index2, event) => {
-    const newinjury = injuryDetails.map((injury, index) => {
-      if (index === index2) {
-        return {
-          ...injury,
-          InjuryArea: event.target.value,
-        };
-      }
-      return injury;
-    });
-    setInjuryDetails(newinjury);
-  };
-  const handleChangeB2 = (index2, event) => {
-    const newinjury = injuryDetails.map((injury, index) => {
-      if (index === index2) {
-        return {
-          ...injury,
-          InjurySide: event.target.value,
-        };
-      }
-      return injury;
-    });
-    setInjuryDetails(newinjury);
-  };
-  const handleChangeB3 = (index2, event) => {
-    const newinjury = injuryDetails.map((injury, index) => {
-      if (index === index2) {
-        return {
-          ...injury,
-          WoundType: event.target.value,
-        };
-      }
-      return injury;
-    });
-    setInjuryDetails(newinjury);
+    setItemBillingDetails(newcauses);
   };
   ////////////////////////////////
 
   const handleDeleteCauseOfInjuryDetail = (index) => {
-    const newCauseOfInjuryDetails = causeOfInjuryDetails.filter(
+    const newItemBillingCheckBalances = itemBillingDetails.filter(
       (_, i) => i !== index
     );
-    setCauseOfInjuryDetails(newCauseOfInjuryDetails);
+    setItemBillingDetails(newItemBillingCheckBalances);
   };
-  const handleAddInjuryDetail = () => {
-    setInjuryDetails([...injuryDetails, newInjuryDetail]);
-    setNewInjuryDetail({ InjuryArea: "", InjurySide: "", WoundType: "" });
-  };
-  const handleDeleteInjuryDetail = (index) => {
-    const newInjuryDetails = injuryDetails.filter((_, i) => i !== index);
-    setInjuryDetails(newInjuryDetails);
-  };
+
   /////////////////////////////////////////////////////
-  const [newCauseOfInjuryDetail, setNewCauseOfInjuryDetail] = useState({
-    CauseOfInjury: "",
-    CommentOfInjury: "",
+  const [newItemBillingCheckBalance, setNewItemBillingCheckBalance] = useState({
+    LocalBillingCode: "",
+    LocalBillingName: "",
+    SimbBillingCode: "",
+    BillingInitial: "",
   });
-  const [newInjuryDetail, setNewInjuryDetail] = useState({
-    InjuryArea: "",
-    InjurySide: "",
-    WoundType: "",
-  });
+  
   ////////////////////////////////////////////////////////
-  const handleAddCauseOfInjuryDetail = () => {
-    setCauseOfInjuryDetails([...causeOfInjuryDetails, newCauseOfInjuryDetail]);
-    setNewCauseOfInjuryDetail({ CauseOfInjury: "", CommentOfInjury: "" });
+  const handleAddItemBillingDetail = () => {
+    setItemBillingDetails([...itemBillingDetails, newItemBillingCheckBalance]);
+    setNewItemBillingCheckBalance({ 
+      LocalBillingCode: "",
+      LocalBillingName: "",
+      SimbBillingCode: "",
+      BillingInitial: "",
+    });
   };
+  ////////////////////////////////////////////////////////
+  const SubmitBillingCheckBalance = () => {
+    console.log(itemBillingDetails)
+
+
+
+
+
+  }
   ////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////
   const handleButtonClick = (data) => {
@@ -399,25 +317,25 @@ export default function checkData() {
     console.log(newRandomNumber);
 
     setShowDocError();
-    const [RefId, TransactionNo, PID, PassportNumber, HN, VN, InvoiceNumber] =
-      data.split(" | ");
-    setRefIdL(RefId);
-    setTransactionNoL(TransactionNo);
-    setHNL(HN);
-    setVNL(VN);
-    setInvoiceNumberL(InvoiceNumber);
+    // const [RefId, TransactionNo, PID, PassportNumber, HN, VN, InvoiceNumber] =
+    //   data.split(" | ");
+    setRefIdL(data.RefId);
+    setTransactionNoL(data.TransactionNo);
+    setHNL(data.HN);
+    setVNL(data.VN);
+    setInvoiceNumberL(data.InvoiceNumber);
     setMsg(null);
-    setPIDL(PID);
-    setPassportNumberL(PassportNumber);
+    setPIDL(data.PID);
+    setPassportNumberL(data.PassportNumber);
 
     const PatientInfo = {
       InsurerCode: InsuranceCode,
-      RefId: RefId,
-      TransactionNo: TransactionNo,
-      PID: PID,
-      PassportNumber: PassportNumber,
-      HN: HN,
-      VN: VN,
+      RefId: data.RefId,
+      TransactionNo: data.TransactionNo,
+      PID: data.PID,
+      PassportNumber: data.PassportNumber,
+      HN: data.HN,
+      VN: data.VN,
       DocumenttypeCode: "006",
       Runningdocument: newRandomNumber,
     };
@@ -584,33 +502,33 @@ export default function checkData() {
     setStatusNew();
     setShowFormError();
     // console.log("-Refresh-");
-    const [
-      RefId,
-      TransactionNo,
-      PID,
-      PassportNumber,
-      HN,
-      VN,
-      InvoiceNumber,
-      PolicyTypeCode,
-      IdType,
-      IllnessTypeCode,
-      ServiceSettingCode,
-      SurgeryTypeCode,
-      FurtherClaimNo,
-      FurtherClaimId,
-      AccidentDate,
-      VisitDateTime,
-      VisitDate,
-    ] = data.split(" | ");
+    // const [
+    //   RefId,
+    //   TransactionNo,
+    //   PID,
+    //   PassportNumber,
+    //   HN,
+    //   VN,
+    //   InvoiceNumber,
+    //   PolicyTypeCode,
+    //   IdType,
+    //   IllnessTypeCode,
+    //   ServiceSettingCode,
+    //   SurgeryTypeCode,
+    //   FurtherClaimNo,
+    //   FurtherClaimId,
+    //   AccidentDate,
+    //   VisitDateTime,
+    //   VisitDate,
+    // ] = data.split(" | ");
     const PatientInfo = {
       InsurerCode: InsuranceCode,
-      RefId: RefId,
-      TransactionNo: TransactionNo,
-      PID: PID,
-      PassportNumber: PassportNumber,
-      HN: HN,
-      VN: VN,
+      RefId: data.RefId,
+      TransactionNo: data.TransactionNo,
+      PID: data.PID,
+      PassportNumber: data.PassportNumber,
+      HN: data.HN,
+      VN: data.VN,
     };
     console.log(PatientInfo);
     axios
@@ -667,41 +585,19 @@ export default function checkData() {
   };
 
   const Detail = (data) => {
-    //    console.log(data)
+        console.log(data)
     //console.log("-Detail-")
     setShowFormError();
-    const [
-      RefId,
-      TransactionNo,
-      PID,
-      PassportNumber,
-      HN,
-      VN,
-      InvoiceNumber,
-      PolicyTypeCode,
-      IdType,
-      IllnessTypeCode,
-      ServiceSettingCode,
-      SurgeryTypeCode,
-      FurtherClaimNo,
-      FurtherClaimId,
-      AccidentDate,
-      VisitDateTime,
-      VisitDate,
-      randomNumberold,
-      futherclaimVN,
-      Visitlocation,
-    ] = data.split(" | ");
 
     const PatientInfo = {
       Insurerid: InsuranceCode,
-      PID: PID,
-      PassportNumber: PassportNumber,
-      IdType: IdType,
-      ServiceSettingCode: ServiceSettingCode,
-      VN: VN,
-      HN: HN,
-      VisitDatefrom: VisitDate,
+      PID: data.PID,
+      PassportNumber: data.PassportNumber,
+      IdType: data.IdType,
+      ServiceSettingCode: data.ServiceSettingCode,
+      VN: data.VN,
+      HN: data.HN,
+      VisitDatefrom: data.VisitDate,
       VisitDateto: "",
     };
     //  console.log(PatientInfo)
@@ -719,7 +615,7 @@ export default function checkData() {
           save2({
             value: "มีรายชื่อ",
             Data: {
-              IdType: IdType,
+              IdType: data.IdType,
               InsurerCode: InsuranceCode,
               DateOfBirth: getEpisodeByHN.DateOfBirth,
               Gender: getEpisodeByHN.Gender,
@@ -750,26 +646,26 @@ export default function checkData() {
       save({
         value: "มีข้อมูล",
         Data: {
-          RefId: RefId,
-          TransactionNo: TransactionNo,
-          VN: VN,
+          RefId: data.RefId,
+          TransactionNo: data.TransactionNo,
+          VN: data.VN,
           InsurerCode: InsuranceCode,
-          ServiceSettingCode: ServiceSettingCode,
-          IllnessTypeCode: IllnessTypeCode,
-          SurgeryTypeCode: SurgeryTypeCode,
-          PolicyTypeCode: PolicyTypeCode,
-          AccidentDate: AccidentDate,
-          VisitDateTime: VisitDateTime,
-          FurtherClaimVN: futherclaimVN,
-          FurtherClaimNo: FurtherClaimNo,
-          FurtherClaimId: FurtherClaimId,
-          Runningdocument: randomNumberold,
-          Visitlocation: Visitlocation,
+          ServiceSettingCode: data.ServiceSettingCode,
+          IllnessTypeCode: data.IllnessTypeCode,
+          SurgeryTypeCode: data.SurgeryTypeCode,
+          PolicyTypeCode: data.PolicyTypeCode,
+          AccidentDate: data.AccidentDate,
+          VisitDateTime: data.VisitDateTime,
+          FurtherClaimVN: data.FurtherClaimVN,
+          FurtherClaimNo: data.FurtherClaimNo,
+          FurtherClaimId: data.FurtherClaimId,
+          Runningdocument: data.randomNumberold,
+          Visitlocation: data.Visitlocation,
         },
       })
     );
 
-    router.push("/aia/opd/eligible");
+     router.push("/aia/opd/eligible");
   };
   const DocumentBase64 = (data) => {
     setMsg();
@@ -1046,16 +942,16 @@ export default function checkData() {
     const isConfirmed = window.confirm("แน่ใจแล้วที่จะยกเลิกการเคลมใช่ไหม");
     if (isConfirmed) {
       setPost();
-      const [RefId, TransactionNo, PID, PassportNumber, HN, VN] =
-        data.split(" | ");
+      // const [RefId, TransactionNo, PID, PassportNumber, HN, VN] =
+      //   data.split(" | ");
       const PatientInfo = {
         InsurerCode: InsuranceCode,
-        RefId: RefId,
-        TransactionNo: TransactionNo,
-        PID: PID,
-        PassportNumber: PassportNumber,
-        HN: HN,
-        VN: VN,
+        RefId: data.RefId,
+        TransactionNo: data.TransactionNo,
+        PID: data.PID,
+        PassportNumber: data.PassportNumber,
+        HN: data.HN,
+        VN: data.VN,
       };
 
       axios
@@ -1758,9 +1654,7 @@ export default function checkData() {
                                     <h1
                                       className="text-success text-2xl"
                                       onClick={() =>
-                                        Refresh(
-                                          `${bill.RefId} | ${bill.TransactionNo} | ${bill.PID} | ${bill.PassportNumber} | ${bill.HN} | ${bill.VN} | ${bill.InvoiceNumber} | ${bill.PolicyTypeCode} | ${bill.IdType} | ${bill.IllnessTypeCode} | ${bill.ServiceSettingCode} | ${bill.SurgeryTypeCode} | ${bill.FurtherClaimNo} | ${bill.FurtherClaimId} | ${bill.AccidentDate} | ${bill.VisitDateTime} | ${bill.VisitDate}`
-                                        )
+                                        Refresh(bill)
                                       }
                                     >
                                       <LuRefreshCw />
@@ -1802,9 +1696,7 @@ export default function checkData() {
                                     <h1
                                       className="text-primary text-2xl"
                                       onClick={() =>
-                                        Detail(
-                                          `${bill.RefId} | ${bill.TransactionNo} | ${bill.PID} | ${bill.PassportNumber} | ${bill.HN} | ${bill.VN} | ${bill.InvoiceNumber} | ${bill.PolicyTypeCode} | ${bill.IdType} | ${bill.IllnessTypeCode} | ${bill.ServiceSettingCode} | ${bill.SurgeryTypeCode} | ${bill.FurtherClaimNo} | ${bill.FurtherClaimId} | ${bill.AccidentDate} | ${bill.VisitDateTime} | ${bill.VisitDate} | ${bill.Runningdocument} | ${bill.FurtherClaimVN} | ${bill.VisitLocation}`
-                                        )
+                                        Detail(bill)
                                       }
                                     >
                                       <IoDocumentText />
@@ -1833,9 +1725,7 @@ export default function checkData() {
                                     <h1
                                       className="text-error text-2xl"
                                       onClick={() =>
-                                        Cancel(
-                                          `${bill.RefId} | ${bill.TransactionNo} | ${bill.PID} | ${bill.PassportNumber} | ${bill.HN} | ${bill.VN} | ${bill.InvoiceNumber}`
-                                        )
+                                        Cancel(bill)
                                       }
                                     >
                                       <MdCancel />
@@ -1857,9 +1747,7 @@ export default function checkData() {
                               <h1
                                 className="text-primary text-2xl"
                                 onClick={() =>
-                                  DocumentList(
-                                    `${bill.RefId} | ${bill.TransactionNo} | ${bill.PID} | ${bill.PassportNumber} | ${bill.HN} | ${bill.VN} | ${bill.InvoiceNumber}`
-                                  )
+                                  DocumentList(bill)
                                 }
                               >
                                 <HiDocumentSearch />
@@ -1877,9 +1765,7 @@ export default function checkData() {
                                     <button
                                       className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100 ml-4 whitespace-nowrap"
                                       onClick={() =>
-                                        handleButtonClick(
-                                          `${bill.RefId} | ${bill.TransactionNo} | ${bill.PID} | ${bill.PassportNumber} | ${bill.HN} | ${bill.VN} | ${bill.InvoiceNumber}`
-                                        )
+                                        handleButtonClick(bill)
                                       }
                                     >
                                       ส่งเอกสาร<br/>เพิ่มเติม
@@ -1892,22 +1778,21 @@ export default function checkData() {
                             ) : (
                               ""
                             )}
-                            {/* { bill.RefId ? (
+                            {/* {console.log(bill)} */}
+                            { bill.RefId ? (
                             (bill.ClaimStatusDesc === "waitting for discharge") ? (
                               <>
 
                                 <button
                                   className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100 ml-4"
                                   onClick={() =>
-                                    Checkcreditlimit(
-                                      `${bill.RefId} | ${bill.TransactionNo} | ${bill.PID} | ${bill.PassportNumber} | ${bill.HN} | ${bill.VN} | ${bill.InvoiceNumber}`
-                                    )
+                                    Checkcreditlimit(bill)
                                   }
                                 >
                                   เช็ควงเงิน
                                 </button>
                               </>
-                            ) : ("")) : ("")} */}
+                            ) : ("")) : ("")}
                           </td>
                         </tr>
                       )
@@ -2216,28 +2101,29 @@ export default function checkData() {
             </div>
           </dialog>
 
-          {/* <dialog id="DoMoney" className="modal text-xl	">
+          <dialog id="DoMoney" className="modal text-xl	">
             <div className="modal-box max-w-7xl">
               <form method="dialog">
       <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
     </form>
+    
                 <h3 className="font-bold text-lg">เช็ควงเงิน</h3>
                 <hr />
 
 
-<TableContainer component={Paper} className="mt-2">
+            <TableContainer component={Paper} className="mt-2">
                       <Table className="table">
                         <TableHead>
                           <TableRow className="bg-primary">
                             <TableCell className="w-2"></TableCell>
                             <TableCell>
                               <h1 className="text-base-100  text-sm w-2/5 text-center">
-                                สาเหตุของการเกิดอุบัติเหตุ (ICD10 code)
+                              LocalBillingCode - LocalBillingName
                               </h1>
                             </TableCell>
                             <TableCell>
                               <h1 className="text-base-100  text-sm w-2/5 text-center">
-                                คำอธิบายอวัยวะที่ได้รับจากการเกิดอุบัติเหตุว่ามีลักษณะบาดแผลอย่างไร
+                              BillingInitial
                               </h1>
                             </TableCell>
                             <TableCell>
@@ -2245,38 +2131,44 @@ export default function checkData() {
                           </TableRow>
                         </TableHead>
                         <TableBody>
-                 
-                          {causeOfInjuryDetails
-                            ? causeOfInjuryDetails.map(
+                          {/* {console.log(itemBillingDetails)} */}
+                          {itemBillingDetails
+                            ? itemBillingDetails.map(
                                 (cause, index) =>
-                                  cause.CauseOfInjury  && (
                                     <TableRow
                                       key={index}
                                       className=" bg-neutral text-sm z-50"
                                     >
                                       <TableCell>{index + 1}</TableCell>
                                       <TableCell>
-                                            <input
-                                              type="text"
-                                              className="rounded-full px-3 py-2 border-2 bg-base-100 break-all w-full"
-                                              value={cause.CauseOfInjury}
-                                              onChange={(e) =>
-                                                handleChangeA1(index, e)
-                                              }
-                                            />
+                                      <select  className="select select-bordered mt-2 x-3 py-2 border-2 bg-base-100 break-all w-full"    
+                                    // value={`${cause.LocalBillingCode}`}  
+                                       onChange={(e) =>
+                                        handleChangeA1(index, e)
+                                      }          
+                                     >
+                           <option>{cause.LocalBillingCode} - {cause.LocalBillingName}</option>
+                      {listBilling
+                  ? listBilling.ItemBillingCheckBalance.map((type, index) => (
+                              <option
+                                key={index}
+                                value={JSON.stringify(type)}>
+                                      {type.LocalBillingCode} - {type.LocalBillingName}
+                              </option>
+                            )
+                          )
+                        : ""}
+                    </select>
+                
                                       </TableCell>
                                       <TableCell>
                                             <TextField
                                               type="text"
                                               className="bg-base-100 w-full m-2"
-                                              value={cause.CommentOfInjury}
+                                              value={cause.BillingInitial}
                                               onChange={(e) =>
                                                 handleChangeA2(index, e)
                                               }
-                                              inputProps={{ maxLength: 200 }}
-                                              placeholder="CommentOfInjury"
-                                              multiline
-                                              rows={4}
                                             />
                                       </TableCell>
                                         <TableCell>
@@ -2292,7 +2184,7 @@ export default function checkData() {
                                           </div>
                                         </TableCell>
                                     </TableRow>
-                                  )
+                                  
                               )
                             : ""}
                               <TableRow>
@@ -2300,44 +2192,54 @@ export default function checkData() {
                                   <FaCirclePlus className="text-xl" />
                                 </TableCell>
 
-                                <TableCell>
-                                  <TextField
-                                    className="bg-base-100 w-full"
-                                    value={newCauseOfInjuryDetail.CauseOfInjury}
-                                    onChange={(e) =>
-                                      setNewCauseOfInjuryDetail({
-                                        ...newCauseOfInjuryDetail,
-                                        CauseOfInjury: e.target.value,
-                                      })
-                                    }
-                                    placeholder="CauseOfInjury"
-                                  />
+                                <TableCell>   
+                    <select  className="select select-bordered w-full mt-2"                
+onChange={(e) => { const selectedType = JSON.parse(e.target.value); 
+  // console.log(selectedType);
+  setNewItemBillingCheckBalance({ ...newItemBillingCheckBalance, 
+    LocalBillingCode: selectedType.LocalBillingCode, 
+    LocalBillingName: selectedType.LocalBillingName, 
+    SimbBillingCode: selectedType.SimbBillingCode,
+  }); }}
+
+                                     required>
+                      <option>- กรุณาเลือก -</option>
+                      {listBilling
+                  ? listBilling.ItemBillingCheckBalance.map((type, index) => (
+                              <option
+                                key={index}
+                                value={JSON.stringify(type)}>
+                                      {type.LocalBillingCode} - {type.LocalBillingName}
+                              </option>
+                            )
+                          )
+                        : ""}
+                    </select>
                                 </TableCell>
+                                <TableCell>
                                 <div className="m-2">
                                   <TextField
                                     type="text"
                                     className="bg-base-100 w-full "
                                     value={
-                                      newCauseOfInjuryDetail.CommentOfInjury
+                                      newItemBillingCheckBalance.BillingInitial
                                     }
                                     onChange={(e) =>
-                                      setNewCauseOfInjuryDetail({
-                                        ...newCauseOfInjuryDetail,
-                                        CommentOfInjury: e.target.value,
+                                      
+                                      setNewItemBillingCheckBalance({
+                                        ...newItemBillingCheckBalance,
+                                        BillingInitial: e.target.value,
                                       })
                                     }
-                                    inputProps={{ maxLength: 200 }}
-                                    placeholder="CommentOfInjury"
-                                    multiline
-                                    rows={4}
+                                    placeholder="BillingInitial"
                                   />
                                 </div>
-                                {newCauseOfInjuryDetail.CauseOfInjury &&
-                                newCauseOfInjuryDetail.CommentOfInjury ? (
+                                </TableCell>
+                                {newItemBillingCheckBalance.LocalBillingCode ? (
                                   <>
                                     <TableCell>
                                       <div
-                                        onClick={handleAddCauseOfInjuryDetail}
+                                        onClick={handleAddItemBillingDetail}
                                         className="btn btn-success text-base-100 text-xl"
                                       >
                                         <FaCirclePlus />
@@ -2350,251 +2252,25 @@ export default function checkData() {
                               </TableRow>
                         </TableBody>
                       </Table>
-                      <div className="grid gap-2 sm:grid-cols-4 text-base-100 bg-primary w-full whitespace-normal text-center">
-                        <div className="rounded-md"></div>
-                        <div className="rounded-md"></div>
-                        <div className="rounded-md "></div>
-                        <div className="rounded-md ">&nbsp;</div>
-                      </div>
+                      <div className="grid gap-2 sm:grid-cols-6  bg-primary w-full whitespace-normal text-center text-lg">
+                <div className="rounded-md"></div>
+                <div className="rounded-md"></div>
+                <div className="rounded-md"></div>
+                <div className="rounded-md px-3 py-2 border-2 bg-base-100 break-all m-1">สรุปค่ารักษาพยาบาล</div>
+                <div className="rounded-md px-3 py-2 border-2 bg-base-100 break-all m-1">
+                  {/* { itemBillingDetails ?  ? listBilling.ItemBillingCheckBalance.map((type, index) => (
+                          type
+                          ) }  */}
+                </div>
+              </div>
                     </TableContainer>
-
-                  <TableContainer component={Paper} className="mt-2">
-                      <Table className="table">
-                        <TableHead>
-                          <TableRow className="bg-primary">
-                            <TableCell className="w-2"></TableCell>
-                            <TableCell>
-                              <h1 className="text-base-100  text-sm w-1/7 text-center">
-                                อวัยวะที่ได้บาดเจ็บจากการเกิดอุบัติเหตุ (ICD10 code)
-                              </h1>
-                            </TableCell>
-                            <TableCell>
-                              <h1 className="text-base-100  text-sm w-3/7 text-center">
-                                ข้างของอวัยวะที่ได้รับบาดเจ็บจากการเกิดอุบัติเหตุ
-                              </h1>
-                            </TableCell>
-                            <TableCell>
-                              <h1 className="text-base-100  text-sm w-3/7 text-center">
-                                ลักษณะบาดแผลที่ได้รับจากการเกิดอุบัติเหตุ
-                              </h1>
-                            </TableCell>
-                            <TableCell>
-                            </TableCell>
-                          </TableRow>
-                        </TableHead>
-                        <TableBody>
-                          {injuryDetails
-                            ? injuryDetails.map(
-                                (injury, index) =>
-                                  injury.InjuryArea  && (
-                                    <TableRow
-                                      key={index}
-                                      className=" bg-neutral text-sm"
-                                    >
-                                      <TableCell>{index + 1}</TableCell>
-
-                                      <TableCell>
-                                            <input
-                                              type="text"
-                                              className="rounded-full px-3 py-2 border-2 bg-base-100 break-all w-full"
-                                              value={injury.InjuryArea}
-                                              onChange={(e) =>
-                                                handleChangeB1(index, e)
-                                              }
-                                            />
-                                      </TableCell>
-                                      <TableCell>
-                                    <FormControl fullWidth className="relative z-50">
-                                   <select className="select select-bordered rounded-full px-3 py-2 bg-base-100 break-all w-full max-w-xs"
-                                             value={injury.InjurySide}
-                                             label=""
-                                             onChange={(e) =>
-                                               handleChangeB2(index, e)
-                                            }
->
-                                            {injurySideType
-                                                  ? injurySideType.Result.map(
-                                                      (injury, index) => (
-                                                        <option
-                                                          key={index}
-                                                          value={
-                                                            injury.injurysidecode
-                                                          }
-                                                        >
-                                                          {
-                                                            injury.injurysidecode
-                                                          }{" "}
-                                                          -{" "}
-                                                          {
-                                                            injury.injurysidename
-                                                          }
-                                                        </option>
-                                                      )
-                                                    )
-                                                  : ""}
-                                      </select>
-                                  </FormControl> 
-                                        
-                                      </TableCell>
-                                      <TableCell>
-                        
-                              <FormControl fullWidth className="relative z-50">
-                                   <select className="select select-bordered rounded-full px-3 py-2 bg-base-100 break-all w-full max-w-xs"
-                                               value={injury.WoundType}
-                                                label=""
-                                                onChange={(e) =>
-                                                  handleChangeB3(index, e)
-                                                }
->                                 {injuryWoundType
-                                                  ? injuryWoundType.Result.map(
-                                                      (Wound, index) => (
-                                                        <option
-                                                          key={index}
-                                                          value={
-                                                            Wound.woundtypecode
-                                                          }
-                                                        >
-                                                          {Wound.woundtypecode}{" "}
-                                                          -{" "}
-                                                          {Wound.woundtypename}
-                                                        </option>
-                                                      )
-                                                    )
-                                                  : ""}
-                                      </select>
-                                  </FormControl> 
-                                           
-                                      </TableCell>
-                        
-                                        
-                                        <TableCell>
-                                          <div
-                                            onClick={() =>
-                                              handleDeleteInjuryDetail(index)
-                                            }
-                                            className="btn btn-error text-base-100 text-xl"
-                                          >
-                                            <FaCircleMinus />
-                                          </div>
-                                        </TableCell>
-                                        
-                                     
-                                    </TableRow>
-                                  )
-                              )
-                            : ""}
-                
-                              <TableRow>
-                                <TableCell>
-                                  <FaCirclePlus className="text-xl" />
-                                </TableCell>
-
-                                <TableCell>
-                                  <TextField
-                                    className="bg-base-100 w-full"
-                                    value={newInjuryDetail.InjuryArea}
-                                    onChange={(e) =>
-                                      setNewInjuryDetail({
-                                        ...newInjuryDetail,
-                                        InjuryArea: e.target.value,
-                                      })
-                                    }
-                                    placeholder="InjuryArea"
-                                  />
-                                </TableCell>
-                                <TableCell>
-                                  <FormControl fullWidth>
-                                    <Select
-                                      className="bg-base-100 w-full m-2"
-                                      labelId="policyTypeValue"
-                                      id="demo-simple-select"
-                                      value={newInjuryDetail.InjurySide}
-                                      label=""
-                                      onChange={(e) =>
-                                        setNewInjuryDetail({
-                                          ...newInjuryDetail,
-                                          InjurySide: e.target.value,
-                                        })
-                                      }
-                                    >
-                                      {injurySideType
-                                        ? injurySideType.Result.map(
-                                            (injury, index) => (
-                                              <MenuItem
-                                                key={index}
-                                                value={injury.injurysidecode}
-                                              >
-                                                {injury.injurysidecode} -{" "}
-                                                {injury.injurysidename}
-                                              </MenuItem>
-                                            )
-                                          )
-                                        : ""}
-                                    </Select>
-                                  </FormControl>
-                                </TableCell>
-                                <TableCell>
-                                  <FormControl fullWidth>
-                                    <Select
-                                      className="bg-base-100 w-full m-2"
-                                      labelId="policyTypeValue"
-                                      id="demo-simple-select"
-                                      value={newInjuryDetail.WoundType}
-                                      label=""
-                                      onChange={(e) =>
-                                        setNewInjuryDetail({
-                                          ...newInjuryDetail,
-                                          WoundType: e.target.value,
-                                        })
-                                      }
-                                    >
-                       
-                                      {injuryWoundType
-                                        ? injuryWoundType.Result.map(
-                                            (Wound, index) => (
-                                              <MenuItem
-                                                key={index}
-                                                value={Wound.woundtypecode}
-                                              >
-                                                {Wound.woundtypecode} -{" "}
-                                                {Wound.woundtypename}
-                                              </MenuItem>
-                                            )
-                                          )
-                                        : ""}
-                                    </Select>
-                                  </FormControl>
-                                </TableCell>
-                                {newInjuryDetail.InjuryArea &&
-                                newInjuryDetail.InjurySide &&
-                                newInjuryDetail.WoundType ? (
-                                  <>
-                                    <TableCell>
-                                      <div
-                                        onClick={handleAddInjuryDetail}
-                                        className="btn btn-success text-base-100 text-xl"
-                                      >
-                                        <FaCirclePlus />
-                                      </div>
-                                    </TableCell>
-                                  </>
-                                ) : (
-                                  ""
-                                )}
-                              </TableRow>
-                
-                        </TableBody>
-                      </Table>
-                      <div className="grid gap-2 sm:grid-cols-4 text-base-100 bg-primary w-full whitespace-normal text-center">
-                        <div className="rounded-md"></div>
-                        <div className="rounded-md"></div>
-                        <div className="rounded-md "></div>
-                        <div className="rounded-md ">&nbsp;</div>
-                      </div>
-                    </TableContainer>
-
+                    <div className="modal-action">
+                  <div className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100" type="submit" onClick={SubmitBillingCheckBalance}>
+                    เช็ควงเงิน
+                  </div>
+                </div>     
             </div>
-          </dialog> */}
+          </dialog>
 
           {showModal ? (
             <>
