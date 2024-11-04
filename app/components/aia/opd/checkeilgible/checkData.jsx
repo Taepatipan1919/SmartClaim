@@ -718,7 +718,7 @@ if(idTypeValue === "NATIONAL_ID"){
   
         IdType: idTypeValue,
       //   PID: numberValue,
-        PID: "0480000004185",
+        PID: "2200000506693",
         PassportNumber: "",
         MembershipId:"",  
         CustomerId : "",
@@ -1365,7 +1365,7 @@ if(idTypeValue === "NATIONAL_ID"){
 
 
  
-  (patientInfo.IllnessTypeCode === "ER" || patientInfo.IllnessTypeCode === "ACC") ? (
+  (patientInfo.IllnessTypeCode === "ER" || patientInfo.IllnessTypeCode === "ACC" || patientInfo.IllnessTypeCode === "FU") ? (
  succFurtherClaim === true ? 
 
  (succFurtherClaim2 === false ? 

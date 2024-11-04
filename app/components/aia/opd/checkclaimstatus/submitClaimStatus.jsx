@@ -40,6 +40,7 @@ import Select from "@mui/material/Select";
 import { HiDocumentSearch } from "react-icons/hi";
 export default function checkData() {
   const InsuranceCode = 13;
+  const [transactionClaimInfo, setTransactionClaimInfo] = useState("");
   const [base64, setBase64] = useState("");
   const [itemBillingDetails, setItemBillingDetails] = useState("");
   const [listBilling, setListBilling] = useState();
@@ -77,7 +78,12 @@ export default function checkData() {
   const [patientUpdate, setPatientUpdate] = useState("");
   const [docType, setDocType] = useState("");
   const [randomNumber, setRandomNumber] = useState("");
+  const [total, setTotal] = useState(0);
+  const [totalApprovedAmount, setTotalApprovedAmount  ] = useState("");
+  const [totalExcessAmount, setTotalExcessAmount ] = useState("");
 
+  const [totalSum, setTotalSum] = useState("");
+  const [fromTotalSum, setFromTotalSum] = useState(false);
   const [selectedValue, setSelectedValue] = useState("");
   const handleSelectChange = (event) => {
     setSelectedValue(event.target.value);
@@ -132,7 +138,7 @@ export default function checkData() {
       )
       .then((response) => {
         setPost(response.data);
-        console.log(response.data);
+       // console.log(response.data);
         // setShowFormError();
         setCurrentData(response.data.Result.TransactionClaimInfo);
       })
@@ -195,7 +201,13 @@ export default function checkData() {
   ///////////////////////////////////////////////////
   ///////////////////////////////////////////////////
   const Checkcreditlimit = (data) => {
+    setFromTotalSum(false)
+    setTotalApprovedAmount(0)
+    setTotalExcessAmount(0)
+    setShowFormError();
+    setMassError();
 
+setTransactionClaimInfo(data)
     setRefIdL(data.RefId);
     setTransactionNoL(data.TransactionNo);
     setHNL(data.HN);
@@ -256,10 +268,22 @@ axios
     });
     setItemBillingDetails(newcauses);
   };
+  // console.log(itemBillingDetails)
   const handleChangeA2 = (index2, event) => {
+    // console.log(itemBillingDetails)
     const newcauses = itemBillingDetails.map((cause, index) => {
 
-      console.log(cause.BillingInitial+event.target.value)
+  
+      // let sum = 0; 
+      // itemBillingDetails.forEach((bill) => { 
+      //   sum += parseInt(bill.BillingInitial, 10); 
+      // });
+      //  setTotal(sum);
+
+
+
+
+     // console.log(cause.BillingInitial+event.target.value)
       if (index === index2) {
         return {
           ...cause,
@@ -272,6 +296,13 @@ axios
   };
   ////////////////////////////////
 
+  // const handleSumBillingInitial = () => { 
+  //   let sum = 0; itemBillingDetails.forEach((bill) => { 
+  //     sum += parseInt(bill.BillingInitial, 10); 
+  //   });
+  //    setTotal(sum);
+  //    };
+//////////////////////////////////
   const handleDeleteCauseOfInjuryDetail = (index) => {
     const newItemBillingCheckBalances = itemBillingDetails.filter(
       (_, i) => i !== index
@@ -298,9 +329,113 @@ axios
     });
   };
   ////////////////////////////////////////////////////////
-  const SubmitBillingCheckBalance = () => {
-    console.log(itemBillingDetails)
+  const SubmitSumBilling = () => {
+    //console.log(itemBillingDetails)
+    // setFromTotalSum(false);
 
+    let sum = 0; 
+    itemBillingDetails.forEach((bill) => { 
+      sum += parseInt(bill.BillingInitial, 10); 
+    });
+    setTotal(sum);
+
+
+
+  }
+  const SubmitBillingCheckBalance = () => {
+    setFromTotalSum(true)
+    setTotalApprovedAmount();
+    setTotalExcessAmount();
+        setShowFormError();
+    setMassError();
+
+    let sum = 0; 
+    itemBillingDetails.forEach((bill) => { 
+      sum += parseInt(bill.BillingInitial, 10); 
+    });
+      // console.log(sum);
+      // console.log(itemBillingDetails)
+       let num = 0;
+      const result = itemBillingDetails.reduce((acc, item) => { 
+//          console.log(item)
+//       console.log(num = num + 1)
+// console.log(item.LocalBillingCode)
+// console.log(item.LocalBillingName)
+// console.log(item.BillingInitial)
+// console.log(item.SimbBillingCode)
+      acc.BillingInfo.push({
+          LocalBillingCode: item.LocalBillingCode,		
+          LocalBillingName: item.LocalBillingName,	
+          SimbBillingCode: item.SimbBillingCode,		
+          PayorBillingCode: item.SimbBillingCode,	
+          BillingInitial: item.BillingInitial,		
+          BillingDiscount: "0",			
+          BillingNetAmount: item.BillingInitial,			
+        });
+        acc.OrderItem.push({
+          Discount: "0",				
+          Initial: item.BillingInitial,			
+          ItemAmount: "1",				
+          ItemId: item.LocalBillingCode,	
+          ItemName: item.LocalBillingName,		
+          LocalBillingCode: item.LocalBillingCode,	
+          LocalBillingName: item.LocalBillingName,		
+          NetAmount: item.BillingInitial,	
+
+        });
+        return acc;
+           },
+           {
+            BillingInfo: [], OrderItem: [], TotalBillAmount: sum,
+            }
+          );
+
+// console.log(transactionClaimInfo)
+// console.log(result)
+
+const PatientInfo = {
+  InsurerCode: InsuranceCode,
+    RefId: transactionClaimInfo.RefId,
+    TransactionNo: transactionClaimInfo.TransactionNo,   
+    // PID: transactionClaimInfo.PID,
+    // IdType: transactionClaimInfo.IdType,
+    HN: transactionClaimInfo.HN,
+    VN: transactionClaimInfo.VN,
+    VisitDateTime: transactionClaimInfo.VisitDateTime,
+    AccidentDate: transactionClaimInfo.AccidentDate,
+  ItemBillingCheckBalance : result,
+}
+// console.log(PatientInfo)
+axios
+.post(
+  process.env.NEXT_PUBLIC_URL_PD2 +
+    process.env.NEXT_PUBLIC_URL_SubmitBillingCheckBalance,
+  { 
+    PatientInfo
+  }
+)
+.then((response) => {
+ 
+  console.log(response.data);
+  if(response.data.HTTPStatus.statusCode === 200){
+   // setTotalSum(response.data.Result)
+
+   setTotalApprovedAmount(response.data.Result.TotalApprovedAmount)
+   setTotalExcessAmount(response.data.Result.TotalExcessAmount)
+  }else{
+    setShowFormError("Error");
+    setMassError(response.data.HTTPStatus.message);
+  }
+
+
+})
+.catch((err) => {
+  // console.error("Error", err)
+  console.log(err);
+  //  if (err.response.request.status === 500) {
+  setShowFormError("Error");
+  setMassError(err.response.data.HTTPStatus.message);
+});
 
 
 
@@ -936,94 +1071,94 @@ axios
         });
     }
   };
-  const Cancel = (data) => {
-    setShowFormError();
-    // console.log("-Cancel-")
-    const isConfirmed = window.confirm("แน่ใจแล้วที่จะยกเลิกการเคลมใช่ไหม");
-    if (isConfirmed) {
-      setPost();
-      // const [RefId, TransactionNo, PID, PassportNumber, HN, VN] =
-      //   data.split(" | ");
-      const PatientInfo = {
-        InsurerCode: InsuranceCode,
-        RefId: data.RefId,
-        TransactionNo: data.TransactionNo,
-        PID: data.PID,
-        PassportNumber: data.PassportNumber,
-        HN: data.HN,
-        VN: data.VN,
-      };
+  // const Cancel = (data) => {
+  //   setShowFormError();
+  //   // console.log("-Cancel-")
+  //   const isConfirmed = window.confirm("แน่ใจแล้วที่จะยกเลิกการเคลมใช่ไหม");
+  //   if (isConfirmed) {
+  //     setPost();
+  //     // const [RefId, TransactionNo, PID, PassportNumber, HN, VN] =
+  //     //   data.split(" | ");
+  //     const PatientInfo = {
+  //       InsurerCode: InsuranceCode,
+  //       RefId: data.RefId,
+  //       TransactionNo: data.TransactionNo,
+  //       PID: data.PID,
+  //       PassportNumber: data.PassportNumber,
+  //       HN: data.HN,
+  //       VN: data.VN,
+  //     };
 
-      axios
-        .post(
-          process.env.NEXT_PUBLIC_URL_PD +
-            process.env.NEXT_PUBLIC_URL_getclaimcancel,
-          { PatientInfo }
-        )
-        .then((response) => {
-          console.log(response.data);
+  //     axios
+  //       .post(
+  //         process.env.NEXT_PUBLIC_URL_PD +
+  //           process.env.NEXT_PUBLIC_URL_getclaimcancel,
+  //         { PatientInfo }
+  //       )
+  //       .then((response) => {
+  //         console.log(response.data);
 
-          // if (response.data.HTTPStatus.statusCode === 200) {
-          // //  console.log("Cancel Succ")
-          //  setMassCancel(response.data.HTTPStatus.message);
-          //  setShowFormCancel("Cancel");
-          // } else {
+  //         // if (response.data.HTTPStatus.statusCode === 200) {
+  //         // //  console.log("Cancel Succ")
+  //         //  setMassCancel(response.data.HTTPStatus.message);
+  //         //  setShowFormCancel("Cancel");
+  //         // } else {
 
-          //   setShowFormError("Error");
-          //   setMassError(response.data.HTTPStatus.error);
-          // }
+  //         //   setShowFormError("Error");
+  //         //   setMassError(response.data.HTTPStatus.error);
+  //         // }
 
-          let PatientInfo2;
+  //         let PatientInfo2;
 
-          if (!patientInfoDetail) {
-            const today = dayjs().format("YYYY-MM-DD");
+  //         if (!patientInfoDetail) {
+  //           const today = dayjs().format("YYYY-MM-DD");
 
-            PatientInfo2 = {
-              InsurerCode: InsuranceCode,
-              IdType: "",
-              InvoiceNumber: "",
-              VN: "",
-              PID: "",
-              PassportNumber: "",
-              HN: "",
-              VisitDatefrom: today,
-              VisitDateto: today,
-              StatusClaimCode: "",
-            };
-          } else {
-            PatientInfo2 = patientInfoDetail;
-          }
-          //   console.log(PatientInfo2)
+  //           PatientInfo2 = {
+  //             InsurerCode: InsuranceCode,
+  //             IdType: "",
+  //             InvoiceNumber: "",
+  //             VN: "",
+  //             PID: "",
+  //             PassportNumber: "",
+  //             HN: "",
+  //             VisitDatefrom: today,
+  //             VisitDateto: today,
+  //             StatusClaimCode: "",
+  //           };
+  //         } else {
+  //           PatientInfo2 = patientInfoDetail;
+  //         }
+  //         //   console.log(PatientInfo2)
 
-          axios
-            .post(
-              process.env.NEXT_PUBLIC_URL_SV +
-                process.env.NEXT_PUBLIC_URL_SearchTransection,
-              { PatientInfo: PatientInfo2 }
-            )
+  //         axios
+  //           .post(
+  //             process.env.NEXT_PUBLIC_URL_SV +
+  //               process.env.NEXT_PUBLIC_URL_SearchTransection,
+  //             { PatientInfo: PatientInfo2 }
+  //           )
 
-            .then((response) => {
-              console.log(response.data);
-              setPost(response.data);
-              setCurrentData(response.data.Result.TransactionClaimInfo);
-              setShowFormError();
-            })
-            .catch((error) => {
-              console.log(error);
-              setShowFormError("Error");
-              setMassError(error.message);
-            });
-        })
-        .catch((error) => {
-          // console.error("Error", err)
-          console.log(error);
-          //  if (err.response.request.status === 500) {
-          // setShowFormError("Error");
-          // setMassError(error.message);
-          // setMassError(error.response.data.HTTPStatus.message);
-        });
-    }
-  };
+  //           .then((response) => {
+  //             console.log(response.data);
+  //             setPost(response.data);
+  //             setCurrentData(response.data.Result.TransactionClaimInfo);
+  //             setShowFormError();
+  //           })
+  //           .catch((error) => {
+  //             console.log(error);
+  //             setShowFormError("Error");
+  //             setMassError(error.message);
+  //           });
+  //       })
+  //       .catch((error) => {
+  //         // console.error("Error", err)
+  //         console.log(error);
+  //         //  if (err.response.request.status === 500) {
+  //         // setShowFormError("Error");
+  //         // setMassError(error.message);
+  //         // setMassError(error.response.data.HTTPStatus.message);
+  //       });
+  //   }
+  // };
 
   const handleOptionChange = (e) => {
     setSelectedIdType(e.target.value);
@@ -1530,7 +1665,7 @@ axios
                                         <a className="bg-info text-base-100 rounded-full px-3 py-2 w-full border-2">
                                           {statusNew.ClaimStatus}
                                         </a>
-                                      ) : (bill.ClaimStatusDesc_EN === "Approve") ? (
+                                      ) : ((bill.ClaimStatusDesc_EN === "Approve")||(bill.ClaimStatusDesc_EN === "Received")) ? (
                                         <a className="bg-success text-base-100 rounded-full px-3 py-2 w-full ">
                                           {bill.ClaimStatusDesc_EN}
                                         </a>
@@ -1555,7 +1690,7 @@ axios
                                       <a className="bg-info text-base-100 rounded-full px-3 py-2 w-full">
                                         {statusNew.ClaimStatus}
                                       </a>
-                                    ) : (bill.ClaimStatusDesc_EN === "Approve") ? (
+                                    ) : ((bill.ClaimStatusDesc_EN === "Approve")||(bill.ClaimStatusDesc_EN === "Received")) ? (
                                       <a className="bg-success text-base-100 rounded-full px-3 py-2 w-full">
                                         {bill.ClaimStatusDesc_EN}
                                       </a>
@@ -1711,7 +1846,7 @@ axios
                               ""
                             )}
                             
-                            {bill.RefId ? (
+                            {/* {bill.RefId ? (
                               bill.BatchNumber ? (
                                 ""
                               ) : bill.ClaimStatusDesc !== "Cancelled to AIA" &&
@@ -1731,14 +1866,13 @@ axios
                                       <MdCancel />
                                     </h1>
                                   </div>
-                                  {/* <br/> */}
                                 </>
                               ) : (
                                 ""
                               )
                             ) : (
                               ""
-                            )}
+                            )} */}
                          
                             <div
                               className="tooltip ml-4"
@@ -1789,7 +1923,7 @@ axios
                                     Checkcreditlimit(bill)
                                   }
                                 >
-                                  เช็ควงเงิน
+                                  ตรวจสอบค่าใช้จ่าย
                                 </button>
                               </>
                             ) : ("")) : ("")}
@@ -2107,10 +2241,29 @@ axios
       <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
     </form>
     
-                <h3 className="font-bold text-lg">เช็ควงเงิน</h3>
+                <h3 className="font-bold text-lg">ตรวจสอบค่าใช้จ่าย</h3>
                 <hr />
 
-
+                {showFormError === "Error" ? (
+            <div role="alert" className="alert alert-error mt-2 text-base-100">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6 shrink-0 stroke-current"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <span>{massError}</span>
+            </div>
+          ) : (
+            ""
+          )}
             <TableContainer component={Paper} className="mt-2">
                       <Table className="table">
                         <TableHead>
@@ -2252,22 +2405,32 @@ onChange={(e) => { const selectedType = JSON.parse(e.target.value);
                               </TableRow>
                         </TableBody>
                       </Table>
-                      <div className="grid gap-2 sm:grid-cols-6  bg-primary w-full whitespace-normal text-center text-lg">
+              <div className="grid gap-2 sm:grid-cols-6  bg-primary w-full whitespace-normal text-center text-lg">
                 <div className="rounded-md"></div>
                 <div className="rounded-md"></div>
                 <div className="rounded-md"></div>
-                <div className="rounded-md px-3 py-2 border-2 bg-base-100 break-all m-1">สรุปค่ารักษาพยาบาล</div>
-                <div className="rounded-md px-3 py-2 border-2 bg-base-100 break-all m-1">
-                  {/* { itemBillingDetails ?  ? listBilling.ItemBillingCheckBalance.map((type, index) => (
-                          type
-                          ) }  */}
-                </div>
+                <div className="px-3 py-2 m-1 btn btn-success text-base-100 hover:text-success hover:bg-base-100" type="submit" onClick={SubmitSumBilling}>สรุปค่ารักษาพยาบาล</div>
+                <div className="rounded-md px-3 py-2 border-2 bg-base-100 break-all m-1">{parseFloat(total).toLocaleString("en-US", {minimumFractionDigits: 2,maximumFractionDigits: 2})}</div>
+                <div className="rounded-md"></div>
               </div>
+                {fromTotalSum && (
+             <div className="grid gap-2 sm:grid-cols-6  bg-primary w-full whitespace-normal text-center text-lg">
+                <div className="rounded-md"></div>
+                <div className="rounded-md"></div>
+                <div className="rounded-md"></div>
+                <div className="rounded-md"></div>
+                <div className="rounded-md px-3 py-2 border-2 bg-base-100 break-all m-1">จำนวนเงินที่คุ้มครอง  <br/>{totalApprovedAmount ? totalApprovedAmount : "Loading..."}</div>
+                <div className="rounded-md px-3 py-2 border-2 bg-base-100 break-all m-1">ส่วนเกินความคุ้มครอง <br/>{totalExcessAmount ? totalExcessAmount : "Loading..."}</div>
+             </div>
+              )   }
+              
                     </TableContainer>
                     <div className="modal-action">
+                      {total !== 0 ?
                   <div className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100" type="submit" onClick={SubmitBillingCheckBalance}>
-                    เช็ควงเงิน
+                    ตรวจสอบค่าใช้จ่าย
                   </div>
+               : ""   }
                 </div>     
             </div>
           </dialog>

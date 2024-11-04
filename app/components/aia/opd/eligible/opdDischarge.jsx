@@ -1664,7 +1664,59 @@ if(rows){
       });
     }
   }
+  const Cancel = () => {
+    setShowFormError();
+    // console.log("-Cancel-")
+    const isConfirmed = window.confirm("แน่ใจแล้วที่จะยกเลิกการเคลมใช่ไหม");
+    if (isConfirmed) {
+      // setPost();
+      // const [RefId, TransactionNo, PID, PassportNumber, HN, VN] =
+      //   data.split(" | ");
+      const PatientInfo = {
+        InsurerCode: PatientInfoData.PatientInfo.InsurerCode,
+        RefId: PatientInfoData.PatientInfo.RefId,
+        TransactionNo: PatientInfoData.PatientInfo.TransactionNo,
+        PID: PatientInfoData.PatientInfo.PID,
+        PassportNumber: PatientInfoData.PatientInfo.PassportNumber,
+        HN: PatientInfoData.PatientInfo.HN,
+        VN: PatientInfoData.PatientInfo.VN,
+      };
+      axios
+        .post(
+          process.env.NEXT_PUBLIC_URL_PD +
+            process.env.NEXT_PUBLIC_URL_getclaimcancel,
+          { PatientInfo }
+        )
+        .then((response) => {
+          console.log(response.data);
+          router.push("/aia/opd/checkClaimStatus");
+          // if (response.data.HTTPStatus.statusCode === 200) {
+          // //  console.log("Cancel Succ")
+          //  setMassCancel(response.data.HTTPStatus.message);
+          //  setShowFormCancel("Cancel");
+          // } else {
 
+          //   setShowFormError("Error");
+          //   setMassError(response.data.HTTPStatus.error);
+          // }
+
+       
+        })
+        .catch((error) => {
+          // console.error("Error", err)
+          console.log(error);
+          try {
+            const ErrorMass = error.config.url;
+            const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+            setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
+            setShowFormError("Error");
+          } catch (error) {
+            setMassError(error.response.data.HTTPStatus.message);
+            setShowFormError("Error");
+          }
+        });
+    }
+  };
   const handleUpload = async () => {
     if (!file) {
       setMsg(
@@ -1849,12 +1901,23 @@ if(rows){
       {patientInfoByPID ? (
         <>
           <form onSubmit={Claim}>
-            {/* <form> */}
             {patientInfoByPID ? (
               <div className="justify-center border-solid w-4/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
+                     <div className="grid gap-2 sm:grid-cols-2 w-full mt-2">
+              <div className="rounded-md">
                 <h1 className="font-black text-accent text-3xl ">
                   Patient Info
                 </h1>
+                </div>
+                <div className="rounded-md text-right">
+                                    <h1
+                                      className="btn btn-error text-base-100 text-xl "
+                                      onClick={Cancel}
+                                    >
+                                      <MdCancel /> ยกเลิกการเคลม
+                                    </h1>
+                                    </div>
+              </div>         
                 <div className="grid gap-2 sm:grid-cols-4 w-full mt-2">
                   <div className="rounded-md">
                     <Box
