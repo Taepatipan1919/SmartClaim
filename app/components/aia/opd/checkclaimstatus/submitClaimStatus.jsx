@@ -201,9 +201,11 @@ export default function checkData() {
   ///////////////////////////////////////////////////
   ///////////////////////////////////////////////////
   const Checkcreditlimit = (data) => {
-    setFromTotalSum(false)
-    setTotalApprovedAmount(0)
-    setTotalExcessAmount(0)
+    setItemBillingDetails("");
+    setTotal(0);
+    setFromTotalSum(false);
+    setTotalApprovedAmount();
+    setTotalExcessAmount();
     setShowFormError();
     setMassError();
 
@@ -1594,6 +1596,7 @@ axios
               </tr>
             </thead>
             <tbody>
+              {/* {console.log(post)} */}
               {post ? (
                 post.HTTPStatus.statusCode === 200 ? (
                   data.map(
@@ -1619,7 +1622,7 @@ axios
                                 statusNew ? ((bill.TransactionNo === statusNew.TransactionNo) ? statusNew.BatchNumber : bill.BatchNumber) : "Loading..."
                             }
                           </td>
-                          <td className="whitespace-nowrap">
+                          <td>
                             <div className="grid gap-1 sm:grid-cols-1 w-full">
                               {
                               // statusAllNew ? (statusAllNew.map((ALLnew) =>ALLnew.TransactionNo ===(bill.TransactionNo||statusNew.TransactionNo) ? (ALLnew.ClaimStatus !== "Cancelled" && ALLnew.ClaimStatus !== "Cancelled to AIA" &&ALLnew.ClaimStatus !== "Reversed" ? (ALLnew.ClaimStatus === "Approved" ||ALLnew.ClaimStatus === "Settle" ? (
@@ -1685,10 +1688,9 @@ axios
                                   bill.ClaimStatusDesc_EN !==
                                     "Cancelled to AIA" &&
                                   bill.ClaimStatusDesc_EN !== "Reversed" ? (
-                                    bill.ClaimStatus === "Approved" ||
-                                    bill.ClaimStatus === "Settle" ? (
+                                    ((bill.ClaimStatusDesc_EN === "Approved") || (bill.ClaimStatusDesc_EN === "Settle")) ? (
                                       <a className="bg-info text-base-100 rounded-full px-3 py-2 w-full">
-                                        {statusNew.ClaimStatus}
+                                        {bill.ClaimStatusDesc_EN}
                                       </a>
                                     ) : ((bill.ClaimStatusDesc_EN === "Approve")||(bill.ClaimStatusDesc_EN === "Received")) ? (
                                       <a className="bg-success text-base-100 rounded-full px-3 py-2 w-full">
@@ -1923,7 +1925,7 @@ axios
                                     Checkcreditlimit(bill)
                                   }
                                 >
-                                  ตรวจสอบค่าใช้จ่าย
+                                  ประมาณการค่าใช้จ่าย
                                 </button>
                               </>
                             ) : ("")) : ("")}
@@ -2241,7 +2243,7 @@ axios
       <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
     </form>
     
-                <h3 className="font-bold text-lg">ตรวจสอบค่าใช้จ่าย</h3>
+                <h3 className="font-bold text-lg">ประมาณการค่าใช้จ่าย</h3>
                 <hr />
 
                 {showFormError === "Error" ? (
@@ -2271,12 +2273,12 @@ axios
                             <TableCell className="w-2"></TableCell>
                             <TableCell>
                               <h1 className="text-base-100  text-sm w-2/5 text-center">
-                              LocalBillingCode - LocalBillingName
+                              Billing Sub-Group
                               </h1>
                             </TableCell>
                             <TableCell>
                               <h1 className="text-base-100  text-sm w-2/5 text-center">
-                              BillingInitial
+                              Price
                               </h1>
                             </TableCell>
                             <TableCell>
@@ -2384,7 +2386,7 @@ onChange={(e) => { const selectedType = JSON.parse(e.target.value);
                                         BillingInitial: e.target.value,
                                       })
                                     }
-                                    placeholder="BillingInitial"
+                                    placeholder=""
                                   />
                                 </div>
                                 </TableCell>
@@ -2409,7 +2411,7 @@ onChange={(e) => { const selectedType = JSON.parse(e.target.value);
                 <div className="rounded-md"></div>
                 <div className="rounded-md"></div>
                 <div className="rounded-md"></div>
-                <div className="px-3 py-2 m-1 btn btn-success text-base-100 hover:text-success hover:bg-base-100" type="submit" onClick={SubmitSumBilling}>สรุปค่ารักษาพยาบาล</div>
+                <div className="px-3 py-2 m-1 btn btn-success text-base-100 hover:text-success hover:bg-base-100" type="submit" onClick={SubmitSumBilling}>ประมาณการค่าใช้จ่าย</div>
                 <div className="rounded-md px-3 py-2 border-2 bg-base-100 break-all m-1">{parseFloat(total).toLocaleString("en-US", {minimumFractionDigits: 2,maximumFractionDigits: 2})}</div>
                 <div className="rounded-md"></div>
               </div>
@@ -2418,17 +2420,22 @@ onChange={(e) => { const selectedType = JSON.parse(e.target.value);
                 <div className="rounded-md"></div>
                 <div className="rounded-md"></div>
                 <div className="rounded-md"></div>
+                <div className="rounded-md text-base-100 mt-4">จำนวนเงินที่คุ้มครอง</div>
+                <div className="rounded-md px-3 py-2 border-2 bg-base-100 break-all m-1">{totalApprovedAmount ? totalApprovedAmount : <span className="loading loading-spinner text-error size-10 "></span>}</div>
                 <div className="rounded-md"></div>
-                <div className="rounded-md px-3 py-2 border-2 bg-base-100 break-all m-1">จำนวนเงินที่คุ้มครอง  <br/>{totalApprovedAmount ? totalApprovedAmount : "Loading..."}</div>
-                <div className="rounded-md px-3 py-2 border-2 bg-base-100 break-all m-1">ส่วนเกินความคุ้มครอง <br/>{totalExcessAmount ? totalExcessAmount : "Loading..."}</div>
-             </div>
+                <div className="rounded-md"></div>
+                <div className="rounded-md"></div>
+                <div className="rounded-md"></div>
+                <div className="rounded-md text-base-100 mt-4">ส่วนเกินความคุ้มครอง</div>
+                <div className="rounded-md px-3 py-2 border-2 bg-base-100 break-all m-1">{totalExcessAmount ? totalExcessAmount : <span className="loading loading-spinner text-error size-10 "></span>}</div>
+              </div>
               )   }
               
                     </TableContainer>
                     <div className="modal-action">
                       {total !== 0 ?
                   <div className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100" type="submit" onClick={SubmitBillingCheckBalance}>
-                    ตรวจสอบค่าใช้จ่าย
+                    ส่งประมาณการค่าใช้จ่ายให้ประกัน
                   </div>
                : ""   }
                 </div>     
