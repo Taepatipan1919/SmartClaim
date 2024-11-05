@@ -34,7 +34,7 @@ export default function Drawer() {
       id: "1",
       label: " OPD",
       // icon: <TbUserSearch />,
-      // href: "/aia/opd",
+      //href: "/aia/opd",
       href: "",
       spacing: false,
       submenu: [
@@ -45,22 +45,27 @@ export default function Drawer() {
         { id: "1-5", label: "วางบิล", href: "/aia/opd/submitBilling" },
       ],
     },
-    // {
-    //   id: "2",
-    //   label: " IPD",
-    //   // icon: <GoBrowser />,
-    //   href: "/aia/ipd",
-    //   spacing: false,
-    //   submenu: "",
-    // },
-    // {
-    //   id: "3",
-    //   label: " Pre",
-    //   // icon: <GoBrowser />,
-    //   href: "/aia/Pre-Author",
-    //   spacing: false,
-    //   submenu: "",
-    // },
+    {
+      id: "2",
+      label: "ตรวจสอบสิทธิ์",
+      //icon: <GoBrowser />,
+      href: "/aia/checkeilgible",
+      spacing: true,
+    },
+    {
+      id: "4",
+      label: "สถานะการเคลม",
+      //icon: <GoBrowser />,
+      href: "/aia/checkClaimStatus",
+      spacing: false,
+    },
+    {
+      id: "5",
+      label: "วางบิล",
+      //icon: <GoBrowser />,
+      href: "/aia/submitBilling",
+      spacing: false,
+    },
   ];
 
   return (
@@ -71,16 +76,6 @@ export default function Drawer() {
         } duration-300 relative`}
       >
         <div className="flex justify-center">
-          {/* <Image
-              className={`bg-neutral text-4xl rounded cursor-pointer block float-center mr-2 duration-500 ${
-                open && "rotate-[360deg]"
-              }`}
-              src="/assets/img/logo.png"
-              alt="HCH"
-              width={70}
-              height={37}
-              priority
-            /> */}
           <img
             className={`text-4xl rounded cursor-pointer block float-center self-center duration-500 ${
               open && "rotate-[360deg]"
@@ -110,29 +105,6 @@ export default function Drawer() {
           ></div>
 
           <ul>
-            {/* {menuItems.map((item) => (
-        <li key={item.id}>
-          <button
-            onClick={() => toggleMenu(item.id)}
-            className="w-full text-left px-4 py-2 hover:bg-gray-300"
-          >
-            {item.label}
-          </button>
-          {openMenu === item.id && item.submenu && (
-            <ul className="pl-4 space-y-1">
-              {item.submenu.map((subItem) => (
-                <li key={subItem.id}>
-                  <Link href={subItem.href}>
-                    <h1 className="block px-4 py-2 hover:bg-gray-300">
-                      {subItem.label}
-                    </h1>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          )}
-        </li>
-      ))} */}
             {menuItems.map((menuitem) => (
               // หัวข้อ
               <li key={menuitem.id}>
@@ -144,19 +116,7 @@ export default function Drawer() {
                   }`}
                 >
                   
-                  {menuitem.icon ? menuitem.icon : <AiFillHome />}
-                  {/* <div className="text-right">
-                    {menuitem.submenu ? (
-                      openMenu ? (
-                        
-                        <MdKeyboardArrowUp />
-                      ) : (
-                        <MdKeyboardArrowDown />
-                      )
-                    ) : (
-                      ""
-                    )}
-                  </div> */}
+                <AiFillHome />
                 </button>
 
                 {/* เมนูตอน เปิด */}
@@ -166,8 +126,10 @@ export default function Drawer() {
                     !open && "hidden"
                   }`}
                 >
-                  {menuitem.icon ? menuitem.icon : <AiFillHome />}
-                  {menuitem.label}{" "}
+             
+
+                  {menuitem.label}
+                  {/* {" "}
                   <div className="text-right">
                     {menuitem.submenu ? (
                       openMenu ? (
@@ -179,7 +141,7 @@ export default function Drawer() {
                     ) : (
                       ""
                     )}
-                  </div>
+                  </div> */}
                 </button>
 
                 {!open && openMenu === menuitem.id && menuitem.submenu && (

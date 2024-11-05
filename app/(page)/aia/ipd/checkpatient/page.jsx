@@ -1,6 +1,6 @@
 "use client";
 import React, { useContext, useEffect } from "react";
-import SelectPatient from "../../../../components/aia/opd/checkpatient/selectPatient";
+import SelectPatient from "../../../../components/aia/ipd/checkpatient/selectPatient";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { save } from "../../../../store/counterSlice";
@@ -47,7 +47,7 @@ export default function Home() {
         className="font-black text-accent text-3xl "
         data-theme="mytheme"
       >
-        OPD - ข้อมูลผู้ป่วย
+        IPD - ข้อมูลผู้ป่วย
       </h1>
       <div>
       <div className="breadcrumbs text-xl">

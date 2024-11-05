@@ -3,7 +3,7 @@
 // import "./globals.css";
 import { Providers } from "../../../store/provider";
 
-// import MenuTabopd from "../../../components/aia/ipd/MenuTabipd";
+// import MenuTabipd from "../../../components/aia/ipd/MenuTabipd";
 import Drawer from "../../../components/aia/layout/drawer";
 import Navbar from "../../../components/aia/layout/navbar";
 import Link from "next/link";
@@ -23,7 +23,7 @@ export default function layout({ children }) {
       {/* <div className="sticky top-0 shadow-md "> */}
       {/* <Navbar /> */}
       {/* </div> */}
-      {/* <MenuTabopd /> */}
+      {/* <MenuTabipd /> */}
       {/* <div className="p-2">{children}</div> */}
       {/* </div> */}
       {/* </Providers> */}

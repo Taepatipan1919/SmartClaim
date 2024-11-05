@@ -129,7 +129,7 @@ export default function checkData() {
       VisitDatefrom: "",
       VisitDateto: "",
       StatusClaimCode: "",
-      ServiceSettingCode: "OPD",
+      ServiceSettingCode: "IPD",
     };
     console.log(PatientInfo);
     axios
@@ -700,7 +700,7 @@ axios
           // setShowModal(true)
           // setTimeout(() => {
           //   setShowModal(false)
-          //router.push('/aia/opd/submitBilling');
+          //router.push('/aia/ipd/submitBilling');
           // }, 5000);
         } else {
           setShowFormError("Error");
@@ -804,7 +804,7 @@ axios
       })
     );
 
-     router.push("/aia/opd/eligible");
+     router.push("/aia/ipd/eligible");
   };
   const DocumentBase64 = (data) => {
     setMsg();
@@ -1003,7 +1003,7 @@ axios
                 // setShowModal(true)
                 // setTimeout(() => {
                 //   setShowModal(false)
-                //router.push('/aia/opd/submitBilling');
+                //router.push('/aia/ipd/submitBilling');
                 // }, 5000);
               } else {
                 setShowFormError("Error");
@@ -1203,7 +1203,7 @@ axios
         VisitDatefrom: dateFromValue,
         VisitDateto: dateToValue,
         StatusClaimCode: statusValue,
-        ServiceSettingCode: "OPD",
+        ServiceSettingCode: "IPD",
       };
     } else if (selectedIdType === "PASSPORT_NO" && numberValue) {
       PatientInfo = {
@@ -1217,7 +1217,7 @@ axios
         VisitDatefrom: dateFromValue,
         VisitDateto: dateToValue,
         StatusClaimCode: statusValue,
-        ServiceSettingCode: "OPD",
+        ServiceSettingCode: "IPD",
       };
     } else if (selectedIdType === "HOSPITAL_ID" && numberValue) {
       PatientInfo = {
@@ -1231,7 +1231,7 @@ axios
         VisitDatefrom: dateFromValue,
         VisitDateto: dateToValue,
         StatusClaimCode: statusValue,
-        ServiceSettingCode: "OPD",
+        ServiceSettingCode: "IPD",
       };
     } else if (selectedIdType === "PID" && numberValue) {
       PatientInfo = {
@@ -1245,7 +1245,7 @@ axios
         VisitDatefrom: dateFromValue,
         VisitDateto: dateToValue,
         StatusClaimCode: statusValue,
-        ServiceSettingCode: "OPD",
+        ServiceSettingCode: "IPD",
       };
     } else if (selectedIdType === "Invoice" && numberValue) {
       PatientInfo = {
@@ -1259,7 +1259,7 @@ axios
         VisitDatefrom: dateFromValue,
         VisitDateto: dateToValue,
         StatusClaimCode: statusValue,
-        ServiceSettingCode: "OPD",
+        ServiceSettingCode: "IPD",
       };
     } else if (fromValue && toValue) {
       PatientInfo = {
@@ -1273,7 +1273,7 @@ axios
         VisitDatefrom: dateFromValue,
         VisitDateto: dateToValue,
         StatusClaimCode: statusValue,
-        ServiceSettingCode: "OPD",
+        ServiceSettingCode: "IPD",
       };
     } else if (statusValue) {
       PatientInfo = {
@@ -1287,7 +1287,7 @@ axios
         VisitDatefrom: dateFromValue,
         VisitDateto: dateToValue,
         StatusClaimCode: statusValue,
-        ServiceSettingCode: "OPD",
+        ServiceSettingCode: "IPD",
       };
     }
 

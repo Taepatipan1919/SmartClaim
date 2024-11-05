@@ -1,9 +1,9 @@
 "use client";
 import { useState, createContext } from "react";
 import { useSelector } from "react-redux";
-import SelectPatient from "../../../../components/aia/opd/checkpatient/selectPatient";
-import OpdDischarge from "../../../../components/aia/opd/eligible/opdDischarge";
-import CheckData from "../../../../components/aia/opd/checkeilgible/checkData";
+import SelectPatient from "../../../../components/aia/ipd/checkpatient/selectPatient";
+import IpdDischarge from "../../../../components/aia/ipd/eligible/ipdDischarge";
+import CheckData from "../../../../components/aia/ipd/checkeilgible/checkData";
 
 export default function Home() {
   const DataTran = useSelector((state) => ({ ...state }));
@@ -19,7 +19,7 @@ export default function Home() {
                 className="font-black text-accent text-3xl "
                 data-theme="mytheme"
               >
-                OPD - ส่งยอดเคลม
+                IPD - ส่งยอดเคลม
               </h1>
 
               <div className="breadcrumbs text-xl">
@@ -31,7 +31,7 @@ export default function Home() {
                   </li>
                 </ul>
               </div>
-              <OpdDischarge data={DataTran} />
+              <IpdDischarge data={DataTran} />
             </>
           ) : (
             <>
@@ -58,7 +58,7 @@ export default function Home() {
       ) : (
         <>
           <h1 className="font-black text-accent text-3xl " data-theme="mytheme">
-            ข้อมูลผู้ป่วย
+          IPD - ข้อมูลผู้ป่วย
           </h1>
 
           <div className="breadcrumbs text-xl">

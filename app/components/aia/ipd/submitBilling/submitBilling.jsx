@@ -24,7 +24,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { FaCloudUploadAlt } from "react-icons/fa";
 import { BiFirstPage, BiLastPage  } from "react-icons/bi";
-import DetailDischarge from "../submitBilling/detailDischarge";
+import DetailDischarge from "./detailDischarge";
 import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
 import { HiDocumentSearch } from "react-icons/hi";
@@ -124,7 +124,6 @@ setBilltype(Billtype)
       // VisitDatefrom: "",
       // VisitDateto: "",
       StatusClaimCode: "",
-      ServiceSettingCode: "OPD",
     };
     console.log(PatientInfo)
     axios
@@ -395,7 +394,7 @@ setBilltype(Billtype)
       // setShowModal(true)
       // setTimeout(() => {
       //   setShowModal(false)
-      //   //router.push('/aia/opd/submitBilling');
+      //   //router.push('/aia/ipd/submitBilling');
       // }, 5000);
       // })
       .catch((error) => {
@@ -476,7 +475,7 @@ setBilltype(Billtype)
         // setShowModal(true)
         // setTimeout(() => {
         //   setShowModal(false)
-        //   //router.push('/aia/opd/submitBilling');
+        //   //router.push('/aia/ipd/submitBilling');
         // }, 5000);
         // })
         .catch((error) => {
@@ -527,7 +526,6 @@ setBilltype(Billtype)
         VisitDatefrom: dateFromValue,
         VisitDateto: dateToValue,
         StatusClaimCode: "",
-        ServiceSettingCode: "OPD",
       };
     } else if (selectedIdType === "PASSPORT_NO" && numberValue) {
       PatientInfo = {
@@ -541,7 +539,6 @@ setBilltype(Billtype)
         VisitDatefrom: dateFromValue,
         VisitDateto: dateToValue,
         StatusClaimCode: "",
-        ServiceSettingCode: "OPD",
       };
     } else if (selectedIdType === "HOSPITAL_ID" && numberValue) {
       PatientInfo = {
@@ -555,7 +552,6 @@ setBilltype(Billtype)
         VisitDatefrom: dateFromValue,
         VisitDateto: dateToValue,
         StatusClaimCode: "",
-        ServiceSettingCode: "OPD",
       };
     } else if (selectedIdType === "PID" && numberValue) {
       PatientInfo = {
@@ -569,7 +565,6 @@ setBilltype(Billtype)
         VisitDatefrom: dateFromValue,
         VisitDateto: dateToValue,
         StatusClaimCode: "",
-        ServiceSettingCode: "OPD",
       };
     } else if (selectedIdType === "Invoice" && numberValue) {
       PatientInfo = {
@@ -583,7 +578,6 @@ setBilltype(Billtype)
         VisitDatefrom: dateFromValue,
         VisitDateto: dateToValue,
         StatusClaimCode: "",
-        ServiceSettingCode: "OPD",
       };
     } else if (fromValue && toValue) {
       PatientInfo = {
@@ -597,7 +591,6 @@ setBilltype(Billtype)
         VisitDatefrom: dateFromValue,
         VisitDateto: dateToValue,
         StatusClaimCode: "",
-        ServiceSettingCode: "OPD",
       };
     }else if (statusValue) {
       PatientInfo = {
@@ -611,7 +604,6 @@ setBilltype(Billtype)
         VisitDatefrom: dateFromValue,
         VisitDateto: dateToValue,
         StatusClaimCode: statusValue,
-        ServiceSettingCode: "OPD",
       };
     }
       

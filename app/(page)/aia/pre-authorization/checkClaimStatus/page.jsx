@@ -1,9 +1,9 @@
 "use client";
 import { useState, createContext } from "react";
 import { useSelector } from "react-redux";
-import CheckData from "../../../../components/aia/opd/checkeilgible/checkData";
-import SubmitClaimStatus from "../../../../components/aia/opd/checkClaimStatus/submitClaimStatus";
-import SelectPatient from "../../../../components/aia/opd/checkpatient/selectPatient";
+import CheckData from "../../../../components/aia/pre-authorization/checkeilgible/checkData";
+import SubmitClaimStatus from "../../../../components/aia/pre-authorization/checkClaimStatus/submitClaimStatus";
+import SelectPatient from "../../../../components/aia/pre-authorization/checkpatient/selectPatient";
 export default function Home() {
   const DataTran  = useSelector((state) => ({ ...state }));
 //console.log(DataTran)
@@ -17,7 +17,7 @@ export default function Home() {
         className="font-black text-accent text-3xl "
         data-theme="mytheme"
       >
-       OPD - สถานะการเคลม
+        สถานะการเคลม
       </h1>
     
       <div className="breadcrumbs text-xl">

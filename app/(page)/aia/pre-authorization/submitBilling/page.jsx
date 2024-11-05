@@ -1,8 +1,8 @@
 "use client";
 import { useState, createContext } from "react";
 import { useSelector } from "react-redux";
-import SubmitBilling from "../../../../components/aia/opd/submitBilling/submitBilling";
-import SelectPatient from "../../../../components/aia/opd/checkpatient/selectPatient";
+import SubmitBilling from "../../../../components/aia/pre-authorization/submitBilling/submitBilling";
+import SelectPatient from "../../../../components/aia/pre-authorization/checkpatient/selectPatient";
 
 export default function Home() {
    const DataTran  = useSelector((state) => ({ ...state }));
@@ -20,7 +20,7 @@ export default function Home() {
         className="font-black text-accent text-3xl "
         data-theme="mytheme"
       >
-        OPD - วางบิล
+        วางบิล
       </h1>
     
       <div className="breadcrumbs text-xl">

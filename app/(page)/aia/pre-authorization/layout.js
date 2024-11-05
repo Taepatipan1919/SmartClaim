@@ -3,7 +3,7 @@
 // import "./globals.css";
 import { Providers } from "../../../store/provider";
 
-// import MenuTabopd from "../../../components/aia/ipd/MenuTabipd";
+// import MenuTabopd from "../../../components/aia/pre-authorization/MenuTabopd";
 import Drawer from "../../../components/aia/layout/drawer";
 import Navbar from "../../../components/aia/layout/navbar";
 import Link from "next/link";

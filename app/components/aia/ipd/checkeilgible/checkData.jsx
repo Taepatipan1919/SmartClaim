@@ -53,7 +53,7 @@ export default function checkData() {
   
   const [fromValue, setFromValue] = useState(null);
   const [accValue, setAccValue] = useState(null);
-  const [statusValue, setStatusValue] = useState("OPD");
+  const [statusValue, setStatusValue] = useState("IPD");
   const [policyTypeValue, setPolicyTypeValue] = useState("");
   const [idTypeValue, setIdTypeValue] = useState("NATIONAL_ID");
   const [surgeryTypeValue, setSurgeryTypeValue] = useState("");
@@ -70,20 +70,11 @@ export default function checkData() {
   const [refIdL, setRefIdL] =useState("");
   const [testMe, setTestMe] = useState(false);
   const [patientInfo, setPatientInfo] =useState("");
-  const [succFurtherClaim, setSuccFurtherClaim] = useState(false);
-  const [succFurtherClaim2, setSuccFurtherClaim2] = useState(false);
   const [accidentDate, setAccidentDate] = useState("");
   const [visitDateTime, setVisitDateTime] = useState("");
   const [showbutton, setShowbutton] = useState("");
   const ReDux = useSelector((state) => ({ ...state }));
   const dispatch = useDispatch();
-  const [selectedValue, setSelectedValue] = useState("");
-  const [furtherClaim, setFurtherClaim] = useState("");
-  const [furtherClaimNo, setFurtherClaimNo] = useState("");
-  const [furtherVN, setFurtherVN] = useState("");
-  const [furtherClaimId, setFurtherClaimId] = useState("");
-  const [visitDateTimeL, setVisitDateTimeL] = useState("");
-  const [claimNoL, setClaimNoL] = useState("");
   const [patientDB, setPatientDB] = useState("");
   
 
@@ -144,49 +135,10 @@ export default function checkData() {
       }
     });
 
-
-
-
-  
   }, []);
-  const handleSelectChange = (event) => {
 
 
-    setSelectedValue(event.target.value);
 
-  //console.log(event.target.value)
-    const [ClaimNo, FurtherClaimId , VisitDateTime , VN] = event.target.value.split(" | ");
-
-    setFurtherClaimId(FurtherClaimId)
-    setFurtherClaimNo(ClaimNo)
-    setVisitDateTimeL(VisitDateTime) 
-    setFurtherVN(VN) 
-    setVNValue(VN)
-  };
-  const handleButtonVNClick = (data) => {
-   // console.log(vNValue)
-    setFurtherVN(vNValue)
-setSuccFurtherClaim2(true)
-  }
-
-  const handleButtonBlackVNClick = (data) => {
-    setShowFormCreateError();
-    setSuccFurtherClaim2(false)
-      }
-  const handleButtonFurtherBlackVNClick = (data) => {
-    setShowFormCreateError();
-        setSuccFurtherClaim2(true)
-        setSuccFurtherClaim(false)
-       }
-
-  const gourl = (event) => {
-        event.preventDefault();
-    
-        setSuccFurtherClaim(true)
-        setSuccFurtherClaim2(false)
-        //setFurtherClaim();
-  
-      };
   const handleButtonClick = (data) => {
     //บันทึก Create
     setShowFormCreateError();
@@ -218,9 +170,6 @@ if(idTypeValue === "NATIONAL_ID"){
     MembershipId:"",  
     CustomerId : "",
     PolicyNumber:"",
-    FurtherClaimVN: furtherVN,
-    FurtherClaimNo: furtherClaimNo,
-    FurtherClaimId: furtherClaimId,
     Visitlocation: visitlocation,
  }
 }else if(idTypeValue === "PASSPORT"){
@@ -247,9 +196,6 @@ if(idTypeValue === "NATIONAL_ID"){
     MembershipId:"",  
     CustomerId : "",
     PolicyNumber:"",
-    FurtherClaimVN: furtherVN,
-    FurtherClaimNo: furtherClaimNo,
-    FurtherClaimId: furtherClaimId,
     Visitlocation: visitlocation,
  }
 }else if(idTypeValue === "MEMBERSHIP_ID"){
@@ -276,9 +222,6 @@ if(idTypeValue === "NATIONAL_ID"){
     MembershipId: numberValue,  
     CustomerId : "",
     PolicyNumber:"",
-    FurtherClaimVN: furtherVN,
-    FurtherClaimNo: furtherClaimNo,
-    FurtherClaimId: furtherClaimId,
     Visitlocation: visitlocation,
  }
 }else if(idTypeValue === "POLICY_NUMBER"){
@@ -305,9 +248,6 @@ if(idTypeValue === "NATIONAL_ID"){
     MembershipId: "",  
     CustomerId : "",
     PolicyNumber: numberValue,
-    FurtherClaimVN: furtherVN,
-    FurtherClaimNo: furtherClaimNo,
-    FurtherClaimId: furtherClaimId,
     Visitlocation: visitlocation,
  }
 }else if(idTypeValue === "CUSTOMER_ID"){
@@ -334,9 +274,6 @@ if(idTypeValue === "NATIONAL_ID"){
     MembershipId: "",  
     CustomerId : numberValue,
     PolicyNumber: "",
-    FurtherClaimVN: furtherVN,
-    FurtherClaimNo: furtherClaimNo,
-    FurtherClaimId: furtherClaimId,
     Visitlocation: visitlocation,
  }
 }
@@ -386,78 +323,6 @@ if(idTypeValue === "NATIONAL_ID"){
   const PrintButton = () => {
     window.print();
   };
-  const confirmButton = (data) => {
-    setFurtherClaim();
-    setShowFormFurtherError();
-    setMassFurtherError();
-   // console.log(ReDux)
-    // console.log(data)
-
-    const [RefId, TransactionNo] = data.split(" | ");
-    setRefIdL(RefId)
-    setTransactionNoL(TransactionNo)
-    const PatientInfo = {
-      InsurerCode: InsurerCode,
-      RefId: RefId,
-      TransactionNo: TransactionNo,
-      PID: patientDB.PID,
-      HN: patientDB.HN,
-      GivenNameTH: patientDB.GivenNameTH,
-      SurnameTH: patientDB.SurnameTH,
-      DateOfBirth: patientDB.DateOfBirth,
-      PassportNumber: patientDB.PassportNumber,
-      IdType: numberValue,
-      VN: detailVN,
-      VisitDateTime: visitDateTime,
-      AccidentDate: accidentDate,
-      ServiceSettingCode: statusValue,
-      IllnessTypeCode: illnessTypeValue,
-      SurgeryTypeCode: surgeryTypeValue,
-      PolicyTypeCode: policyTypeValue,
-      FurtherClaimNo: furtherClaimNo,
-      FurtherClaimId: furtherClaimId,
-    };
-     console.log(PatientInfo);
-
-  setLoad(true)
-     
-    axios
-      .post(
-        process.env.NEXT_PUBLIC_URL_PD +
-          process.env.NEXT_PUBLIC_URL_getRetrieveFurtherclaim,
-        {
-            PatientInfo
-        }
-      )
-      .then((response) => {
-   
-        console.log(response.data)
-        setLoad(false)
-        // if(response.data.HTTPStatus.statusCode === 200){
-          setFurtherClaim(response.data);
-          console.log(response.data);
-        // }else{
-         // setMassFurtherError(response.data.HTTPStatus.message);
-         // setShowFormFurtherError("Error");
-        // }
-
-      })
-      .catch((error) => {
-        console.log(error);
-        try {
-          const ErrorMass = error.config.url;
-          const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
-          setMassFurtherError(error.code + " - " + error.message + " - " + ErrorMass2);
-          setShowFormCheckEligibleError("Error");
-        } catch (error) {
-          setMassFurtherError(error.response.data.HTTPStatus.message);
-          setShowFormCheckEligibleError("Error");
-        }
-      });
-  
-  };
-
-
 
 
   const idtype = (event) => {
@@ -675,20 +540,16 @@ if(idTypeValue === "NATIONAL_ID"){
   };
 
   const check = async (event) => {
-
+    setShowFormCreateError();
     // console.log(numberValue)
     event.preventDefault();
-    setFurtherClaim();
     setMass();
     setResult();
     setShowbutton();
-    setSuccFurtherClaim2(false);
     setShowFormCheckEligibleError();
-    setSelectedValue();
     setHS();
     setHB();
     setAI();
-    setSuccFurtherClaim(false)
     const [VNselectVN, VisitDateselectVN , LocationDesc] = event.target.selectVN.value.split(" | ");
     //const [YearVN, MonthVN, DayVN] = VisitDateselectVN.split('-');
     // const Acc = accValue.split(" ");
@@ -712,7 +573,7 @@ if(idTypeValue === "NATIONAL_ID"){
     if (illnessTypeValue === "DAY") {
       TypeValue = "IPD";
     } else {
-      TypeValue = "OPD";
+      TypeValue = "IPD";
     }
 
     if(idTypeValue === "NATIONAL_ID"){
@@ -733,8 +594,8 @@ if(idTypeValue === "NATIONAL_ID"){
         SurgeryTypeCode: surgeryTypeValue,
   
         IdType: idTypeValue,
-         PID: numberValue,
-      //  PID: "0480000004193",
+      //   PID: numberValue,
+        PID: "0480000004207",
         PassportNumber: "",
         MembershipId:"",  
         CustomerId : "",
@@ -1363,14 +1224,7 @@ if(idTypeValue === "NATIONAL_ID"){
                     <div className="rounded-md">
                     วันที่เข้าการรักษา : {patientInfo.VisitDateTime}
                     </div>
-                    {selectedValue ?
-                    <div className="rounded-md">
-                    รักษาแบบต่อเนื่อง : 
-                    <br/>- เลขกรมธรรม์: {furtherClaimNo} 
-                    <br/>- วันที่เข้ารักษา: {visitDateTimeL} 
-                    <br/>- VN: {furtherVN}
-                                    
-                                    </div> : ""}
+
 
                                     
                                     {showFormCreateError === "Error" ? (
@@ -1397,198 +1251,7 @@ if(idTypeValue === "NATIONAL_ID"){
         <div className="flex justify-center mt-4">   
         
           {mass ? (mass === true ? (
-
-
-
- 
-  (patientInfo.IllnessTypeCode === "ER" || patientInfo.IllnessTypeCode === "ACC" || patientInfo.IllnessTypeCode === "FU" || patientInfo.IllnessTypeCode === "CMT") ? (
- succFurtherClaim === true ? 
-
- (succFurtherClaim2 === false ? 
- <div className="rounded-md">
-                    <TextField
-                  error
-              id="outlined-basic"
-              label="เคลมต่อเนื่อง (VN First Claim form)"
-              // multiline
-              // maxRows={4}
-              variant="outlined"
-              className="w-full"
-              name="VN"
-              type="text"
-              value={vNValue}
-              onChange={(e) => setVNValue(e.target.value)}
-            />
-
-      <div
-    className="btn btn-error text-base-100 hover:text-error hover:bg-base-100 ml-2"
-    onClick={() =>handleButtonFurtherBlackVNClick(
-      `${result.Result.InsuranceData.RefId} | ${result.Result.InsuranceData.TransactionNo}`
-    )}
-  >
-    ย้อนกลับ
-  </div>
- <div
-   className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 ml-2 mt-2"
-   onClick={() =>handleButtonVNClick(
-     `${result.Result.InsuranceData.RefId} | ${result.Result.InsuranceData.TransactionNo}`
-   )}
- >
-   ยืนยันเลือก
- </div>
- </div> 
- :
-
-  <div className="rounded-md">
-      <div
-    className="btn btn-error text-base-100 hover:text-error hover:bg-base-100 ml-2"
-    onClick={() =>handleButtonBlackVNClick(
-      `${result.Result.InsuranceData.RefId} | ${result.Result.InsuranceData.TransactionNo}`
-    )}
-  >
-    ย้อนกลับ
-  </div>
-  <div
-    className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 ml-2"
-    onClick={() =>handleButtonClick(
-      `${result.Result.InsuranceData.RefId} | ${result.Result.InsuranceData.TransactionNo}`
-    )}
-  >
-    ลงทะเบียนใช้สิทธิ์
-  </div>
-  </div> 
- )
-
-  : (
-  furtherClaim ? (<div className="rounded-md w-full">
-                  <div role="tablist" className="tabs-bordered">
-                <input
-                  type="radio"
-                  name="my_tabs_1"
-                  role="tab"
-                  className="tab text-xl"
-                  aria-label="เข้ารักษาครั้งแรก"
-                  defaultChecked
-                />
-
-                <input
-                  type="radio"
-                  name="my_tabs_1"
-                  role="tab"
-                  className="tab text-xl"
-                  aria-label="เข้ารักษาแบบต่อเนื่อง"
-                />
-                <div role="tabpanel" className="tab-content mt-4">
-                  <label className="form-control w-full">
-                    <select
-                      className="select select-bordered"
-                      onChange={handleSelectChange}
-                    >
-                      <option></option>
-                      {/* {console.log(furtherClaim)} */}
-               {furtherClaim
-                        ? furtherClaim.Result.InsuranceData.FurtherClaimList.map(
-                            (ftc, index) => (
-                              <option
-                                key={index}
-                                value={`${ftc.ClaimNo} | ${ftc.FurtherClaimId} | ${ftc.VisitDateTime} | ${ftc.FurtherClaimVN}`}
-                              >
-                                เลขกรมธรรม์: {ftc.ClaimNo}, วันที่เข้ารักษา:{" "}
-                                {ftc.VisitDateTime.split("T")[0]} VN: {ftc.FurtherClaimVN}
-                              </option>
-                            )
-                          )
-                        : ""} 
-                      <></>
-                    </select>
-                  </label>
-                </div>
-              </div>
-              <div className="flex justify-end p-4">
-              <div
-                className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 "
-                  onClick={gourl}
-              >
-                ยืนยัน
-              </div>
-              </div>
-  </div>
-  ) : ( 
-    //furtherClaim===""s
-!selectedValue ? load === true ? <CircularProgress size="30px" className="text-error" /> :
-(<div className="rounded-md">
-<div
-  className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 ml-2"
-  onClick={() =>
-    confirmButton(
-      `${result.Result.InsuranceData.RefId} | ${result.Result.InsuranceData.TransactionNo}`
-    )
-  }
->
-  {/* ต่อเนื่อง */}
-   ลงทะเบียนใช้สิทธิ์(ต่อเนื่อง)
-</div>
-
-</div>) : ("Loading...")
-
-  ) )
-
-          ) : (
-
-
-            (succFurtherClaim2 === false ? 
-              (
-                <>
-                <div className="flex  w-full">
-
-                                    <TextField
-                  error
-              id="outlined-basic"
-              label="เคลมต่อเนื่อง (VN First Claim form)"
-              // multiline
-              // maxRows={4}
-              variant="outlined"
-              className="w-full"
-              name="vn"
-              type="text"
-              value={vNValue}
-              onChange={(e) => setVNValue(e.target.value)}
-            />
-              </div> 
-
-              <div
-                className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 ml-2"
-                onClick={() =>handleButtonVNClick(
-                  `${result.Result.InsuranceData.RefId} | ${result.Result.InsuranceData.TransactionNo}`
-                )}
-              >
-                ยืนยันเลือก
-              </div>
-            </>
-              )
-              :
-             
-               <div className="rounded-md">
-                      <div
-    className="btn btn-error text-base-100 hover:text-error hover:bg-base-100 ml-2"
-    onClick={() =>handleButtonBlackVNClick(
-      `${result.Result.InsuranceData.RefId} | ${result.Result.InsuranceData.TransactionNo}`
-    )}
-  >
-    ย้อนกลับ
-  </div>
-               <div
-                 className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 ml-2"
-                 onClick={() =>handleButtonClick(
-                   `${result.Result.InsuranceData.RefId} | ${result.Result.InsuranceData.TransactionNo}`
-                 )}
-               >
-                 ลงทะเบียนใช้สิทธิ์
-               </div>
-               </div> 
-              )
-)
-
+      ""
  
           ) : (
             <div className="rounded-md">
