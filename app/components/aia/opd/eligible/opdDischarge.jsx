@@ -14,6 +14,7 @@ import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import { FaEdit } from "react-icons/fa";
 import OutlinedInput from "@mui/material/OutlinedInput";
+import CircularProgress from '@mui/material/CircularProgress';
 import InputAdornment from "@mui/material/InputAdornment";
 import { FaCirclePlus, FaCircleMinus } from "react-icons/fa6";
 import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
@@ -1753,7 +1754,7 @@ if(rows){
     formData.append("UploadedBy", "");
     formData.append("Runningdocument", PatientInfoData.PatientInfo.Runningdocument);
     setMsg(
-      <span className="loading loading-spinner text-info loading-lg"></span>
+      <CircularProgress size="30px" className="text-error text-lg" />
     );
     setProgress((prevState) => {
       return { ...prevState, started: true };
@@ -3884,7 +3885,7 @@ if(rows){
         <div className="pt-6 ">
           <div className="justify-center border-solid w-1/5 m-auto p-8 ">
             <center>
-              <span className="loading loading-spinner text-error size-5 "></span>
+              <CircularProgress size="30px" className="text-error text-lg" />
             </center>
             <div className="justify-center text-4xl">Loading....</div>
           </div>
@@ -3998,7 +3999,7 @@ if(rows){
                     <h1 className="text-4xl text-error">
                       ทางบริษัทประกัน กำลังตรวจสอบ...
                     </h1>
-                    <span className="loading loading-spinner text-error size-10 "></span>
+                    <CircularProgress size="30px" className="text-error text-lg" />
                   </center>
                 )}
               </>
@@ -4014,7 +4015,7 @@ if(rows){
               <h2 className="text-4xl font-bold mb-4 text-primary">
                 ส่งเคลมเรียบร้อยแล้ว
               </h2>
-              {/* <div className="text-center"> <span className="loading loading-bars loading-lg "></span></div> */}
+
             </div>
           </div>
         </>

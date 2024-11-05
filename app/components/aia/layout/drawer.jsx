@@ -12,7 +12,7 @@ import { RiContactsLine } from "react-icons/ri";
 import { GoBrowser } from "react-icons/go";
 import { IoArrowForwardCircleSharp } from "react-icons/io5";
 import { MdKeyboardArrowDown, MdKeyboardArrowUp } from "react-icons/md";
-
+import { IoDocumentText } from "react-icons/io5";
 export default function Drawer() {
   const [open, setOpen] = useState(true);
   const [openMenu, setOpenMenu] = useState(null);
@@ -134,6 +134,7 @@ export default function Drawer() {
         </li>
       ))} */}
             {menuItems.map((menuitem) => (
+              // หัวข้อ
               <li key={menuitem.id}>
                 {/* เมนูตอน พับ */}
                 <button
@@ -144,6 +145,18 @@ export default function Drawer() {
                 >
                   
                   {menuitem.icon ? menuitem.icon : <AiFillHome />}
+                  {/* <div className="text-right">
+                    {menuitem.submenu ? (
+                      openMenu ? (
+                        
+                        <MdKeyboardArrowUp />
+                      ) : (
+                        <MdKeyboardArrowDown />
+                      )
+                    ) : (
+                      ""
+                    )}
+                  </div> */}
                 </button>
 
                 {/* เมนูตอน เปิด */}
@@ -168,12 +181,39 @@ export default function Drawer() {
                     )}
                   </div>
                 </button>
+
+                {!open && openMenu === menuitem.id && menuitem.submenu && (
+                  <ul className="bg-base-100 rounded-lg border-2  w-full">
+                    {menuitem.submenu.map((subItem) => (
+                      <li key={subItem.id}>
+                        <Link href={subItem.href}>
+                          {/* เมนู ย่อยตอนปิด */}
+                          <h1 className="block text-primary rounded-lg mt-1 w-full hover:text-base-100 hover:bg-secondary">
+                            <div className="flex items-center">
+                            <div
+                                    className="tooltip tooltip-right relative md:z-50 z-0"
+                                    data-tip={subItem.label}
+                                  >
+                                    <h1
+                                      className="text-2xl mt-2 p-2"
+                                    >
+                              <IoDocumentText />
+                                    </h1>
+                                  </div>
+                             
+                            </div>
+                          </h1>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
                 {open && openMenu === menuitem.id && menuitem.submenu && (
                   <ul className="bg-base-100 rounded-lg border-2">
                     {menuitem.submenu.map((subItem) => (
                       <li key={subItem.id}>
                         <Link href={subItem.href}>
-                          {/* เมนู ย่อย */}
+                          {/* เมนู ย่อยตอนเปิด */}
                           <h1 className="block text-primary rounded-lg m-0.5 mt-1 px-3 hover:text-base-100 hover:bg-secondary">
                             <div className="flex items-center ">
                               

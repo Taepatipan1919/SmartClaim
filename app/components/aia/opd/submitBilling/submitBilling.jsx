@@ -15,6 +15,7 @@ import { IoIosDocument } from "react-icons/io";
 import { AiOutlineUnorderedList } from "react-icons/ai";
 import { Button, Menu, MenuItem } from "@mui/material";
 import NativeSelect from '@mui/material/NativeSelect';
+import CircularProgress from '@mui/material/CircularProgress';
 import { useRouter } from "next/navigation";
 // import { RefreshIcon, ClipboardIcon, TrashIcon } from '@heroicons/react/outline';
 import dayjs from "dayjs";
@@ -189,7 +190,7 @@ setBilltype(Billtype)
     formData.append("UploadedBy", "");
     formData.append("Runningdocument", randomNumber);
     setMsg(
-      <span className="loading loading-spinner text-info loading-lg"></span>
+      <CircularProgress size="30px" className="text-error text-lg" />
     );
     setProgress((prevState) => {
       return { ...prevState, started: true };
@@ -1274,7 +1275,7 @@ axios
       </div>
 
       <div role="tablist" className="tabs tabs-lifted ">
-  <input type="radio" name="my_tabs_2" role="tab"  className="tab tab-w-32" aria-label="ทั้งหมด"     defaultChecked />
+  <input type="radio" name="my_tabs_2" role="tab"  className="tab w-[500px] text-sm inline-flex space-x-2 whitespace-nowrap" aria-label="ทั้งหมด"     defaultChecked />
   <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6">
    
 
@@ -1581,7 +1582,7 @@ axios
 
 
 
-     <input type="radio" name="my_tabs_2" role="tab"  className="tab w-[500px] text-sm inline-flex space-x-2" aria-label="รอวางบิล"     />
+     <input type="radio" name="my_tabs_2" role="tab"  className="tab w-[500px] text-sm inline-flex space-x-2 whitespace-nowrap" aria-label="รอวางบิล"     />
      <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6">
 
 
@@ -1870,7 +1871,7 @@ axios
 
   {/* <input type="radio" name="my_tabs_2" role="tab" className="tab  w-[300px]" aria-label="วางบิลแล้ว" />
   <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6"> */}
-  <input type="radio" name="my_tabs_2" role="tab"  className="tab w-[500px]" aria-label="วางบิล"     />
+  <input type="radio" name="my_tabs_2" role="tab"  className="tab w-[500px] text-sm inline-flex space-x-2 whitespace-nowrap" aria-label="วางบิล"     />
   <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6">
 
 

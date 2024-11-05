@@ -15,6 +15,7 @@ import { IoIosDocument } from "react-icons/io";
 import { AiOutlineUnorderedList } from "react-icons/ai";
 import { Button, Menu, MenuItem } from "@mui/material";
 import { useRouter } from "next/navigation";
+import CircularProgress from '@mui/material/CircularProgress';
 import Input from '@mui/material/Input';
 import {
   Table,
@@ -537,7 +538,7 @@ axios
     formData.append("UploadedBy", "");
     formData.append("Runningdocument", randomNumber);
     setMsg(
-      <span className="loading loading-spinner text-info loading-lg"></span>
+      <CircularProgress size="30px" className="text-error text-lg" />
     );
     setProgress((prevState) => {
       return { ...prevState, started: true };
@@ -2292,7 +2293,7 @@ axios
                                 (cause, index) =>
                                     <TableRow
                                       key={index}
-                                      className=" bg-neutral text-sm z-50"
+                                      className=" bg-neutral text-sm"
                                     >
                                       <TableCell>{index + 1}</TableCell>
                                       <TableCell>
@@ -2421,13 +2422,13 @@ onChange={(e) => { const selectedType = JSON.parse(e.target.value);
                 <div className="rounded-md"></div>
                 <div className="rounded-md"></div>
                 <div className="rounded-md text-base-100 mt-4">จำนวนเงินที่คุ้มครอง</div>
-                <div className="rounded-md px-3 py-2 border-2 bg-base-100 break-all m-1">{totalApprovedAmount ? totalApprovedAmount : <span className="loading loading-spinner text-error size-10 "></span>}</div>
+                <div className="rounded-md px-3 py-2 border-2 bg-base-100 break-all m-1">{totalApprovedAmount ? totalApprovedAmount : <CircularProgress size="30px" className="text-error text-lg" />}</div>
                 <div className="rounded-md"></div>
                 <div className="rounded-md"></div>
                 <div className="rounded-md"></div>
                 <div className="rounded-md"></div>
                 <div className="rounded-md text-base-100 mt-4">ส่วนเกินความคุ้มครอง</div>
-                <div className="rounded-md px-3 py-2 border-2 bg-base-100 break-all m-1">{totalExcessAmount ? totalExcessAmount : <span className="loading loading-spinner text-error size-10 "></span>}</div>
+                <div className="rounded-md px-3 py-2 border-2 bg-base-100 break-all m-1">{totalExcessAmount ? totalExcessAmount : <CircularProgress size="30px" className="text-error text-lg" />}</div>
               </div>
               )   }
               

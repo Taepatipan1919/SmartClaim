@@ -9,7 +9,7 @@ import { FaSearch } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import { IoMdCheckmarkCircle } from "react-icons/io";
 import { FaCircleXmark } from "react-icons/fa6";
-
+import CircularProgress from '@mui/material/CircularProgress';
 import dayjs from "dayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers";
@@ -64,6 +64,8 @@ export default function checkData() {
   const [showFormCheckEligibleError, setShowFormCheckEligibleError] =useState("");
   const [massFurtherError, setMassFurtherError] = useState("");
   const [showFormFurtherError, setShowFormFurtherError] =useState("");
+  const [massCreateError, setMassCreateError] = useState("");
+  const [showFormCreateError, setShowFormCreateError] =useState("");
   const [transactionNoL, setTransactionNoL] =useState("");
   const [refIdL, setRefIdL] =useState("");
   const [testMe, setTestMe] = useState(false);
@@ -168,9 +170,11 @@ setSuccFurtherClaim2(true)
   }
 
   const handleButtonBlackVNClick = (data) => {
+    setShowFormCreateError();
     setSuccFurtherClaim2(false)
       }
   const handleButtonFurtherBlackVNClick = (data) => {
+    setShowFormCreateError();
         setSuccFurtherClaim2(true)
         setSuccFurtherClaim(false)
        }
@@ -185,6 +189,7 @@ setSuccFurtherClaim2(true)
       };
   const handleButtonClick = (data) => {
     //บันทึก Create
+    setShowFormCreateError();
     let PatientInfo;
 
     const [RefId, TransactionNo] = data.split(" | ");
@@ -348,6 +353,18 @@ if(idTypeValue === "NATIONAL_ID"){
     .then((response) => {
       console.log(response.data)
 
+
+      if(response.data.HTTPStatus.statusCode === 200){
+              window.print();
+      }else{
+        setShowFormCreateError("Error");
+        setMassCreateError(response.data.HTTPStatus.message);
+      }
+
+
+
+
+
     })
     .catch((error) => {
       console.log(error);
@@ -363,7 +380,6 @@ if(idTypeValue === "NATIONAL_ID"){
     });
 
 
-    window.print();
 
   };
   
@@ -718,7 +734,7 @@ if(idTypeValue === "NATIONAL_ID"){
   
         IdType: idTypeValue,
       //   PID: numberValue,
-        PID: "2200000506693",
+        PID: "0480000004193",
         PassportNumber: "",
         MembershipId:"",  
         CustomerId : "",
@@ -1326,7 +1342,7 @@ if(idTypeValue === "NATIONAL_ID"){
           <h2 className="text-xl font-semibold mb-2 text-center">จากการตรวจสอบเบื้องต้น</h2>
           <p className="text-xl text-center">
             <b className=""> 
-           {mass === true ? <p className="underline">** มีสิทธิ์ใช้บริการเรียกร้องสินไหม **</p> : mass === false ? <p className="text-error underline">** ไม่มีสิทธิ์ใช้บริการเรียกร้องสินไหม **</p> : <span className="loading loading-spinner text-error size-10 "></span>}
+           {mass === true ? <p className="underline">** มีสิทธิ์ใช้บริการเรียกร้องสินไหม **</p> : mass === false ? <p className="text-error underline">** ไม่มีสิทธิ์ใช้บริการเรียกร้องสินไหม **</p> : <CircularProgress size="30px" className="text-error" />}
           
            </b>
           </p>
@@ -1356,10 +1372,30 @@ if(idTypeValue === "NATIONAL_ID"){
                                     
                                     </div> : ""}
 
-                    
-
+                                    
+                                    {showFormCreateError === "Error" ? (
+              <div
+                role="alert"
+                className="alert alert-error mt-2 text-base-100"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6 shrink-0 stroke-current"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                <span>{massCreateError}</span>
+              </div>
+            ) : ""}
         <div className="flex justify-center mt-4">   
-
+        
           {mass ? (mass === true ? (
 
 
@@ -1479,7 +1515,7 @@ if(idTypeValue === "NATIONAL_ID"){
   </div>
   ) : ( 
     //furtherClaim===""s
-!selectedValue ? load === true ? <span className="loading loading-spinner text-error size-10 "></span> :
+!selectedValue ? load === true ? <CircularProgress size="30px" className="text-error" /> :
 (<div className="rounded-md">
 <div
   className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 ml-2"
@@ -1493,7 +1529,7 @@ if(idTypeValue === "NATIONAL_ID"){
    ลงทะเบียนใช้สิทธิ์(ต่อเนื่อง)
 </div>
 
-</div>) : ("รอ")
+</div>) : ("Loading...")
 
   ) )
 
@@ -1622,7 +1658,7 @@ if(idTypeValue === "NATIONAL_ID"){
                         <td></td>
                         <td>
                           <div className="justify-center text-4xl">
-                              <span className="loading loading-bars loading-lg"></span>
+                              <CircularProgress size="30px" className="text-error text-lg" />
                           </div>
                         </td>
                         <td></td>
@@ -1669,7 +1705,7 @@ if(idTypeValue === "NATIONAL_ID"){
                         <td></td>
                         <td>
                           <div className="justify-center text-4xl">
-                            <span className="loading loading-bars loading-lg"></span>
+                            <CircularProgress size="30px" className="text-error text-lg" />
                           </div>
                         </td>
                         <td></td>
