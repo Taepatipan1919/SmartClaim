@@ -1,11 +1,29 @@
 import React from "react";
+
 import { FaUserLargeSlash } from "react-icons/fa6";
 import { FaUserLarge } from "react-icons/fa6";
 import { useSelector } from "react-redux";
 import Tooltip from "@mui/material/Tooltip";
-
+import { useDispatch } from "react-redux";
+import { save } from "../../../store/counterSlice";
+import { save2 } from "../../../store/patientSlice";
 export default function navbar() {
+  const dispatch = useDispatch();
   const DataTran = useSelector((state) => ({ ...state }));
+  const initialState = {
+    value: "ไม่มีข้อมูล",
+    Data: {},
+  };
+  const initialState2 = {
+    value: "ไม่มีรายชื่อ",
+    Data: {},
+  };
+
+
+  function outredux() {
+     dispatch(save(initialState));
+     dispatch(save2(initialState2));
+  };
 
   const dataArray = [
     {
@@ -36,13 +54,16 @@ export default function navbar() {
       <div className="sticky top-0 h-screen  ">
         {DataTran.Patient.value === "มีรายชื่อ" ? (
           <>
+
             <Tooltip
               title={<pre>{tooltipText}</pre>}
               arrow
               className="absolute right-2 top-6 mt-2 -translate-y-1/2 bg-primary text-base-100 hover:bg-error"
             >
-              <button className="btn">
+              <button className="btn" onClick={outredux}>
+
                 {DataTran.Patient.value === "มีรายชื่อ" ? <FaUserLarge /> : ""}
+
               </button>
             </Tooltip>
           </>
