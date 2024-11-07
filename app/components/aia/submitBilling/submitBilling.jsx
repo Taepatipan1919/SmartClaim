@@ -63,8 +63,8 @@ export default function checkData() {
   const [hNL, setHNL] = useState("");
   const [vNL, setVNL] = useState("");
   const [invoiceNumberL, setInvoiceNumberL] = useState("");
-
-  
+  const [serviceValue, setServiceValue] = useState("OPD");
+  const [serviceCode, setServiceCode] = useState("");
   const [detailData, setDetailData] = useState("");
   const [showDocError, setShowDocError] = useState("");
   const [massDocError, setMassDocError] = useState("");
@@ -83,19 +83,22 @@ export default function checkData() {
       )
       .then((response) => {
         setClaimStatus(response.data);
-        //console.log(response.data)
       })
       .catch((error) => {
         console.log(error);
-        // try{
-        //   const ErrorMass = error.config.url
-        //   const [ErrorMass1, ErrorMass2] = ErrorMass.split('v1/');
-        //   setMassSummitError(error.code +" - "+error.message +" - "+ErrorMass2);
-        //   setShowSummitError("Error")
-        // }
-        // catch (error) {
-        //   setMassSummitError(error.response.data.HTTPStatus.message);
-        //   setShowSummitError("Error");
+      });
+      axios
+      .get(
+        process.env.NEXT_PUBLIC_URL_SV +
+          process.env.NEXT_PUBLIC_URL_ServiceSetting +
+          InsuranceCode
+      )
+      .then((response) => {
+        setServiceCode(response.data);
+
+      })
+      .catch((error) => {
+        console.log(error);
       });
 const Billtype = [
   {
@@ -124,7 +127,7 @@ setBilltype(Billtype)
       // VisitDatefrom: "",
       // VisitDateto: "",
       StatusClaimCode: "",
-      ServiceSettingCode: "OPD",
+      ServiceSettingCode: serviceValue,
     };
     console.log(PatientInfo)
     axios
@@ -149,6 +152,9 @@ setBilltype(Billtype)
 
     const status = (event) => {
       setStatusValue(event.target.value);
+    };
+    const type = (event) => {
+      setServiceValue(event.target.value);
     };
     const bill = (event) => {
       setBillValue(event.target.value);
@@ -403,7 +409,7 @@ setBilltype(Billtype)
         console.log(error);
         //  if (err.response.request.status === 500) {
         setShowFormError("Error");
-        //  setMassError(error.response.data.HTTPStatus.message);
+         setMassError(error.response.data.HTTPStatus.message);
       });
 
 
@@ -527,7 +533,7 @@ setBilltype(Billtype)
         VisitDatefrom: dateFromValue,
         VisitDateto: dateToValue,
         StatusClaimCode: statusValue,
-        ServiceSettingCode: "OPD",
+        ServiceSettingCode: serviceValue,
       };
     } else if (selectedIdType === "PASSPORT_NO" && numberValue) {
       PatientInfo = {
@@ -541,7 +547,7 @@ setBilltype(Billtype)
         VisitDatefrom: dateFromValue,
         VisitDateto: dateToValue,
         StatusClaimCode: statusValue,
-        ServiceSettingCode: "OPD",
+        ServiceSettingCode: serviceValue,
       };
     } else if (selectedIdType === "HOSPITAL_ID" && numberValue) {
       PatientInfo = {
@@ -555,7 +561,7 @@ setBilltype(Billtype)
         VisitDatefrom: dateFromValue,
         VisitDateto: dateToValue,
         StatusClaimCode: statusValue,
-        ServiceSettingCode: "OPD",
+        ServiceSettingCode: serviceValue,
       };
     } else if (selectedIdType === "PID" && numberValue) {
       PatientInfo = {
@@ -569,7 +575,7 @@ setBilltype(Billtype)
         VisitDatefrom: dateFromValue,
         VisitDateto: dateToValue,
         StatusClaimCode: statusValue,
-        ServiceSettingCode: "OPD",
+        ServiceSettingCode: serviceValue,
       };
     } else if (selectedIdType === "Invoice" && numberValue) {
       PatientInfo = {
@@ -583,7 +589,7 @@ setBilltype(Billtype)
         VisitDatefrom: dateFromValue,
         VisitDateto: dateToValue,
         StatusClaimCode: statusValue,
-        ServiceSettingCode: "OPD",
+        ServiceSettingCode: serviceValue,
       };
     } else if (fromValue && toValue) {
       PatientInfo = {
@@ -597,7 +603,7 @@ setBilltype(Billtype)
         VisitDatefrom: dateFromValue,
         VisitDateto: dateToValue,
         StatusClaimCode: statusValue,
-        ServiceSettingCode: "OPD",
+        ServiceSettingCode: serviceValue,
       };
     }else if (statusValue) {
       if(fromValue && toValue){
@@ -613,7 +619,7 @@ setBilltype(Billtype)
           VisitDatefrom: dateFromValue,
           VisitDateto: dateToValue,
           StatusClaimCode: statusValue,
-          ServiceSettingCode: "OPD",
+          ServiceSettingCode: serviceValue,
         };
       }else{
 
@@ -629,9 +635,25 @@ setBilltype(Billtype)
         VisitDatefrom: today,
         VisitDateto: today,
         StatusClaimCode: statusValue,
-        ServiceSettingCode: "OPD",
+        ServiceSettingCode: serviceValue,
       }; 
       }
+    }else {
+      
+      const today = dayjs().format('YYYY-MM-DD');
+      PatientInfo = {
+   InsurerCode: InsuranceCode,
+    IdType: "",
+   InvoiceNumber: "",
+   VN: "",
+   PID: "",
+   PassportNumber: "",
+   HN: "",
+   VisitDatefrom: today,
+   VisitDateto: today,
+   StatusClaimCode: statusValue,
+   ServiceSettingCode: serviceValue,
+ }; 
     }
       
     // else{
@@ -1269,6 +1291,31 @@ axios
                   format="YYYY-MM-DD"
                 />
               </LocalizationProvider>
+              <FormControl className="ml-2">
+              <InputLabel id="demo-simple-select-label">
+              ประเภทการรักษา
+              </InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={serviceValue}
+                label="ํประเภทการรักษา"
+                onChange={type}
+              >
+                {serviceCode
+                  ? serviceCode.Result.map((type, index) => type.servicesettingcode !== "PRE" ? (
+                      <MenuItem key={index} value={type.servicesettingcode}>
+                        {type.servicesettingcode} -{" "}
+                        {type.servicesettingdesc}
+                      </MenuItem>
+                    ): "")
+                  : (
+                    <MenuItem value="OPD">
+                      OPD - ผู้ป่วยนอก
+                  </MenuItem>
+                  )}
+              </Select>
+            </FormControl>
               <FormControl className="ml-2 w-80">
               <InputLabel id="demo-simple-select-label">
                 Claim Status
@@ -1291,11 +1338,17 @@ axios
               </Select>
             </FormControl>
               <button
-                className="btn btn-error text-base-100 text-lg rounded-full px-3 py-2 hover:bg-base-100 hover:text-error ml-2"
+                className="btn btn-error text-base-100 text-lg rounded-full hover:bg-base-100 hover:text-error ml-2"
                 type="submit"
               >
-                <FaSearch /> ค้นหา
+                <FaSearch />
               </button>
+              <div
+              className="btn btn-base-100 text-error text-lg rounded-full hover:text-base-100 ml-2"
+              type="submit"
+            >
+              <MdCancel />
+            </div>
             </div>
           </div>
         </form>

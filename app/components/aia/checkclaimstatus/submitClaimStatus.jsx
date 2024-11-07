@@ -82,7 +82,7 @@ export default function checkData() {
   const [total, setTotal] = useState(0);
   const [totalApprovedAmount, setTotalApprovedAmount  ] = useState("");
   const [totalExcessAmount, setTotalExcessAmount ] = useState("");
-  const [serviceValue, setServiceValue] = useState("");
+  const [serviceValue, setServiceValue] = useState("OPD");
   const [serviceCode, setServiceCode] = useState("");
   const [totalSum, setTotalSum] = useState("");
   const [fromTotalSum, setFromTotalSum] = useState(false);
@@ -92,6 +92,7 @@ export default function checkData() {
   };
 
   useEffect(() => {
+
     setStatusNew({});
     axios
       .get(
@@ -101,19 +102,9 @@ export default function checkData() {
       )
       .then((response) => {
         setClaimStatus(response.data);
-        //console.log(response.data)
       })
       .catch((error) => {
         console.log(error);
-        // try{
-        //   const ErrorMass = error.config.url
-        //   const [ErrorMass1, ErrorMass2] = ErrorMass.split('v1/');
-        //   setMassSummitError(error.code +" - "+error.message +" - "+ErrorMass2);
-        //   setShowSummitError("Error")
-        // }
-        // catch (error) {
-        //   setMassSummitError(error.response.data.HTTPStatus.message);
-        //   setShowSummitError("Error");
       });
       axios
       .get(
@@ -123,19 +114,10 @@ export default function checkData() {
       )
       .then((response) => {
         setServiceCode(response.data);
-        //console.log(response.data)
+
       })
       .catch((error) => {
         console.log(error);
-        // try{
-        //   const ErrorMass = error.config.url
-        //   const [ErrorMass1, ErrorMass2] = ErrorMass.split('v1/');
-        //   setMassSummitError(error.code +" - "+error.message +" - "+ErrorMass2);
-        //   setShowSummitError("Error")
-        // }
-        // catch (error) {
-        //   setMassSummitError(error.response.data.HTTPStatus.message);
-        //   setShowSummitError("Error");
       });
 
     const today = dayjs().format("YYYY-MM-DD");
@@ -152,7 +134,7 @@ export default function checkData() {
       VisitDatefrom: "",
       VisitDateto: "",
       StatusClaimCode: "",
-      ServiceSettingCode: "OPD",
+      ServiceSettingCode: serviceValue,
     };
     console.log(PatientInfo);
     axios
@@ -181,6 +163,63 @@ export default function checkData() {
   };
   const type = (event) => {
     setServiceValue(event.target.value);
+  };
+
+
+  async function DelectSearch() {
+//     const today = dayjs().format('YYYY-MM-DD');
+//     PatientInfo = {
+//  InsurerCode: InsuranceCode,
+//   IdType: "",
+//  InvoiceNumber: "",
+//  VN: "",
+//  PID: "",
+//  PassportNumber: "",
+//  HN: "",
+//  VisitDatefrom: today,
+//  VisitDateto: today,
+//  StatusClaimCode: statusValue,
+//  ServiceSettingCode: serviceValue,
+// }; 
+// setPatientUpdate({ PatientInfo });
+
+//   setPatientInfoDetail(PatientInfo);
+//   axios
+//     .post(
+//       process.env.NEXT_PUBLIC_URL_SV +
+//         process.env.NEXT_PUBLIC_URL_SearchTransection,
+//       { PatientInfo }
+//     )
+//     .then((response) => {
+//       setPost(response.data);
+//       console.log(response.data);
+//       setCurrentData(response.data.Result.TransactionClaimInfo);
+//       setShowFormError();
+//     })
+//     .catch((error) => {
+//       console.log(error);
+
+//       setShowFormError("Error");
+//       setMassError(error.message);
+//     });
+console.log("55")
+await stepOne();
+await stepTwo();
+
+
+function stepOne() {
+  setTimeout(() => {
+        router.push("/aia/submitBilling");
+  }, 1000);
+
+};
+function stepTwo() {
+  setTimeout(() => {
+    router.push("/aia/checkClaimStatus");
+}, 1000);
+
+};
+
   };
   const DocumentList = (data) => {
     setShowDocError();
@@ -662,30 +701,8 @@ axios
   };
 
   const Refresh = (data) => {
-    //  setPost()
-    // setStatusAllNew();
     setStatusNew();
     setShowFormError();
-    // console.log("-Refresh-");
-    // const [
-    //   RefId,
-    //   TransactionNo,
-    //   PID,
-    //   PassportNumber,
-    //   HN,
-    //   VN,
-    //   InvoiceNumber,
-    //   PolicyTypeCode,
-    //   IdType,
-    //   IllnessTypeCode,
-    //   ServiceSettingCode,
-    //   SurgeryTypeCode,
-    //   FurtherClaimNo,
-    //   FurtherClaimId,
-    //   AccidentDate,
-    //   VisitDateTime,
-    //   VisitDate,
-    // ] = data.split(" | ");
     const PatientInfo = {
       InsurerCode: InsuranceCode,
       RefId: data.RefId,
@@ -735,17 +752,17 @@ axios
       })
       .catch((error) => {
         console.log(error);
-        // try {
-        //   const ErrorMass = error.config.url;
-        //   const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
-        //   setMassError(
-        //     error.code + " - " + error.message + " - " + ErrorMass2
-        //   );
-        //   setShowFormError("Error");
-        // } catch (error) {
-        //   setMassError("Error ในการเปิดไฟล์");
-        //   setShowFormError("Error");
-        // }
+        try {
+          const ErrorMass = error.config.url;
+          const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+          setMassError(
+            error.code + " - " + error.message + " - " + ErrorMass2
+          );
+          setShowFormError("Error");
+        } catch (error) {
+          setMassError("Error ในการเปิดไฟล์");
+          setShowFormError("Error");
+        }
       });
   };
 
@@ -863,13 +880,6 @@ axios
         const url = URL.createObjectURL(blob);
         window.open(url);
 
-        //         const base64String = response.data.base64;
-        // console.log(base64String)
-        //       const linkSource = `data:application/pdf;base64,${base64String}`;
-        //         const pdfWindow = window.open();
-        //         pdfWindow.document.write(
-        //             `<iframe width='100%' height='99%' src='${linkSource}'></iframe>`
-        //        );
       })
       .catch((error) => {
         console.log(error);
@@ -960,8 +970,6 @@ axios
             PatientInfo: {
               RefId: refIdL,
               TransactionNo: transactionNoL,
-              // HN: PatientInfoData.PatientInfo.HN,
-              // VN: PatientInfoData.PatientInfo.VN,
               DocumentName: data,
             },
           }
@@ -1022,15 +1030,8 @@ axios
                   RefId: response.data.Result.InsuranceData.RefId,
                   TransactionNo:
                     response.data.Result.InsuranceData.TransactionNo,
-                  // HN : response.data.Result.InsuranceData.HN,
-                  // VN : response.data.Result.InsuranceData.VN,
                 }));
 
-                // setShowModal(true)
-                // setTimeout(() => {
-                //   setShowModal(false)
-                //router.push('/aia/submitBilling');
-                // }, 5000);
               } else {
                 setShowFormError("Error");
                 setMassError(response.data.HTTPStatus.error);
@@ -1038,17 +1039,6 @@ axios
             })
             .catch((error) => {
               console.log(error);
-              // try {
-              //   const ErrorMass = error.config.url;
-              //   const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
-              //   setMassError(
-              //     error.code + " - " + error.message + " - " + ErrorMass2
-              //   );
-              //   setShowFormError("Error");
-              // } catch (error) {
-              //   setMassError("Error ในการเปิดไฟล์");
-              //   setShowFormError("Error");
-              // }
             });
 
           axios
@@ -1101,94 +1091,6 @@ axios
         });
     }
   };
-  // const Cancel = (data) => {
-  //   setShowFormError();
-  //   // console.log("-Cancel-")
-  //   const isConfirmed = window.confirm("แน่ใจแล้วที่จะยกเลิกการเคลมใช่ไหม");
-  //   if (isConfirmed) {
-  //     setPost();
-  //     // const [RefId, TransactionNo, PID, PassportNumber, HN, VN] =
-  //     //   data.split(" | ");
-  //     const PatientInfo = {
-  //       InsurerCode: InsuranceCode,
-  //       RefId: data.RefId,
-  //       TransactionNo: data.TransactionNo,
-  //       PID: data.PID,
-  //       PassportNumber: data.PassportNumber,
-  //       HN: data.HN,
-  //       VN: data.VN,
-  //     };
-
-  //     axios
-  //       .post(
-  //         process.env.NEXT_PUBLIC_URL_PD +
-  //           process.env.NEXT_PUBLIC_URL_getclaimcancel,
-  //         { PatientInfo }
-  //       )
-  //       .then((response) => {
-  //         console.log(response.data);
-
-  //         // if (response.data.HTTPStatus.statusCode === 200) {
-  //         // //  console.log("Cancel Succ")
-  //         //  setMassCancel(response.data.HTTPStatus.message);
-  //         //  setShowFormCancel("Cancel");
-  //         // } else {
-
-  //         //   setShowFormError("Error");
-  //         //   setMassError(response.data.HTTPStatus.error);
-  //         // }
-
-  //         let PatientInfo2;
-
-  //         if (!patientInfoDetail) {
-  //           const today = dayjs().format("YYYY-MM-DD");
-
-  //           PatientInfo2 = {
-  //             InsurerCode: InsuranceCode,
-  //             IdType: "",
-  //             InvoiceNumber: "",
-  //             VN: "",
-  //             PID: "",
-  //             PassportNumber: "",
-  //             HN: "",
-  //             VisitDatefrom: today,
-  //             VisitDateto: today,
-  //             StatusClaimCode: "",
-  //           };
-  //         } else {
-  //           PatientInfo2 = patientInfoDetail;
-  //         }
-  //         //   console.log(PatientInfo2)
-
-  //         axios
-  //           .post(
-  //             process.env.NEXT_PUBLIC_URL_SV +
-  //               process.env.NEXT_PUBLIC_URL_SearchTransection,
-  //             { PatientInfo: PatientInfo2 }
-  //           )
-
-  //           .then((response) => {
-  //             console.log(response.data);
-  //             setPost(response.data);
-  //             setCurrentData(response.data.Result.TransactionClaimInfo);
-  //             setShowFormError();
-  //           })
-  //           .catch((error) => {
-  //             console.log(error);
-  //             setShowFormError("Error");
-  //             setMassError(error.message);
-  //           });
-  //       })
-  //       .catch((error) => {
-  //         // console.error("Error", err)
-  //         console.log(error);
-  //         //  if (err.response.request.status === 500) {
-  //         // setShowFormError("Error");
-  //         // setMassError(error.message);
-  //         // setMassError(error.response.data.HTTPStatus.message);
-  //       });
-  //   }
-  // };
 
   const handleOptionChange = (e) => {
     setSelectedIdType(e.target.value);
@@ -1333,6 +1235,22 @@ axios
         ServiceSettingCode: serviceValue,
       }; 
       }
+    } else {
+      
+      const today = dayjs().format('YYYY-MM-DD');
+      PatientInfo = {
+   InsurerCode: InsuranceCode,
+    IdType: "",
+   InvoiceNumber: "",
+   VN: "",
+   PID: "",
+   PassportNumber: "",
+   HN: "",
+   VisitDatefrom: today,
+   VisitDateto: today,
+   StatusClaimCode: statusValue,
+   ServiceSettingCode: serviceValue,
+ }; 
     }
 
     console.log(PatientInfo);
@@ -1548,7 +1466,6 @@ axios
                   format="YYYY-MM-DD"
               />
             </LocalizationProvider>
-            {/* serviceCode */}
             <FormControl className="ml-2 w-80">
               <InputLabel id="demo-simple-select-label">
               ประเภทการรักษา
@@ -1567,7 +1484,11 @@ axios
                         {type.servicesettingdesc}
                       </MenuItem>
                     ))
-                  : ""}
+                  : (
+                    <MenuItem value="OPD">
+                      OPD - ผู้ป่วยนอก
+                  </MenuItem>
+                  )}
               </Select>
             </FormControl>
             
@@ -1593,11 +1514,18 @@ axios
               </Select>
             </FormControl>
             <button
-              className="btn btn-error text-base-100 text-lg rounded-full px-3 py-2 hover:bg-base-100 hover:text-error ml-2"
+              className="btn btn-error text-base-100 text-lg rounded-full hover:bg-base-100 hover:text-error ml-2"
               type="submit"
             >
-              <FaSearch /> ค้นหา
+              <FaSearch />
             </button>
+            <div
+              className="btn btn-base-100 text-error text-xl rounded-full hover:text-base-100 ml-2"
+              type="submit"
+              onClick={DelectSearch}
+            >
+              <MdCancel />
+            </div>
           </div>
         </div>
       </form>
@@ -1672,7 +1600,7 @@ axios
               </tr>
             </thead>
             <tbody>
-              {/* {console.log(post)} */}
+              {console.log(post)}
               {post ? (
                 post.HTTPStatus.statusCode === 200 ? (
                   data.map(
@@ -1690,55 +1618,12 @@ axios
                           <td className="whitespace-nowrap">{bill.InvoiceNumber}</td>
                           <td className="whitespace-nowrap">
                             {
-                              //  statusAllNew ? (statusAllNew.map(ALLnew => ((ALLnew.TransactionNo === ((bill.TransactionNo)||(statusNew.TransactionNo))) ?
-                              //  (ALLnew.BatchNumber) : ((bill.BatchNumber)||(statusNew.BatchNumber)))))
-                              // :(statusNew ? (bill.TransactionNo === statusNew.TransactionNo ? statusNew.BatchNumber : bill.BatchNumber): "Loading...")
-                              // statusAllNew ? statusAllNew.map((ALLnew) => ALLnew.TransactionNo === (bill.TransactionNo||statusNew.TransactionNo) ? ALLnew.BatchNumber : "")
-                                // : 
                                 statusNew ? ((bill.TransactionNo === statusNew.TransactionNo) ? statusNew.BatchNumber : bill.BatchNumber) : "Loading..."
                             }
                           </td>
                           <td>
                             <div className="grid gap-1 sm:grid-cols-1 w-full">
                               {
-                              // statusAllNew ? (statusAllNew.map((ALLnew) =>ALLnew.TransactionNo ===(bill.TransactionNo||statusNew.TransactionNo) ? (ALLnew.ClaimStatus !== "Cancelled" && ALLnew.ClaimStatus !== "Cancelled to AIA" &&ALLnew.ClaimStatus !== "Reversed" ? (ALLnew.ClaimStatus === "Approved" ||ALLnew.ClaimStatus === "Settle" ? (
-                              //           <a className="bg-success text-base-100 rounded-full px-3 py-2">
-                              //             {ALLnew.ClaimStatus}
-                              //           </a>
-                              //         ) : (
-                              //           <a className="bg-warning text-base-100 rounded-full px-3 py-2">
-                              //             {ALLnew.ClaimStatus}
-                              //           </a>
-                              //         )
-                              //       ) : (
-                              //         <a className="bg-error text-base-100 rounded-full px-3 py-2">
-                              //           {ALLnew.ClaimStatus}
-                              //         </a>
-                              //       )
-                              //     ) : (
-                                    
-                                  //   bill.ClaimStatusDesc_EN !== "Cancelled" &&
-                                  //   bill.ClaimStatusDesc_EN !==
-                                  //     "Cancelled to AIA" &&
-                                  //   bill.ClaimStatusDesc_EN !== "Reversed" ? (
-                                  //   bill.ClaimStatus === "Approved" ||
-                                  //   bill.ClaimStatus === "Settle" ? (
-                                  //     <a className="bg-success text-base-100 rounded-full px-3 py-2">
-                                  //       {statusNew.ClaimStatus}
-                                  //     </a>
-                                  //   ) : (
-                                  //     <a className="bg-warning text-base-100 rounded-full px-3 py-2">
-                                  //       {bill.ClaimStatusDesc_EN}
-                                  //     </a>
-                                  //   )
-                                  // ) : (
-                                  //   <a className="bg-error text-base-100 rounded-full px-3 py-2">
-                                  //     {bill.ClaimStatusDesc_EN}
-                                  //   </a>
-                                  // )
-                 
-                              //     "" ))
-                              // ) :
                                statusNew ? (
                                 bill.TransactionNo ===statusNew.TransactionNo ? (statusNew.ClaimStatusDesc ? (statusNew.ClaimStatus !== "Cancelled" && statusNew.ClaimStatus !=="Cancelled to AIA" &&statusNew.ClaimStatus !== "Reversed" ? (statusNew.ClaimStatus === "Approved" ||statusNew.ClaimStatus === "Settle" ? (
                                         <a className="bg-info text-base-100 rounded-full px-3 py-2 w-full border-2">
@@ -1811,49 +1696,38 @@ axios
                           {console.log(statusNew)} */}
 
                           {bill.TotalBillAmount
-                              ? parseFloat(
+                              ? (parseFloat(
                                     bill.TotalBillAmount
                                 ).toLocaleString("en-US", {
                                   minimumFractionDigits: 2,
                                   maximumFractionDigits: 2,
                                 })
-                              : ""}
+                               ) : ""}
                           </th>
                           <th>
-                            {/* {bill.ApprovedAmount
-                          ? parseFloat(bill.ApprovedAmount).toLocaleString('en-US', {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          })
-                          : ""} */}
                           {bill.TotalApprovedAmount
                               ?
-                              //  parseFloat(
                                 (statusNew
-                                ? ((bill.TransactionNo ===statusNew.TransactionNo)
+                                ? (
+                                  (bill.TransactionNo ===statusNew.TransactionNo)
                                   ? (statusNew.TotalApproveAmount ? parseFloat(statusNew.TotalApproveAmount).toLocaleString("en-US", {minimumFractionDigits: 2,maximumFractionDigits: 2,}) : parseFloat(bill.TotalApprovedAmount).toLocaleString("en-US", {minimumFractionDigits: 2,maximumFractionDigits: 2,})  )
-                                  :  parseFloat(bill.TotalApprovedAmount).toLocaleString("en-US", {minimumFractionDigits: 2,maximumFractionDigits: 2,}))
                                   :  parseFloat(bill.TotalApprovedAmount).toLocaleString("en-US", {minimumFractionDigits: 2,maximumFractionDigits: 2,})
                                 )
-                           
-                                 
-                                // ).toLocaleString("en-US", {
-                                //   minimumFractionDigits: 2,
-                                //   maximumFractionDigits: 2,
-                                // })
+                                  :  ""
+                                )
                               : ""}
                             
                           </th>
 
                           <th>
                             {bill.TotalExcessAmount
-                              ? parseFloat(
+                              ? (parseFloat(
                                   bill.TotalExcessAmount
                                 ).toLocaleString("en-US", {
                                   minimumFractionDigits: 2,
                                   maximumFractionDigits: 2,
                                 })
-                              : ""}
+                               ) : ""}
                           </th>
                           <td>
                             
@@ -1923,34 +1797,7 @@ axios
                             ) : (
                               ""
                             )}
-                            
-                            {/* {bill.RefId ? (
-                              bill.BatchNumber ? (
-                                ""
-                              ) : bill.ClaimStatusDesc !== "Cancelled to AIA" &&
-                                bill.ClaimStatusDesc !== "Cancelled" &&
-                                bill.ClaimStatusDesc !== "Reversed" ? (
-                                <>
-                                  <div
-                                    className="tooltip ml-4"
-                                    data-tip="ยกเลิกการเคลม"
-                                  >
-                                    <h1
-                                      className="text-error text-2xl"
-                                      onClick={() =>
-                                        Cancel(bill)
-                                      }
-                                    >
-                                      <MdCancel />
-                                    </h1>
-                                  </div>
-                                </>
-                              ) : (
-                                ""
-                              )
-                            ) : (
-                              ""
-                            )} */}
+
                          
                             <div
                               className="tooltip ml-4"
@@ -2044,15 +1891,6 @@ axios
                     <BiFirstPage className="text-base-100 text-xl text-right" />
                   </button>
                 )}
-                {/* </div>
-        <div className="text-center"> */}
-
-                {/* {console.log(endIndex)}
-        {console.log(startIndex)}
-        {console.log(ITEMS_PER_PAGE)} */}
-
-                {/* </div>
-        <div className="text-right"> */}
                 {endIndex < currentData.length && (
                   <button
                     onClick={handleNextPage}
@@ -2077,25 +1915,7 @@ axios
               <form onSubmit={submitbilling}>
                 <h3 className="font-bold text-lg ">ส่งเอกสาร เพิ่มเติม</h3>
                 <hr />
-                {/* <div className="grid gap-2 sm:grid-cols-2 w-full mt-2">
-                <div className="rounded-md">
 
-                <p className="text-left">Document Type</p>
-                <select  className="select select-bordered w-full mt-2" onChange={handleSelectChange} required>
-                      <option></option>
-                      {docType
-                  ? docType.Result.map((type, index) => (
-                              <option
-                                key={index}
-                                value={type.documenttypecode}>
-                                      {type.documenttypename}
-                              </option>
-                            )
-                          )
-                        : ""}
-                      <></>
-                    </select>
-          </div> */}
 
                 <div className="rounded-md mt-9">
                   <div className="flex items-center ">
@@ -2215,25 +2035,6 @@ axios
               </form>
               <h3 className="font-bold text-lg">เอกสารทั้งหมด</h3>
               <hr />
-
-              {/* <div className="rounded-md mt-9">
-                    <div className="flex items-center ">
-                      <input
-                        type="file"
-                        accept=".pdf"
-                        className="file-input file-input-bordered file-input-info w-5/6"
-                        onChange={(e) => {
-                          setFile(e.target.files[0]);
-                        }}
-                      />
-                      <div
-                        className="btn btn-success text-base-100 hover:text-success hover:bg-base-100 w-1/6 ml-2"
-                        onClick={handleUpload}
-                      >
-                        <FaCloudUploadAlt className="size-6" />
-                      </div>
-                    </div>
-                  </div> */}
               {progress.started && (
                 <progress
                   max="100"

@@ -3,6 +3,8 @@ import { useState, createContext } from "react";
 import { useSelector } from "react-redux";
 import SelectPatient from "../../../../components/aia/checkpatient/selectPatient";
 import OpdDischarge from "../../../../components/aia/eligible/opdDischarge";
+import IpdDischarge from "../../../../components/aia/eligible/ipdDischarge";
+import PreDischarge from "../../../../components/aia/eligible/preDischarge";
 import CheckData from "../../../../components/aia/checkeilgible/checkData";
 
 export default function Home() {
@@ -15,12 +17,28 @@ export default function Home() {
         <>
           {DataTran.DataTran.value === "มีข้อมูล" ? (
             <>
-              <h1
-                className="font-black text-accent text-3xl "
-                data-theme="mytheme"
-              >
-                ส่งยอดเคลม
-              </h1>
+                   {
+              DataTran.DataTran.Data.ServiceSettingCode === "OPD" ?             
+               <h1
+              className="font-black text-accent text-3xl "
+              data-theme="mytheme" >
+              ส่งยอดเคลม - OPD
+            </h1> 
+            : DataTran.DataTran.Data.ServiceSettingCode === "IPD" ? 
+            <h1
+            className="font-black text-accent text-3xl "
+            data-theme="mytheme" >
+            ส่งยอดเคลม - IPD
+          </h1> 
+            : 
+            <h1
+            className="font-black text-accent text-3xl "
+            data-theme="mytheme" >
+            ส่งยอดเคลม - Pre
+          </h1> 
+            
+            }
+
 
               <div className="breadcrumbs text-xl">
                 <ul>
@@ -31,7 +49,10 @@ export default function Home() {
                   </li>
                 </ul>
               </div>
-              <OpdDischarge data={DataTran} />
+            {
+              DataTran.DataTran.Data.ServiceSettingCode === "OPD" ? <OpdDischarge data={DataTran} /> : DataTran.DataTran.Data.ServiceSettingCode === "IPD" ? <IpdDischarge data={DataTran} /> : <PreDischarge data={DataTran} />
+            
+            }
             </>
           ) : (
             <>

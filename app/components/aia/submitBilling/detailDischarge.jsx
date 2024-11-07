@@ -716,7 +716,7 @@ useEffect(() => {
                   <div className="flex items-center mt-2 ml-2"></div> 
           </div>
            {/* //////////////////////////////////////////////////////////////////////////// */}
-          {transactionClaimInfo ? ((transactionClaimInfo.AccidentDetail.AccidentDate !== "Invalid Date") ? (
+          {transactionClaimInfo ? (transactionClaimInfo.AccidentDetail.AccidentDate ? (
                       <div className="justify-center border-solid m-auto border-2 border-warning rounded-lg p-4 mt-2">
             <h1 className="font-black text-error text-3xl ">AccidentDetail</h1>
             <div className="flex  w-full mt-2">

@@ -53,7 +53,8 @@ export default function checkData() {
   
   const [fromValue, setFromValue] = useState(null);
   const [accValue, setAccValue] = useState(null);
-  const [statusValue, setStatusValue] = useState("OPD");
+  const [serviceValue, setServiceValue] = useState("OPD");
+  const [serviceCode, setServiceCode] = useState("");
   const [policyTypeValue, setPolicyTypeValue] = useState("");
   const [idTypeValue, setIdTypeValue] = useState("NATIONAL_ID");
   const [surgeryTypeValue, setSurgeryTypeValue] = useState("");
@@ -165,7 +166,10 @@ export default function checkData() {
   };
   const handleButtonVNClick = (data) => {
    // console.log(vNValue)
+   if(patientInfo.VN !== vNValue){
     setFurtherVN(vNValue)
+   }
+   
 setSuccFurtherClaim2(true)
   }
 
@@ -178,7 +182,9 @@ setSuccFurtherClaim2(true)
         setSuccFurtherClaim2(true)
         setSuccFurtherClaim(false)
        }
-
+       const type = (event) => {
+        setServiceValue(event.target.value);
+      };
   const gourl = (event) => {
         event.preventDefault();
     
@@ -207,7 +213,7 @@ if(idTypeValue === "NATIONAL_ID"){
     VisitDateTime: visitDateTime,
     AccidentDate: accidentDate,
     PolicyTypeCode: policyTypeValue,
-    ServiceSettingCode: statusValue,
+    ServiceSettingCode: serviceValue,
     IllnessTypeCode: illnessTypeValue,
     SurgeryTypeCode:  surgeryTypeValue,
     Runningdocument: randomNumber,
@@ -236,7 +242,7 @@ if(idTypeValue === "NATIONAL_ID"){
     VisitDateTime: visitDateTime,
     AccidentDate: accidentDate,
     PolicyTypeCode: policyTypeValue,
-    ServiceSettingCode: statusValue,
+    ServiceSettingCode: serviceValue,
     IllnessTypeCode: illnessTypeValue,
     SurgeryTypeCode:  surgeryTypeValue,
     Runningdocument: randomNumber,
@@ -265,7 +271,7 @@ if(idTypeValue === "NATIONAL_ID"){
     VisitDateTime: visitDateTime,
     AccidentDate: accidentDate,
     PolicyTypeCode: policyTypeValue,
-    ServiceSettingCode: statusValue,
+    ServiceSettingCode: serviceValue,
     IllnessTypeCode: illnessTypeValue,
     SurgeryTypeCode:  surgeryTypeValue,
     Runningdocument: randomNumber,
@@ -294,7 +300,7 @@ if(idTypeValue === "NATIONAL_ID"){
     VisitDateTime: visitDateTime,
     AccidentDate: accidentDate,
     PolicyTypeCode: policyTypeValue,
-    ServiceSettingCode: statusValue,
+    ServiceSettingCode: serviceValue,
     IllnessTypeCode: illnessTypeValue,
     SurgeryTypeCode:  surgeryTypeValue,
     Runningdocument: randomNumber,
@@ -323,7 +329,7 @@ if(idTypeValue === "NATIONAL_ID"){
     VisitDateTime: visitDateTime,
     AccidentDate: accidentDate,
     PolicyTypeCode: policyTypeValue,
-    ServiceSettingCode: statusValue,
+    ServiceSettingCode: serviceValue,
     IllnessTypeCode: illnessTypeValue,
     SurgeryTypeCode:  surgeryTypeValue,
     Runningdocument: randomNumber,
@@ -410,7 +416,7 @@ if(idTypeValue === "NATIONAL_ID"){
       VN: detailVN,
       VisitDateTime: visitDateTime,
       AccidentDate: accidentDate,
-      ServiceSettingCode: statusValue,
+      ServiceSettingCode: serviceValue,
       IllnessTypeCode: illnessTypeValue,
       SurgeryTypeCode: surgeryTypeValue,
       PolicyTypeCode: policyTypeValue,
@@ -610,24 +616,16 @@ if(idTypeValue === "NATIONAL_ID"){
   useEffect(() => {
     axios
       .get(
-        process.env.NEXT_PUBLIC_URL_PD +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_ServiceSetting +
           InsurerCode
       )
       .then((response) => {
-        setServiceSetting(response.data);
+        setServiceCode(response.data);
+
       })
       .catch((error) => {
         console.log(error);
-        try {
-          const ErrorMass = error.config.url;
-          const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
-          setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
-          setShowFormError("Error");
-        } catch (error) {
-          setMassError(error.response.data.HTTPStatus.message);
-          setShowFormError("Error");
-        }
       });
   }, []);
 
@@ -642,7 +640,7 @@ if(idTypeValue === "NATIONAL_ID"){
         PID: patientDB.PID,
         PassportNumber: patientDB.PassportNumber,
         IdType: numberValue,
-        ServiceSettingCode: statusValue,
+        ServiceSettingCode: serviceValue,
         HN: patientDB.HN,
         VisitDatefrom: DatefromValue,
         VisitDateto: "",
@@ -1008,29 +1006,7 @@ if(idTypeValue === "NATIONAL_ID"){
                 </LocalizationProvider>
               </div>
             </div>
-            {/* <div className="px-2">
-            <div className="">
-                   <FormControl fullWidth>
-        <InputLabel id="demo-simple-select-label">ประเภทการเข้ารักษา</InputLabel>
-        <Select
-          labelId="demo-simple-select-label"
-          id="demo-simple-select"
-          value={statusValue}
-          label="Type"
-          onChange={Status}
-          className="w-52 max-w-xs"
-          required
-        >
-          {serviceSetting
-                ? serviceSetting.map((Service, index) => (
-                    <MenuItem key={index} value={Service.ServiceSettingCode}>{Service.ServiceSettingCode} - {Service.ServiceSettingDesc}</MenuItem>
-                  ))
-                : ""}
-
-        </Select>
-      </FormControl>
-            </div>
-          </div> */}
+ 
             <div className="">
               <div className="">
                 <button
@@ -1126,7 +1102,33 @@ if(idTypeValue === "NATIONAL_ID"){
                   </div>
                 </div>
                 <div className="grid grid-cols-8 gap-2 mt-4">
-                  <div></div>
+                  <div>
+                  <FormControl className="w-full">
+              <InputLabel id="demo-simple-select-label">
+              ประเภทการรักษา
+              </InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={serviceValue}
+                label="ํประเภทการรักษา"
+                onChange={type}
+              >
+                {serviceCode
+                  ? serviceCode.Result.map((type, index) => (
+                      <MenuItem key={index} value={type.servicesettingcode}>
+                        {type.servicesettingcode} -{" "}
+                        {type.servicesettingdesc}
+                      </MenuItem>
+                    ))
+                  : (
+                    <MenuItem value="OPD">
+                      OPD - ผู้ป่วยนอก
+                  </MenuItem>
+                  )}
+              </Select>
+            </FormControl>
+                  </div>
                   <div>
                   <FormControl fullWidth>
                       <InputLabel id="policyTypeValue">
