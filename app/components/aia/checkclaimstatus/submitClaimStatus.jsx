@@ -166,61 +166,49 @@ export default function checkData() {
   };
 
 
-  async function DelectSearch() {
-//     const today = dayjs().format('YYYY-MM-DD');
-//     PatientInfo = {
-//  InsurerCode: InsuranceCode,
-//   IdType: "",
-//  InvoiceNumber: "",
-//  VN: "",
-//  PID: "",
-//  PassportNumber: "",
-//  HN: "",
-//  VisitDatefrom: today,
-//  VisitDateto: today,
-//  StatusClaimCode: statusValue,
-//  ServiceSettingCode: serviceValue,
-// }; 
-// setPatientUpdate({ PatientInfo });
 
-//   setPatientInfoDetail(PatientInfo);
-//   axios
-//     .post(
-//       process.env.NEXT_PUBLIC_URL_SV +
-//         process.env.NEXT_PUBLIC_URL_SearchTransection,
-//       { PatientInfo }
-//     )
-//     .then((response) => {
-//       setPost(response.data);
-//       console.log(response.data);
-//       setCurrentData(response.data.Result.TransactionClaimInfo);
-//       setShowFormError();
-//     })
-//     .catch((error) => {
-//       console.log(error);
+    const DelectSearch = () => {
+      setNumberValue();
+      setFromValue(null);
+      setToValue(null);
+    const today = dayjs().format('YYYY-MM-DD');
+   const PatientInfo = {
+ InsurerCode: InsuranceCode,
+  IdType: "",
+ InvoiceNumber: "",
+ VN: "",
+ PID: "",
+ PassportNumber: "",
+ HN: "",
+ VisitDatefrom: today,
+ VisitDateto: today,
+ StatusClaimCode: statusValue,
+ ServiceSettingCode: serviceValue,
+}; 
+ 
+  axios
+    .post(
+      process.env.NEXT_PUBLIC_URL_SV +
+        process.env.NEXT_PUBLIC_URL_SearchTransection,
+      { PatientInfo }
+    )
+    .then((response) => {
+      setPost(response.data);
+      console.log(response.data);
+      setCurrentData(response.data.Result.TransactionClaimInfo);
+      setShowFormError();
+    })
+    .catch((error) => {
+      console.log(error);
 
-//       setShowFormError("Error");
-//       setMassError(error.message);
-//     });
-console.log("55")
-await stepOne();
-await stepTwo();
-
-
-function stepOne() {
-  setTimeout(() => {
-        router.push("/aia/submitBilling");
-  }, 1000);
-
-};
-function stepTwo() {
-  setTimeout(() => {
-    router.push("/aia/checkClaimStatus");
-}, 1000);
-
-};
-
+      setShowFormError("Error");
+      setMassError(error.message);
+    });
   };
+
+
+
+
   const DocumentList = (data) => {
     setShowDocError();
     // const [RefId, TransactionNo, PID, PassportNumber, HN, VN, InvoiceNumber] =

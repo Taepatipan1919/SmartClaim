@@ -352,6 +352,44 @@ setBilltype(Billtype)
 
  
   };
+  const DelectSearch = () => {
+    setNumberValue();
+    setFromValue(null);
+    setToValue(null);
+  const today = dayjs().format('YYYY-MM-DD');
+ const PatientInfo = {
+InsurerCode: InsuranceCode,
+IdType: "",
+InvoiceNumber: "",
+VN: "",
+PID: "",
+PassportNumber: "",
+HN: "",
+VisitDatefrom: today,
+VisitDateto: today,
+StatusClaimCode: statusValue,
+ServiceSettingCode: serviceValue,
+}; 
+
+axios
+  .post(
+    process.env.NEXT_PUBLIC_URL_SV +
+      process.env.NEXT_PUBLIC_URL_SearchTransection,
+    { PatientInfo }
+  )
+  .then((response) => {
+    setPost(response.data);
+    console.log(response.data);
+    setCurrentData(response.data.Result.TransactionClaimInfo);
+    setShowFormError();
+  })
+  .catch((error) => {
+    console.log(error);
+
+    setShowFormError("Error");
+    setMassError(error.message);
+  });
+};
   const Refresh = (data) => {
     setStatusNew()
     //setStatusAllNew();
@@ -1344,8 +1382,9 @@ axios
                 <FaSearch />
               </button>
               <div
-              className="btn btn-base-100 text-error text-lg rounded-full hover:text-base-100 ml-2"
+              className="btn btn-base-100 text-error text-xl rounded-full hover:text-base-100 ml-2"
               type="submit"
+              onClick={DelectSearch}
             >
               <MdCancel />
             </div>
@@ -1516,11 +1555,9 @@ axios
                         </div>
                         </>) : ("")) : ("")}
                         {bill.RefId ? (
-                            ((
-                              ((bill.ClaimStatusDesc === "Approve")||(bill.ClaimStatusDesc === "waitting for discharge"))
-                              &&(bill.ClaimStatusDesc !== "Cancelled to AIA")) || (((bill.ClaimStatusDesc === "Received")||(bill.ClaimStatusDesc === "waitting for discharge"))
-                              &&(bill.ClaimStatusDesc !== "Cancelled to AIA")) || (((bill.ClaimStatusDesc === "waitting discharge")||(bill.ClaimStatusDesc === "waitting for discharge"))
-                              &&(bill.ClaimStatusDesc !== "Cancelled to AIA"))) ? (
+                            
+                              ((bill.ClaimNo)||(bill.InvoiceNumber)
+                             ? (
                               <>
                         <div className="tooltip ml-4" data-tip="ข้อมูลส่งเคลม">
                           <h1
@@ -1555,7 +1592,7 @@ axios
                                 </>
                             ): ("")) : ("")} */}
                                                       </>
-                                                    ) : ( "")) : ( "")}
+                                                    ) :  "" )) : ( "")}
         
 
                         <div

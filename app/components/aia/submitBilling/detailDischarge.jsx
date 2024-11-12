@@ -180,6 +180,7 @@ const   PatientInfo = {
   "SurgeryTypeCode":  ""
 
   }
+  console.log(PatientInfo)
     axios
   .post(process.env.NEXT_PUBLIC_URL_SV + process.env.NEXT_PUBLIC_URL_ReviewOPDDischarge,
     {

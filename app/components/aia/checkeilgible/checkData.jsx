@@ -19,6 +19,7 @@ import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
+import { styled } from "@mui/material/styles";
 export default function checkData() {
   const error = {
     response: {
@@ -43,6 +44,7 @@ export default function checkData() {
   const [numberValue, setNumberValue] = useState("");
   const [vNValue, setVNValue] = useState("");
   const [mass, setMass] = useState();
+  const [formPRE, setFormPRE] = useState(false);
   const [hS, setHS ] = useState();
   const [hB, setHB ] = useState();
   const [aI, setAI ] = useState();
@@ -57,8 +59,9 @@ export default function checkData() {
   const [serviceCode, setServiceCode] = useState("");
   const [policyTypeValue, setPolicyTypeValue] = useState("");
   const [idTypeValue, setIdTypeValue] = useState("NATIONAL_ID");
-  const [surgeryTypeValue, setSurgeryTypeValue] = useState("");
+  const [surgeryTypeValue, setSurgeryTypeValue] = useState("N");
   const [illnessTypeValue, setIllnessTypeValue] = useState("");
+  const [selectPRETypeValue, setSelectPRETypeValue] = useState("");
   const router = useRouter();
   const [massError, setMassError] = useState("");
   const [showFormError, setShowFormError] = useState("");
@@ -153,16 +156,18 @@ export default function checkData() {
   const handleSelectChange = (event) => {
 
 
-    setSelectedValue(event.target.value);
+      setSelectedValue(event.target.value);
 
-  //console.log(event.target.value)
-    const [ClaimNo, FurtherClaimId , VisitDateTime , VN] = event.target.value.split(" | ");
+      //console.log(event.target.value)
+        const [ClaimNo, FurtherClaimId , VisitDateTime , VN] = event.target.value.split(" | ");
+    
+        setFurtherClaimId(FurtherClaimId)
+        setFurtherClaimNo(ClaimNo)
+        setVisitDateTimeL(VisitDateTime) 
+        setFurtherVN(VN) 
+        setVNValue(VN)
+  
 
-    setFurtherClaimId(FurtherClaimId)
-    setFurtherClaimNo(ClaimNo)
-    setVisitDateTimeL(VisitDateTime) 
-    setFurtherVN(VN) 
-    setVNValue(VN)
   };
   const handleButtonVNClick = (data) => {
    // console.log(vNValue)
@@ -187,7 +192,7 @@ setSuccFurtherClaim2(true)
       };
   const gourl = (event) => {
         event.preventDefault();
-    
+        setFormPRE(false);
         setSuccFurtherClaim(true)
         setSuccFurtherClaim2(false)
         //setFurtherClaim();
@@ -519,7 +524,21 @@ if(idTypeValue === "NATIONAL_ID"){
   const surgery = (event) => {
     setSurgeryTypeValue(event.target.value);
   };
+  const NotSelectPRE = (event) => {
 
+      setSelectPRETypeValue("");
+      setFormPRE(false);
+  };
+  const SelectPRE = (event) => {
+    if(event.target.value){
+      setSelectPRETypeValue(event.target.value);
+      setFormPRE(true);
+    }else{
+      setSelectPRETypeValue("");
+      setFormPRE(false);
+    }
+
+  };
   useEffect(() => {
     axios
       .get(
@@ -732,7 +751,7 @@ if(idTypeValue === "NATIONAL_ID"){
   
         IdType: idTypeValue,
       //   PID: numberValue,
-        PID: "0480000004193",
+        PID: "3100500420908",
         PassportNumber: "",
         MembershipId:"",  
         CustomerId : "",
@@ -858,10 +877,14 @@ if(idTypeValue === "NATIONAL_ID"){
    console.log(PatientInfo);
     setPatientInfo(PatientInfo)
      try {
-      document.getElementById("my_modal_3").showModal();
+      if(serviceValue === "OPD"){
+        document.getElementById("OPD").showModal();
+      }else if(serviceValue === "PRE"){
+        document.getElementById("PRE").showModal();
+      }
+ 
 
       const response = await axios.post(
-   // `http://localhost:3000/api/v1/check-eligible/checkeligible/`,
             process.env.NEXT_PUBLIC_URL_PD +
               process.env.NEXT_PUBLIC_URL_checkeligible,
         {
@@ -940,7 +963,12 @@ if(idTypeValue === "NATIONAL_ID"){
 
 
 
-
+  const CustomTextField = styled(TextField)({
+    "& .MuiInputBase-input.Mui-disabled": {
+      color: "black", // เปลี่ยนสีข้อความเป็นสีดำ
+      cursor: "default", // เปลี่ยนเคอร์เซอร์เป็นแบบปกติ
+    },
+  });
 
 
 
@@ -1217,12 +1245,41 @@ if(idTypeValue === "NATIONAL_ID"){
                         required
                       >
                         {illnessType
-                          ? illnessType.Result.map((ill, index) => (
-                              <MenuItem key={index} value={ill.illnesstypecode}>
+                          ? illnessType.Result.map((ill, index) => 
+
+                            
+                              serviceValue ===  "OPD"  ? (
+                              ((ill.illnesstypecode === "ILL")||(ill.illnesstypecode === "ACC")||(ill.illnesstypecode === "ER")||(ill.illnesstypecode === "DEN")
+                            ||(ill.illnesstypecode === "MET")||(ill.illnesstypecode === "HD")||(ill.illnesstypecode === "CMT")||(ill.illnesstypecode === "CHK")||(ill.illnesstypecode === "VAC")||(ill.illnesstypecode === "FU")
+                          )  ? (
+                               <MenuItem key={index} value={ill.illnesstypecode}>
                                 {ill.illnesstypedesc}
                               </MenuItem>
-                            ))
-                          : ""}
+                              ) : ""
+                            
+                            )
+                              : 
+                                serviceValue ===  "PRE"  ? (
+                                  (ill.illnesstypecode === "ILL")||(ill.illnesstypecode === "ACC")||(ill.illnesstypecode === "DAY")
+                            ? (
+                               <MenuItem key={index} value={ill.illnesstypecode}>
+                                {ill.illnesstypedesc}
+                              </MenuItem>
+                              )
+                              :"" 
+                              ) 
+                              : 
+                              serviceValue ===  "IPD"  ? (
+                                (ill.illnesstypecode === "ILL")||(ill.illnesstypecode === "ACC")||(ill.illnesstypecode === "DAY")||(ill.illnesstypecode === "MAT")
+                          ? (
+                             <MenuItem key={index} value={ill.illnesstypecode}>
+                              {ill.illnesstypedesc}
+                            </MenuItem>
+                            )
+                            :"" 
+                            ) 
+                            : ""
+                         ): ""}
                       </Select>
                     </FormControl>
                   </div>
@@ -1258,6 +1315,7 @@ if(idTypeValue === "NATIONAL_ID"){
                         className=""
                         required
                       >
+                        {/* {console.log(surgeryTypeValue)} */}
                         {surgeryType
                           ? surgeryType.Result.map((surgery, index) => (
                               <MenuItem key={index} value={surgery.iscode}>
@@ -1321,13 +1379,13 @@ if(idTypeValue === "NATIONAL_ID"){
 
       {/* {showForm && ( */}
 
-      <dialog id="my_modal_3" className="modal text-xl ">
+      <dialog id="OPD" className="modal text-xl ">
         <div className="modal-box w-full h-full max-w-7xl ">
           <form method="dialog">
             <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
               ✕
             </button>
-                <h1 className="text-accent text-3xl text-center">ผลการตรวจสอบสิทธิ์</h1>
+                <h1 className="text-accent text-3xl text-center">ผลการตรวจสอบสิทธิ์ - OPD</h1>
 
                 <div className="flex  w-full mt-4">
         <div className="p-4 border-2  rounded-md bg-white w-3/6 shadow-md">
@@ -1338,6 +1396,7 @@ if(idTypeValue === "NATIONAL_ID"){
           <p className="">วันเกิด: {patientInfo.DateOfBirth}</p>
           <p className="">VN: {patientInfo.VN}</p>
           <p className="">Location: {visitlocation}</p>
+          <p className="">ประเภทในการรักษา: {serviceValue}</p>
         </div>
         
         <div className="p-4 border-2  rounded-md bg-white w-3/6 shadow-md ml-2">
@@ -1726,6 +1785,515 @@ if(idTypeValue === "NATIONAL_ID"){
         </div>
       </dialog>
 
+
+      <dialog id="PRE" className="modal text-xl ">
+        <div className="modal-box w-full h-full max-w-7xl ">
+          <form method="dialog">
+            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
+              ✕
+            </button>
+                <h1 className="text-accent text-3xl text-center">ผลการตรวจสอบสิทธิ์ - PRE</h1>
+
+                <div className="flex  w-full mt-4">
+        <div className="p-4 border-2  rounded-md bg-white w-3/6 shadow-md">
+          <h2 className="text-xl font-semibold mb-2 text-center">ข้อมูลส่วนตัว</h2>
+          <p className="">รหัสประจำตัวประชาชน: {patientInfo.PID}</p>
+          <p className="">HN: {patientInfo.HN}</p>
+          <p className="">ชื่อ: {patientInfo.GivenNameTH} {patientInfo.SurnameTH}</p>
+          <p className="">วันเกิด: {patientInfo.DateOfBirth}</p>
+          <p className="">VN: {patientInfo.VN}</p>
+          <p className="">Location: {visitlocation}</p>
+          <p className="">ประเภทในการรักษา: {serviceValue}</p>
+        </div>
+        
+        <div className="p-4 border-2  rounded-md bg-white w-3/6 shadow-md ml-2">
+          <h2 className="text-xl font-semibold mb-2 text-center">จากการตรวจสอบเบื้องต้น</h2>
+          <p className="text-xl text-center">
+            <b className=""> 
+           {mass === true ? <p className="underline">** มีสิทธิ์ใช้บริการเรียกร้องสินไหม **</p> : mass === false ? <p className="text-error underline">** ไม่มีสิทธิ์ใช้บริการเรียกร้องสินไหม **</p> : <CircularProgress size="30px" className="text-error" />}
+          
+           </b>
+          </p>
+      
+                    <div className="rounded-md">
+                    ประเภทกรมธรรม์ : {policyTypeValue === "IB" ? "ประกันรายบุคคล" : "ประกันกลุ่ม"}
+                    </div>
+                    <div className="rounded-md">
+                    ประเภทรักษา : {illnessType ?
+            illnessType.Result.map((ill) => 
+            ill.illnesstypecode  ===  patientInfo.IllnessTypeCode ? ( <>
+             {ill.illnesstypedesc} </>
+            ) : "") : ""}
+                    </div>
+                    <div className="rounded-md">
+                    การผ่าตัด : {surgeryTypeValue === "N" ? "ไม่มีการผ่าตัด" : "มีการผ่าตัด"}
+                    </div>
+                    <div className="rounded-md">
+                    วันที่เข้าการรักษา : {patientInfo.VisitDateTime}
+                    </div>
+                    {selectedValue ?
+                    <div className="rounded-md">
+                    รักษาแบบต่อเนื่อง : 
+                    <br/>- เลขกรมธรรม์: {furtherClaimNo} 
+                    <br/>- วันที่เข้ารักษา: {visitDateTimeL} 
+                    <br/>- VN: {furtherVN}
+                                    
+                                    </div> : ""}
+
+                                    
+                                    {showFormCreateError === "Error" ? (
+              <div
+                role="alert"
+                className="alert alert-error mt-2 text-base-100"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6 shrink-0 stroke-current"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                <span>{massCreateError}</span>
+              </div>
+            ) : ""}
+        <div className="flex justify-center mt-4">   
+        
+          {mass ? (mass === true ? (
+
+
+
+ 
+  (patientInfo.IllnessTypeCode === "ACC") ? (
+ succFurtherClaim === true ? 
+
+ (succFurtherClaim2 === false ? 
+ <div className="rounded-md">
+                    <TextField
+                  error
+              id="outlined-basic"
+              label="เคลมต่อเนื่อง (VN First Claim form)"
+              // multiline
+              // maxRows={4}
+              variant="outlined"
+              className="w-full"
+              name="VN"
+              type="text"
+              value={vNValue}
+              onChange={(e) => setVNValue(e.target.value)}
+            />
+
+      <div
+    className="btn btn-error text-base-100 hover:text-error hover:bg-base-100 ml-2"
+    onClick={() =>handleButtonFurtherBlackVNClick(
+      `${result.Result.InsuranceData.RefId} | ${result.Result.InsuranceData.TransactionNo}`
+    )}
+  >
+    ย้อนกลับ
+  </div>
+ <div
+   className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 ml-2 mt-2"
+   onClick={() =>handleButtonVNClick(
+     `${result.Result.InsuranceData.RefId} | ${result.Result.InsuranceData.TransactionNo}`
+   )}
+ >
+   ยืนยันเลือก
+ </div>
+ </div> 
+ :
+
+  <div className="rounded-md">
+      <div
+    className="btn btn-error text-base-100 hover:text-error hover:bg-base-100 ml-2"
+    onClick={() =>handleButtonBlackVNClick(
+      `${result.Result.InsuranceData.RefId} | ${result.Result.InsuranceData.TransactionNo}`
+    )}
+  >
+    ย้อนกลับ
+  </div>
+  <div
+    className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 ml-2"
+    onClick={() =>handleButtonClick(
+      `${result.Result.InsuranceData.RefId} | ${result.Result.InsuranceData.TransactionNo}`
+    )}
+  >
+    ลงทะเบียนใช้สิทธิ์
+  </div>
+  </div> 
+ )
+
+  : (
+  furtherClaim ? (<div className="rounded-md w-full">
+                  <div role="tablist" className="tabs-bordered">
+                <input
+                  type="radio"
+                  name="my_tabs_1"
+                  role="tab"
+                  className="tab text-xl"
+                  aria-label="ไม่เคยประเมินเคสก่อนผ่าตัด"
+                  onChange={NotSelectPRE}
+                  defaultChecked
+                />
+
+                <input
+                  type="radio"
+                  name="my_tabs_1"
+                  role="tab"
+                  className="tab text-xl"
+                  aria-label="เคยประเมินเคสก่อนผ่าตัด"
+                />
+                <div role="tabpanel" className="tab-content mt-4">
+                  <label className="form-control w-full">
+                    <select
+                      className="select select-bordered"
+                      value={selectPRETypeValue}
+                      onChange={SelectPRE}
+                    >
+                      <option></option>
+                      {console.log(selectPRETypeValue)}
+               {furtherClaim
+                        ? furtherClaim.Result.InsuranceData.FurtherClaimList.map(
+                            (ftc, index) => (
+                              <option
+                                key={index}
+                                value={`${ftc.ClaimNo}`}
+                              >
+                                เลขกรมธรรม์: {ftc.ClaimNo}, วันที่เข้ารักษา:{" "}
+                                {ftc.VisitDateTime.split("T")[0]} VN: {ftc.FurtherClaimVN}
+                              </option>
+                            )
+                          )
+                        : ""} 
+                      <></>
+                    </select>
+                  </label>
+                </div>
+              </div>
+              <div className="flex justify-end p-4">
+              <div
+                className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 "
+                  onClick={gourl}
+              >
+                ยืนยัน
+              </div>
+              </div>
+  </div>
+  ) : ( 
+    //furtherClaim===""
+!selectedValue ? load === true ? <CircularProgress size="30px" className="text-error" /> :
+(<div className="rounded-md">
+<div
+  className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 ml-2"
+  onClick={() =>
+    confirmButton(
+      `${result.Result.InsuranceData.RefId} | ${result.Result.InsuranceData.TransactionNo}`
+    )
+  }
+>
+  {/* ต่อเนื่อง */}
+   ลงทะเบียนใช้สิทธิ์(ต่อเนื่อง)
+</div>
+
+</div>) : ("Loading...")
+
+  ) )
+
+          ) : (
+// Type อื่นๆ
+
+            (succFurtherClaim2 === false ? 
+              (
+                <>
+                <div className="flex  w-full">
+
+                                    <TextField
+                  error
+              id="outlined-basic"
+              label="เคลมต่อเนื่อง (VN First Claim form)"
+              // multiline
+              // maxRows={4}
+              variant="outlined"
+              className="w-full"
+              name="vn"
+              type="text"
+              value={vNValue}
+              onChange={(e) => setVNValue(e.target.value)}
+            />
+              </div> 
+
+              <div
+                className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 ml-2"
+                onClick={() =>handleButtonVNClick(
+                  `${result.Result.InsuranceData.RefId} | ${result.Result.InsuranceData.TransactionNo}`
+                )}
+              >
+                ยืนยันเลือก
+              </div>
+            </>
+              )
+              :
+             
+               <div className="rounded-md">
+                      <div
+    className="btn btn-error text-base-100 hover:text-error hover:bg-base-100 ml-2"
+    onClick={() =>handleButtonBlackVNClick(
+      `${result.Result.InsuranceData.RefId} | ${result.Result.InsuranceData.TransactionNo}`
+    )}
+  >
+    ย้อนกลับ
+  </div>
+               <div
+                 className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 ml-2"
+                 onClick={() =>handleButtonClick(
+                   `${result.Result.InsuranceData.RefId} | ${result.Result.InsuranceData.TransactionNo}`
+                 )}
+               >
+                 ลงทะเบียนใช้สิทธิ์
+               </div>
+               </div> 
+              )
+)
+
+ 
+          ) : (
+            <div className="rounded-md">
+            <div
+              className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 ml-2"
+              onClick={PrintButton}
+            >
+              Print
+            </div>
+        </div>
+          )
+          ) : ""}
+
+         </div>
+        </div>
+      </div>
+
+      {((showFormCheckEligibleError)||(showFormFurtherError)) === "Error" ? (
+              <div
+                role="alert"
+                className="alert alert-error mt-2 text-base-100"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6 shrink-0 stroke-current"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                <span>{(massError)||(massFurtherError)}</span>
+              </div>
+            ) : (
+              <>
+
+
+
+                  {formPRE && (
+                    
+                    <div className="p-4 border-2  rounded-md bg-white w-full mt-4 shadow-md">  
+                        <div className="grid gap-2 sm:grid-cols-5 w-full mt-2">
+                          <div className="rounded-md">
+                          <Box
+                      sx={{
+                        backgroundColor: "#e5e7eb",
+                        padding: 0,
+                        borderRadius: 0,
+                      }}
+                    >
+                      <CustomTextField
+                        id="disabledInput"
+                        label="รหัสอนุมัติการเรียกร้อง (Claim ID)"
+                        className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"
+                        defaultValue={selectPRETypeValue}
+                        InputProps={{ readOnly: true }}
+                      />
+                    </Box>
+                          </div>
+                          <div className="rounded-md">
+                          <Box
+                      sx={{
+                        backgroundColor: "#e5e7eb",
+                        padding: 0,
+                        borderRadius: 0,
+                      }}
+                    >
+                      <CustomTextField
+                        id="disabledInput"
+                        label="จำนวนครั้งของการพิจารณาครั้งก่อน"
+                        className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"
+                        defaultValue="{PatientInfoData.PatientInfo.VN}"
+                        InputProps={{ readOnly: true }}
+                      />
+                    </Box>
+                          </div>
+                          <div className="rounded-md">
+                          <Box
+                      sx={{
+                        backgroundColor: "#e5e7eb",
+                        padding: 0,
+                        borderRadius: 0,
+                      }}
+                    >
+                      <CustomTextField
+                        id="disabledInput"
+                        label="วันที่มารับการรักษาที่โรงพยาบาลของการพิจารณาครั้งก่อน"
+                        className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"
+                        defaultValue="{PatientInfoData.PatientInfo.VN}"
+                        InputProps={{ readOnly: true }}
+                      />
+                    </Box>
+                          </div>
+                          <div className="rounded-md">
+                          <Box
+                      sx={{
+                        backgroundColor: "#e5e7eb",
+                        padding: 0,
+                        borderRadius: 0,
+                      }}
+                    >
+                      <CustomTextField
+                        id="disabledInput"
+                        label="สถานะของการพิจารณาครั้งก่อน"
+                        className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"
+                        defaultValue="{PatientInfoData.PatientInfo.VN}"
+                        InputProps={{ readOnly: true }}
+                      />
+                    </Box>
+                          </div>
+                          <div className="rounded-md">
+                          <Box
+                      sx={{
+                        backgroundColor: "#e5e7eb",
+                        padding: 0,
+                        borderRadius: 0,
+                      }}
+                    >
+                      <CustomTextField
+                        id="disabledInput"
+                        label="วันที่คาดว่าจะเข้ารับการผ่าตัดที่โรงพยาบาลของการพิจารณาครั้งก่อน"
+                        className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"
+                        defaultValue="{PatientInfoData.PatientInfo.VN}"
+                        InputProps={{ readOnly: true }}
+                      />
+                    </Box>
+                          </div>
+                        </div>
+                    </div>
+                  )}
+
+
+
+
+
+
+              <h1 className="text-2xl mt-2 flex items-center">ผลการตรวจสอบสิทธิ์ ค่ารักษาพยาบาล (HS/ME) 
+              {hS === true ? <b className="underline ml-2">มีสิทธิ์เรียกร้องสินไหม</b> :  hS === false ? <b className="text-error underline  ml-2">ไม่สามารถใช้สิทธิ์เรียกร้องสินไหม</b> : "" } 
+              </h1>
+                <table className="table mt-2">
+                  <thead className="bg-info text-base-100">
+                    <tr>
+                    <th>เลขที่กรมธรรม์</th>
+                    <th>สัญญาเพิ่มเติม</th>
+                      <th>ผลการตรวจสอบ</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {result ? (
+                      result.Result.InsuranceData.CoverageList.map(
+                        (coverage, index) =>
+                            coverage.Type === "ผลประโยชน์ค่ารักษาพยาบาล" ? (
+
+                          coverage.MessageList.map((message, msgIndex) => (
+                            <tr key={`${index}-${msgIndex}`}>
+                              <td>{message.PolicyNo}</td>
+                              <td>{message.PlanName}</td>
+                              <td>{message.MessageTh}</td>
+                            </tr>
+                          ))
+                      ) : ""
+                    )) : (
+                      <tr>
+                        <td></td>
+                        <td>
+                          <div className="justify-center text-4xl">
+                              <CircularProgress size="30px" className="text-error text-lg" />
+                          </div>
+                        </td>
+                        <td></td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+                <div className="grid gap-2 sm:grid-cols-4 text-base-100 bg-info w-full whitespace-normal text-center">
+                  <div className="rounded-md"></div>
+                  <div className="rounded-md"></div>
+                  <div className="rounded-md ">&nbsp;</div>
+                </div>
+
+              
+
+                <h1 className="text-2xl mt-2 flex items-center">ผลการตรวจสอบสิทธิ์ ค่ารักษาพยาบาล (AI/HB) 
+           {(aI||hB) === true ? <b className="underline ml-2">มีสิทธิ์เรียกร้องสินไหม</b> : (aI||hB) === false ? <b className="text-error underline ml-2">ไม่สามารถใช้สิทธิ์เรียกร้องสินไหม</b> : "" } 
+           
+                </h1>
+                <table className="table mt-2">
+                  <thead className="bg-info text-base-100">
+                    <tr>
+                    <th>เลขที่กรมธรรม์</th>
+                    <th>สัญญาเพิ่มเติม</th>
+                      <th>ผลการตรวจสอบ</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {result ? (
+                      result.Result.InsuranceData.CoverageList.map(
+                        (coverage, index) =>
+                            (coverage.Type === "ผลประโยชน์ค่าชดเชย"||coverage.Type === "ผลประโยชน์ค่าชดเชยนอนรพ") ? (
+
+                          coverage.MessageList.map((message, msgIndex) => (
+                            <tr key={`${index}-${msgIndex}`}>
+                              <td>{message.PolicyNo}</td>
+                              <td>{message.PlanName}</td>
+                              <td>{message.MessageTh}</td>
+                            </tr>
+                          ))
+                      ) : ""
+                    )) : (
+                      <tr>
+                        <td></td>
+                        <td>
+                          <div className="justify-center text-4xl">
+                            <CircularProgress size="30px" className="text-error text-lg" />
+                          </div>
+                        </td>
+                        <td></td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+                <div className="grid gap-2 sm:grid-cols-4 text-base-100 bg-info w-full whitespace-normal text-center">
+                  <div className="rounded-md"></div>
+                  <div className="rounded-md"></div>
+                  <div className="rounded-md ">&nbsp;</div>
+                </div>
+              </>
+            )}
+          </form>
+        </div>
+      </dialog>
     </>
   );
 }

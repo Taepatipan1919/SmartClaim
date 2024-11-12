@@ -13,6 +13,8 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import { FaEdit } from "react-icons/fa";
+import { MdKeyboardArrowRight } from "react-icons/md";
+import { MdKeyboardArrowDown } from "react-icons/md";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import CircularProgress from '@mui/material/CircularProgress';
 import InputAdornment from "@mui/material/InputAdornment";
@@ -78,6 +80,9 @@ export default function Page({ data }) {
   const [orderItemz, setOrderItemz] = useState();
   const [result, setResult] = useState("");
   const [showModal, setShowModal] = useState(false);
+  const [showArrowVN, setShowArrowVN] = useState();
+  
+  const [showArrow, setShowArrow] = useState(false);
   const router = useRouter();
   const [bmi, setBmi] = useState("");
   const inputRef = useRef(null);
@@ -1861,6 +1866,17 @@ if(rows){
       );
     }
   };
+  const ArrowOpen = (e) =>{
+    console.log(e)
+    // console.log(showArrow)
+    setShowArrowVN(e.ItemId)
+    if(showArrow === false){
+      setShowArrow(true)
+    }else{
+      setShowArrow(false)
+    }
+ 
+  }
   const handleOtherInsurer = (e) => {
     setOtherInsurer(e.target.value);
   };
@@ -3904,12 +3920,12 @@ if(rows){
       )}
 
 <dialog id="Editfurtherclaimvn" className="modal text-xl	">
-        <div className="modal-box w-11/12 max-w-sm">
+        <div className="modal-box w-11/12 max-w-7xl">
           <form method="dialog">
             <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
               ✕
             </button>
-            <h3 className="font-bold text-lg">แก้ไข Claim form จาก VN</h3>
+            <h3 className="font-bold text-lg">ตาราง Claim form</h3>
             <hr />
             {showSummitError === "Error" ? (
               <div
@@ -3951,24 +3967,129 @@ if(rows){
                 {massSummit ? (
                   massSummit
                 ) : (
-                    <div className="flex items-center text-center mt-2">
-                      <TextField
-                        id="disabledInput"
-                        className=""
-                        label=""
-                       // defaultValue={PatientInfoData.PatientInfo.FurtherClaimVN ? PatientInfoData.PatientInfo.FurtherClaimVN : PatientInfoData.PatientInfo.VN }
-                        value={numberValue}
-                        onChange={(e) => setNumberValue(e.target.value)}
-                       // InputProps={{ readOnly: true }}
-                      />
-
-                  <div
+                <table className="table  mt-2">
+                  <thead>
+                    <tr className="text-base-100 bg-primary py-8 text-sm w-full text-center">
+                      <th></th>
+                      <th>Episode Number</th>
+                      <th>Location</th>
+                      <th>Date</th>
+                      <th>Doctor</th>
+                      <th>Diagnosis</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  {console.log(showArrowVN)}
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {orderItemz ? (
+                      orderItemz.Result.OrderItemInfo.map((order, index) => (
+                        (order.ItemId) && (
+                        <tr key={index} className=" bg-neutral text-sm">
+                          <td className="px-6 py-4 whitespace-nowrap">
+                          {
+                          showArrowVN === order.ItemId ?
+                          showArrow === false ? <MdKeyboardArrowRight className="text-success text-3xl" onClick={() => ArrowOpen(order)}/> : <MdKeyboardArrowDown className="text-success text-3xl" onClick={() => ArrowOpen(order)}/>
+                          :
+                          <MdKeyboardArrowRight className="text-success text-3xl" onClick={() => ArrowOpen(order)}/>
+                          }
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                              {order.ItemId ? order.ItemId : <>&nbsp;</>}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                              {order.ItemName ? order.ItemName : <>&nbsp;</>}
+                            </div>
+                            {
+                          showArrowVN === order.ItemId ?
+                          showArrow === false ? "" : 
+                                          //   <CustomTextField
+                                          //   className="w-full mt-2  text-black rounded disabled:text-black disabled:bg-gray-300"
+                                          //      id="disabledInput"
+                                          //   name="PresentIllness"
+                                          //   label=""
+                                          //   multiline
+                                          //   rows={4}
+                                          //   defaultValue="dsadsadsadasdsadasdas"
+                                          //   inputProps={{ maxLength: 500 }}
+                                          // />
+                                          <CustomTextField
+                                          id="disabledInput"
+                                          rows={4}
+                                          multiline
+                                                   defaultValue="dsadsadsadasdsadasdas"
+                                          className="w-full text-black rounded disabled:text-black disabled:bg-gray-300 cursor-not-allowed mt-2"
+                                          InputProps={{ readOnly: true }}
+                                        />
+                          :
+                          ""
+                          }
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                              {order.LocalBillingCode ? (
+                                order.LocalBillingCode
+                              ) : (
+                                <>&nbsp;</>
+                              )}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                              {order.LocalBillingCode ? (
+                                order.LocalBillingCode
+                              ) : (
+                                <>&nbsp;</>
+                              )}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                              {order.LocalBillingCode ? (
+                                order.LocalBillingCode
+                              ) : (
+                                <>&nbsp;</>
+                              )}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                          <div
                     className="btn btn-success text-base-100 hover:text-success hover:bg-base-100 ml-2"
                     onClick={Submitfurtherclaimvn}
                   >
-                    <IoIosSave  className="size-6" />
-                  </div>
-                    </div>
+                               <IoIosSave  className="size-6" />
+                             </div>
+                          </td>
+                        </tr>
+                      )) )
+                    ) : (
+                      <tr>
+                        <td></td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+                  //   <div className="flex items-center text-center mt-2">
+                  //     <TextField
+                  //       id="disabledInput"
+                  //       className=""
+                  //       label=""
+                  //      // defaultValue={PatientInfoData.PatientInfo.FurtherClaimVN ? PatientInfoData.PatientInfo.FurtherClaimVN : PatientInfoData.PatientInfo.VN }
+                  //       value={numberValue}
+                  //       onChange={(e) => setNumberValue(e.target.value)}
+                  //      // InputProps={{ readOnly: true }}
+                  //     />
+
+                  // <div
+                  //   className="btn btn-success text-base-100 hover:text-success hover:bg-base-100 ml-2"
+                  //   onClick={Submitfurtherclaimvn}
+                  // >
+                  //   <IoIosSave  className="size-6" />
+                  // </div>
+                  //   </div>
+
                 )}
             
           </form>
