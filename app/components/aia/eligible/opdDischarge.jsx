@@ -183,7 +183,7 @@ export default function Page({ data }) {
 
     },
   };
-  //console.log(PatientInfoData.PatientInfo)
+  console.log(PatientInfoData.PatientInfo)
   useEffect(() => {
     PatientInfoData.PatientInfo.FurtherClaimVN ? setNumberValue(PatientInfoData.PatientInfo.FurtherClaimVN) : setNumberValue(PatientInfoData.PatientInfo.VN);  
     setRandomNumber();
@@ -3979,7 +3979,7 @@ if(rows){
                       <th></th>
                     </tr>
                   </thead>
-                  {console.log(showArrowVN)}
+                  {/* {console.log(showArrowVN)} */}
                   <tbody className="bg-white divide-y divide-gray-200">
                     {orderItemz ? (
                       orderItemz.Result.OrderItemInfo.map((order, index) => (
