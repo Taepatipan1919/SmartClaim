@@ -78,6 +78,7 @@ export default function Page({ data }) {
   const [investigation, setInvestigation] = useState();
   const [billing, setBilling] = useState();
   const [orderItemz, setOrderItemz] = useState();
+  const [listClaimForm, setListClaimForm] = useState();
   const [result, setResult] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [showArrowVN, setShowArrowVN] = useState();
@@ -1015,7 +1016,8 @@ export default function Page({ data }) {
 
   
 
-    async function Submitfurtherclaimvn() {
+    async function Submitfurtherclaimvn(e) {
+      console.log(e)
   setShowSummitError();
   setShowSummitSucc();
   try {
@@ -1029,7 +1031,7 @@ export default function Page({ data }) {
                 "TransactionNo": PatientInfoData.PatientInfo.TransactionNo,
                 "HN": PatientInfoData.PatientInfo.HN,
                 "VN": PatientInfoData.PatientInfo.VN,
-                "FurtherClaimVN": numberValue,
+                "FurtherClaimVN": e.VN,
                 }
               }
       )
@@ -1055,7 +1057,7 @@ export default function Page({ data }) {
           PolicyTypeCode: PatientInfoData.PatientInfo.PolicyTypeCode,
           AccidentDate: PatientInfoData.PatientInfo.AccidentDate,
           VisitDateTime: PatientInfoData.PatientInfo.VisitDateTime,
-          FurtherClaimVN: numberValue,
+          FurtherClaimVN: e.VN,
           FurtherClaimNo: PatientInfoData.PatientInfo.FurtherClaimNo,
           FurtherClaimId: PatientInfoData.PatientInfo.FurtherClaimId,
           Runningdocument: PatientInfoData.PatientInfo.randomNumberold,
@@ -1160,6 +1162,33 @@ export default function Page({ data }) {
         }
       });
   }, []);
+
+  useEffect(() => {
+    axios
+      .post(
+        // process.env.NEXT_PUBLIC_URL_SV +
+        //   process.env.NEXT_PUBLIC_URL_getListClaimFormOPDByVN,
+        // PatientInfoData
+        '/api/v1/aia-opddischarge/getListClaimFormOPDByVN', PatientInfoData
+      )
+      .then((response) => {
+      //  console.log(response.data)
+      setListClaimForm(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+        try {
+          const ErrorMass = error.config.url;
+          const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+          setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
+          setShowFormError("Error");
+        } catch (error) {
+          setMassError(error.response.data.HTTPStatus.message);
+          setShowFormError("Error");
+        }
+      });
+  }, []);
+
 
   useEffect(() => {
     axios
@@ -1869,7 +1898,7 @@ if(rows){
   const ArrowOpen = (e) =>{
     console.log(e)
     // console.log(showArrow)
-    setShowArrowVN(e.ItemId)
+    setShowArrowVN(e.VN)
     if(showArrow === false){
       setShowArrow(true)
     }else{
@@ -3920,7 +3949,7 @@ if(rows){
       )}
 
 <dialog id="Editfurtherclaimvn" className="modal text-xl	">
-        <div className="modal-box w-11/12 max-w-7xl">
+        <div className="modal-box w-11/12 max-w-full">
           <form method="dialog">
             <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
               ✕
@@ -3971,55 +4000,54 @@ if(rows){
                   <thead>
                     <tr className="text-base-100 bg-primary py-8 text-sm w-full text-center">
                       <th></th>
-                      <th>Episode Number</th>
-                      <th>Location</th>
-                      <th>Date</th>
-                      <th>Doctor</th>
-                      <th>Diagnosis</th>
+                      <th className="w-1/12">VisiDate</th>
+                      <th className="w-1/12">Episode Number</th>
+                      <th className="w-5/12">Location</th>
+                      <th className="w-2/12">Doctor</th>
+                      <th className="w-3/12">Diagnosis</th>
                       <th></th>
                     </tr>
                   </thead>
-                  {/* {console.log(showArrowVN)} */}
+                  {console.log(listClaimForm)}
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {orderItemz ? (
-                      orderItemz.Result.OrderItemInfo.map((order, index) => (
-                        (order.ItemId) && (
+                    {listClaimForm ? (
+                      listClaimForm.Result.ClaimFormListInfo.map((FormList, index) => (
+                  
                         <tr key={index} className=" bg-neutral text-sm">
                           <td className="px-6 py-4 whitespace-nowrap">
                           {
-                          showArrowVN === order.ItemId ?
-                          showArrow === false ? <MdKeyboardArrowRight className="text-success text-3xl" onClick={() => ArrowOpen(order)}/> : <MdKeyboardArrowDown className="text-success text-3xl" onClick={() => ArrowOpen(order)}/>
+                          showArrowVN === FormList.VN ?
+                          showArrow === false ? <MdKeyboardArrowRight className="text-success text-3xl" onClick={() => ArrowOpen(FormList)}/> : <MdKeyboardArrowDown className="text-success text-3xl" onClick={() => ArrowOpen(FormList)}/>
                           :
-                          <MdKeyboardArrowRight className="text-success text-3xl" onClick={() => ArrowOpen(order)}/>
+                          <MdKeyboardArrowRight className="text-success text-3xl" onClick={() => ArrowOpen(FormList)}/>
                           }
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                              {order.ItemId ? order.ItemId : <>&nbsp;</>}
+                              {FormList.VisiDate ? (
+                                FormList.VisiDate
+                              ) : (
+                                <>&nbsp;</>
+                              )}
                             </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                              {order.ItemName ? order.ItemName : <>&nbsp;</>}
+                              {FormList.VN ? FormList.VN : <>&nbsp;</>}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                              {FormList.LocationDesc ? FormList.LocationDesc : <>&nbsp;</>}
                             </div>
                             {
-                          showArrowVN === order.ItemId ?
+                          showArrowVN === FormList.VN ?
                           showArrow === false ? "" : 
-                                          //   <CustomTextField
-                                          //   className="w-full mt-2  text-black rounded disabled:text-black disabled:bg-gray-300"
-                                          //      id="disabledInput"
-                                          //   name="PresentIllness"
-                                          //   label=""
-                                          //   multiline
-                                          //   rows={4}
-                                          //   defaultValue="dsadsadsadasdsadasdas"
-                                          //   inputProps={{ maxLength: 500 }}
-                                          // />
                                           <CustomTextField
                                           id="disabledInput"
                                           rows={4}
                                           multiline
-                                                   defaultValue="dsadsadsadasdsadasdas"
+                                                   defaultValue={FormList.PresentIllness}
                                           className="w-full text-black rounded disabled:text-black disabled:bg-gray-300 cursor-not-allowed mt-2"
                                           InputProps={{ readOnly: true }}
                                         />
@@ -4028,42 +4056,79 @@ if(rows){
                           }
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                              {order.LocalBillingCode ? (
-                                order.LocalBillingCode
+                          <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                              {FormList.DoctorFirstName ? (
+                                FormList.DoctorFirstName
                               ) : (
                                 <>&nbsp;</>
                               )}
                             </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                              {order.LocalBillingCode ? (
-                                order.LocalBillingCode
+                          <div className="border-2 bg-base-100 break-all">
+
+
+  <table className="table">
+    {/* head */}
+    <thead>
+      <tr>
+        <th>Code</th>
+        <th>Name</th>
+      </tr>
+    </thead>
+    <tbody>
+
+
+                             {FormList.DiagnosisInfo ? (
+                            
+                            FormList.DiagnosisInfo.map((Diag, index) => (
+                              <tr  key={index}>
+                            <th>{Diag.DxCode}</th>
+                            <th>{Diag.DxName}</th>
+                            </tr>
+                            )
+                          )
                               ) : (
-                                <>&nbsp;</>
-                              )}
+                              <tr>
+                                <th></th>
+                                <td></td>
+                              </tr>
+                              )} 
+
+
+
+</tbody>
+  </table>
+
+
+
+
                             </div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                              {order.LocalBillingCode ? (
-                                order.LocalBillingCode
-                              ) : (
-                                <>&nbsp;</>
-                              )}
-                            </div>
+                            {
+                          showArrowVN === FormList.VN ?
+                          showArrow === false ? "" : 
+                                          <CustomTextField
+                                          id="disabledInput"
+                                          rows={4}
+                                          multiline
+                                                   defaultValue={FormList.PresentIllness}
+                                          className="w-full text-black rounded disabled:text-black disabled:bg-gray-300 cursor-not-allowed mt-2"
+                                          InputProps={{ readOnly: true }}
+                                        />
+                          :
+                          ""
+                          }
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                           <div
                     className="btn btn-success text-base-100 hover:text-success hover:bg-base-100 ml-2"
-                    onClick={Submitfurtherclaimvn}
+                    onClick={() => Submitfurtherclaimvn(FormList)}
                   >
                                <IoIosSave  className="size-6" />
                              </div>
                           </td>
-                        </tr>
-                      )) )
+                </tr>
+                      ) )
                     ) : (
                       <tr>
                         <td></td>

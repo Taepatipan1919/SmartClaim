@@ -52,6 +52,7 @@ export default function checkData() {
   const [result, setResult] = useState();
   const [detailVN, setDetailVN] = useState();
   const [visitlocation, setVisitlocation] = useState();
+  const [listClaimForm, setListClaimForm] = useState();
   
   const [fromValue, setFromValue] = useState(null);
   const [accValue, setAccValue] = useState(null);
@@ -82,6 +83,7 @@ export default function checkData() {
   const ReDux = useSelector((state) => ({ ...state }));
   const dispatch = useDispatch();
   const [selectedValue, setSelectedValue] = useState("");
+  const [preAuthTransactionList, setPreAuthTransactionList] = useState("");
   const [furtherClaim, setFurtherClaim] = useState("");
   const [furtherClaimNo, setFurtherClaimNo] = useState("");
   const [furtherVN, setFurtherVN] = useState("");
@@ -103,6 +105,7 @@ export default function checkData() {
   }else{
     setRandomNumber(ReDux.DataTran.Data.Runningdocument)
   }
+
 
 
   const PatientInfo = {
@@ -372,10 +375,6 @@ if(idTypeValue === "NATIONAL_ID"){
         setMassCreateError(response.data.HTTPStatus.message);
       }
 
-
-
-
-
     })
     .catch((error) => {
       console.log(error);
@@ -398,11 +397,10 @@ if(idTypeValue === "NATIONAL_ID"){
     window.print();
   };
   const confirmButton = (data) => {
+    
     setFurtherClaim();
     setShowFormFurtherError();
     setMassFurtherError();
-   // console.log(ReDux)
-    // console.log(data)
 
     const [RefId, TransactionNo] = data.split(" | ");
     setRefIdL(RefId)
@@ -432,39 +430,68 @@ if(idTypeValue === "NATIONAL_ID"){
 
   setLoad(true)
      
+    console.log(serviceValue)
+     if(serviceValue === "OPD"){
     axios
-      .post(
-        process.env.NEXT_PUBLIC_URL_PD +
-          process.env.NEXT_PUBLIC_URL_getRetrieveFurtherclaim,
-        {
-            PatientInfo
-        }
-      )
-      .then((response) => {
-   
-        console.log(response.data)
-        setLoad(false)
-        // if(response.data.HTTPStatus.statusCode === 200){
-          setFurtherClaim(response.data);
-          console.log(response.data);
-        // }else{
-         // setMassFurtherError(response.data.HTTPStatus.message);
-         // setShowFormFurtherError("Error");
-        // }
+    .post(
+      process.env.NEXT_PUBLIC_URL_PD +
+        process.env.NEXT_PUBLIC_URL_getRetrieveFurtherclaim,
+      {
+          PatientInfo
+      }
+    )
+    .then((response) => {
+ 
+      console.log(response.data)
+      setLoad(false)
+        setFurtherClaim(response.data);
+        console.log(response.data);
+    })
+    .catch((error) => {
+      console.log(error);
+      try {
+        const ErrorMass = error.config.url;
+        const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+        setMassFurtherError(error.code + " - " + error.message + " - " + ErrorMass2);
+        setShowFormCheckEligibleError("Error");
+      } catch (error) {
+        setMassFurtherError(error.response.data.HTTPStatus.message);
+        setShowFormCheckEligibleError("Error");
+      }
+    });
+    }else if(serviceValue === "PRE"){
 
-      })
-      .catch((error) => {
-        console.log(error);
-        try {
-          const ErrorMass = error.config.url;
-          const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
-          setMassFurtherError(error.code + " - " + error.message + " - " + ErrorMass2);
-          setShowFormCheckEligibleError("Error");
-        } catch (error) {
-          setMassFurtherError(error.response.data.HTTPStatus.message);
-          setShowFormCheckEligibleError("Error");
-        }
-      });
+    axios
+    .post(
+      '/api/v1/aia-checkeligible/preauthSubmission',{PatientInfo} 
+      // process.env.NEXT_PUBLIC_URL_PD +
+      //   process.env.NEXT_PUBLIC_URL_getRetrieveFurtherclaim,
+      // {
+      //     PatientInfo
+      // }
+    )
+    .then((response) => {
+ 
+      console.log(response.data)
+      setLoad(false)
+      setPreAuthTransactionList(response.data);
+    })
+    .catch((error) => {
+      console.log(error);
+      try {
+        const ErrorMass = error.config.url;
+        const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+        setMassFurtherError(error.code + " - " + error.message + " - " + ErrorMass2);
+        setShowFormCheckEligibleError("Error");
+      } catch (error) {
+        setMassFurtherError(error.response.data.HTTPStatus.message);
+        setShowFormCheckEligibleError("Error");
+      }
+    });
+
+
+    }
+ 
   
   };
 
@@ -530,8 +557,15 @@ if(idTypeValue === "NATIONAL_ID"){
       setFormPRE(false);
   };
   const SelectPRE = (event) => {
+
+    
     if(event.target.value){
-      setSelectPRETypeValue(event.target.value);
+
+      console.log(JSON.parse(event.target.value))
+       setListClaimForm(JSON.parse(event.target.value));
+      
+
+      setSelectPRETypeValue(event.target.value.ClaimNo);
       setFormPRE(true);
     }else{
       setSelectPRETypeValue("");
@@ -906,8 +940,10 @@ if(idTypeValue === "NATIONAL_ID"){
             const AI = response.data.Result.InsuranceData.CoverageList.some(coverage => coverage.Type === "ผลประโยชน์ค่าชดเชย" && coverage.Status === true);
             // const HSBypass = response.data.Result.InsuranceData.CoverageList.some(coverage => coverage.Type === "ผลประโยชน์ค่ารักษาพยาบาลที่ต้องตรวจสอบความคุ้มครองโดยเจ้าหน้าที่ AIA" && coverage.Status === true);
             if (hasTrueStatus) {
+                console.log("True")
               setMass(true);
             }else{
+              console.log("False")
               setMass(false)
             }
             
@@ -936,6 +972,8 @@ if(idTypeValue === "NATIONAL_ID"){
             //   setHSBypass(false);
             // }
 
+          }else{
+            console.log("Error")
           }
 
 
@@ -1926,9 +1964,10 @@ if(idTypeValue === "NATIONAL_ID"){
   </div>
   </div> 
  )
-
   : (
-  furtherClaim ? (<div className="rounded-md w-full">
+    preAuthTransactionList ? (
+
+              <div className="rounded-md w-full">
                   <div role="tablist" className="tabs-bordered">
                 <input
                   type="radio"
@@ -1955,16 +1994,15 @@ if(idTypeValue === "NATIONAL_ID"){
                       onChange={SelectPRE}
                     >
                       <option></option>
-                      {console.log(selectPRETypeValue)}
-               {furtherClaim
-                        ? furtherClaim.Result.InsuranceData.FurtherClaimList.map(
+               {preAuthTransactionList
+                        ? preAuthTransactionList.Data.PreAuthTransactionList.map(
                             (ftc, index) => (
                               <option
                                 key={index}
-                                value={`${ftc.ClaimNo}`}
+                                value={JSON.stringify(ftc)}
                               >
                                 เลขกรมธรรม์: {ftc.ClaimNo}, วันที่เข้ารักษา:{" "}
-                                {ftc.VisitDateTime.split("T")[0]} VN: {ftc.FurtherClaimVN}
+                                {ftc.VisitDateTime.split("T")[0]} 
                               </option>
                             )
                           )
@@ -2117,7 +2155,7 @@ if(idTypeValue === "NATIONAL_ID"){
                         id="disabledInput"
                         label="รหัสอนุมัติการเรียกร้อง (Claim ID)"
                         className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"
-                        defaultValue={selectPRETypeValue}
+                        defaultValue={listClaimForm.ClaimNo}
                         InputProps={{ readOnly: true }}
                       />
                     </Box>
@@ -2134,7 +2172,7 @@ if(idTypeValue === "NATIONAL_ID"){
                         id="disabledInput"
                         label="จำนวนครั้งของการพิจารณาครั้งก่อน"
                         className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"
-                        defaultValue="{PatientInfoData.PatientInfo.VN}"
+                        defaultValue={listClaimForm.OccerrenceNo}
                         InputProps={{ readOnly: true }}
                       />
                     </Box>
@@ -2151,7 +2189,7 @@ if(idTypeValue === "NATIONAL_ID"){
                         id="disabledInput"
                         label="วันที่มารับการรักษาที่โรงพยาบาลของการพิจารณาครั้งก่อน"
                         className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"
-                        defaultValue="{PatientInfoData.PatientInfo.VN}"
+                        defaultValue={listClaimForm.VisitDateTime}
                         InputProps={{ readOnly: true }}
                       />
                     </Box>
@@ -2168,7 +2206,7 @@ if(idTypeValue === "NATIONAL_ID"){
                         id="disabledInput"
                         label="สถานะของการพิจารณาครั้งก่อน"
                         className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"
-                        defaultValue="{PatientInfoData.PatientInfo.VN}"
+                        defaultValue={listClaimForm.ClaimStatusDesc}
                         InputProps={{ readOnly: true }}
                       />
                     </Box>
@@ -2185,16 +2223,37 @@ if(idTypeValue === "NATIONAL_ID"){
                         id="disabledInput"
                         label="วันที่คาดว่าจะเข้ารับการผ่าตัดที่โรงพยาบาลของการพิจารณาครั้งก่อน"
                         className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"
-                        defaultValue="{PatientInfoData.PatientInfo.VN}"
+                        defaultValue={listClaimForm.ExpectedAdmitDate}
                         InputProps={{ readOnly: true }}
                       />
                     </Box>
                           </div>
                         </div>
+                        <div className="overflow-x-auto border-2 mt-2">
+  <table className="table">
+    {/* head */}
+    <thead>
+      <tr className="bg-info text-base-100">
+        <th>Icd9</th>
+        <th>ProcedureName</th>
+        <th>ProcedureDate</th>
+      </tr>
+    </thead>
+    <tbody>
+      {listClaimForm    ? listClaimForm.Procedure.map(
+                              (Procedure, index) => (
+      <tr className="bg-base-200" key={index}>
+        <td>{Procedure.Icd9}</td>
+        <td>{Procedure.ProcedureName}</td>
+        <td>{Procedure.ProcedureDate}</td>
+      </tr>
+                              ) 
+                  ): ""}
+
+</tbody>
+  </table>
+</div>
                     </div>
-                  )}
-
-
 
 
 
