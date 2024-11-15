@@ -46,7 +46,7 @@ export default function checkData() {
   const [itemBillingDetails, setItemBillingDetails] = useState("");
   const [listBilling, setListBilling] = useState();
   const dispatch = useDispatch();
-  const [post, setPost] = useState("");
+  const [postData, setPostData] = useState("");
   const [currentData, setCurrentData] = useState("");
   const [selectedIdType, setSelectedIdType] = useState("");
   const [patientInfoDetail, setPatientInfoDetail] = useState();
@@ -93,6 +93,24 @@ export default function checkData() {
 
   useEffect(() => {
 
+    axios
+    .get(
+      process.env.NEXT_PUBLIC_URL_PD2 +
+        process.env.NEXT_PUBLIC_URL_documentType +
+        InsuranceCode
+    )
+    .then((response) => {
+      setDocType(response.data);
+    })
+    .catch((err) => {
+      // console.error("Error", err)
+      console.log(err);
+      //  if (err.response.request.status === 500) {
+      setShowFormError("Error");
+      setMassError(err.response.data.HTTPStatus.message);
+    });
+
+
     setStatusNew({});
     axios
       .get(
@@ -136,7 +154,7 @@ export default function checkData() {
       StatusClaimCode: "",
       ServiceSettingCode: serviceValue,
     };
-    console.log(PatientInfo);
+   // console.log(PatientInfo);
     axios
       .post(
         process.env.NEXT_PUBLIC_URL_SV +
@@ -144,8 +162,8 @@ export default function checkData() {
         { PatientInfo }
       )
       .then((response) => {
-        setPost(response.data);
-       // console.log(response.data);
+        setPostData(response.data);
+        console.log(response.data);
         // setShowFormError();
         setCurrentData(response.data.Result.TransactionClaimInfo);
       })
@@ -155,9 +173,9 @@ export default function checkData() {
         setShowFormError("Error");
         setMassError(error.message);
       });
-
+    }, []);
     /////////////////////////////////////////////////////////////////////////////////////
-  }, []);
+
   const status = (event) => {
     setStatusValue(event.target.value);
   };
@@ -193,8 +211,8 @@ export default function checkData() {
       { PatientInfo }
     )
     .then((response) => {
-      setPost(response.data);
-      console.log(response.data);
+      setPostData(response.data);
+    //  console.log(response.data);
       setCurrentData(response.data.Result.TransactionClaimInfo);
       setShowFormError();
     })
@@ -234,7 +252,7 @@ export default function checkData() {
       Runningdocument: "",
     };
 
-    console.log(PatientInfo);
+ //   console.log(PatientInfo);
     axios
       .post(
         process.env.NEXT_PUBLIC_URL_PD2 +
@@ -473,7 +491,7 @@ axios
 )
 .then((response) => {
  
-  console.log(response.data);
+ // console.log(response.data);
   if(response.data.HTTPStatus.statusCode === 200){
    // setTotalSum(response.data.Result)
 
@@ -506,7 +524,7 @@ axios
     };
     const newRandomNumber = generateRandomFiveDigitNumber();
     setRandomNumber(newRandomNumber);
-    console.log(newRandomNumber);
+   //console.log(newRandomNumber);
 
     setShowDocError();
     // const [RefId, TransactionNo, PID, PassportNumber, HN, VN, InvoiceNumber] =
@@ -532,7 +550,7 @@ axios
       Runningdocument: newRandomNumber,
     };
 
-    console.log(PatientInfo);
+   // console.log(PatientInfo);
     axios
       .post(
         process.env.NEXT_PUBLIC_URL_PD2 +
@@ -541,7 +559,7 @@ axios
       )
       .then((response) => {
         setBillList(response.data);
-        console.log(response.data);
+    //    console.log(response.data);
       })
       .catch((err) => {
         // console.error("Error", err)
@@ -757,86 +775,87 @@ axios
   const Detail = (data) => {
         console.log(data)
     //console.log("-Detail-")
-    setShowFormError();
+    // setShowFormError();
 
-    const PatientInfo = {
-      Insurerid: InsuranceCode,
-      PID: data.PID,
-      PassportNumber: data.PassportNumber,
-      IdType: data.IdType,
-      ServiceSettingCode: data.ServiceSettingCode,
-      VN: data.VN,
-      HN: data.HN,
-      VisitDatefrom: data.VisitDate,
-      VisitDateto: "",
-    };
-    //  console.log(PatientInfo)
+    // const PatientInfo = {
+    //   Insurerid: InsuranceCode,
+    //   PID: data.PID,
+    //   PassportNumber: data.PassportNumber,
+    //   IdType: data.IdType,
+    //   ServiceSettingCode: data.ServiceSettingCode,
+    //   VN: data.VN,
+    //   HN: data.HN,
+    //   VisitDatefrom: data.VisitDate,
+    //   VisitDateto: "",
+    // };
+    // //  console.log(PatientInfo)
 
-    axios
-      .post(
-        process.env.NEXT_PUBLIC_URL_PD +
-          process.env.NEXT_PUBLIC_URL_getEpisodeByHN,
-        { PatientInfo }
-      )
-      .then((response) => {
-        const getEpisodeByHN = response.data.Result.PatientInfo;
-        //  console.log(response.data)
-        dispatch(
-          save2({
-            value: "มีรายชื่อ",
-            Data: {
-              IdType: data.IdType,
-              InsurerCode: InsuranceCode,
-              DateOfBirth: getEpisodeByHN.DateOfBirth,
-              Gender: getEpisodeByHN.Gender,
-              GivenNameEN: getEpisodeByHN.GivenNameEN,
-              GivenNameTH: getEpisodeByHN.GivenNameTH,
-              HN: getEpisodeByHN.HN,
-              MobilePhone: getEpisodeByHN.MobilePhone,
-              PID: getEpisodeByHN.PID,
-              PassportNumber: getEpisodeByHN.PassportNumber,
-              SurnameEN: getEpisodeByHN.SurnameEN,
-              SurnameTH: getEpisodeByHN.SurnameTH,
-              TitleEN: getEpisodeByHN.TitleEN,
-              TitleTH: getEpisodeByHN.TitleTH,
-            },
-          })
-        );
-      })
-      .catch((error) => {
-        console.log(error);
-        setShowFormError("Error");
-        //setMassError(error.response.data.HTTPStatus.message);
-        setMassError(
-          error.response?.data?.HTTPStatus?.message || "Unknown error"
-        );
-      });
+    // axios
+    //   .post(
+    //     process.env.NEXT_PUBLIC_URL_PD +
+    //       process.env.NEXT_PUBLIC_URL_getEpisodeByHN,
+    //     { PatientInfo }
+    //   )
+    //   .then((response) => {
+    //     const getEpisodeByHN = response.data.Result.PatientInfo;
+    //     //  console.log(response.data)
+    //     dispatch(
+    //       save2({
+    //         value: "มีรายชื่อ",
+    //         Data: {
+    //           IdType: data.IdType,
+    //           InsurerCode: InsuranceCode,
+    //           DateOfBirth: getEpisodeByHN.DateOfBirth,
+    //           Gender: getEpisodeByHN.Gender,
+    //           GivenNameEN: getEpisodeByHN.GivenNameEN,
+    //           GivenNameTH: getEpisodeByHN.GivenNameTH,
+    //           HN: getEpisodeByHN.HN,
+    //           MobilePhone: getEpisodeByHN.MobilePhone,
+    //           PID: getEpisodeByHN.PID,
+    //           PassportNumber: getEpisodeByHN.PassportNumber,
+    //           SurnameEN: getEpisodeByHN.SurnameEN,
+    //           SurnameTH: getEpisodeByHN.SurnameTH,
+    //           TitleEN: getEpisodeByHN.TitleEN,
+    //           TitleTH: getEpisodeByHN.TitleTH,
+    //         },
+    //       })
+    //     );
+    //   })
+    //   .catch((error) => {
+    //     console.log(error);
+    //     setShowFormError("Error");
+    //     //setMassError(error.response.data.HTTPStatus.message);
+    //     setMassError(
+    //       error.response?.data?.HTTPStatus?.message || "Unknown error"
+    //     );
+    //   });
 
-    dispatch(
-      save({
-        value: "มีข้อมูล",
-        Data: {
-          RefId: data.RefId,
-          TransactionNo: data.TransactionNo,
-          VN: data.VN,
-          InsurerCode: InsuranceCode,
-          ServiceSettingCode: data.ServiceSettingCode,
-          IllnessTypeCode: data.IllnessTypeCode,
-          SurgeryTypeCode: data.SurgeryTypeCode,
-          PolicyTypeCode: data.PolicyTypeCode,
-          AccidentDate: data.AccidentDate,
-          VisitDateTime: data.VisitDateTime,
-          FurtherClaimVN: data.FurtherClaimVN,
-          FurtherClaimNo: data.FurtherClaimNo,
-          FurtherClaimId: data.FurtherClaimId,
-          Runningdocument: data.randomNumberold,
-          Visitlocation: data.Visitlocation,
-        },
-      })
-    );
+    // dispatch(
+    //   save({
+    //     value: "มีข้อมูล",
+    //     Data: {
+    //       RefId: data.RefId,
+    //       TransactionNo: data.TransactionNo,
+    //       VN: data.VN,
+    //       InsurerCode: InsuranceCode,
+    //       ServiceSettingCode: data.ServiceSettingCode,
+    //       IllnessTypeCode: data.IllnessTypeCode,
+    //       SurgeryTypeCode: data.SurgeryTypeCode,
+    //       PolicyTypeCode: data.PolicyTypeCode,
+    //       AccidentDate: data.AccidentDate,
+    //       VisitDateTime: data.VisitDateTime,
+    //       FurtherClaimVN: data.FurtherClaimVN,
+    //       FurtherClaimNo: data.FurtherClaimNo,
+    //       FurtherClaimId: data.FurtherClaimId,
+    //       Runningdocument: data.randomNumberold,
+    //       Visitlocation: data.Visitlocation,
+    //     },
+    //   })
+    // );
 
-     router.push("/aia/eligible");
+    //  router.push("/aia/eligible");
   };
+  
   const DocumentBase64 = (data) => {
     setMsg();
     setProgress({ started: false, pc: 0 });
@@ -922,7 +941,7 @@ axios
               { PatientInfo: patientUpdate }
             )
             .then((response) => {
-              setPost(response.data);
+              setPostData(response.data);
               // console.log(response.data)
               //  setCurrentData(response.data.Result.TransactionClaimInfo)
               setShowFormError();
@@ -999,7 +1018,7 @@ axios
               }
             )
             .then((response) => {
-              console.log(response.data);
+           //   console.log(response.data);
 
               if (response.data.HTTPStatus.statusCode === 200) {
                 // console.log(response.data)
@@ -1095,7 +1114,7 @@ axios
     setBillList();
     // setStatusAllNew();
     setStatusNew({});
-    setPost();
+    setPostData();
     setShowFormError();
     let data = {};
     let dateToValue = "";
@@ -1241,7 +1260,7 @@ axios
  }; 
     }
 
-    console.log(PatientInfo);
+   // console.log(PatientInfo);
     setPatientUpdate({ PatientInfo });
     if (PatientInfo) {
       setPatientInfoDetail(PatientInfo);
@@ -1252,8 +1271,8 @@ axios
           { PatientInfo }
         )
         .then((response) => {
-          setPost(response.data);
-          console.log(response.data);
+          setPostData(response.data);
+      //    console.log(response.data);
           setCurrentData(response.data.Result.TransactionClaimInfo);
           setShowFormError();
         })
@@ -1297,7 +1316,7 @@ axios
 
   const RefreshAll = () => {
     // console.log(data)
-    setPost();
+    setPostData();
     const extractedRefId = data.map((item) => item.RefId);
     const extractedTransactionNo = data.map((item) => item.TransactionNo);
 
@@ -1314,7 +1333,7 @@ axios
         { PatientInfo: PatientInfo }
       )
       .then((response) => {
-        console.log(response.data);
+     //   console.log(response.data);
 
         const AllPatient = response.data.Result.InsuranceData.map((item) => ({
           RefId: item.RefId,
@@ -1327,7 +1346,7 @@ axios
           PaymentDate: item.StatusInfo.PaymentDate,
           InvoiceNumber: item.StatusInfo.InvoiceNumber,
         }));
-        console.log(AllPatient);
+      //  console.log(AllPatient);
         // setStatusAllNew(AllPatient);
         axios
         .post(
@@ -1336,7 +1355,7 @@ axios
           { PatientInfo: patientUpdate }
         )
         .then((response) => {
-          setPost(response.data);
+          setPostData(response.data);
           // console.log(response.data)
           //  setCurrentData(response.data.Result.TransactionClaimInfo)
           setShowFormError();
@@ -1364,6 +1383,7 @@ axios
 
   return (
     <>
+
       <form onSubmit={handleSubmit}>
         {/* <div className="grid gap-1 sm:grid-cols-1 w-full"> */}
         <div className="flex items-center  w-full">
@@ -1570,12 +1590,12 @@ axios
                 <th></th>
                 <th >Visit Date</th>
                 <th>Full Name</th>
-                <th>HN</th>
-                <th>VN</th>
+                <th>HN <br/> VN</th>
+                <th>Location</th>
                 <th>ClaimNo</th>
                 <th>Invoicenumber</th>
                 <td>BatchNumber</td>
-                <th className="w-40">Status</th>
+                <th className="w-40 ">Status</th>
                 <th >Total<br/>Billamount</th>
                 <th >Approved<br/>Amount</th>
                 <th >Excess<br/>Amount</th>
@@ -1588,9 +1608,9 @@ axios
               </tr>
             </thead>
             <tbody>
-              {console.log(post)}
-              {post ? (
-                post.HTTPStatus.statusCode === 200 ? (
+              {/* {console.log(postData)} */}
+              {postData ? (
+                postData.HTTPStatus.statusCode === 200 ? (
                   data.map(
                     (bill, index) =>
                       (bill.VisitDate || bill.HN) !== "" && (
@@ -1600,8 +1620,8 @@ axios
                           <td className="whitespace-nowrap">
                             {bill.TitleTH} {bill.GivenNameTH} {bill.SurnameTH}
                           </td>
-                          <td className="whitespace-nowrap">{bill.HN}</td>
-                          <td className="whitespace-nowrap">{bill.VN}</td>
+                          <td className="whitespace-nowrap">{bill.HN} <br/> {bill.VN}</td>
+                          <td className="">{bill.VisitLocation}</td>
                           <td className="whitespace-nowrap">{bill.ClaimNo}</td>
                           <td className="whitespace-nowrap">{bill.InvoiceNumber}</td>
                           <td className="whitespace-nowrap">
@@ -1610,7 +1630,7 @@ axios
                             }
                           </td>
                           <td>
-                            <div className="grid gap-1 sm:grid-cols-1 w-full">
+                            <div className="grid gap-1 sm:grid-cols-1 w-40 ">
                               {
                                statusNew ? (
                                 bill.TransactionNo ===statusNew.TransactionNo ? (statusNew.ClaimStatusDesc ? (statusNew.ClaimStatus !== "Cancelled" && statusNew.ClaimStatus !=="Cancelled to AIA" &&statusNew.ClaimStatus !== "Reversed" ? (statusNew.ClaimStatus === "Approved" ||statusNew.ClaimStatus === "Settle" ? (
@@ -1810,12 +1830,12 @@ axios
                                 ) : (
                                   <>
                                     <button
-                                      className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100 ml-4 whitespace-nowrap"
+                                      className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100 whitespace-nowrap"
                                       onClick={() =>
                                         handleButtonClick(bill)
                                       }
                                     >
-                                      ส่งเอกสาร<br/>เพิ่มเติม
+                                      ส่งเอกสารเพิ่มเติม
                                     </button>
                                   </>
                                 )
@@ -1827,11 +1847,11 @@ axios
                             )}
                             {/* {console.log(bill)} */}
                             { bill.RefId ? (
-                            (bill.ClaimStatusDesc === "waitting for discharge") ? (
+                             ((bill.ClaimStatusDesc === "waitting for discharge")||(bill.ClaimStatusDesc === "Approve")||(bill.ClaimStatusDesc === "Received")) ? (
                               <>
 
                                 <button
-                                  className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100 ml-4"
+                                  className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100"
                                   onClick={() =>
                                     Checkcreditlimit(bill)
                                   }
@@ -1857,13 +1877,13 @@ axios
             </tbody>
           </table>
 
-          {post ? (
+          {postData ? (
             <div className="grid gap-1 sm:grid-cols-2 w-full mt-4">
               <div className="flex justify-between text-right">
                 <div className="text-right">
                   <h1 className="text-lg">
                     Showing {startIndex + 1} to {endIndex} of{" "}
-                    {post ? post.Result.TransactionClaimInfo.length : ""}{" "}
+                    {postData ? postData.Result.TransactionClaimInfo.length : ""}{" "}
                     entries.
                   </h1>
                 </div>
@@ -2015,7 +2035,7 @@ axios
           </dialog>
 
           <dialog id="my_modal_4" className="modal text-xl	">
-            <div className="modal-box max-w-3xl">
+            <div className="modal-box max-w-4xl">
               <form method="dialog">
                 <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
                   ✕
@@ -2061,10 +2081,12 @@ axios
                   <thead>
                     <tr className="text-base-100 bg-primary py-8 text-sm w-full text-center">
                       <th className="w-2/5">ชื่อไฟล์</th>
+                      <th className="w-2/5">ประเภทเอกสาร</th>
                       <th className="w-1/5"></th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
+                    {/* {console.log(docType)} */}
                     {billList ? (
                       billList.map((list, index) => (
                         <tr key={index} className=" bg-neutral text-sm">
@@ -2074,6 +2096,16 @@ axios
                             {list.originalname}
                           </td>
                           <td className="px-6 py-4 break-words">
+                            {
+                  
+                              docType.Result.map((type,index) => 
+                                list.documenttypecode === type.documenttypecode ? (
+                              <h1 key={index}>{type.documenttypename} </h1>      
+                                  ) : ""
+                            ) 
+                          }
+                          </td>
+                          <td className="px-6 py-4 break-words flex items-center">
                             <div
                               className="btn btn-primary  mr-2 text-base-100 hover:text-primary hover:bg-base-100"
                               type="submit"

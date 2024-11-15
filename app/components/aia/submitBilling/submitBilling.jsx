@@ -48,6 +48,7 @@ export default function checkData() {
   const [currentData, setCurrentData] = useState("");
   const [billtype, setBilltype] = useState("");
   const [claimStatus, setClaimStatus] = useState("");
+  const [docType, setDocType] = useState("");
   const [patientInfoDetail, setPatientInfoDetail] = useState();
   const [statusNew, setStatusNew] = useState({});
   const [file, setFile] = useState(null);
@@ -74,6 +75,23 @@ export default function checkData() {
 
 
   useEffect(() => {
+
+    axios
+    .get(
+      process.env.NEXT_PUBLIC_URL_PD2 +
+        process.env.NEXT_PUBLIC_URL_documentType +
+        InsuranceCode
+    )
+    .then((response) => {
+      setDocType(response.data);
+    })
+    .catch((err) => {
+      // console.error("Error", err)
+      console.log(err);
+      //  if (err.response.request.status === 500) {
+      setShowFormError("Error");
+      setMassError(err.response.data.HTTPStatus.message);
+    });
 
     axios
       .get(
@@ -1430,6 +1448,7 @@ axios
                 <th>Full Name</th>
                 <th>HN</th>
                 <th>VN</th>
+                <th>Location</th>
                 <th>ClaimNo</th>
                 <th>Invoicenumber</th>
                 <td>BatchNumber</td>
@@ -1460,6 +1479,7 @@ axios
                       </td>
                       <td>{bill.HN}</td>
                       <td>{bill.VN}</td>
+                      <td className="whitespace-nowrap">{bill.VisitLocation}</td>
                       <td>{bill.ClaimNo}</td>
                       <td>{bill.InvoiceNumber}</td>
                       <td>
@@ -1734,6 +1754,7 @@ axios
                 <th>Full Name</th>
                 <th>HN</th>
                 <th>VN</th>
+                <th>Location</th>
                 <th>ClaimNo</th>
                 <th>Invoicenumber</th>
                 <td>BatchNumber</td>
@@ -1765,6 +1786,7 @@ axios
     </td>
     <td>{bill.HN}</td>
     <td>{bill.VN}</td>
+    <td className="whitespace-nowrap">{bill.VisitLocation}</td>
     <td>{bill.ClaimNo}</td>
     <td>{bill.InvoiceNumber}</td>
     <td>
@@ -2025,6 +2047,7 @@ axios
                 <th>Full Name</th>
                 <th>HN</th>
                 <th>VN</th>
+                <th>Location</th>
                 <th>ClaimNo</th>
                 <th>Invoicenumber</th>
                 <td>BatchNumber</td>
@@ -2056,6 +2079,7 @@ axios
     </td>
     <td>{bill.HN}</td>
     <td>{bill.VN}</td>
+    <td className="whitespace-nowrap">{bill.VisitLocation}</td>
     <td>{bill.ClaimNo}</td>
     <td>{bill.InvoiceNumber}</td>
     <td>
@@ -2530,7 +2554,8 @@ axios
                   <table className="table table-zebra mt-2">
                     <thead>
                       <tr className="text-base-100 bg-primary py-8 text-sm w-full text-center">
-                        <th className="w-2/5">ชื่อไฟล์</th>
+                      <th className="w-2/5">ชื่อไฟล์</th>
+                      <th className="w-2/5">ประเภทเอกสาร</th>
                         <th className="w-1/5"></th>
                       </tr>
                     </thead>
@@ -2543,6 +2568,16 @@ axios
                               <br/>{list.originalname}
                             </td>
                             <td className="px-6 py-4 break-words">
+                            {
+                  
+                              docType.Result.map((type,index) => 
+                                list.documenttypecode === type.documenttypecode ? (
+                              <h1 key={index}>{type.documenttypename} </h1>      
+                                  ) : ""
+                            ) 
+                          }
+                          </td>
+                          <td className="px-6 py-4 break-words flex items-center">
                         
                                 <div
                                   className="btn btn-primary  mr-2 text-base-100 hover:text-primary hover:bg-base-100"

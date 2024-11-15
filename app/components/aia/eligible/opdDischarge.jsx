@@ -41,7 +41,7 @@ import {
 import { styled } from "@mui/material/styles";
 
 export default function Page({ data }) {
-  //console.log(data)
+ // console.log(data)
   const error = {
     response: {
       data: {
@@ -77,6 +77,7 @@ export default function Page({ data }) {
   const [injurySideType, setInjurySideType] = useState();
   const [investigation, setInvestigation] = useState();
   const [billing, setBilling] = useState();
+  const [numberBilling, setNumberBilling] = useState(false);
   const [orderItemz, setOrderItemz] = useState();
   const [listClaimForm, setListClaimForm] = useState();
   const [result, setResult] = useState("");
@@ -184,7 +185,7 @@ export default function Page({ data }) {
 
     },
   };
-  console.log(PatientInfoData.PatientInfo)
+  //console.log(PatientInfoData.PatientInfo)
   useEffect(() => {
     PatientInfoData.PatientInfo.FurtherClaimVN ? setNumberValue(PatientInfoData.PatientInfo.FurtherClaimVN) : setNumberValue(PatientInfoData.PatientInfo.VN);  
     setRandomNumber();
@@ -195,12 +196,12 @@ export default function Page({ data }) {
     setFileList()
     const newRandomNumber = generateRandomFiveDigitNumber();
     setRandomNumber(newRandomNumber);
-    console.log(newRandomNumber);
+  //  console.log(newRandomNumber);
   }else{
     setRandomNumber(data.DataTran.Data.Runningdocument)
   }
 
-  }, []);
+  }, [data]);
 
   useEffect(() => {
     if (inputRef.current) {
@@ -229,7 +230,7 @@ export default function Page({ data }) {
       //  console.log(response.data)
       })
       .catch((error) => {
-        console.log(error);
+  //      console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -240,7 +241,7 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
-  }, []);
+  }, [data]);
 
   useEffect(() => {
     const PatientInfo = {
@@ -264,7 +265,7 @@ export default function Page({ data }) {
         //console.log(response.data.Result.PatientInfo[0])
       })
       .catch((error) => {
-        console.log(error);
+    //    console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -275,7 +276,7 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
-  }, []);
+  }, [data]);
 
   useEffect(() => {
     let Data;
@@ -356,7 +357,7 @@ export default function Page({ data }) {
       PatientInfoData 
       )
       .then((response) => {
-         console.log(response.data)
+    //     console.log(response.data)
         setVisit(response.data);
         setOver45(response.data.Result.VisitInfo.AccidentCauseOver45Days);
         //const dateValue = dayjs(response.data.Result.VisitInfo.SignSymptomsDate);
@@ -366,7 +367,7 @@ export default function Page({ data }) {
 
       })
       .catch((error) => {
-        console.log(error);
+    //    console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -395,7 +396,7 @@ export default function Page({ data }) {
         );
       })
       .catch((error) => {
-        console.log(error);
+    //    console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -406,14 +407,7 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
-
-
-
- 
-
-
-
-  }, []);
+  }, [data]);
 
   useEffect(() => {
     let Data;
@@ -495,7 +489,7 @@ export default function Page({ data }) {
        PatientInfoData
       )
       .then((response) => {
-        console.log(response.data)
+      //  console.log(response.data)
          setAccidentDetail(response.data);
           setCauseOfInjuryDetails(response.data.Result.AccidentDetailInfo.CauseOfInjuryDetail);
           setInjuryDetails(response.data.Result.AccidentDetailInfo.InjuryDetail);
@@ -509,7 +503,7 @@ export default function Page({ data }) {
         // }
       })
       .catch((error) => {
-        console.log(error);
+    //    console.log(error);
         // try {
         //   const ErrorMass = error.config.url;
         //   const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -521,7 +515,7 @@ export default function Page({ data }) {
         // }
       
       });
-  }, []);
+  }, [data]);
   useEffect(() => {
     axios
       .get(
@@ -534,7 +528,7 @@ export default function Page({ data }) {
         setOver45Days(response.data);
       })
       .catch((error) => {
-        console.log(error);
+    //    console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -545,7 +539,7 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
-  }, []);
+  }, [data]);
   useEffect(() => {
     axios
       .get(
@@ -559,7 +553,7 @@ export default function Page({ data }) {
         setDataaccidentPlace(response.data);
       })
       .catch((error) => {
-        console.log(error);
+    //    console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -570,7 +564,7 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
-  }, []);
+  }, [data]);
   useEffect(() => {
     axios
       .get(
@@ -584,7 +578,7 @@ export default function Page({ data }) {
         setDatainjurySide(response.data);
       })
       .catch((error) => {
-        console.log(error);
+    //    console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -595,7 +589,7 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
-  }, []);
+  }, [data]);
 
   useEffect(() => {
     axios
@@ -610,7 +604,7 @@ export default function Page({ data }) {
         setDataWoundType(response.data);
       })
       .catch((error) => {
-        console.log(error);
+    //    console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -621,7 +615,7 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
-  }, []);
+  }, [data]);
  
   useEffect(() => {
     
@@ -636,7 +630,7 @@ export default function Page({ data }) {
         setVitalsign(response.data);
       })
       .catch((error) => {
-        console.log(error);
+    //    console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -647,7 +641,7 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
-  }, []);
+  }, [data]);
 
   useEffect(() => {
     let Data;
@@ -727,11 +721,11 @@ export default function Page({ data }) {
       PatientInfoData
       )
       .then((response) => {
-        console.log(response.data)
+     //   console.log(response.data)
         setDoctor(response.data);
       })
       .catch((error) => {
-        console.log(error);
+    //    console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -742,7 +736,7 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
-  }, []);
+  }, [data]);
 
   useEffect(() => {
     let Data;
@@ -821,11 +815,11 @@ export default function Page({ data }) {
         PatientInfoData
       )
       .then((response) => {
-        console.log(response.data)
+    //    console.log(response.data)
         setDiagnosis(response.data);
       })
       .catch((error) => {
-        console.log(error);
+    //    console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -836,7 +830,7 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
-  }, []);
+  }, [data]);
   useEffect(() => {
     axios
       .post(
@@ -853,7 +847,7 @@ export default function Page({ data }) {
         //console.log(rows);
       })
       .catch((error) => {
-        console.log(error);
+      //  console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -864,7 +858,7 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
-  }, []);
+  }, [data]);
 
   const handleAddRow = () => {
     setRows([...rows, newRow]);
@@ -976,7 +970,7 @@ export default function Page({ data }) {
         setInjuryWoundType(response.data);
       })
       .catch((error) => {
-        console.log(error);
+     //   console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -987,7 +981,7 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
-  }, []);
+  }, [data]);
   ////////////////////////////////
 
   const handleDeleteCauseOfInjuryDetail = (index) => {
@@ -1017,7 +1011,7 @@ export default function Page({ data }) {
   
 
     async function Submitfurtherclaimvn(e) {
-      console.log(e)
+  //    console.log(e)
   setShowSummitError();
   setShowSummitSucc();
   try {
@@ -1036,7 +1030,7 @@ export default function Page({ data }) {
               }
       )
 
-      console.log(response.data)
+     // console.log(response.data)
 
       if(response.data.HTTPStatus.statusCode === 200){
 
@@ -1069,7 +1063,7 @@ export default function Page({ data }) {
       await stepOne();
       await stepTwo();
     } catch (error) {
-      console.log(error);
+    //  console.log(error);
     };
 
     function stepOne() {
@@ -1125,7 +1119,7 @@ export default function Page({ data }) {
         setInvestigation(response.data);
       })
       .catch((error) => {
-        console.log(error);
+     //   console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -1136,7 +1130,7 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
-  }, []);
+  }, [data]);
 
   useEffect(() => {
     axios
@@ -1150,7 +1144,7 @@ export default function Page({ data }) {
         setOrderItemz(response.data);
       })
       .catch((error) => {
-        console.log(error);
+     //   console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -1161,7 +1155,7 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
-  }, []);
+  }, [data]);
 
   useEffect(() => {
     axios
@@ -1176,7 +1170,7 @@ export default function Page({ data }) {
       setListClaimForm(response.data);
       })
       .catch((error) => {
-        console.log(error);
+     //   console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -1187,10 +1181,12 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
-  }, []);
+  }, [data]);
 
 
   useEffect(() => {
+   
+    setBilling();
     axios
       .post(
         process.env.NEXT_PUBLIC_URL_SV +
@@ -1198,11 +1194,16 @@ export default function Page({ data }) {
         PatientInfoData
       )
       .then((response) => {
-     //   console.log(response.data)
-        setBilling(response.data);
+        console.log(response.data)
+    // console.log("5555")
+    if(numberBilling === false){
+      setBilling(response.data);
+      setNumberBilling(true);
+    }
+       
       })
       .catch((error) => {
-        console.log(error);
+     //   console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -1255,7 +1256,7 @@ export default function Page({ data }) {
         //        );
       })
       .catch((error) => {
-        console.log(error);
+    //    console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -1331,7 +1332,7 @@ export default function Page({ data }) {
         //console.log(response.data)
       })
       .catch((error) => {
-        console.log(error);
+       // console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -1350,7 +1351,7 @@ export default function Page({ data }) {
 
       })
       .catch((error) => {
-        console.log(error);
+     //   console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -1454,7 +1455,7 @@ if(rows){
          await stepThree();
          await stepFour();
       } catch (error) {
-        console.log(error);
+   //     console.log(error);
       }
     }
 
@@ -1490,7 +1491,7 @@ if(rows){
             resolve("Step 1 completed");
           })
           .catch((error) => {
-            console.log(error);
+          //  console.log(error);
             try {
               const ErrorMass = error.config.url;
               const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -1530,11 +1531,11 @@ if(rows){
             { PatientInfo }
           )
           .then((response) => {
-            console.log("2 Succ");
+          //  console.log("2 Succ");
             resolve("Step 2 completed");
           })
           .catch((error) => {
-            console.log(error);
+          //  console.log(error);
             try {
               const ErrorMass = error.config.url;
               const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -1607,11 +1608,11 @@ if(rows){
             { PatientInfo }
           )
           .then((response) => {
-            console.log("3 Succ");
+         //   console.log("3 Succ");
             resolve("Step 3 completed");
           })
           .catch((error) => {
-            console.log(error);
+         //   console.log(error);
             try {
               const ErrorMass = error.config.url;
               const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -1670,10 +1671,10 @@ if(rows){
                 { PatientInfo }
               )
               .then((response) => {
-                console.log(response.data);
+              //  console.log(response.data);
               })
               .catch((error) => {
-                console.log(error);
+             //   console.log(error);
               });
               document.getElementById("my_modal_3").close();
               console.log("4 Succ");
@@ -1691,7 +1692,7 @@ if(rows){
             }
           })
           .catch((error) => {
-            console.log(error);
+          //  console.log(error);
             try {
               const ErrorMass = error.config.url;
               const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -1734,7 +1735,7 @@ if(rows){
           { PatientInfo }
         )
         .then((response) => {
-          console.log(response.data);
+       //   console.log(response.data);
           router.push("/aia/checkClaimStatus");
           // if (response.data.HTTPStatus.statusCode === 200) {
           // //  console.log("Cancel Succ")
@@ -1750,7 +1751,7 @@ if(rows){
         })
         .catch((error) => {
           // console.error("Error", err)
-          console.log(error);
+         // console.log(error);
           try {
             const ErrorMass = error.config.url;
             const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -1859,7 +1860,7 @@ if(rows){
           //console.log(response.data)
         })
         .catch((error) => {
-          console.log(error);
+         // console.log(error);
           try {
             const ErrorMass = error.config.url;
             const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -1896,7 +1897,7 @@ if(rows){
     }
   };
   const ArrowOpen = (e) =>{
-    console.log(e)
+  //  console.log(e)
     // console.log(showArrow)
     setShowArrowVN(e.VN)
     if(showArrow === false){
@@ -2182,7 +2183,7 @@ if(rows){
                     </div>
                   </div>
                   <div className="rounded-md">
-                    <div className="flex items-center ">
+                    {/* <div className="flex items-center ">
                       <input
                         type="checkbox"
                         id="OtherInsurer"
@@ -2194,7 +2195,7 @@ if(rows){
                       <p className="text-left">
                         &nbsp;ค่าส่วนเกินจากประกันอื่นๆ
                       </p>
-                    </div>
+                    </div> */}
                   </div>
                   <div className="rounded-md"> </div>
                   <div className="rounded-md"> </div>
@@ -2283,7 +2284,7 @@ if(rows){
                       >
                         <FaEdit className="text-base-100" />
                       </div>
-                  <div className="mt-2 ml-2">Claim form จาก VN : {PatientInfoData.PatientInfo.FurtherClaimVN ? PatientInfoData.PatientInfo.FurtherClaimVN+" ( เก่า )" : PatientInfoData.PatientInfo.VN+" ( ปัจจุบัน )" }</div>                    
+                  <div className="mt-2 ml-2">Claim form จาก VN : {PatientInfoData.PatientInfo.FurtherClaimVN ? (PatientInfoData.PatientInfo.FurtherClaimVN === PatientInfoData.PatientInfo.VN ? PatientInfoData.PatientInfo.VN+" ( ปัจจุบัน )" : PatientInfoData.PatientInfo.FurtherClaimVN+" ( เก่า )") : PatientInfoData.PatientInfo.VN+" ( ปัจจุบัน )" }</div>                    
 
                 </div>
                 <div className="grid gap-2 sm:grid-cols-2 w-full mt-4">
@@ -4002,13 +4003,13 @@ if(rows){
                       <th></th>
                       <th className="w-1/12">VisiDate</th>
                       <th className="w-1/12">Episode Number</th>
-                      <th className="w-5/12">Location</th>
                       <th className="w-2/12">Doctor</th>
+                      <th className="w-5/12">Location</th>
                       <th className="w-3/12">Diagnosis</th>
                       <th></th>
                     </tr>
                   </thead>
-                  {console.log(listClaimForm)}
+                  {/* {console.log(listClaimForm)} */}
                   <tbody className="bg-white divide-y divide-gray-200">
                     {listClaimForm ? (
                       listClaimForm.Result.ClaimFormListInfo.map((FormList, index) => (
@@ -4037,6 +4038,15 @@ if(rows){
                             </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                              {FormList.DoctorFirstName ? (
+                                FormList.DoctorFirstName
+                              ) : (
+                                <>&nbsp;</>
+                              )}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
                             <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
                               {FormList.LocationDesc ? FormList.LocationDesc : <>&nbsp;</>}
                             </div>
@@ -4054,15 +4064,6 @@ if(rows){
                           :
                           ""
                           }
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                              {FormList.DoctorFirstName ? (
-                                FormList.DoctorFirstName
-                              ) : (
-                                <>&nbsp;</>
-                              )}
-                            </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                           <div className="border-2 bg-base-100 break-all">
@@ -4099,9 +4100,6 @@ if(rows){
 
 </tbody>
   </table>
-
-
-
 
                             </div>
                             {

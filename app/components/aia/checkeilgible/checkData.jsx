@@ -40,7 +40,7 @@ export default function checkData() {
   const [illnessType, setIllnessType] = useState();
   const [surgeryType, setSurgeryType] = useState();
   const [showForm, setShowForm] = useState(false);
-  const [load, setLoad] = useState();
+  const [load, setLoad] = useState(false);
   const [numberValue, setNumberValue] = useState("");
   const [vNValue, setVNValue] = useState("");
   const [mass, setMass] = useState();
@@ -52,6 +52,7 @@ export default function checkData() {
   const [result, setResult] = useState();
   const [detailVN, setDetailVN] = useState();
   const [visitlocation, setVisitlocation] = useState();
+  const [locationCode, setLocationCode] = useState();
   const [listClaimForm, setListClaimForm] = useState();
   
   const [fromValue, setFromValue] = useState(null);
@@ -94,6 +95,7 @@ export default function checkData() {
   
 
   useEffect(() => {
+    setLoad(false)
     setRandomNumber();
     if(!ReDux.DataTran.Data.Runningdocument){
     const generateRandomFiveDigitNumber = () => {
@@ -236,6 +238,7 @@ if(idTypeValue === "NATIONAL_ID"){
     FurtherClaimNo: furtherClaimNo,
     FurtherClaimId: furtherClaimId,
     Visitlocation: visitlocation,
+    VisitlocationCode: locationCode,
  }
 }else if(idTypeValue === "PASSPORT"){
   PatientInfo = {
@@ -265,6 +268,7 @@ if(idTypeValue === "NATIONAL_ID"){
     FurtherClaimNo: furtherClaimNo,
     FurtherClaimId: furtherClaimId,
     Visitlocation: visitlocation,
+    VisitlocationCode: locationCode,
  }
 }else if(idTypeValue === "MEMBERSHIP_ID"){
   PatientInfo = {
@@ -294,6 +298,7 @@ if(idTypeValue === "NATIONAL_ID"){
     FurtherClaimNo: furtherClaimNo,
     FurtherClaimId: furtherClaimId,
     Visitlocation: visitlocation,
+    VisitlocationCode: locationCode,
  }
 }else if(idTypeValue === "POLICY_NUMBER"){
   PatientInfo = {
@@ -323,6 +328,7 @@ if(idTypeValue === "NATIONAL_ID"){
     FurtherClaimNo: furtherClaimNo,
     FurtherClaimId: furtherClaimId,
     Visitlocation: visitlocation,
+    VisitlocationCode: locationCode,
  }
 }else if(idTypeValue === "CUSTOMER_ID"){
   PatientInfo = {
@@ -352,6 +358,7 @@ if(idTypeValue === "NATIONAL_ID"){
     FurtherClaimNo: furtherClaimNo,
     FurtherClaimId: furtherClaimId,
     Visitlocation: visitlocation,
+    VisitlocationCode: locationCode,
  }
 }
     
@@ -428,9 +435,9 @@ if(idTypeValue === "NATIONAL_ID"){
     };
      console.log(PatientInfo);
 
-  setLoad(true)
+  setLoad(false)
      
-    console.log(serviceValue)
+    // console.log(serviceValue)
      if(serviceValue === "OPD"){
     axios
     .post(
@@ -443,7 +450,7 @@ if(idTypeValue === "NATIONAL_ID"){
     .then((response) => {
  
       console.log(response.data)
-      setLoad(false)
+      setLoad(true)
         setFurtherClaim(response.data);
         console.log(response.data);
     })
@@ -473,7 +480,7 @@ if(idTypeValue === "NATIONAL_ID"){
     .then((response) => {
  
       console.log(response.data)
-      setLoad(false)
+      setLoad(true)
       setPreAuthTransactionList(response.data);
     })
     .catch((error) => {
@@ -740,7 +747,7 @@ if(idTypeValue === "NATIONAL_ID"){
     setHB();
     setAI();
     setSuccFurtherClaim(false)
-    const [VNselectVN, VisitDateselectVN , LocationDesc] = event.target.selectVN.value.split(" | ");
+    const [VNselectVN, VisitDateselectVN , LocationDesc , LocationCode] = event.target.selectVN.value.split(" | ");
     //const [YearVN, MonthVN, DayVN] = VisitDateselectVN.split('-');
     // const Acc = accValue.split(" ");
     // setVisitDate(VisitDateTime)
@@ -757,6 +764,7 @@ if(idTypeValue === "NATIONAL_ID"){
     setVisitDateTime(VisitDateselectVN);
     setDetailVN(VNselectVN);
     setVisitlocation(LocationDesc)
+    setLocationCode(LocationCode)
 
     
 
@@ -1126,6 +1134,7 @@ if(idTypeValue === "NATIONAL_ID"){
                       </tr>
                     </thead>
                     <tbody>
+                      {console.log(post)}
                       {post ? (
                         post.Result.EpisodeInfo.map((ep, index) => (
                           <tr key={index} className="hover">
@@ -1133,7 +1142,7 @@ if(idTypeValue === "NATIONAL_ID"){
                               <input
                                 type="radio"
                                 name="selectVN"
-                                value={`${ep.VN} | ${ep.VisitDateTime} | ${ep.LocationDesc}`}
+                                value={`${ep.VN} | ${ep.VisitDateTime} | ${ep.LocationDesc} | ${ep.LocationCode}`}
                                 className="radio checked:bg-blue-500"
                                 defaultChecked
                               />
@@ -1613,7 +1622,7 @@ if(idTypeValue === "NATIONAL_ID"){
               </div>
   </div>
   ) : ( 
-    //furtherClaim===""s
+    //furtherClaim===""
 !selectedValue ? load === true ? <CircularProgress size="30px" className="text-error" /> :
 (<div className="rounded-md">
 <div
@@ -1902,79 +1911,31 @@ if(idTypeValue === "NATIONAL_ID"){
             ) : ""}
         <div className="flex justify-center mt-4">   
         
-          {mass ? (mass === true ? (
 
-
-
- 
-  (patientInfo.IllnessTypeCode === "ACC") ? (
- succFurtherClaim === true ? 
-
- (succFurtherClaim2 === false ? 
- <div className="rounded-md">
-                    <TextField
-                  error
-              id="outlined-basic"
-              label="เคลมต่อเนื่อง (VN First Claim form)"
-              // multiline
-              // maxRows={4}
-              variant="outlined"
-              className="w-full"
-              name="VN"
-              type="text"
-              value={vNValue}
-              onChange={(e) => setVNValue(e.target.value)}
-            />
-
-      <div
-    className="btn btn-error text-base-100 hover:text-error hover:bg-base-100 ml-2"
-    onClick={() =>handleButtonFurtherBlackVNClick(
-      `${result.Result.InsuranceData.RefId} | ${result.Result.InsuranceData.TransactionNo}`
-    )}
-  >
-    ย้อนกลับ
-  </div>
- <div
-   className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 ml-2 mt-2"
-   onClick={() =>handleButtonVNClick(
-     `${result.Result.InsuranceData.RefId} | ${result.Result.InsuranceData.TransactionNo}`
-   )}
- >
-   ยืนยันเลือก
- </div>
- </div> 
- :
-
-  <div className="rounded-md">
-      <div
-    className="btn btn-error text-base-100 hover:text-error hover:bg-base-100 ml-2"
-    onClick={() =>handleButtonBlackVNClick(
-      `${result.Result.InsuranceData.RefId} | ${result.Result.InsuranceData.TransactionNo}`
-    )}
-  >
-    ย้อนกลับ
-  </div>
-  <div
-    className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 ml-2"
-    onClick={() =>handleButtonClick(
-      `${result.Result.InsuranceData.RefId} | ${result.Result.InsuranceData.TransactionNo}`
-    )}
-  >
-    ลงทะเบียนใช้สิทธิ์
-  </div>
-  </div> 
- )
-  : (
-    preAuthTransactionList ? (
-
-              <div className="rounded-md w-full">
+   {mass === true ? 
+   load === false ?
+   <div className="rounded-md">
+   <div
+     className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 ml-2"
+     onClick={() =>
+       confirmButton(
+         `${result.Result.InsuranceData.RefId} | ${result.Result.InsuranceData.TransactionNo}`
+       )
+     }
+   >
+      ลงทะเบียนใช้สิทธิ์
+   </div>
+   
+   </div>
+   : 
+          <div className="rounded-md w-full">
                   <div role="tablist" className="tabs-bordered">
                 <input
                   type="radio"
                   name="my_tabs_1"
                   role="tab"
                   className="tab text-xl"
-                  aria-label="ไม่เคยประเมินเคสก่อนผ่าตัด"
+                  aria-label="ไม่เคยจองสิทธิ์"
                   onChange={NotSelectPRE}
                   defaultChecked
                 />
@@ -1984,7 +1945,7 @@ if(idTypeValue === "NATIONAL_ID"){
                   name="my_tabs_1"
                   role="tab"
                   className="tab text-xl"
-                  aria-label="เคยประเมินเคสก่อนผ่าตัด"
+                  aria-label="เคยจองสิทธิ์"
                 />
                 <div role="tabpanel" className="tab-content mt-4">
                   <label className="form-control w-full">
@@ -2020,97 +1981,11 @@ if(idTypeValue === "NATIONAL_ID"){
                 ยืนยัน
               </div>
               </div>
-  </div>
-  ) : ( 
-    //furtherClaim===""
-!selectedValue ? load === true ? <CircularProgress size="30px" className="text-error" /> :
-(<div className="rounded-md">
-<div
-  className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 ml-2"
-  onClick={() =>
-    confirmButton(
-      `${result.Result.InsuranceData.RefId} | ${result.Result.InsuranceData.TransactionNo}`
-    )
-  }
->
-  {/* ต่อเนื่อง */}
-   ลงทะเบียนใช้สิทธิ์(ต่อเนื่อง)
-</div>
+           </div>
 
-</div>) : ("Loading...")
-
-  ) )
-
-          ) : (
-// Type อื่นๆ
-
-            (succFurtherClaim2 === false ? 
-              (
-                <>
-                <div className="flex  w-full">
-
-                                    <TextField
-                  error
-              id="outlined-basic"
-              label="เคลมต่อเนื่อง (VN First Claim form)"
-              // multiline
-              // maxRows={4}
-              variant="outlined"
-              className="w-full"
-              name="vn"
-              type="text"
-              value={vNValue}
-              onChange={(e) => setVNValue(e.target.value)}
-            />
-              </div> 
-
-              <div
-                className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 ml-2"
-                onClick={() =>handleButtonVNClick(
-                  `${result.Result.InsuranceData.RefId} | ${result.Result.InsuranceData.TransactionNo}`
-                )}
-              >
-                ยืนยันเลือก
-              </div>
-            </>
-              )
-              :
-             
-               <div className="rounded-md">
-                      <div
-    className="btn btn-error text-base-100 hover:text-error hover:bg-base-100 ml-2"
-    onClick={() =>handleButtonBlackVNClick(
-      `${result.Result.InsuranceData.RefId} | ${result.Result.InsuranceData.TransactionNo}`
-    )}
-  >
-    ย้อนกลับ
-  </div>
-               <div
-                 className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 ml-2"
-                 onClick={() =>handleButtonClick(
-                   `${result.Result.InsuranceData.RefId} | ${result.Result.InsuranceData.TransactionNo}`
-                 )}
-               >
-                 ลงทะเบียนใช้สิทธิ์
-               </div>
-               </div> 
-              )
-)
-
- 
-          ) : (
-            <div className="rounded-md">
-            <div
-              className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 ml-2"
-              onClick={PrintButton}
-            >
-              Print
-            </div>
-        </div>
-          )
-          ) : ""}
-
+            : ""}
          </div>
+     
         </div>
       </div>
 
@@ -2140,7 +2015,7 @@ if(idTypeValue === "NATIONAL_ID"){
 
 
                   {formPRE && (
-                    
+                    <>
                     <div className="p-4 border-2  rounded-md bg-white w-full mt-4 shadow-md">  
                         <div className="grid gap-2 sm:grid-cols-5 w-full mt-2">
                           <div className="rounded-md">
@@ -2229,9 +2104,31 @@ if(idTypeValue === "NATIONAL_ID"){
                     </Box>
                           </div>
                         </div>
-                        <div className="overflow-x-auto border-2 mt-2">
+                        <div className="overflow-x-auto mt-2">
+                          <h1>Diagnosis</h1>
   <table className="table">
-    {/* head */}
+    <thead>
+      <tr className="bg-info text-base-100">
+        <th>Icd10</th>
+        <th>DxName</th>
+      </tr>
+    </thead>
+    <tbody>
+      {listClaimForm    ? listClaimForm.Diagnosis.map(
+                              (Diagnosis, index) => (
+      <tr className="bg-base-200" key={index}>
+        <td>{Diagnosis.Icd10}</td>
+        <td>{Diagnosis.DxName}</td>
+      </tr>
+                              ) 
+                  ): ""}
+
+</tbody>
+  </table>
+                        </div>
+                        <div className="overflow-x-auto mt-2">
+                        <h1>Procedure</h1>
+  <table className="table">
     <thead>
       <tr className="bg-info text-base-100">
         <th>Icd9</th>
@@ -2252,13 +2149,15 @@ if(idTypeValue === "NATIONAL_ID"){
 
 </tbody>
   </table>
-</div>
+                        </div>
                     </div>
+     
+
+                    </>
+                  )}  
 
 
-
-
-              <h1 className="text-2xl mt-2 flex items-center">ผลการตรวจสอบสิทธิ์ ค่ารักษาพยาบาล (HS/ME) 
+              <h1 className="text-2xl mt-2 flex items-center">ผลการตรวจสอบสิทธิ์ ค่ารักษาพยาบาล (HS/ME)
               {hS === true ? <b className="underline ml-2">มีสิทธิ์เรียกร้องสินไหม</b> :  hS === false ? <b className="text-error underline  ml-2">ไม่สามารถใช้สิทธิ์เรียกร้องสินไหม</b> : "" } 
               </h1>
                 <table className="table mt-2">
@@ -2348,11 +2247,12 @@ if(idTypeValue === "NATIONAL_ID"){
                   <div className="rounded-md"></div>
                   <div className="rounded-md ">&nbsp;</div>
                 </div>
-              </>
-            )}
+             
+          
+                  </>
+                )}
           </form>
         </div>
       </dialog>
     </>
-  );
-}
+  )}

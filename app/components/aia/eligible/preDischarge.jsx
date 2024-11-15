@@ -13,6 +13,8 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import { FaEdit } from "react-icons/fa";
+import { MdKeyboardArrowRight } from "react-icons/md";
+import { MdKeyboardArrowDown } from "react-icons/md";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import CircularProgress from '@mui/material/CircularProgress';
 import InputAdornment from "@mui/material/InputAdornment";
@@ -39,7 +41,7 @@ import {
 import { styled } from "@mui/material/styles";
 
 export default function Page({ data }) {
-  //console.log(data)
+ // console.log(data)
   const error = {
     response: {
       data: {
@@ -75,9 +77,14 @@ export default function Page({ data }) {
   const [injurySideType, setInjurySideType] = useState();
   const [investigation, setInvestigation] = useState();
   const [billing, setBilling] = useState();
+  const [numberBilling, setNumberBilling] = useState(false);
   const [orderItemz, setOrderItemz] = useState();
+  const [listClaimForm, setListClaimForm] = useState();
   const [result, setResult] = useState("");
   const [showModal, setShowModal] = useState(false);
+  const [showArrowVN, setShowArrowVN] = useState();
+  
+  const [showArrow, setShowArrow] = useState(false);
   const router = useRouter();
   const [bmi, setBmi] = useState("");
   const inputRef = useRef(null);
@@ -189,12 +196,12 @@ export default function Page({ data }) {
     setFileList()
     const newRandomNumber = generateRandomFiveDigitNumber();
     setRandomNumber(newRandomNumber);
-    console.log(newRandomNumber);
+  //  console.log(newRandomNumber);
   }else{
     setRandomNumber(data.DataTran.Data.Runningdocument)
   }
 
-  }, []);
+  }, [data]);
 
   useEffect(() => {
     if (inputRef.current) {
@@ -223,7 +230,7 @@ export default function Page({ data }) {
       //  console.log(response.data)
       })
       .catch((error) => {
-        console.log(error);
+  //      console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -234,7 +241,7 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
-  }, []);
+  }, [data]);
 
   useEffect(() => {
     const PatientInfo = {
@@ -258,7 +265,7 @@ export default function Page({ data }) {
         //console.log(response.data.Result.PatientInfo[0])
       })
       .catch((error) => {
-        console.log(error);
+    //    console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -269,7 +276,7 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
-  }, []);
+  }, [data]);
 
   useEffect(() => {
     let Data;
@@ -350,7 +357,7 @@ export default function Page({ data }) {
       PatientInfoData 
       )
       .then((response) => {
-         console.log(response.data)
+    //     console.log(response.data)
         setVisit(response.data);
         setOver45(response.data.Result.VisitInfo.AccidentCauseOver45Days);
         //const dateValue = dayjs(response.data.Result.VisitInfo.SignSymptomsDate);
@@ -360,7 +367,7 @@ export default function Page({ data }) {
 
       })
       .catch((error) => {
-        console.log(error);
+    //    console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -389,7 +396,7 @@ export default function Page({ data }) {
         );
       })
       .catch((error) => {
-        console.log(error);
+    //    console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -400,14 +407,7 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
-
-
-
- 
-
-
-
-  }, []);
+  }, [data]);
 
   useEffect(() => {
     let Data;
@@ -489,7 +489,7 @@ export default function Page({ data }) {
        PatientInfoData
       )
       .then((response) => {
-        console.log(response.data)
+      //  console.log(response.data)
          setAccidentDetail(response.data);
           setCauseOfInjuryDetails(response.data.Result.AccidentDetailInfo.CauseOfInjuryDetail);
           setInjuryDetails(response.data.Result.AccidentDetailInfo.InjuryDetail);
@@ -503,7 +503,7 @@ export default function Page({ data }) {
         // }
       })
       .catch((error) => {
-        console.log(error);
+    //    console.log(error);
         // try {
         //   const ErrorMass = error.config.url;
         //   const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -515,7 +515,7 @@ export default function Page({ data }) {
         // }
       
       });
-  }, []);
+  }, [data]);
   useEffect(() => {
     axios
       .get(
@@ -528,7 +528,7 @@ export default function Page({ data }) {
         setOver45Days(response.data);
       })
       .catch((error) => {
-        console.log(error);
+    //    console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -539,7 +539,7 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
-  }, []);
+  }, [data]);
   useEffect(() => {
     axios
       .get(
@@ -553,7 +553,7 @@ export default function Page({ data }) {
         setDataaccidentPlace(response.data);
       })
       .catch((error) => {
-        console.log(error);
+    //    console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -564,7 +564,7 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
-  }, []);
+  }, [data]);
   useEffect(() => {
     axios
       .get(
@@ -578,7 +578,7 @@ export default function Page({ data }) {
         setDatainjurySide(response.data);
       })
       .catch((error) => {
-        console.log(error);
+    //    console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -589,7 +589,7 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
-  }, []);
+  }, [data]);
 
   useEffect(() => {
     axios
@@ -604,7 +604,7 @@ export default function Page({ data }) {
         setDataWoundType(response.data);
       })
       .catch((error) => {
-        console.log(error);
+    //    console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -615,7 +615,7 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
-  }, []);
+  }, [data]);
  
   useEffect(() => {
     
@@ -630,7 +630,7 @@ export default function Page({ data }) {
         setVitalsign(response.data);
       })
       .catch((error) => {
-        console.log(error);
+    //    console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -641,7 +641,7 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
-  }, []);
+  }, [data]);
 
   useEffect(() => {
     let Data;
@@ -721,11 +721,11 @@ export default function Page({ data }) {
       PatientInfoData
       )
       .then((response) => {
-        console.log(response.data)
+     //   console.log(response.data)
         setDoctor(response.data);
       })
       .catch((error) => {
-        console.log(error);
+    //    console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -736,7 +736,7 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
-  }, []);
+  }, [data]);
 
   useEffect(() => {
     let Data;
@@ -815,11 +815,11 @@ export default function Page({ data }) {
         PatientInfoData
       )
       .then((response) => {
-        console.log(response.data)
+    //    console.log(response.data)
         setDiagnosis(response.data);
       })
       .catch((error) => {
-        console.log(error);
+    //    console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -830,7 +830,7 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
-  }, []);
+  }, [data]);
   useEffect(() => {
     axios
       .post(
@@ -847,7 +847,7 @@ export default function Page({ data }) {
         //console.log(rows);
       })
       .catch((error) => {
-        console.log(error);
+      //  console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -858,7 +858,7 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
-  }, []);
+  }, [data]);
 
   const handleAddRow = () => {
     setRows([...rows, newRow]);
@@ -970,7 +970,7 @@ export default function Page({ data }) {
         setInjuryWoundType(response.data);
       })
       .catch((error) => {
-        console.log(error);
+     //   console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -981,7 +981,7 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
-  }, []);
+  }, [data]);
   ////////////////////////////////
 
   const handleDeleteCauseOfInjuryDetail = (index) => {
@@ -1010,7 +1010,8 @@ export default function Page({ data }) {
 
   
 
-    async function Submitfurtherclaimvn() {
+    async function Submitfurtherclaimvn(e) {
+  //    console.log(e)
   setShowSummitError();
   setShowSummitSucc();
   try {
@@ -1024,12 +1025,12 @@ export default function Page({ data }) {
                 "TransactionNo": PatientInfoData.PatientInfo.TransactionNo,
                 "HN": PatientInfoData.PatientInfo.HN,
                 "VN": PatientInfoData.PatientInfo.VN,
-                "FurtherClaimVN": numberValue,
+                "FurtherClaimVN": e.VN,
                 }
               }
       )
 
-      console.log(response.data)
+     // console.log(response.data)
 
       if(response.data.HTTPStatus.statusCode === 200){
 
@@ -1050,7 +1051,7 @@ export default function Page({ data }) {
           PolicyTypeCode: PatientInfoData.PatientInfo.PolicyTypeCode,
           AccidentDate: PatientInfoData.PatientInfo.AccidentDate,
           VisitDateTime: PatientInfoData.PatientInfo.VisitDateTime,
-          FurtherClaimVN: numberValue,
+          FurtherClaimVN: e.VN,
           FurtherClaimNo: PatientInfoData.PatientInfo.FurtherClaimNo,
           FurtherClaimId: PatientInfoData.PatientInfo.FurtherClaimId,
           Runningdocument: PatientInfoData.PatientInfo.randomNumberold,
@@ -1062,7 +1063,7 @@ export default function Page({ data }) {
       await stepOne();
       await stepTwo();
     } catch (error) {
-      console.log(error);
+    //  console.log(error);
     };
 
     function stepOne() {
@@ -1118,7 +1119,7 @@ export default function Page({ data }) {
         setInvestigation(response.data);
       })
       .catch((error) => {
-        console.log(error);
+     //   console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -1129,7 +1130,7 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
-  }, []);
+  }, [data]);
 
   useEffect(() => {
     axios
@@ -1143,7 +1144,7 @@ export default function Page({ data }) {
         setOrderItemz(response.data);
       })
       .catch((error) => {
-        console.log(error);
+     //   console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -1154,9 +1155,38 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
-  }, []);
+  }, [data]);
 
   useEffect(() => {
+    axios
+      .post(
+        // process.env.NEXT_PUBLIC_URL_SV +
+        //   process.env.NEXT_PUBLIC_URL_getListClaimFormOPDByVN,
+        // PatientInfoData
+        '/api/v1/aia-opddischarge/getListClaimFormOPDByVN', PatientInfoData
+      )
+      .then((response) => {
+      //  console.log(response.data)
+      setListClaimForm(response.data);
+      })
+      .catch((error) => {
+     //   console.log(error);
+        try {
+          const ErrorMass = error.config.url;
+          const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+          setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
+          setShowFormError("Error");
+        } catch (error) {
+          setMassError(error.response.data.HTTPStatus.message);
+          setShowFormError("Error");
+        }
+      });
+  }, [data]);
+
+
+  useEffect(() => {
+   
+    setBilling();
     axios
       .post(
         process.env.NEXT_PUBLIC_URL_SV +
@@ -1164,11 +1194,16 @@ export default function Page({ data }) {
         PatientInfoData
       )
       .then((response) => {
-     //   console.log(response.data)
-        setBilling(response.data);
+        console.log(response.data)
+    // console.log("5555")
+    if(numberBilling === false){
+      setBilling(response.data);
+      setNumberBilling(true);
+    }
+       
       })
       .catch((error) => {
-        console.log(error);
+     //   console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -1221,7 +1256,7 @@ export default function Page({ data }) {
         //        );
       })
       .catch((error) => {
-        console.log(error);
+    //    console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -1297,7 +1332,7 @@ export default function Page({ data }) {
         //console.log(response.data)
       })
       .catch((error) => {
-        console.log(error);
+       // console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -1316,7 +1351,7 @@ export default function Page({ data }) {
 
       })
       .catch((error) => {
-        console.log(error);
+     //   console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -1420,7 +1455,7 @@ if(rows){
          await stepThree();
          await stepFour();
       } catch (error) {
-        console.log(error);
+   //     console.log(error);
       }
     }
 
@@ -1456,7 +1491,7 @@ if(rows){
             resolve("Step 1 completed");
           })
           .catch((error) => {
-            console.log(error);
+          //  console.log(error);
             try {
               const ErrorMass = error.config.url;
               const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -1496,11 +1531,11 @@ if(rows){
             { PatientInfo }
           )
           .then((response) => {
-            console.log("2 Succ");
+          //  console.log("2 Succ");
             resolve("Step 2 completed");
           })
           .catch((error) => {
-            console.log(error);
+          //  console.log(error);
             try {
               const ErrorMass = error.config.url;
               const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -1573,11 +1608,11 @@ if(rows){
             { PatientInfo }
           )
           .then((response) => {
-            console.log("3 Succ");
+         //   console.log("3 Succ");
             resolve("Step 3 completed");
           })
           .catch((error) => {
-            console.log(error);
+         //   console.log(error);
             try {
               const ErrorMass = error.config.url;
               const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -1636,10 +1671,10 @@ if(rows){
                 { PatientInfo }
               )
               .then((response) => {
-                console.log(response.data);
+              //  console.log(response.data);
               })
               .catch((error) => {
-                console.log(error);
+             //   console.log(error);
               });
               document.getElementById("my_modal_3").close();
               console.log("4 Succ");
@@ -1657,7 +1692,7 @@ if(rows){
             }
           })
           .catch((error) => {
-            console.log(error);
+          //  console.log(error);
             try {
               const ErrorMass = error.config.url;
               const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -1700,7 +1735,7 @@ if(rows){
           { PatientInfo }
         )
         .then((response) => {
-          console.log(response.data);
+       //   console.log(response.data);
           router.push("/aia/checkClaimStatus");
           // if (response.data.HTTPStatus.statusCode === 200) {
           // //  console.log("Cancel Succ")
@@ -1716,7 +1751,7 @@ if(rows){
         })
         .catch((error) => {
           // console.error("Error", err)
-          console.log(error);
+         // console.log(error);
           try {
             const ErrorMass = error.config.url;
             const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -1825,7 +1860,7 @@ if(rows){
           //console.log(response.data)
         })
         .catch((error) => {
-          console.log(error);
+         // console.log(error);
           try {
             const ErrorMass = error.config.url;
             const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -1861,6 +1896,17 @@ if(rows){
       );
     }
   };
+  const ArrowOpen = (e) =>{
+  //  console.log(e)
+    // console.log(showArrow)
+    setShowArrowVN(e.VN)
+    if(showArrow === false){
+      setShowArrow(true)
+    }else{
+      setShowArrow(false)
+    }
+ 
+  }
   const handleOtherInsurer = (e) => {
     setOtherInsurer(e.target.value);
   };
@@ -2096,7 +2142,7 @@ if(rows){
                             onChange={handleOtherInsurer}
                             disabled
                           />
-                          <p className="text-left ml-2">รักษาครั้งแรก</p>
+                          <p className="text-left ml-2">จองสิทธิ์ครั้งแรก</p>
                           <input
                             type="radio"
                             id="OtherInsurer"
@@ -2107,7 +2153,7 @@ if(rows){
                             defaultChecked
                             disabled
                           />
-                          <p className="text-left ml-2">รักษาแบบต่อเนื่อง</p>
+                          <p className="text-left ml-2">เคยจองสิทธิ์มาก่อน</p>
                         </>
                       ) : (
                         <>
@@ -2121,7 +2167,7 @@ if(rows){
                             defaultChecked
                             disabled
                           />
-                          <p className="text-left ml-2">รักษาครั้งแรก</p>
+                          <p className="text-left ml-2">จองสิทธิ์ครั้งแรก</p>
                           <input
                             type="radio"
                             id="OtherInsurer"
@@ -2131,13 +2177,13 @@ if(rows){
                             onChange={handleOtherInsurer}
                             disabled
                           />
-                          <p className="text-left ml-2">รักษาแบบต่อเนื่อง</p>
+                          <p className="text-left ml-2">เคยจองสิทธิ์มาก่อน</p>
                         </>
                       )}
                     </div>
                   </div>
                   <div className="rounded-md">
-                    <div className="flex items-center ">
+                    {/* <div className="flex items-center ">
                       <input
                         type="checkbox"
                         id="OtherInsurer"
@@ -2149,7 +2195,7 @@ if(rows){
                       <p className="text-left">
                         &nbsp;ค่าส่วนเกินจากประกันอื่นๆ
                       </p>
-                    </div>
+                    </div> */}
                   </div>
                   <div className="rounded-md"> </div>
                   <div className="rounded-md"> </div>
@@ -2238,7 +2284,7 @@ if(rows){
                       >
                         <FaEdit className="text-base-100" />
                       </div>
-                  <div className="mt-2 ml-2">Claim form จาก VN : {PatientInfoData.PatientInfo.FurtherClaimVN ? PatientInfoData.PatientInfo.FurtherClaimVN+" ( เก่า )" : PatientInfoData.PatientInfo.VN+" ( ปัจจุบัน )" }</div>                    
+                  <div className="mt-2 ml-2">Claim form จาก VN : {PatientInfoData.PatientInfo.FurtherClaimVN ? (PatientInfoData.PatientInfo.FurtherClaimVN === PatientInfoData.PatientInfo.VN ? PatientInfoData.PatientInfo.VN+" ( ปัจจุบัน )" : PatientInfoData.PatientInfo.FurtherClaimVN+" ( เก่า )") : PatientInfoData.PatientInfo.VN+" ( ปัจจุบัน )" }</div>                    
 
                 </div>
                 <div className="grid gap-2 sm:grid-cols-2 w-full mt-4">
@@ -3904,12 +3950,12 @@ if(rows){
       )}
 
 <dialog id="Editfurtherclaimvn" className="modal text-xl	">
-        <div className="modal-box w-11/12 max-w-sm">
+        <div className="modal-box w-11/12 max-w-full">
           <form method="dialog">
             <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
               ✕
             </button>
-            <h3 className="font-bold text-lg">แก้ไข Claim form จาก VN</h3>
+            <h3 className="font-bold text-lg">ตาราง Claim form</h3>
             <hr />
             {showSummitError === "Error" ? (
               <div
@@ -3951,24 +3997,165 @@ if(rows){
                 {massSummit ? (
                   massSummit
                 ) : (
-                    <div className="flex items-center text-center mt-2">
-                      <TextField
-                        id="disabledInput"
-                        className=""
-                        label=""
-                       // defaultValue={PatientInfoData.PatientInfo.FurtherClaimVN ? PatientInfoData.PatientInfo.FurtherClaimVN : PatientInfoData.PatientInfo.VN }
-                        value={numberValue}
-                        onChange={(e) => setNumberValue(e.target.value)}
-                       // InputProps={{ readOnly: true }}
-                      />
+                <table className="table  mt-2">
+                  <thead>
+                    <tr className="text-base-100 bg-primary py-8 text-sm w-full text-center">
+                      <th></th>
+                      <th className="w-1/12">VisiDate</th>
+                      <th className="w-1/12">Episode Number</th>
+                      <th className="w-2/12">Doctor</th>
+                      <th className="w-5/12">Location</th>
+                      <th className="w-3/12">Diagnosis</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  {/* {console.log(listClaimForm)} */}
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {listClaimForm ? (
+                      listClaimForm.Result.ClaimFormListInfo.map((FormList, index) => (
+                  
+                        <tr key={index} className=" bg-neutral text-sm">
+                          <td className="px-6 py-4 whitespace-nowrap">
+                          {
+                          showArrowVN === FormList.VN ?
+                          showArrow === false ? <MdKeyboardArrowRight className="text-success text-3xl" onClick={() => ArrowOpen(FormList)}/> : <MdKeyboardArrowDown className="text-success text-3xl" onClick={() => ArrowOpen(FormList)}/>
+                          :
+                          <MdKeyboardArrowRight className="text-success text-3xl" onClick={() => ArrowOpen(FormList)}/>
+                          }
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                              {FormList.VisiDate ? (
+                                FormList.VisiDate
+                              ) : (
+                                <>&nbsp;</>
+                              )}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                              {FormList.VN ? FormList.VN : <>&nbsp;</>}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                              {FormList.DoctorFirstName ? (
+                                FormList.DoctorFirstName
+                              ) : (
+                                <>&nbsp;</>
+                              )}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                              {FormList.LocationDesc ? FormList.LocationDesc : <>&nbsp;</>}
+                            </div>
+                            {
+                          showArrowVN === FormList.VN ?
+                          showArrow === false ? "" : 
+                                          <CustomTextField
+                                          id="disabledInput"
+                                          rows={4}
+                                          multiline
+                                                   defaultValue={FormList.PresentIllness}
+                                          className="w-full text-black rounded disabled:text-black disabled:bg-gray-300 cursor-not-allowed mt-2"
+                                          InputProps={{ readOnly: true }}
+                                        />
+                          :
+                          ""
+                          }
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="border-2 bg-base-100 break-all">
 
-                  <div
+
+  <table className="table">
+    {/* head */}
+    <thead>
+      <tr>
+        <th>Code</th>
+        <th>Name</th>
+      </tr>
+    </thead>
+    <tbody>
+
+
+                             {FormList.DiagnosisInfo ? (
+                            
+                            FormList.DiagnosisInfo.map((Diag, index) => (
+                              <tr  key={index}>
+                            <th>{Diag.DxCode}</th>
+                            <th>{Diag.DxName}</th>
+                            </tr>
+                            )
+                          )
+                              ) : (
+                              <tr>
+                                <th></th>
+                                <td></td>
+                              </tr>
+                              )} 
+
+
+
+</tbody>
+  </table>
+
+
+
+
+                            </div>
+                            {
+                          showArrowVN === FormList.VN ?
+                          showArrow === false ? "" : 
+                                          <CustomTextField
+                                          id="disabledInput"
+                                          rows={4}
+                                          multiline
+                                                   defaultValue={FormList.PresentIllness}
+                                          className="w-full text-black rounded disabled:text-black disabled:bg-gray-300 cursor-not-allowed mt-2"
+                                          InputProps={{ readOnly: true }}
+                                        />
+                          :
+                          ""
+                          }
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                          <div
                     className="btn btn-success text-base-100 hover:text-success hover:bg-base-100 ml-2"
-                    onClick={Submitfurtherclaimvn}
+                    onClick={() => Submitfurtherclaimvn(FormList)}
                   >
-                    <IoIosSave  className="size-6" />
-                  </div>
-                    </div>
+                               <IoIosSave  className="size-6" />
+                             </div>
+                          </td>
+                </tr>
+                      ) )
+                    ) : (
+                      <tr>
+                        <td></td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+                  //   <div className="flex items-center text-center mt-2">
+                  //     <TextField
+                  //       id="disabledInput"
+                  //       className=""
+                  //       label=""
+                  //      // defaultValue={PatientInfoData.PatientInfo.FurtherClaimVN ? PatientInfoData.PatientInfo.FurtherClaimVN : PatientInfoData.PatientInfo.VN }
+                  //       value={numberValue}
+                  //       onChange={(e) => setNumberValue(e.target.value)}
+                  //      // InputProps={{ readOnly: true }}
+                  //     />
+
+                  // <div
+                  //   className="btn btn-success text-base-100 hover:text-success hover:bg-base-100 ml-2"
+                  //   onClick={Submitfurtherclaimvn}
+                  // >
+                  //   <IoIosSave  className="size-6" />
+                  // </div>
+                  //   </div>
+
                 )}
             
           </form>
