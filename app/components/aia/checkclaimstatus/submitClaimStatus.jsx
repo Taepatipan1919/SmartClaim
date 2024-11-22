@@ -60,6 +60,7 @@ export default function checkData() {
   // const [showFormCancel, setShowFormCancel] = useState("");
   const [billList, setBillList] = useState("");
   const [showModal, setShowModal] = useState(false);
+  const [doMoney, setDoMoney] = useState(false);
   const router = useRouter();
   const [statusNew, setStatusNew] = useState({});
   // const [statusAllNew, setStatusAllNew] = useState();
@@ -775,85 +776,112 @@ axios
   const Detail = (data) => {
         console.log(data)
     //console.log("-Detail-")
-    // setShowFormError();
+    setShowFormError();
 
-    // const PatientInfo = {
-    //   Insurerid: InsuranceCode,
-    //   PID: data.PID,
-    //   PassportNumber: data.PassportNumber,
-    //   IdType: data.IdType,
-    //   ServiceSettingCode: data.ServiceSettingCode,
-    //   VN: data.VN,
-    //   HN: data.HN,
-    //   VisitDatefrom: data.VisitDate,
-    //   VisitDateto: "",
-    // };
-    // //  console.log(PatientInfo)
+    const PatientInfo = {
+      Insurerid: InsuranceCode,
+      PID: data.PID,
+      PassportNumber: data.PassportNumber,
+      IdType: data.IdType,
+      ServiceSettingCode: data.ServiceSettingCode,
+      VN: data.VN,
+      HN: data.HN,
+      VisitDatefrom: data.VisitDate,
+      VisitDateto: "",
+    };
+     //  console.log(PatientInfo)
 
-    // axios
-    //   .post(
-    //     process.env.NEXT_PUBLIC_URL_PD +
-    //       process.env.NEXT_PUBLIC_URL_getEpisodeByHN,
-    //     { PatientInfo }
-    //   )
-    //   .then((response) => {
-    //     const getEpisodeByHN = response.data.Result.PatientInfo;
-    //     //  console.log(response.data)
-    //     dispatch(
-    //       save2({
-    //         value: "มีรายชื่อ",
-    //         Data: {
-    //           IdType: data.IdType,
-    //           InsurerCode: InsuranceCode,
-    //           DateOfBirth: getEpisodeByHN.DateOfBirth,
-    //           Gender: getEpisodeByHN.Gender,
-    //           GivenNameEN: getEpisodeByHN.GivenNameEN,
-    //           GivenNameTH: getEpisodeByHN.GivenNameTH,
-    //           HN: getEpisodeByHN.HN,
-    //           MobilePhone: getEpisodeByHN.MobilePhone,
-    //           PID: getEpisodeByHN.PID,
-    //           PassportNumber: getEpisodeByHN.PassportNumber,
-    //           SurnameEN: getEpisodeByHN.SurnameEN,
-    //           SurnameTH: getEpisodeByHN.SurnameTH,
-    //           TitleEN: getEpisodeByHN.TitleEN,
-    //           TitleTH: getEpisodeByHN.TitleTH,
-    //         },
-    //       })
-    //     );
-    //   })
-    //   .catch((error) => {
-    //     console.log(error);
-    //     setShowFormError("Error");
-    //     //setMassError(error.response.data.HTTPStatus.message);
-    //     setMassError(
-    //       error.response?.data?.HTTPStatus?.message || "Unknown error"
-    //     );
-    //   });
+    axios
+      .post(
+        process.env.NEXT_PUBLIC_URL_PD +
+          process.env.NEXT_PUBLIC_URL_getEpisodeByHN,
+        { PatientInfo }
+      )
+      .then((response) => {
+        const getEpisodeByHN = response.data.Result.PatientInfo;
+        //  console.log(response.data)
+        dispatch(
+          save2({
+            value: "มีรายชื่อ",
+            Data: {
+              IdType: data.IdType,
+              InsurerCode: InsuranceCode,
+              DateOfBirth: getEpisodeByHN.DateOfBirth,
+              Gender: getEpisodeByHN.Gender,
+              GivenNameEN: getEpisodeByHN.GivenNameEN,
+              GivenNameTH: getEpisodeByHN.GivenNameTH,
+              HN: getEpisodeByHN.HN,
+              MobilePhone: getEpisodeByHN.MobilePhone,
+              PID: getEpisodeByHN.PID,
+              PassportNumber: getEpisodeByHN.PassportNumber,
+              SurnameEN: getEpisodeByHN.SurnameEN,
+              SurnameTH: getEpisodeByHN.SurnameTH,
+              TitleEN: getEpisodeByHN.TitleEN,
+              TitleTH: getEpisodeByHN.TitleTH,
+            },
+          })
+        );
+      })
+      .catch((error) => {
+        console.log(error);
+        setShowFormError("Error");
+        //setMassError(error.response.data.HTTPStatus.message);
+        setMassError(
+          error.response?.data?.HTTPStatus?.message || "Unknown error"
+        );
+      });
 
-    // dispatch(
-    //   save({
-    //     value: "มีข้อมูล",
-    //     Data: {
-    //       RefId: data.RefId,
-    //       TransactionNo: data.TransactionNo,
-    //       VN: data.VN,
-    //       InsurerCode: InsuranceCode,
-    //       ServiceSettingCode: data.ServiceSettingCode,
-    //       IllnessTypeCode: data.IllnessTypeCode,
-    //       SurgeryTypeCode: data.SurgeryTypeCode,
-    //       PolicyTypeCode: data.PolicyTypeCode,
-    //       AccidentDate: data.AccidentDate,
-    //       VisitDateTime: data.VisitDateTime,
-    //       FurtherClaimVN: data.FurtherClaimVN,
-    //       FurtherClaimNo: data.FurtherClaimNo,
-    //       FurtherClaimId: data.FurtherClaimId,
-    //       Runningdocument: data.randomNumberold,
-    //       Visitlocation: data.Visitlocation,
-    //     },
-    //   })
-    // );
+        if(PatientInfo.ServiceSettingCode === "OPD"){
+    dispatch(
+      save({
+        value: "มีข้อมูล",
+        Data: {
+          RefId: data.RefId,
+          TransactionNo: data.TransactionNo,
+          VN: data.VN,
+          InsurerCode: InsuranceCode,
+          ServiceSettingCode: data.ServiceSettingCode,
+          IllnessTypeCode: data.IllnessTypeCode,
+          SurgeryTypeCode: data.SurgeryTypeCode,
+          PolicyTypeCode: data.PolicyTypeCode,
+          AccidentDate: data.AccidentDate,
+          VisitDateTime: data.VisitDateTime,
+          FurtherClaimVN: data.FurtherClaimVN,
+          FurtherClaimNo: data.FurtherClaimNo,
+          FurtherClaimId: data.FurtherClaimId,
+          Runningdocument: data.randomNumberold,
+          Visitlocation: data.Visitlocation,
+        },
+      })
+    );
+        }else{
+          dispatch(
+            save({
+              value: "มีข้อมูล",
+              Data: {
+                RefId: data.RefId,
+                TransactionNo: data.TransactionNo,
+                VN: data.VN,
+                InsurerCode: InsuranceCode,
+                ServiceSettingCode: data.ServiceSettingCode,
+                IllnessTypeCode: data.IllnessTypeCode,
+                SurgeryTypeCode: data.SurgeryTypeCode,
+                PolicyTypeCode: data.PolicyTypeCode,
+                AccidentDate: data.AccidentDate,
+                VisitDateTime: data.VisitDateTime,
+                // PreauthReferClaimNo: data.PreauthReferClaimNo,
+                // PreauthReferOcc: data.PreauthReferOcc,   
+                PreauthReferClaimNo: "",
+                PreauthReferOcc: "",   
+                Runningdocument: data.randomNumberold,
+                Visitlocation: data.Visitlocation,
+              },
+            })
+          );
+        }
 
-    //  router.push("/aia/eligible");
+
+      router.push("/aia/eligible");
   };
   
   const DocumentBase64 = (data) => {
@@ -883,7 +911,7 @@ axios
           const byteArray = new Uint8Array(byteNumbers);
           return new Blob([byteArray], { type });
         };
-        const blob = base64ToBlob(response.data.base64);
+         const blob = base64ToBlob(response.data.base64);
         const url = URL.createObjectURL(blob);
         window.open(url);
 
@@ -1120,7 +1148,11 @@ axios
     let dateToValue = "";
     let dateFromValue = "";
     let PatientInfo;
-
+    if(serviceValue === "OPD"){
+      setDoMoney(true);
+    }else{
+      setDoMoney(false);
+    }
     if (fromValue && toValue) {
       dateFromValue = dayjs(fromValue.$d).format("YYYY-MM-DD");
       dateToValue = dayjs(toValue.$d).format("YYYY-MM-DD");
@@ -1131,6 +1163,7 @@ axios
         InsurerCode: InsuranceCode,
         IdType: selectedIdType,
         InvoiceNumber: "",
+        ClaimNo: "",
         VN: numberValue,
         PID: "",
         PassportNumber: "",
@@ -1145,6 +1178,7 @@ axios
         InsurerCode: InsuranceCode,
         IdType: selectedIdType,
         InvoiceNumber: "",
+        ClaimNo: "",
         VN: "",
         PID: "",
         PassportNumber: numberValue,
@@ -1159,6 +1193,7 @@ axios
         InsurerCode: InsuranceCode,
         IdType: selectedIdType,
         InvoiceNumber: "",
+        ClaimNo: "",
         VN: "",
         PID: "",
         PassportNumber: "",
@@ -1173,6 +1208,7 @@ axios
         InsurerCode: InsuranceCode,
         IdType: selectedIdType,
         InvoiceNumber: "",
+        ClaimNo: "",
         VN: "",
         PID: numberValue,
         PassportNumber: "",
@@ -1187,6 +1223,22 @@ axios
         InsurerCode: InsuranceCode,
         IdType: selectedIdType,
         InvoiceNumber: numberValue,
+        ClaimNo: "",
+        VN: "",
+        PID: "",
+        PassportNumber: "",
+        HN: "",
+        VisitDatefrom: dateFromValue,
+        VisitDateto: dateToValue,
+        StatusClaimCode: statusValue,
+        ServiceSettingCode: serviceValue,
+      };
+    } else if (selectedIdType === "ClaimNo" && numberValue) {
+      PatientInfo = {
+        InsurerCode: InsuranceCode,
+        IdType: selectedIdType,
+        InvoiceNumber: "",
+        ClaimNo: numberValue,
         VN: "",
         PID: "",
         PassportNumber: "",
@@ -1201,6 +1253,7 @@ axios
         InsurerCode: InsuranceCode,
         IdType: "",
         InvoiceNumber: "",
+        ClaimNo: "",
         VN: "",
         PID: "",
         PassportNumber: "",
@@ -1216,6 +1269,7 @@ axios
           InsurerCode: InsuranceCode,
            IdType: "",
           InvoiceNumber: "",
+          ClaimNo: "",
           VN: "",
           PID: "",
           PassportNumber: "",
@@ -1232,6 +1286,7 @@ axios
         InsurerCode: InsuranceCode,
          IdType: "",
         InvoiceNumber: "",
+        ClaimNo: "",
         VN: "",
         PID: "",
         PassportNumber: "",
@@ -1249,6 +1304,7 @@ axios
    InsurerCode: InsuranceCode,
     IdType: "",
    InvoiceNumber: "",
+   ClaimNo: "",
    VN: "",
    PID: "",
    PassportNumber: "",
@@ -1429,7 +1485,7 @@ axios
                 onChange={handleOptionChange}
               />
               <p className="text-left">&nbsp;VN &nbsp;</p>
-              <input
+              {/* <input
                 type="radio"
                 id="Invoice"
                 name="identity_type"
@@ -1438,7 +1494,17 @@ axios
                 checked={selectedIdType === "Invoice"}
                 onChange={handleOptionChange}
               />
-              <p className="text-left">&nbsp;Invoice &nbsp;</p>
+              <p className="text-left">&nbsp;Invoice &nbsp;</p> */}
+              <input
+                type="radio"
+                id="ClaimNo"
+                name="identity_type"
+                value="ClaimNo"
+                className="checkbox checkbox-info"
+                checked={selectedIdType === "ClaimNo"}
+                onChange={handleOptionChange}
+              />
+              <p className="text-left">&nbsp;ClaimNo &nbsp;</p>
               <p className="ml-2">Visit Date</p>
             </div>
             <TextField
@@ -1767,22 +1833,10 @@ axios
                             {bill.RefId ? (
                               bill.BatchNumber ? (
                                 ""
-                              ) : ((bill.ClaimStatusDesc === "Approve" ||
-                                  bill.ClaimStatusDesc ===
-                                    "waitting for discharge") &&
-                                  bill.ClaimStatusDesc !==
-                                    "Cancelled to AIA") ||
-                                ((bill.ClaimStatusDesc === "Received" ||
-                                  bill.ClaimStatusDesc ===
-                                    "waitting for discharge") &&
-                                  bill.ClaimStatusDesc !==
-                                    "Cancelled to AIA") ||
-                                ((bill.ClaimStatusDesc ===
-                                  "waitting discharge" ||
-                                  bill.ClaimStatusDesc ===
-                                    "waitting for discharge") &&
-                                  bill.ClaimStatusDesc !==
-                                    "Cancelled to AIA") ? (
+                              ) : ((bill.ClaimStatusDesc === "Approve" || bill.ClaimStatusDesc === "waitting for discharge") && bill.ClaimStatusDesc !== "Cancelled to AIA") ||
+                                ((bill.ClaimStatusDesc === "Received" || bill.ClaimStatusDesc === "waitting for discharge") && bill.ClaimStatusDesc !== "Cancelled to AIA") ||
+                                ((bill.ClaimStatusDesc === "waitting discharge" || bill.ClaimStatusDesc === "waitting for discharge") && bill.ClaimStatusDesc !== "Cancelled to AIA") ||
+                                bill.ClaimStatusDesc === "Pending" ? (
                                 <>
                                   <div
                                     className="tooltip ml-4"
@@ -1823,7 +1877,7 @@ axios
                           </td>
                           <td>
                             {bill.RefId ? (
-                              bill.ClaimStatusDesc === "Approve" ||
+                              bill.ClaimStatusDesc === "Approve" || bill.ClaimStatusDesc === "Pending" ||
                               bill.ClaimStatusDesc === "Received" ? (
                                 bill.BatchNumber ? (
                                   ""
@@ -1847,7 +1901,7 @@ axios
                             )}
                             {/* {console.log(bill)} */}
                             { bill.RefId ? (
-                             ((bill.ClaimStatusDesc === "waitting for discharge")||(bill.ClaimStatusDesc === "Approve")||(bill.ClaimStatusDesc === "Received")) ? (
+                             ((bill.ClaimStatusDesc === "waitting for discharge")||(bill.ClaimStatusDesc === "Approve")||(bill.ClaimStatusDesc === "Received"))&&doMoney === true ? (
                               <>
 
                                 <button

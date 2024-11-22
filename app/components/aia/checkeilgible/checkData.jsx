@@ -45,6 +45,7 @@ export default function checkData() {
   const [vNValue, setVNValue] = useState("");
   const [mass, setMass] = useState();
   const [formPRE, setFormPRE] = useState(false);
+  const [succPRE, setSuccPRE] = useState(false);
   const [hS, setHS ] = useState();
   const [hB, setHB ] = useState();
   const [aI, setAI ] = useState();
@@ -91,6 +92,7 @@ export default function checkData() {
   const [furtherClaimId, setFurtherClaimId] = useState("");
   const [visitDateTimeL, setVisitDateTimeL] = useState("");
   const [claimNoL, setClaimNoL] = useState("");
+  
   const [patientDB, setPatientDB] = useState("");
   
 
@@ -186,6 +188,7 @@ setSuccFurtherClaim2(true)
   const handleButtonBlackVNClick = (data) => {
     setShowFormCreateError();
     setSuccFurtherClaim2(false)
+    setSuccPRE(false);
       }
   const handleButtonFurtherBlackVNClick = (data) => {
     setShowFormCreateError();
@@ -195,9 +198,11 @@ setSuccFurtherClaim2(true)
        const type = (event) => {
         setServiceValue(event.target.value);
       };
-  const gourl = (event) => {
-        event.preventDefault();
+  const gourl = () => {
+        //event.preventDefault();
+        // console.log(event.target.value);
         setFormPRE(false);
+        setSuccPRE(true);
         setSuccFurtherClaim(true)
         setSuccFurtherClaim2(false)
         //setFurtherClaim();
@@ -466,7 +471,7 @@ if(idTypeValue === "NATIONAL_ID"){
         setShowFormCheckEligibleError("Error");
       }
     });
-    }else if(serviceValue === "PRE"){
+    }else if((serviceValue === "PRE")||(serviceValue === "IPD")){
 
     axios
     .post(
@@ -550,6 +555,7 @@ if(idTypeValue === "NATIONAL_ID"){
       setTextInputVisible(true);
     } else {
       setTextInputVisible(false);
+      setAccValue(null);
     }
 
 
@@ -565,14 +571,13 @@ if(idTypeValue === "NATIONAL_ID"){
   };
   const SelectPRE = (event) => {
 
-    
     if(event.target.value){
-
-      console.log(JSON.parse(event.target.value))
-       setListClaimForm(JSON.parse(event.target.value));
-      
-
-      setSelectPRETypeValue(event.target.value.ClaimNo);
+    const Datavalue = JSON.parse(event.target.value);
+    console.log(Datavalue)
+      setListClaimForm(Datavalue);
+      setSelectPRETypeValue(Datavalue.ClaimNo);
+      setClaimNoL(Datavalue.ClaimNo);
+      setVisitDateTimeL(Datavalue.VisitDateTime)
       setFormPRE(true);
     }else{
       setSelectPRETypeValue("");
@@ -735,6 +740,7 @@ if(idTypeValue === "NATIONAL_ID"){
   const check = async (event) => {
 
     // console.log(numberValue)
+    setSelectPRETypeValue("");
     event.preventDefault();
     setFurtherClaim();
     setMass();
@@ -746,7 +752,8 @@ if(idTypeValue === "NATIONAL_ID"){
     setHS();
     setHB();
     setAI();
-    setSuccFurtherClaim(false)
+    setSuccFurtherClaim(false);
+    setSuccPRE(false);
     const [VNselectVN, VisitDateselectVN , LocationDesc , LocationCode] = event.target.selectVN.value.split(" | ");
     //const [YearVN, MonthVN, DayVN] = VisitDateselectVN.split('-');
     // const Acc = accValue.split(" ");
@@ -915,7 +922,7 @@ if(idTypeValue === "NATIONAL_ID"){
 
 
 
-
+    
    console.log(PatientInfo);
     setPatientInfo(PatientInfo)
      try {
@@ -923,6 +930,8 @@ if(idTypeValue === "NATIONAL_ID"){
         document.getElementById("OPD").showModal();
       }else if(serviceValue === "PRE"){
         document.getElementById("PRE").showModal();
+      }else if(serviceValue === "IPD"){
+        document.getElementById("IPD").showModal();
       }
  
 
@@ -1117,7 +1126,7 @@ if(idTypeValue === "NATIONAL_ID"){
         {post ? (
           post.HTTPStatus.statusCode === 200 ? (
             <>
-         {/*     <form onSubmit={gourl}>*/}
+
                <form onSubmit={check}> 
                 <div className="overflow-x-auto mt-2">
                   <table className="table">
@@ -1134,7 +1143,7 @@ if(idTypeValue === "NATIONAL_ID"){
                       </tr>
                     </thead>
                     <tbody>
-                      {console.log(post)}
+                      {/* {console.log(post)} */}
                       {post ? (
                         post.Result.EpisodeInfo.map((ep, index) => (
                           <tr key={index} className="hover">
@@ -1878,14 +1887,15 @@ if(idTypeValue === "NATIONAL_ID"){
                     <div className="rounded-md">
                     วันที่เข้าการรักษา : {patientInfo.VisitDateTime}
                     </div>
-                    {selectedValue ?
+                    {selectPRETypeValue ?
+                    (
                     <div className="rounded-md">
-                    รักษาแบบต่อเนื่อง : 
-                    <br/>- เลขกรมธรรม์: {furtherClaimNo} 
-                    <br/>- วันที่เข้ารักษา: {visitDateTimeL} 
-                    <br/>- VN: {furtherVN}
+                    เคยการจองสิทธิ์ : 
+                    <br/>- เลขกรมธรรม์: {claimNoL} 
+                    <br/>- วันที่มารับการรักษาครั้งก่อน : {visitDateTimeL}
                                     
-                                    </div> : ""}
+                                    </div>
+                                   ) : ""} 
 
                                     
                                     {showFormCreateError === "Error" ? (
@@ -1914,6 +1924,7 @@ if(idTypeValue === "NATIONAL_ID"){
 
    {mass === true ? 
    load === false ?
+   (
    <div className="rounded-md">
    <div
      className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 ml-2"
@@ -1927,9 +1938,11 @@ if(idTypeValue === "NATIONAL_ID"){
    </div>
    
    </div>
-   : 
+   )
+   :  ( succPRE === false ?
+        (
           <div className="rounded-md w-full">
-                  <div role="tablist" className="tabs-bordered">
+             <div role="tablist" className="tabs-bordered">
                 <input
                   type="radio"
                   name="my_tabs_1"
@@ -1973,19 +1986,489 @@ if(idTypeValue === "NATIONAL_ID"){
                   </label>
                 </div>
               </div>
-              <div className="flex justify-end p-4">
+            <div className="flex justify-end p-4">
               <div
                 className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 "
                   onClick={gourl}
               >
                 ยืนยัน
               </div>
-              </div>
-           </div>
+            </div>
+          </div>
 
-            : ""}
+   
+
+         ) : (
+          <div className="rounded-md">
+                      <div
+    className="btn btn-error text-base-100 hover:text-error hover:bg-base-100 ml-2"
+    onClick={() =>handleButtonBlackVNClick(
+      `${result.Result.InsuranceData.RefId} | ${result.Result.InsuranceData.TransactionNo}`
+    )}
+  >
+    ย้อนกลับ
+  </div>
+               <div
+                 className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 ml-2"
+                 onClick={() =>handleButtonClick(
+                   `${result.Result.InsuranceData.RefId} | ${result.Result.InsuranceData.TransactionNo}`
+                 )}
+               >
+                 Print
+               </div>
+               </div> 
+         ) 
+           )   : ""}
          </div>
+        </div>
+      </div>
+
+      {((showFormCheckEligibleError)||(showFormFurtherError)) === "Error" ? (
+              <div
+                role="alert"
+                className="alert alert-error mt-2 text-base-100"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6 shrink-0 stroke-current"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                <span>{(massError)||(massFurtherError)}</span>
+              </div>
+            ) : (
+              <>
+
+
+
+                  {formPRE && (
+                    <>
+                    <div className="p-4 border-2  rounded-md bg-white w-full mt-4 shadow-md">  
+                        <div className="grid gap-2 sm:grid-cols-5 w-full mt-2">
+                          <div className="rounded-md">
+                          <Box
+                      sx={{
+                        backgroundColor: "#e5e7eb",
+                        padding: 0,
+                        borderRadius: 0,
+                      }}
+                    >
+                      <CustomTextField
+                        id="disabledInput"
+                        label="รหัสอนุมัติการเรียกร้อง (Claim ID)"
+                        className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"
+                        defaultValue={listClaimForm.ClaimNo}
+                        InputProps={{ readOnly: true }}
+                      />
+                    </Box>
+                          </div>
+                          <div className="rounded-md">
+                          <Box
+                      sx={{
+                        backgroundColor: "#e5e7eb",
+                        padding: 0,
+                        borderRadius: 0,
+                      }}
+                    >
+                      <CustomTextField
+                        id="disabledInput"
+                        label="จำนวนครั้งของการพิจารณาครั้งก่อน"
+                        className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"
+                        defaultValue={listClaimForm.OccerrenceNo}
+                        InputProps={{ readOnly: true }}
+                      />
+                    </Box>
+                          </div>
+                          <div className="rounded-md">
+                          <Box
+                      sx={{
+                        backgroundColor: "#e5e7eb",
+                        padding: 0,
+                        borderRadius: 0,
+                      }}
+                    >
+                      <CustomTextField
+                        id="disabledInput"
+                        label="วันที่มารับการรักษาที่โรงพยาบาลของการพิจารณาครั้งก่อน"
+                        className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"
+                        defaultValue={listClaimForm.VisitDateTime}
+                        InputProps={{ readOnly: true }}
+                      />
+                    </Box>
+                          </div>
+                          <div className="rounded-md">
+                          <Box
+                      sx={{
+                        backgroundColor: "#e5e7eb",
+                        padding: 0,
+                        borderRadius: 0,
+                      }}
+                    >
+                      <CustomTextField
+                        id="disabledInput"
+                        label="สถานะของการพิจารณาครั้งก่อน"
+                        className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"
+                        defaultValue={listClaimForm.ClaimStatusDesc}
+                        InputProps={{ readOnly: true }}
+                      />
+                    </Box>
+                          </div>
+                          <div className="rounded-md">
+                          <Box
+                      sx={{
+                        backgroundColor: "#e5e7eb",
+                        padding: 0,
+                        borderRadius: 0,
+                      }}
+                    >
+                      <CustomTextField
+                        id="disabledInput"
+                        label="วันที่คาดว่าจะเข้ารับการผ่าตัดที่โรงพยาบาลของการพิจารณาครั้งก่อน"
+                        className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"
+                        defaultValue={listClaimForm.ExpectedAdmitDate}
+                        InputProps={{ readOnly: true }}
+                      />
+                    </Box>
+                          </div>
+                        </div>
+                        <div className="overflow-x-auto mt-2">
+                          <h1>Diagnosis</h1>
+  <table className="table">
+    <thead>
+      <tr className="bg-info text-base-100">
+        <th>Icd10</th>
+        <th>DxName</th>
+      </tr>
+    </thead>
+    <tbody>
+      {listClaimForm    ? listClaimForm.Diagnosis.map(
+                              (Diagnosis, index) => (
+      <tr className="bg-base-200" key={index}>
+        <td>{Diagnosis.Icd10}</td>
+        <td>{Diagnosis.DxName}</td>
+      </tr>
+                              ) 
+                  ): ""}
+
+</tbody>
+  </table>
+                        </div>
+                        <div className="overflow-x-auto mt-2">
+                        <h1>Procedure</h1>
+  <table className="table">
+    <thead>
+      <tr className="bg-info text-base-100">
+        <th>Icd9</th>
+        <th>ProcedureName</th>
+        <th>ProcedureDate</th>
+      </tr>
+    </thead>
+    <tbody>
+      {listClaimForm    ? listClaimForm.Procedure.map(
+                              (Procedure, index) => (
+      <tr className="bg-base-200" key={index}>
+        <td>{Procedure.Icd9}</td>
+        <td>{Procedure.ProcedureName}</td>
+        <td>{Procedure.ProcedureDate}</td>
+      </tr>
+                              ) 
+                  ): ""}
+
+</tbody>
+  </table>
+                        </div>
+                    </div>
      
+
+                    </>
+                  )}  
+
+
+              <h1 className="text-2xl mt-2 flex items-center">ผลการตรวจสอบสิทธิ์ ค่ารักษาพยาบาล (HS/ME)
+              {hS === true ? <b className="underline ml-2">มีสิทธิ์เรียกร้องสินไหม</b> :  hS === false ? <b className="text-error underline  ml-2">ไม่สามารถใช้สิทธิ์เรียกร้องสินไหม</b> : "" } 
+              </h1>
+                <table className="table mt-2">
+                  <thead className="bg-info text-base-100">
+                    <tr>
+                    <th>เลขที่กรมธรรม์</th>
+                    <th>สัญญาเพิ่มเติม</th>
+                      <th>ผลการตรวจสอบ</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {result ? (
+                      result.Result.InsuranceData.CoverageList.map(
+                        (coverage, index) =>
+                            coverage.Type === "ผลประโยชน์ค่ารักษาพยาบาล" ? (
+
+                          coverage.MessageList.map((message, msgIndex) => (
+                            <tr key={`${index}-${msgIndex}`}>
+                              <td>{message.PolicyNo}</td>
+                              <td>{message.PlanName}</td>
+                              <td>{message.MessageTh}</td>
+                            </tr>
+                          ))
+                      ) : ""
+                    )) : (
+                      <tr>
+                        <td></td>
+                        <td>
+                          <div className="justify-center text-4xl">
+                              <CircularProgress size="30px" className="text-error text-lg" />
+                          </div>
+                        </td>
+                        <td></td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+                <div className="grid gap-2 sm:grid-cols-4 text-base-100 bg-info w-full whitespace-normal text-center">
+                  <div className="rounded-md"></div>
+                  <div className="rounded-md"></div>
+                  <div className="rounded-md ">&nbsp;</div>
+                </div>
+
+              
+
+                <h1 className="text-2xl mt-2 flex items-center">ผลการตรวจสอบสิทธิ์ ค่ารักษาพยาบาล (AI/HB) 
+           {(aI||hB) === true ? <b className="underline ml-2">มีสิทธิ์เรียกร้องสินไหม</b> : (aI||hB) === false ? <b className="text-error underline ml-2">ไม่สามารถใช้สิทธิ์เรียกร้องสินไหม</b> : "" } 
+           
+                </h1>
+                <table className="table mt-2">
+                  <thead className="bg-info text-base-100">
+                    <tr>
+                    <th>เลขที่กรมธรรม์</th>
+                    <th>สัญญาเพิ่มเติม</th>
+                      <th>ผลการตรวจสอบ</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {result ? (
+                      result.Result.InsuranceData.CoverageList.map(
+                        (coverage, index) =>
+                            (coverage.Type === "ผลประโยชน์ค่าชดเชย"||coverage.Type === "ผลประโยชน์ค่าชดเชยนอนรพ") ? (
+
+                          coverage.MessageList.map((message, msgIndex) => (
+                            <tr key={`${index}-${msgIndex}`}>
+                              <td>{message.PolicyNo}</td>
+                              <td>{message.PlanName}</td>
+                              <td>{message.MessageTh}</td>
+                            </tr>
+                          ))
+                      ) : ""
+                    )) : (
+                      <tr>
+                        <td></td>
+                        <td>
+                          <div className="justify-center text-4xl">
+                            <CircularProgress size="30px" className="text-error text-lg" />
+                          </div>
+                        </td>
+                        <td></td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+                <div className="grid gap-2 sm:grid-cols-4 text-base-100 bg-info w-full whitespace-normal text-center">
+                  <div className="rounded-md"></div>
+                  <div className="rounded-md"></div>
+                  <div className="rounded-md ">&nbsp;</div>
+                </div>
+             
+          
+                  </>
+                )}
+          </form>
+        </div>
+      </dialog>
+
+
+      <dialog id="IPD" className="modal text-xl ">
+        <div className="modal-box w-full h-full max-w-7xl ">
+          <form method="dialog">
+            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
+              ✕
+            </button>
+                <h1 className="text-accent text-3xl text-center">ผลการตรวจสอบสิทธิ์ - IPD</h1>
+
+                <div className="flex  w-full mt-4">
+        <div className="p-4 border-2  rounded-md bg-white w-3/6 shadow-md">
+          <h2 className="text-xl font-semibold mb-2 text-center">ข้อมูลส่วนตัว</h2>
+          <p className="">รหัสประจำตัวประชาชน: {patientInfo.PID}</p>
+          <p className="">HN: {patientInfo.HN}</p>
+          <p className="">ชื่อ: {patientInfo.GivenNameTH} {patientInfo.SurnameTH}</p>
+          <p className="">วันเกิด: {patientInfo.DateOfBirth}</p>
+          <p className="">VN: {patientInfo.VN}</p>
+          <p className="">Location: {visitlocation}</p>
+          <p className="">ประเภทในการรักษา: {serviceValue}</p>
+        </div>
+        
+        <div className="p-4 border-2  rounded-md bg-white w-3/6 shadow-md ml-2">
+          <h2 className="text-xl font-semibold mb-2 text-center">จากการตรวจสอบเบื้องต้น</h2>
+          <p className="text-xl text-center">
+            <b className=""> 
+           {mass === true ? <p className="underline">** มีสิทธิ์ใช้บริการเรียกร้องสินไหม **</p> : mass === false ? <p className="text-error underline">** ไม่มีสิทธิ์ใช้บริการเรียกร้องสินไหม **</p> : <CircularProgress size="30px" className="text-error" />}
+          
+           </b>
+          </p>
+      
+                    <div className="rounded-md">
+                    ประเภทกรมธรรม์ : {policyTypeValue === "IB" ? "ประกันรายบุคคล" : "ประกันกลุ่ม"}
+                    </div>
+                    <div className="rounded-md">
+                    ประเภทรักษา : {illnessType ?
+            illnessType.Result.map((ill) => 
+            ill.illnesstypecode  ===  patientInfo.IllnessTypeCode ? ( <>
+             {ill.illnesstypedesc} </>
+            ) : "") : ""}
+                    </div>
+                    <div className="rounded-md">
+                    การผ่าตัด : {surgeryTypeValue === "N" ? "ไม่มีการผ่าตัด" : "มีการผ่าตัด"}
+                    </div>
+                    <div className="rounded-md">
+                    วันที่เข้าการรักษา : {patientInfo.VisitDateTime}
+                    </div>
+                    {/* {console.log(claimNoL)} */}
+                    {selectPRETypeValue ?
+                    (
+                    <div className="rounded-md">
+                    เคยการจองสิทธิ์ : 
+                    <br/>- เลขกรมธรรม์: {claimNoL} 
+                    <br/>- วันที่มารับการรักษาครั้งก่อน : {visitDateTimeL}
+                                    
+                                    </div>
+                                   ) : ""} 
+
+                                    
+                                    {showFormCreateError === "Error" ? (
+              <div
+                role="alert"
+                className="alert alert-error mt-2 text-base-100"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6 shrink-0 stroke-current"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                <span>{massCreateError}</span>
+              </div>
+            ) : ""}
+        <div className="flex justify-center mt-4">   
+        
+
+   {mass === true ? 
+   load === false ?
+   (
+   <div className="rounded-md">
+   <div
+     className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 ml-2"
+     onClick={() =>
+       confirmButton(
+         `${result.Result.InsuranceData.RefId} | ${result.Result.InsuranceData.TransactionNo}`
+       )
+     }
+   >
+      ลงทะเบียนใช้สิทธิ์
+   </div>
+   
+   </div>
+   )
+   :  ( succPRE === false ?
+        (
+          <div className="rounded-md w-full">
+             <div role="tablist" className="tabs-bordered">
+                <input
+                  type="radio"
+                  name="my_tabs_1"
+                  role="tab"
+                  className="tab text-xl"
+                  aria-label="ไม่เคยจองสิทธิ์"
+                  onChange={NotSelectPRE}
+                  defaultChecked
+                />
+
+                <input
+                  type="radio"
+                  name="my_tabs_1"
+                  role="tab"
+                  className="tab text-xl"
+                  aria-label="เคยจองสิทธิ์"
+                />
+                <div role="tabpanel" className="tab-content mt-4">
+                  <label className="form-control w-full">
+                    <select
+                      className="select select-bordered"
+                      value={selectPRETypeValue}
+                      onChange={SelectPRE}
+                    >
+                      <option></option>
+               {preAuthTransactionList
+                        ? preAuthTransactionList.Data.PreAuthTransactionList.map(
+                            (ftc, index) => (
+                              <option
+                                key={index}
+                                value={JSON.stringify(ftc)}
+                              >
+                                เลขกรมธรรม์: {ftc.ClaimNo}, วันที่เข้ารักษา:{" "}
+                                {ftc.VisitDateTime.split("T")[0]} 
+                              </option>
+                            )
+                          )
+                        : ""} 
+                      <></>
+                    </select>
+                  </label>
+                </div>
+              </div>
+            <div className="flex justify-end p-4">
+              <div
+                className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 "
+                  onClick={gourl}
+              >
+                ยืนยัน
+              </div>
+            </div>
+          </div>
+
+   
+
+         ) : (
+          <div className="rounded-md">
+                      <div
+    className="btn btn-error text-base-100 hover:text-error hover:bg-base-100 ml-2"
+    onClick={() =>handleButtonBlackVNClick(
+      `${result.Result.InsuranceData.RefId} | ${result.Result.InsuranceData.TransactionNo}`
+    )}
+  >
+    ย้อนกลับ
+  </div>
+               <div
+                 className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 ml-2"
+                 onClick={() =>handleButtonClick(
+                   `${result.Result.InsuranceData.RefId} | ${result.Result.InsuranceData.TransactionNo}`
+                 )}
+               >
+                 Print
+               </div>
+               </div> 
+         ) 
+           )   : ""}
+         </div>
         </div>
       </div>
 

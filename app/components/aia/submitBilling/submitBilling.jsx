@@ -582,6 +582,7 @@ axios
         InsurerCode: InsuranceCode,
          IdType: selectedIdType,
         InvoiceNumber: "",
+        ClaimNo : "",
         VN: numberValue,
         PID: "",
         PassportNumber: "",
@@ -596,6 +597,7 @@ axios
         InsurerCode: InsuranceCode,
          IdType: selectedIdType,
         InvoiceNumber: "",
+        ClaimNo : "",
         VN: "",
         PID: "",
         PassportNumber: numberValue,
@@ -610,6 +612,7 @@ axios
         InsurerCode: InsuranceCode,
          IdType: selectedIdType,
         InvoiceNumber: "",
+        ClaimNo : "",
         VN: "",
         PID: "",
         PassportNumber: "",
@@ -624,6 +627,7 @@ axios
         InsurerCode: InsuranceCode,
          IdType: selectedIdType,
         InvoiceNumber: "",
+        ClaimNo : "",
         VN: "",
         PID: numberValue,
         PassportNumber: "",
@@ -633,11 +637,12 @@ axios
         StatusClaimCode: statusValue,
         ServiceSettingCode: serviceValue,
       };
-    } else if (selectedIdType === "Invoice" && numberValue) {
+    } else if (selectedIdType === "ClaimNo" && numberValue) {
       PatientInfo = {
         InsurerCode: InsuranceCode,
          IdType: selectedIdType,
-        InvoiceNumber: numberValue,
+        InvoiceNumber: "",
+        ClaimNo : numberValue,
         VN: "",
         PID: "",
         PassportNumber: "",
@@ -652,6 +657,7 @@ axios
         InsurerCode: InsuranceCode,
          IdType: "",
         InvoiceNumber: "",
+        ClaimNo : "",
         VN: "",
         PID: "",
         PassportNumber: "",
@@ -668,6 +674,7 @@ axios
           InsurerCode: InsuranceCode,
            IdType: "",
           InvoiceNumber: "",
+          ClaimNo : "",
           VN: "",
           PID: "",
           PassportNumber: "",
@@ -684,6 +691,7 @@ axios
         InsurerCode: InsuranceCode,
          IdType: "",
         InvoiceNumber: "",
+        ClaimNo : "",
         VN: "",
         PID: "",
         PassportNumber: "",
@@ -701,6 +709,7 @@ axios
    InsurerCode: InsuranceCode,
     IdType: "",
    InvoiceNumber: "",
+   ClaimNo : "",
    VN: "",
    PID: "",
    PassportNumber: "",
@@ -1303,15 +1312,15 @@ axios
                 />
                 <p className="text-left">&nbsp;VN &nbsp;</p>
                 <input
-                  type="radio"
-                  id="InvoiceNumber"
-                  name="identity_type"
-                  value="InvoiceNumber"
-                  className="checkbox checkbox-info"
-                  checked={selectedIdType === "InvoiceNumber"}
-                  onChange={handleOptionChange}
-                />
-                <p className="text-left">&nbsp;Invoice&nbsp;</p>
+                type="radio"
+                id="ClaimNo"
+                name="identity_type"
+                value="ClaimNo"
+                className="checkbox checkbox-info"
+                checked={selectedIdType === "ClaimNo"}
+                onChange={handleOptionChange}
+              />
+              <p className="text-left">&nbsp;ClaimNo &nbsp;</p>
                 <p className="ml-2">Visit Date</p>
               </div>
               <TextField
