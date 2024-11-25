@@ -759,17 +759,19 @@ axios
       })
       .catch((error) => {
         console.log(error);
-        try {
-          const ErrorMass = error.config.url;
-          const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
-          setMassError(
-            error.code + " - " + error.message + " - " + ErrorMass2
-          );
-          setShowFormError("Error");
-        } catch (error) {
-          setMassError("Error ในการเปิดไฟล์");
-          setShowFormError("Error");
-        }
+        setShowFormError("Error");
+        setMassError(error.response.data.HTTPStatus.error);
+        // try {
+        //   const ErrorMass = error.config.url;
+        //   const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+        //   setMassError(
+        //     error.code + " - " + error.message + " - " + ErrorMass2
+        //   );
+        //   setShowFormError("Error");
+        // } catch (error) {
+        //   setMassError("Error ในการเปิดไฟล์");
+        //   setShowFormError("Error");
+        // }
       });
   };
 
@@ -1703,11 +1705,18 @@ axios
                                         <a className="bg-info text-base-100 rounded-full px-3 py-2 w-full border-2">
                                           {statusNew.ClaimStatus}
                                         </a>
-                                      ) : ((bill.ClaimStatusDesc_EN === "Approve")||(bill.ClaimStatusDesc_EN === "Received")) ? (
-                                        <a className="bg-success text-base-100 rounded-full px-3 py-2 w-full ">
-                                          {bill.ClaimStatusDesc_EN}
-                                        </a>
-                                      ) : (<a className="bg-warning rounded-full px-3 py-2 w-full">
+                                                                    ) : ((bill.ClaimStatusDesc_EN === "Approve")||(bill.ClaimStatusDesc_EN === "Received")|| (bill.ClaimStatusDesc_EN === "Pending")) ? (
+                                                                      bill.ClaimStatusDesc_EN === "Pending" ? (
+                                                                      <a className="bg-accent text-base-100 rounded-full px-3 py-2 w-full">
+                                                                        {bill.ClaimStatusDesc_EN}
+                                                                      </a>
+                                                                    )
+                                                                     : ( 
+                                                                     <a className="bg-success text-base-100 rounded-full px-3 py-2 w-full">
+                                                                      {bill.ClaimStatusDesc_EN}
+                                                                    </a>
+                                                                    )
+                                                                     ) : (<a className="bg-warning rounded-full px-3 py-2 w-full">
                                         {bill.ClaimStatusDesc_EN}
                                       </a>)
                                     ) : (
@@ -1727,11 +1736,18 @@ axios
                                       <a className="bg-info text-base-100 rounded-full px-3 py-2 w-full">
                                         {bill.ClaimStatusDesc_EN}
                                       </a>
-                                    ) : ((bill.ClaimStatusDesc_EN === "Approve")||(bill.ClaimStatusDesc_EN === "Received")) ? (
-                                      <a className="bg-success text-base-100 rounded-full px-3 py-2 w-full">
+                    ) : ((bill.ClaimStatusDesc_EN === "Approve")||(bill.ClaimStatusDesc_EN === "Received")|| (bill.ClaimStatusDesc_EN === "Pending") || (bill.ClaimStatusDesc_EN === "AddDoc")) ? (
+                                      bill.ClaimStatusDesc_EN === "Pending" ? (
+                                      <a className="bg-accent text-base-100 rounded-full px-3 py-2 w-full">
                                         {bill.ClaimStatusDesc_EN}
                                       </a>
-                                    ) : (<a className="bg-warning  rounded-full px-3 py-2 w-full">
+                                    )
+                                     : ( 
+                                     <a className="bg-success text-base-100 rounded-full px-3 py-2 w-full">
+                                      {bill.ClaimStatusDesc_EN}
+                                    </a>
+                                    )
+                                     ) : (<a className="bg-warning  rounded-full px-3 py-2 w-full">
                                       {bill.ClaimStatusDesc_EN}
                                     </a>)
                                   ) : (

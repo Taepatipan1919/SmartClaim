@@ -1498,19 +1498,37 @@ axios
                       </td>
                       <td>
                       <div className="grid gap-1 sm:grid-cols-1 w-full">
-                        {
-                        //statusAllNew ? statusAllNew.map(ALLnew => (ALLnew.TransactionNo === ((bill.TransactionNo)||(statusNew.TransactionNo)) ? ((((ALLnew.ClaimStatus !== "Cancelled")&&(ALLnew.ClaimStatus !== "Cancelled to AIA")&&(ALLnew.ClaimStatus !== "Reversed")) ? ((ALLnew.ClaimStatus === "Approved")||(ALLnew.ClaimStatus === "Settle")) ? <a className="bg-success text-base-100 rounded-full px-3 py-2">{ALLnew.ClaimStatus}</a> : <a className="bg-warning text-base-100 rounded-full px-3 py-2">{ALLnew.ClaimStatus}</a> : <a className="bg-error text-base-100 rounded-full px-3 py-2">{ALLnew.ClaimStatus}</a>)) : ((((bill.ClaimStatusDesc_EN !== "Cancelled")&&(bill.ClaimStatusDesc_EN !== "Cancelled to AIA")&&(bill.ClaimStatusDesc_EN !== "Reversed")) ? ((bill.ClaimStatus === "Approved")||(bill.ClaimStatus === "Settle")) ? <a className="bg-success text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatus}</a> : <a className="bg-warning text-base-100 rounded-full px-3 py-2">{bill.ClaimStatusDesc_EN}</a> : <a className="bg-error text-base-100 rounded-full px-3 py-2">{bill.ClaimStatusDesc_EN}</a>)))):
+                      {
                         (statusNew ? bill.TransactionNo === statusNew.TransactionNo ? statusNew.ClaimStatusDesc ?  (((statusNew.ClaimStatus !== "Cancelled")&&(statusNew.ClaimStatus !== "Cancelled to AIA")&&(statusNew.ClaimStatus !== "Reversed")) ? ((statusNew.ClaimStatus === "Approved")||(statusNew.ClaimStatus === "Settle")) ? <a className="bg-info text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatus}</a> : 
-                        ((statusNew.ClaimStatus === "Approve")||(statusNew.ClaimStatus === "Received")) ? (
+                        ((statusNew.ClaimStatus === "Approve")||(statusNew.ClaimStatus === "Received")||(statusNew.ClaimStatus === "Pending") || (statusNew.ClaimStatus === "AddDoc")) ? 
+
+                        statusNew.ClaimStatus === "Pending" ? (
+                          <a className="bg-accent text-base-100 rounded-full px-3 py-2 w-full">
+                            {statusNew.ClaimStatus}
+                          </a>
+                        )
+                         :  (
                           <a className="bg-success text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatus}</a>
-                        ) : (
+                        ) 
+                        : (
                         <a className="bg-warning rounded-full px-3 py-2">{statusNew.ClaimStatus}</a>
                       )
                          : <a className="bg-error text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatus}</a>): "" : bill.ClaimStatusDesc ? 
                         (((bill.ClaimStatusDesc_EN !== "Cancelled")&&(bill.ClaimStatusDesc_EN !== "Cancelled to AIA")&&(bill.ClaimStatusDesc_EN !== "Reversed")) ? ((bill.ClaimStatusDesc_EN === "Approved")||(bill.ClaimStatusDesc_EN === "Settle")) ? <a className="bg-info text-base-100 rounded-full px-3 py-2">{bill.ClaimStatusDesc_EN}</a> : 
-                        ((bill.ClaimStatusDesc_EN === "Approve")||(bill.ClaimStatusDesc_EN === "Received")) ? (
-                          <a className="bg-success text-base-100 rounded-full px-3 py-2">{bill.ClaimStatusDesc_EN}</a>
-                        ) : (
+                     ((bill.ClaimStatusDesc_EN === "Approve")||(bill.ClaimStatusDesc_EN === "Received")|| (bill.ClaimStatusDesc_EN === "Pending") || (bill.ClaimStatusDesc_EN === "AddDoc")) ? (
+                        bill.ClaimStatusDesc_EN === "Pending" ? (
+                        <a className="bg-accent text-base-100 rounded-full px-3 py-2 w-full">
+                          {bill.ClaimStatusDesc_EN}
+                        </a>
+                      )
+                       : ( 
+                       <a className="bg-success text-base-100 rounded-full px-3 py-2 w-full">
+                        {bill.ClaimStatusDesc_EN}
+                      </a>
+                      )
+                       )
+
+                        : (
                       <a className="bg-warning rounded-full px-3 py-2">{bill.ClaimStatusDesc_EN}</a>  
                       )
                        : <a className="bg-error text-base-100 rounded-full px-3 py-2">{bill.ClaimStatusDesc_EN}</a>): "": "Loading...")}
@@ -1805,19 +1823,37 @@ axios
     </td>
     <td>
     <div className="grid gap-1 sm:grid-cols-1 w-full">
-                        {
-                        //statusAllNew ? statusAllNew.map(ALLnew => (ALLnew.TransactionNo === ((bill.TransactionNo)||(statusNew.TransactionNo)) ? ((((ALLnew.ClaimStatus !== "Cancelled")&&(ALLnew.ClaimStatus !== "Cancelled to AIA")&&(ALLnew.ClaimStatus !== "Reversed")) ? ((ALLnew.ClaimStatus === "Approved")||(ALLnew.ClaimStatus === "Settle")) ? <a className="bg-success text-base-100 rounded-full px-3 py-2">{ALLnew.ClaimStatus}</a> : <a className="bg-warning text-base-100 rounded-full px-3 py-2">{ALLnew.ClaimStatus}</a> : <a className="bg-error text-base-100 rounded-full px-3 py-2">{ALLnew.ClaimStatus}</a>)) : ((((bill.ClaimStatusDesc_EN !== "Cancelled")&&(bill.ClaimStatusDesc_EN !== "Cancelled to AIA")&&(bill.ClaimStatusDesc_EN !== "Reversed")) ? ((bill.ClaimStatus === "Approved")||(bill.ClaimStatus === "Settle")) ? <a className="bg-success text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatus}</a> : <a className="bg-warning text-base-100 rounded-full px-3 py-2">{bill.ClaimStatusDesc_EN}</a> : <a className="bg-error text-base-100 rounded-full px-3 py-2">{bill.ClaimStatusDesc_EN}</a>)))):
+    {
                         (statusNew ? bill.TransactionNo === statusNew.TransactionNo ? statusNew.ClaimStatusDesc ?  (((statusNew.ClaimStatus !== "Cancelled")&&(statusNew.ClaimStatus !== "Cancelled to AIA")&&(statusNew.ClaimStatus !== "Reversed")) ? ((statusNew.ClaimStatus === "Approved")||(statusNew.ClaimStatus === "Settle")) ? <a className="bg-info text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatus}</a> : 
-                        ((statusNew.ClaimStatus === "Approve")||(statusNew.ClaimStatus === "Received")) ? (
+                        ((statusNew.ClaimStatus === "Approve")||(statusNew.ClaimStatus === "Received")||(statusNew.ClaimStatus === "Pending") || (statusNew.ClaimStatus === "AddDoc")) ? 
+
+                        statusNew.ClaimStatus === "Pending" ? (
+                          <a className="bg-accent text-base-100 rounded-full px-3 py-2 w-full">
+                            {statusNew.ClaimStatus}
+                          </a>
+                        )
+                         :  (
                           <a className="bg-success text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatus}</a>
-                        ) : (
+                        ) 
+                        : (
                         <a className="bg-warning rounded-full px-3 py-2">{statusNew.ClaimStatus}</a>
                       )
                          : <a className="bg-error text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatus}</a>): "" : bill.ClaimStatusDesc ? 
                         (((bill.ClaimStatusDesc_EN !== "Cancelled")&&(bill.ClaimStatusDesc_EN !== "Cancelled to AIA")&&(bill.ClaimStatusDesc_EN !== "Reversed")) ? ((bill.ClaimStatusDesc_EN === "Approved")||(bill.ClaimStatusDesc_EN === "Settle")) ? <a className="bg-info text-base-100 rounded-full px-3 py-2">{bill.ClaimStatusDesc_EN}</a> : 
-                        ((bill.ClaimStatusDesc_EN === "Approve")||(bill.ClaimStatusDesc_EN === "Received")) ? (
-                          <a className="bg-success text-base-100 rounded-full px-3 py-2">{bill.ClaimStatusDesc_EN}</a>
-                        ) : (
+                     ((bill.ClaimStatusDesc_EN === "Approve")||(bill.ClaimStatusDesc_EN === "Received")|| (bill.ClaimStatusDesc_EN === "Pending") || (bill.ClaimStatusDesc_EN === "AddDoc")) ? (
+                        bill.ClaimStatusDesc_EN === "Pending" ? (
+                        <a className="bg-accent text-base-100 rounded-full px-3 py-2 w-full">
+                          {bill.ClaimStatusDesc_EN}
+                        </a>
+                      )
+                       : ( 
+                       <a className="bg-success text-base-100 rounded-full px-3 py-2 w-full">
+                        {bill.ClaimStatusDesc_EN}
+                      </a>
+                      )
+                       )
+
+                        : (
                       <a className="bg-warning rounded-full px-3 py-2">{bill.ClaimStatusDesc_EN}</a>  
                       )
                        : <a className="bg-error text-base-100 rounded-full px-3 py-2">{bill.ClaimStatusDesc_EN}</a>): "": "Loading...")}
@@ -2098,19 +2134,37 @@ axios
     </td>
     <td>
     <div className="grid gap-1 sm:grid-cols-1 w-full">
-                        {
-                        //statusAllNew ? statusAllNew.map(ALLnew => (ALLnew.TransactionNo === ((bill.TransactionNo)||(statusNew.TransactionNo)) ? ((((ALLnew.ClaimStatus !== "Cancelled")&&(ALLnew.ClaimStatus !== "Cancelled to AIA")&&(ALLnew.ClaimStatus !== "Reversed")) ? ((ALLnew.ClaimStatus === "Approved")||(ALLnew.ClaimStatus === "Settle")) ? <a className="bg-success text-base-100 rounded-full px-3 py-2">{ALLnew.ClaimStatus}</a> : <a className="bg-warning text-base-100 rounded-full px-3 py-2">{ALLnew.ClaimStatus}</a> : <a className="bg-error text-base-100 rounded-full px-3 py-2">{ALLnew.ClaimStatus}</a>)) : ((((bill.ClaimStatusDesc_EN !== "Cancelled")&&(bill.ClaimStatusDesc_EN !== "Cancelled to AIA")&&(bill.ClaimStatusDesc_EN !== "Reversed")) ? ((bill.ClaimStatus === "Approved")||(bill.ClaimStatus === "Settle")) ? <a className="bg-success text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatus}</a> : <a className="bg-warning text-base-100 rounded-full px-3 py-2">{bill.ClaimStatusDesc_EN}</a> : <a className="bg-error text-base-100 rounded-full px-3 py-2">{bill.ClaimStatusDesc_EN}</a>)))):
+    {
                         (statusNew ? bill.TransactionNo === statusNew.TransactionNo ? statusNew.ClaimStatusDesc ?  (((statusNew.ClaimStatus !== "Cancelled")&&(statusNew.ClaimStatus !== "Cancelled to AIA")&&(statusNew.ClaimStatus !== "Reversed")) ? ((statusNew.ClaimStatus === "Approved")||(statusNew.ClaimStatus === "Settle")) ? <a className="bg-info text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatus}</a> : 
-                        ((statusNew.ClaimStatus === "Approve")||(statusNew.ClaimStatus === "Received")) ? (
+                        ((statusNew.ClaimStatus === "Approve")||(statusNew.ClaimStatus === "Received")||(statusNew.ClaimStatus === "Pending") || (statusNew.ClaimStatus === "AddDoc")) ? 
+
+                        statusNew.ClaimStatus === "Pending" ? (
+                          <a className="bg-accent text-base-100 rounded-full px-3 py-2 w-full">
+                            {statusNew.ClaimStatus}
+                          </a>
+                        )
+                         :  (
                           <a className="bg-success text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatus}</a>
-                        ) : (
+                        ) 
+                        : (
                         <a className="bg-warning rounded-full px-3 py-2">{statusNew.ClaimStatus}</a>
                       )
                          : <a className="bg-error text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatus}</a>): "" : bill.ClaimStatusDesc ? 
                         (((bill.ClaimStatusDesc_EN !== "Cancelled")&&(bill.ClaimStatusDesc_EN !== "Cancelled to AIA")&&(bill.ClaimStatusDesc_EN !== "Reversed")) ? ((bill.ClaimStatusDesc_EN === "Approved")||(bill.ClaimStatusDesc_EN === "Settle")) ? <a className="bg-info text-base-100 rounded-full px-3 py-2">{bill.ClaimStatusDesc_EN}</a> : 
-                        ((bill.ClaimStatusDesc_EN === "Approve")||(bill.ClaimStatusDesc_EN === "Received")) ? (
-                          <a className="bg-success text-base-100 rounded-full px-3 py-2">{bill.ClaimStatusDesc_EN}</a>
-                        ) : (
+                     ((bill.ClaimStatusDesc_EN === "Approve")||(bill.ClaimStatusDesc_EN === "Received")|| (bill.ClaimStatusDesc_EN === "Pending") || (bill.ClaimStatusDesc_EN === "AddDoc")) ? (
+                        bill.ClaimStatusDesc_EN === "Pending" ? (
+                        <a className="bg-accent text-base-100 rounded-full px-3 py-2 w-full">
+                          {bill.ClaimStatusDesc_EN}
+                        </a>
+                      )
+                       : ( 
+                       <a className="bg-success text-base-100 rounded-full px-3 py-2 w-full">
+                        {bill.ClaimStatusDesc_EN}
+                      </a>
+                      )
+                       )
+
+                        : (
                       <a className="bg-warning rounded-full px-3 py-2">{bill.ClaimStatusDesc_EN}</a>  
                       )
                        : <a className="bg-error text-base-100 rounded-full px-3 py-2">{bill.ClaimStatusDesc_EN}</a>): "": "Loading...")}
