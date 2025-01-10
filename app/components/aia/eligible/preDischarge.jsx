@@ -2172,6 +2172,28 @@ if(rows){
                       </div>
                       <div className="rounded-md mt-2">
                     <TextField
+                          error
+                      className="w-full"
+                      id="outlined-multiline-static"
+                      label="จำนวนเงินที่ประเมินการผ่าตัดเบื้องต้นที่ยื่นพิจารณาก่อนการผ่าตัด"
+                      name="จำนวนเงินที่ประเมินการผ่าตัดเบื้องต้นที่ยื่นพิจารณาก่อนการผ่าตัด"
+                      value={totalEstimatedCost}
+                      onChange={(newTotalEstimatedCost) =>
+                        setTotalEstimatedCost(newTotalEstimatedCost)
+                      }
+                      slotProps={{
+                        input: {
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              $
+                            </InputAdornment>
+                          ),
+                        },
+                      }}
+                    />
+                  </div>
+                      <div className="rounded-md mt-2">
+                    <TextField
                       //    error
                       className="w-full"
                       id="outlined-multiline-static"
@@ -2207,6 +2229,7 @@ if(rows){
                       }}
                     />
                   </div>
+                  
                   <div className="rounded-md mt-2">
 
                   <FormControl className="w-full">
@@ -3528,28 +3551,6 @@ onChange={IsPackage}
 
 
 </div>
-<div className="rounded-md mt-2">
-                    <TextField
-                          error
-                      className="w-full"
-                      id="outlined-multiline-static"
-                      label="จำนวนเงินที่ประเมินการผ่าตัดเบื้องต้นที่ยื่นพิจารณาก่อนการผ่าตัด"
-                      name="จำนวนเงินที่ประเมินการผ่าตัดเบื้องต้นที่ยื่นพิจารณาก่อนการผ่าตัด"
-                      value={totalEstimatedCost}
-                      onChange={(newTotalEstimatedCost) =>
-                        setTotalEstimatedCost(newTotalEstimatedCost)
-                      }
-                      slotProps={{
-                        input: {
-                          startAdornment: (
-                            <InputAdornment position="start">
-                              $
-                            </InputAdornment>
-                          ),
-                        },
-                      }}
-                    />
-                  </div>
                   </div>
                   <TableContainer component={Paper} className="mt-2">
                     <Table className="table">

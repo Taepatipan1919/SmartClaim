@@ -759,7 +759,8 @@ if(idTypeValue === "NATIONAL_ID"){
     // const Acc = accValue.split(" ");
     // setVisitDate(VisitDateTime)
     let DateAccValue;
-    let TypeValue;
+
+
     let PatientInfo;
     if(accValue){
     DateAccValue = dayjs(accValue.$d).format("YYYY-MM-DD");
@@ -774,12 +775,12 @@ if(idTypeValue === "NATIONAL_ID"){
     setLocationCode(LocationCode)
 
     
-
-    if (illnessTypeValue === "DAY") {
-      TypeValue = "IPD";
-    } else {
-      TypeValue = "OPD";
-    }
+    // console.log(serviceValue)
+    // if (illnessTypeValue === "DAY") {
+    //   TypeValue = "IPD";
+    // } else {
+    //   TypeValue = "OPD";
+    // }
 
     if(idTypeValue === "NATIONAL_ID"){
       PatientInfo = {
@@ -794,13 +795,13 @@ if(idTypeValue === "NATIONAL_ID"){
         VisitDateTime: VisitDateselectVN,
         AccidentDate: DateAccValue,
         PolicyTypeCode: policyTypeValue,
-        ServiceSettingCode: TypeValue,
+        ServiceSettingCode: serviceValue,
         IllnessTypeCode: illnessTypeValue,
         SurgeryTypeCode: surgeryTypeValue,
   
         IdType: idTypeValue,
-      //   PID: numberValue,
-        PID: "3100500420908",
+         PID: numberValue,
+      //  PID: "3100500420908",
         PassportNumber: "",
         MembershipId:"",  
         CustomerId : "",
@@ -822,7 +823,7 @@ if(idTypeValue === "NATIONAL_ID"){
         VisitDateTime: VisitDateselectVN,
         AccidentDate: DateAccValue,
         PolicyTypeCode: policyTypeValue,
-        ServiceSettingCode: TypeValue,
+        ServiceSettingCode: serviceValue,
         IllnessTypeCode: illnessTypeValue,
         SurgeryTypeCode: surgeryTypeValue,
   
@@ -849,7 +850,7 @@ if(idTypeValue === "NATIONAL_ID"){
         VisitDateTime: VisitDateselectVN,
         AccidentDate: DateAccValue,
         PolicyTypeCode: policyTypeValue,
-        ServiceSettingCode: TypeValue,
+        ServiceSettingCode: serviceValue,
         IllnessTypeCode: illnessTypeValue,
         SurgeryTypeCode: surgeryTypeValue,
   
@@ -876,7 +877,7 @@ if(idTypeValue === "NATIONAL_ID"){
         VisitDateTime: VisitDateselectVN,
         AccidentDate: DateAccValue,
         PolicyTypeCode: policyTypeValue,
-        ServiceSettingCode: TypeValue,
+        ServiceSettingCode: serviceValue,
         IllnessTypeCode: illnessTypeValue,
         SurgeryTypeCode: surgeryTypeValue,
   
@@ -903,7 +904,7 @@ if(idTypeValue === "NATIONAL_ID"){
         VisitDateTime: VisitDateselectVN,
         AccidentDate: DateAccValue,
         PolicyTypeCode: policyTypeValue,
-        ServiceSettingCode: TypeValue,
+        ServiceSettingCode: serviceValue,
         IllnessTypeCode: illnessTypeValue,
         SurgeryTypeCode: surgeryTypeValue,
   

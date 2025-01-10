@@ -53,6 +53,16 @@ export default function Page({ data }) {
       },
     },
   };
+
+
+  const [textPresentIllness, setTextPresentIllness] = useState(''); 
+  const [charCountPresentIllness, setCharCountPresentIllness] = useState(0);
+  const handleTextChangePresentIllness = (event) => { 
+    const valuePresentIllness = event.target.value; 
+    setTextPresentIllness(valuePresentIllness); 
+    setCharCountPresentIllness(valuePresentIllness.length); 
+  };
+
   const dispatch = useDispatch();
   const InsuranceCode = 13;
   const [massError, setMassError] = useState("");
@@ -83,7 +93,6 @@ export default function Page({ data }) {
   const [result, setResult] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [showArrowVN, setShowArrowVN] = useState();
-  
   const [showArrow, setShowArrow] = useState(false);
   const router = useRouter();
   const [bmi, setBmi] = useState("");
@@ -105,7 +114,8 @@ export default function Page({ data }) {
   const [procedure, setProcedure] = useState("");
   const [causeOfInjuryDetails, setCauseOfInjuryDetails] = useState("");
   const [injuryDetails, setInjuryDetails] = useState("");
-
+  const [visitInfoDxFreeText, setVisitInfoDxFreeText] = useState('');
+  const [visitInfoPresentIllness, setVisitInfoPresentIllness] = useState('');
   const [randomNumber, setRandomNumber] = useState('');
 
 
@@ -152,7 +162,9 @@ export default function Page({ data }) {
   const Over45 = (event) => {
     setOver45(event.target.value);
   };
-
+  
+  const handleTextChangeVisitInfoDxFreeText = (event) => { const value = event.target.value; setVisitInfoDxFreeText(value); setCharCountDxFreeText(value.length); };
+  const handleTextChangeVisitInfoPresentIllness = (event) => { const value = event.target.value; setVisitInfoPresentIllness(value); setCharCountPresentIllness(value.length); };
   const PatientInfoData = {
     PatientInfo: {
       InsurerCode: data.DataTran.Data.InsurerCode,
@@ -360,6 +372,8 @@ export default function Page({ data }) {
     //     console.log(response.data)
         setVisit(response.data);
         setOver45(response.data.Result.VisitInfo.AccidentCauseOver45Days);
+        setTextPresentIllness(response.data.Result.VisitInfo.PresentIllness);
+        setCharCountPresentIllness(response.data.Result.VisitInfo.PresentIllness.length);
         //const dateValue = dayjs(response.data.Result.VisitInfo.SignSymptomsDate);
         //console.log(response.data.Result.VisitInfo.SignSymptomsDate)
         // setSignSymptomsDate(dateValue);
@@ -2324,11 +2338,14 @@ if(rows){
                       label="Diagnosis"
                       name="DxFreeTextText"
                       multiline
-                      rows={4}
+                      rows={10}
                       defaultValue={visit.Result.VisitInfo.DxFreeText}
+                      // value={visitInfoDxFreeText}
+                      // onChange={handleTextChangeVisitInfoDxFreeText}
                       inputProps={{ maxLength: 200 }}
                       required
                     />
+                    {/* <p>{charCountDxFreeText} /200 ตัวอักษร</p> */}
                   </div>
                   <div className="rounded-md mt-2">
                     <TextField
@@ -2338,11 +2355,12 @@ if(rows){
                       id="outlined-multiline-static"
                       label="Present illness or Cause of Injury"
                       multiline
-                      rows={4}
-                      defaultValue={visit.Result.VisitInfo.PresentIllness}
+                      rows={10}
+                      value={textPresentIllness} 
+                      onChange={handleTextChangePresentIllness}
                       inputProps={{ maxLength: 500 }}
-                      //   required
                     />
+                    <p>{charCountPresentIllness}/500 ตัวอักษร</p>
                   </div>
                   <div className="rounded-md mt-2">
                     <TextField

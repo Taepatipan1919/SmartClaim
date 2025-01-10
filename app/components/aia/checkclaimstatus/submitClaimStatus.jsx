@@ -54,13 +54,17 @@ export default function checkData() {
   const [fromValue, setFromValue] = useState(null);
   const [toValue, setToValue] = useState(null);
   const [massError, setMassError] = useState("");
+  const [iCD10Value, setICD10Value] = useState();
+  const [furtherClaimId, setFurtherClaimId] = useState();
   const [showFormError, setShowFormError] = useState("");
   const [invoiceNumberL, setInvoiceNumberL] = useState("");
   const [massCancel, setMassCancel] = useState("");
   // const [showFormCancel, setShowFormCancel] = useState("");
   const [billList, setBillList] = useState("");
   const [showModal, setShowModal] = useState(false);
-  const [doMoney, setDoMoney] = useState(false);
+  const [over45Days, setOver45Days] = useState("");
+  const [over45, setOver45] = useState("");
+  const [doMoney, setDoMoney] = useState(true);
   const router = useRouter();
   const [statusNew, setStatusNew] = useState({});
   // const [statusAllNew, setStatusAllNew] = useState();
@@ -87,11 +91,37 @@ export default function checkData() {
   const [serviceCode, setServiceCode] = useState("");
   const [totalSum, setTotalSum] = useState("");
   const [fromTotalSum, setFromTotalSum] = useState(false);
-  const [selectedValue, setSelectedValue] = useState("");
-  const handleSelectChange = (event) => {
-    setSelectedValue(event.target.value);
+  // const [selectedValue, setSelectedValue] = useState("");
+  // const handleSelectChange = (event) => {
+  //   setSelectedValue(event.target.value);
+  // };
+  const Over45 = (event) => {
+    setOver45(event.target.value);
   };
-
+  useEffect(() => {
+    axios
+      .get(
+        process.env.NEXT_PUBLIC_URL_PD2 +
+          process.env.NEXT_PUBLIC_URL_accidentCauseOver45Day +
+          InsuranceCode
+      )
+      .then((response) => {
+     //   console.log(response.data)
+        setOver45Days(response.data);
+      })
+      .catch((error) => {
+    //    console.log(error);
+        try {
+          const ErrorMass = error.config.url;
+          const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+          setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
+          setShowFormError("Error");
+        } catch (error) {
+          setMassError(error.response.data.HTTPStatus.message);
+          setShowFormError("Error");
+        }
+      });
+  }, []);
   useEffect(() => {
 
     axios
@@ -275,6 +305,8 @@ export default function checkData() {
   ///////////////////////////////////////////////////
   ///////////////////////////////////////////////////
   const Checkcreditlimit = (data) => {
+    setOver45("");
+    setICD10Value("");
     setItemBillingDetails("");
     setTotal(0);
     setFromTotalSum(false);
@@ -292,6 +324,7 @@ setTransactionClaimInfo(data)
     setMsg(null);
     setPIDL(data.PID);
     setPassportNumberL(data.PassportNumber);
+    setFurtherClaimId(data.FurtherClaimId)
     //console.log(data)
 
 
@@ -466,7 +499,7 @@ axios
             }
           );
 
-// console.log(transactionClaimInfo)
+ //console.log(transactionClaimInfo)
 // console.log(result)
 
 const PatientInfo = {
@@ -475,11 +508,15 @@ const PatientInfo = {
     TransactionNo: transactionClaimInfo.TransactionNo,   
     // PID: transactionClaimInfo.PID,
     // IdType: transactionClaimInfo.IdType,
+    IllnessTypeCode : transactionClaimInfo.IllnessTypeCode,
     HN: transactionClaimInfo.HN,
     VN: transactionClaimInfo.VN,
     VisitDateTime: transactionClaimInfo.VisitDateTime,
     AccidentDate: transactionClaimInfo.AccidentDate,
   ItemBillingCheckBalance : result,
+  ICD10: iCD10Value,
+  FurtherClaimId: furtherClaimId,
+  AccidentCauseOver45Days: over45,
 }
 // console.log(PatientInfo)
 axios
@@ -1330,7 +1367,7 @@ axios
         )
         .then((response) => {
           setPostData(response.data);
-      //    console.log(response.data);
+          console.log(response.data);
           setCurrentData(response.data.Result.TransactionClaimInfo);
           setShowFormError();
         })
@@ -1690,7 +1727,7 @@ axios
                           </td>
                           <td className="whitespace-nowrap">{bill.HN} <br/> {bill.VN}</td>
                           <td className="">{bill.VisitLocation}</td>
-                          <td className="whitespace-nowrap">{bill.ClaimNo}</td>
+                          <td className="whitespace-nowrap">{bill.ClaimNo} <br/>  ( {bill.ServiceSettingCode} )</td>
                           <td className="whitespace-nowrap">{bill.InvoiceNumber}</td>
                           <td className="whitespace-nowrap">
                             {
@@ -1701,7 +1738,7 @@ axios
                             <div className="grid gap-1 sm:grid-cols-1 w-40 ">
                               {
                                statusNew ? (
-                                bill.TransactionNo ===statusNew.TransactionNo ? (statusNew.ClaimStatusDesc ? (statusNew.ClaimStatus !== "Cancelled" && statusNew.ClaimStatus !=="Cancelled to AIA" &&statusNew.ClaimStatus !== "Reversed" ? (statusNew.ClaimStatus === "Approved" ||statusNew.ClaimStatus === "Settle" ? (
+                                bill.TransactionNo ===statusNew.TransactionNo ? (statusNew.ClaimStatusDesc ? (statusNew.ClaimStatus !== "Cancelled" && statusNew.ClaimStatus !=="Cancelled to AIA" &&statusNew.ClaimStatus !== "Reversed" && statusNew.ClaimStatus !== "Decline" ? (statusNew.ClaimStatus === "Approved" ||statusNew.ClaimStatus === "Settle" ? (
                                         <a className="bg-info text-base-100 rounded-full px-3 py-2 w-full border-2">
                                           {statusNew.ClaimStatus}
                                         </a>
@@ -1731,7 +1768,7 @@ axios
                                   bill.ClaimStatusDesc_EN !== "Cancelled" &&
                                   bill.ClaimStatusDesc_EN !==
                                     "Cancelled to AIA" &&
-                                  bill.ClaimStatusDesc_EN !== "Reversed" ? (
+                                  bill.ClaimStatusDesc_EN !== "Reversed" && bill.ClaimStatusDesc_EN !== "Decline" ? (
                                     ((bill.ClaimStatusDesc_EN === "Approved") || (bill.ClaimStatusDesc_EN === "Settle")) ? (
                                       <a className="bg-info text-base-100 rounded-full px-3 py-2 w-full">
                                         {bill.ClaimStatusDesc_EN}
@@ -1915,10 +1952,11 @@ axios
                             ) : (
                               ""
                             )}
-                            {/* {console.log(bill)} */}
+                             {/* {console.log(doMoney)}  */}
                             { bill.RefId ? (
-                             ((bill.ClaimStatusDesc === "waitting for discharge")||(bill.ClaimStatusDesc === "Approve")||(bill.ClaimStatusDesc === "Received"))&&doMoney === true ? (
-                              <>
+                             ((bill.ClaimStatusDesc === "waitting for discharge")||(bill.ClaimStatusDesc === "Approve")||(bill.ClaimStatusDesc === "Received"))&& doMoney === true ? (
+                            
+                            <>
 
                                 <button
                                   className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100"
@@ -1928,7 +1966,8 @@ axios
                                 >
                                   ประมาณการค่าใช้จ่าย
                                 </button>
-                              </>
+
+                            </>
                             ) : ("")) : ("")}
                           </td>
                         </tr>
@@ -2213,7 +2252,7 @@ axios
                 <h3 className="font-bold text-lg">ประมาณการค่าใช้จ่าย</h3>
                 <hr />
 
-                {showFormError === "Error" ? (
+                {((showFormError === "Error")||(totalApprovedAmount === 0)) ? (
             <div role="alert" className="alert alert-error mt-2 text-base-100">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -2228,11 +2267,59 @@ axios
                   d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
                 />
               </svg>
-              <span>{massError}</span>
+              <span>{massError} {totalApprovedAmount === 0 ? "ขออภัย มีค่าใช้จ่ายส่วนที่เกินวงเงินคุ้มครอง ที่ลูกค้าต้องชำระเพิ่ม." : ""}</span>
             </div>
           ) : (
             ""
           )}
+
+<TextField error id="outlined-error" label="ICD10" variant="outlined" className="w-full mt-4" value={iCD10Value} onChange={(e) => setICD10Value(e.target.value)}/>
+
+                    
+                          
+                            
+                          <select  className="select select-bordered w-full mt-2"                
+onChange={Over45}
+value={over45}
+
+                                     required>
+                      <option>สาเหตุของการมารับการรักษาเกิน 45 วัน จากการเกิดอุบัติเหตุ</option>
+                      {over45Days
+                  ? over45Days.Result.map((over, index) => (
+                              <option
+                                key={index}
+                                value={over.causeovercode}>
+                                      - {over.causeoverdesc}
+                              </option>
+                            )
+                          )
+                        : ""}
+                    </select>
+{/*                           
+                          <Select
+                            error
+                            className="w-full mt-4"
+                            labelId="demo-error-select-label"
+                            id="demo-error-select"
+                            //name="woundTypeText"
+                            value={over45}
+                            label="สาเหตุของการมารับการรักษาเกิน 45 วัน จากการเกิดอุบัติเหตุ"
+                            onChange={Over45}
+                            required
+                          >
+                            {over45Days
+                              ? over45Days.Result.map((over, index) => (
+                                  <MenuItem
+                                    key={index}
+                                    value={over.causeovercode}
+                                  >
+                                    {over.causeoverdesc}
+                                  </MenuItem>
+                                ))
+                              : ""}
+                          </Select> */}
+         
+
             <TableContainer component={Paper} className="mt-2">
                       <Table className="table">
                         <TableHead>
@@ -2375,12 +2462,15 @@ onChange={(e) => { const selectedType = JSON.parse(e.target.value);
                         </TableBody>
                       </Table>
               <div className="grid gap-2 sm:grid-cols-6  bg-primary w-full whitespace-normal text-center text-lg">
+                <div className=""></div>
                 <div className="rounded-md"></div>
                 <div className="rounded-md"></div>
-                <div className="rounded-md"></div>
-                <div className="px-3 py-2 m-1 btn btn-success text-base-100 hover:text-success hover:bg-base-100" type="submit" onClick={SubmitSumBilling}>ประมาณการค่าใช้จ่าย</div>
+                <div className="px-3 py-2 m-1 w-full btn btn-success text-base-100 hover:text-success hover:bg-base-100" type="submit" onClick={SubmitSumBilling}>ประมาณการค่าใช้จ่าย</div>
                 <div className="rounded-md px-3 py-2 border-2 bg-base-100 break-all m-1">{parseFloat(total).toLocaleString("en-US", {minimumFractionDigits: 2,maximumFractionDigits: 2})}</div>
-                <div className="rounded-md"></div>
+                <div className="rounded-md">
+
+                
+                </div>
               </div>
                 {fromTotalSum && (
              <div className="grid gap-2 sm:grid-cols-6  bg-primary w-full whitespace-normal text-center text-lg">
