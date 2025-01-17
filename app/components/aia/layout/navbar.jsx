@@ -38,14 +38,14 @@ export default function navbar() {
       SurnameEN: DataTran.Patient.Data.SurnameEN,
       SurnameTH: DataTran.Patient.Data.SurnameTH,
       TitleEN: DataTran.Patient.Data.TitleEN,
-      TitleTH: DataTran.Patient.Data.TitleTH,
+      TitleTHc: DataTran.Patient.Data.TitleTHc,
     },
   ];
 
   const tooltipText = dataArray
     .map(
       (item) =>
-        `FullName (TH): ${item.TitleTH} ${item.GivenNameTH} ${item.SurnameTH}\nFullName (EN): ${item.TitleEN} ${item.GivenNameEN} ${item.SurnameEN}\nHN : ${item.HN}\nPID: ${item.PID}\nDate Of Birth : ${item.DateOfBirth}\nMobilePhone : ${item.MobilePhone}`
+        `FullName (TH): ${item.TitleTHc} ${item.GivenNameTH} ${item.SurnameTH}\nFullName (EN): ${item.TitleEN} ${item.GivenNameEN} ${item.SurnameEN}\nHN : ${item.HN}\nPID: ${item.PID}\nDate Of Birth : ${item.DateOfBirth}\nMobilePhone : ${item.MobilePhone}`
     )
     .join("\n\n");
 

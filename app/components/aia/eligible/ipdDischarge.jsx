@@ -13,6 +13,7 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import { FaEdit } from "react-icons/fa";
+import { BiFirstPage, BiLastPage } from "react-icons/bi";
 import { MdKeyboardArrowRight } from "react-icons/md";
 import { MdKeyboardArrowDown } from "react-icons/md";
 import OutlinedInput from "@mui/material/OutlinedInput";
@@ -54,46 +55,58 @@ export default function Page({ data }) {
       },
     },
   };
-  const dispatch = useDispatch();
+  const [currentDatavitalsign, setCurrentDatavitalsign] = useState("");
+  const [currentPagevitalsign, setCurrentPagevitalsign] = useState(1);
+  const [countvitalsign, setCountvitalsign] = useState(0);
+  const [currentDatainvestigation, setCurrentDatainvestigation] = useState("");
+  const [currentPageinvestigation, setCurrentPageinvestigation] = useState(1);
+  const [countinvestigation, setCountinvestigation] = useState(0);
+  const [currentDataorderItemz, setCurrentDataorderItemz] = useState("");
+  const [currentPageorderItemz, setCurrentPageorderItemz] = useState(1);
+  const [countorderItemz, setCountorderItemz] = useState(0);
+
+
+  const [summitEditConcurrentNote, setSummitEditConcurrentNote] = useState("false");
+  const dispatch = useDispatch("");
   const InsuranceCode = 13;
   const [massError, setMassError] = useState("");
   const [showFormError, setShowFormError] = useState("");
-  const [patientInfoByPID, setPatientInfoByPID] = useState();
-  const [visit, setVisit] = useState();
-  const [combinedString, setCombinedString] = useState();
-  const [accidentDetail, setAccidentDetail] = useState();
+  const [patientInfoByPID, setPatientInfoByPID] = useState("");
+  const [visit, setVisit] = useState("");
+  const [combinedString, setCombinedString] = useState("");
+  const [accidentDetail, setAccidentDetail] = useState("");
   const [accidentPlaceValue, setAccidentPlaceValue] = useState("");
   const [dataaccidentPlace, setDataaccidentPlace] = useState("");
   const [datainjurySide, setDatainjurySide] = useState("");
   const [injurySide, setInjurySide] = useState("");
   const [DataWoundType, setDataWoundType] = useState("");
   const [woundType, setWoundType] = useState("");
-  const [vitalsign, setVitalsign] = useState();
+  const [vitalsign, setVitalsign] = useState("");
+  const itemsPerPage = 20;
   const [accidentDate, setAccidentDate] = useState(null);
-  const [doctor, setDoctor] = useState();
-  const [diagnosis, setDiagnosis] = useState();
-  const [injuryWoundType, setInjuryWoundType] = useState();
-  const [injurySideType, setInjurySideType] = useState();
-  const [investigation, setInvestigation] = useState();
-  const [billing, setBilling] = useState();
+  const [doctor, setDoctor] = useState("");
+  const [diagnosis, setDiagnosis] = useState("");
+  const [injuryWoundType, setInjuryWoundType] = useState("");
+  const [injurySideType, setInjurySideType] = useState("");
+  const [investigation, setInvestigation] = useState("");
+  const [billing, setBilling] = useState("");
   const [numberBilling, setNumberBilling] = useState(false);
-  const [orderItemz, setOrderItemz] = useState();
-  const [listClaimForm, setListClaimForm] = useState();
+  const [orderItemz, setOrderItemz] = useState("");
   const [showModal, setShowModal] = useState(false);
-  const [showArrowVN, setShowArrowVN] = useState();
+  const [showArrowVN, setShowArrowVN] = useState("");
   
-  const [anesthesiaListValue, setAnesthesiaListValue] = useState();
-  const [anesthesiaListCode, setAnesthesiaListCode] = useState();
+  const [anesthesiaListValue, setAnesthesiaListValue] = useState("");
+  const [anesthesiaListCode, setAnesthesiaListCode] = useState("");
 
 
 
 
   
-  const [admissionValue, setAdmissionValue] = useState();
+  const [admissionValue, setAdmissionValue] = useState("");
   const [indicationForAdmissionCode, setIndicationForAdmissionCode] = useState("");
   
   const [showArrow, setShowArrow] = useState(false);
-  const router = useRouter();
+  const router = useRouter("");
   const inputRef = useRef(null);
   const [file, setFile] = useState(null);
   const [progress, setProgress] = useState({ started: false, pc: 0 });
@@ -108,17 +121,17 @@ export default function Page({ data }) {
   const [showSummitSucc, setShowSummitSucc] = useState("");
   const [massSummit, setMassSummit] = useState("");
   const [admitDateTime, setAdmitDateTime] = useState(null);
-  const [dscDateTime, setDscDateTime] = useState(null);
+  const [dscDateTime, setDscDateTime] = useState(dayjs());
   const [an, setAn] = useState("");
   const [expectedLos, setExpectedLos] = useState("");
-  const [otherInsurer, setOtherInsurer] = useState("false");
+  const [otherInsurer, setOtherInsurer] = useState(false);
   const [rows, setRows] = useState("");
   const [procedure, setProcedure] = useState("");
   const [causeOfInjuryDetails, setCauseOfInjuryDetails] = useState("");
   const [injuryDetails, setInjuryDetails] = useState("");
 
   const [randomNumber, setRandomNumber] = useState('');
-
+  const [isIPDDischargeValue, setIsIPDDischargeValue] = useState(false);
 
   const [newRow, setNewRow] = useState({
     Icd9: "",
@@ -135,7 +148,11 @@ export default function Page({ data }) {
     InjurySide: "",
     WoundType: "",
   });
-  
+  const [rows2, setRows2] = useState("");
+  const [newRow2, setNewRow2] = useState({
+    ConcurrentDateTime: null,
+    ConcurrentDetail: "",
+  });
 
 
   const [summitEditProcedure, setSummitEditProcedure] = useState("false");
@@ -184,6 +201,7 @@ export default function Page({ data }) {
         AccidentDate: data.DataTran.Data.AccidentDate,
       AccidentPlaceCode: "",
       WoundDetails: "",
+      IsIPDDischarge: data.DataTran.Data.IsIPDDischarge,
       AccidentInjurySideCode: "",
       AccidentInjuryWoundtypeCode: "",
         PolicyTypeCode: data.DataTran.Data.PolicyTypeCode,
@@ -200,7 +218,7 @@ export default function Page({ data }) {
 
     },
   };
-  //console.log(PatientInfoData.PatientInfo)
+  // console.log(PatientInfoData.PatientInfo)
   useEffect(() => {
     setRandomNumber();
     if(!data.DataTran.Data.Runningdocument){
@@ -259,9 +277,8 @@ export default function Page({ data }) {
 
             axios
       .get(
-        `/api/v1/utils/IndicationForAdmission/`+
-        // process.env.NEXT_PUBLIC_URL_SV +
-        //   process.env.NEXT_PUBLIC_URL_IndicationForAdmission +
+        process.env.NEXT_PUBLIC_URL_SV +
+          process.env.NEXT_PUBLIC_URL_getIndicationsForAdmission +
            InsuranceCode
       )
       .then((response) => {
@@ -275,9 +292,8 @@ export default function Page({ data }) {
 
       axios
       .get(
-        `/api/v1/utils/AnesthesiaList/`+
-        // process.env.NEXT_PUBLIC_URL_SV +
-        //   process.env.NEXT_PUBLIC_URL_IndicationForAdmission +
+        process.env.NEXT_PUBLIC_URL_SV +
+          process.env.NEXT_PUBLIC_URL_getAnesthesiaList +
            InsuranceCode
       )
       .then((response) => {
@@ -329,16 +345,18 @@ export default function Page({ data }) {
     axios
       .post(
         process.env.NEXT_PUBLIC_URL_SV +
-          process.env.NEXT_PUBLIC_URL_getOPDDischargeVisit,
+          process.env.NEXT_PUBLIC_URL_getIPDDischargeVisit,
       //  Data 
       PatientInfoData 
       )
       .then((response) => {
-    //     console.log(response.data)
+        //  console.log(response.data)
         setVisit(response.data);
         //const dateValue = dayjs(response.data.Result.VisitInfo.SignSymptomsDate);
         //console.log(response.data.Result.VisitInfo.SignSymptomsDate)
         // setSignSymptomsDate(dateValue);
+        // setAdmitDateTime(response.data.Result.VisitInfo.AdmitDateTime);
+        // setDscDateTime(response.data.Result.VisitInfo.DscDateTime);
         setComaScore(response.data.Result.VisitInfo.ComaScore);
 
       })
@@ -360,7 +378,7 @@ export default function Page({ data }) {
       axios
       .post(
         process.env.NEXT_PUBLIC_URL_SV +
-          process.env.NEXT_PUBLIC_URL_getOPDDischargeVisit,
+          process.env.NEXT_PUBLIC_URL_getIPDDischargeVisit,
           PatientInfoData  
       )
       .then((response) => {
@@ -385,46 +403,46 @@ export default function Page({ data }) {
       });
   }, [data]);
 
-  useEffect(() => {
+  // useEffect(() => {
 
-    const dateValue = dayjs(PatientInfoData.PatientInfo.AccidentDate);
-    setAccidentDate(dateValue);
-        //console.log(Data)
-    axios
-      .post(
-        process.env.NEXT_PUBLIC_URL_PD +
-          process.env.NEXT_PUBLIC_URL_getOPDDischargeAccident,
-       // Data
-       PatientInfoData
-      )
-      .then((response) => {
-      //  console.log(response.data)
-         setAccidentDetail(response.data);
-          setCauseOfInjuryDetails(response.data.Result.AccidentDetailInfo.CauseOfInjuryDetail);
-          setInjuryDetails(response.data.Result.AccidentDetailInfo.InjuryDetail);
-          setAccidentPlaceValue(response.data.Result.AccidentDetailInfo.AccidentPlace)
+  //   const dateValue = dayjs(PatientInfoData.PatientInfo.AccidentDate);
+  //   setAccidentDate(dateValue);
+  //       //console.log(Data)
+  //   axios
+  //     .post(
+  //       process.env.NEXT_PUBLIC_URL_PD +
+  //         process.env.NEXT_PUBLIC_URL_getIPDDischargeAccident,
+  //      // Data
+  //      PatientInfoData
+  //     )
+  //     .then((response) => {
+  //     //  console.log(response.data)
+  //        setAccidentDetail(response.data);
+  //         setCauseOfInjuryDetails(response.data.Result.AccidentDetailInfo.CauseOfInjuryDetail);
+  //         setInjuryDetails(response.data.Result.AccidentDetailInfo.InjuryDetail);
+  //         setAccidentPlaceValue(response.data.Result.AccidentDetailInfo.AccidentPlace)
 
-        // if (response.data.Result.AccidentDetailInfo.CauseOfInjuryDetail.CauseOfInjury){
-        //   setCauseOfInjuryDetails(response.data.Result.AccidentDetailInfo.CauseOfInjuryDetail[0]);
-        // }
-        // if (response.data.Result.AccidentDetailInfo.InjuryDetail.InjuryArea){
-        //   setInjuryDetails(response.data.Result.AccidentDetailInfo.InjuryDetail[0]);
-        // }
-      })
-      .catch((error) => {
-        console.log(error);
-        // try {
-        //   const ErrorMass = error.config.url;
-        //   const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
-        //   setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
-        //   setShowFormError("Error");
-        // } catch (error) {
-        //   setMassError("Error Accident");
-        //   setShowFormError("Error");
-        // }
+  //       // if (response.data.Result.AccidentDetailInfo.CauseOfInjuryDetail.CauseOfInjury){
+  //       //   setCauseOfInjuryDetails(response.data.Result.AccidentDetailInfo.CauseOfInjuryDetail[0]);
+  //       // }
+  //       // if (response.data.Result.AccidentDetailInfo.InjuryDetail.InjuryArea){
+  //       //   setInjuryDetails(response.data.Result.AccidentDetailInfo.InjuryDetail[0]);
+  //       // }
+  //     })
+  //     .catch((error) => {
+  //       console.log(error);
+  //       // try {
+  //       //   const ErrorMass = error.config.url;
+  //       //   const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+  //       //   setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
+  //       //   setShowFormError("Error");
+  //       // } catch (error) {
+  //       //   setMassError("Error Accident");
+  //       //   setShowFormError("Error");
+  //       // }
       
-      });
-  }, [data]);
+  //     });
+  // }, [data]);
 
   useEffect(() => {
     axios
@@ -508,15 +526,16 @@ export default function Page({ data }) {
     axios
       .post(
         process.env.NEXT_PUBLIC_URL_PD +
-          process.env.NEXT_PUBLIC_URL_getOPDDischargeVitalSign,
+          process.env.NEXT_PUBLIC_URL_getIPDVitalSign,
         PatientInfoData
       )
       .then((response) => {
-     //   console.log(response.data)
+        //  console.log(response.data)
         setVitalsign(response.data);
+        setCurrentDatavitalsign(response.data.Result.VitalSignInfo);
       })
       .catch((error) => {
-    //    console.log(error);
+        console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -529,12 +548,46 @@ export default function Page({ data }) {
       });
   }, [data]);
 
+  const handleChangeEditDateRow2 = (index2, even) => {
+    const neweditrow2 = rows2.map((Pre, index) => {
+      if (index === index2) {
+        return {
+          ...Pre,
+          ConcurrentDateTime: even,
+        };
+      }
+      return Pre;
+    });
+    setRows2(neweditrow2);
+  };
+  const handleChangeEditDetailRow2 = (index2, even) => {
+    const neweditrow2 = rows2.map((Pre, index) => {
+      if (index === index2) {
+        return {
+          ...Pre,
+          ConcurrentDetail: even.target.value,
+        };
+      }
+      return Pre;
+    });
+    setRows2(neweditrow2);
+  };
+
+
+  const handleAddRow2 = () => {
+    setRows2([...rows2, newRow2]);
+    setNewRow2({ ConcurrentDateTime: null, ConcurrentDetail: "" });
+  };
+  const handleDeleteRow2 = (index) => {
+    const newRows2 = rows2.filter((_, i) => i !== index);
+    setRows2(newRows2);
+  };
   useEffect(() => {
 
     axios
       .post(
         process.env.NEXT_PUBLIC_URL_PD +
-          process.env.NEXT_PUBLIC_URL_getOPDDischargeDoctor,
+          process.env.NEXT_PUBLIC_URL_getIPDDischargeDoctor,
       //  Data
       PatientInfoData
       )
@@ -560,8 +613,7 @@ export default function Page({ data }) {
 
     axios
       .post(
-        process.env.NEXT_PUBLIC_URL_PD +
-          process.env.NEXT_PUBLIC_URL_getOPDDischargeDiagnosis,
+        process.env.NEXT_PUBLIC_URL_PD + process.env.NEXT_PUBLIC_URL_getIPDDischargeDiagnosis,
        // Data
         PatientInfoData
       )
@@ -586,7 +638,7 @@ export default function Page({ data }) {
     axios
       .post(
         process.env.NEXT_PUBLIC_URL_SV +
-          process.env.NEXT_PUBLIC_URL_getOPDDischargeProcedure,
+          process.env.NEXT_PUBLIC_URL_getIPDDischargeProcedure,
         PatientInfoData
       )
       .then((response) => {
@@ -759,11 +811,11 @@ export default function Page({ data }) {
     setNewInjuryDetail({ InjuryArea: "", InjurySide: "", WoundType: "" });
   };
 
-  const Editfurtherclaimvn = () => {
-    setShowSummitError();
-    setShowSummitSucc();
-    document.getElementById("Editfurtherclaimvn").showModal();
-  };
+  // const Editfurtherclaimvn = () => {
+  //   setShowSummitError();
+  //   setShowSummitSucc();
+  //   document.getElementById("Editfurtherclaimvn").showModal();
+  // };
 
   
 
@@ -855,6 +907,15 @@ export default function Page({ data }) {
   };
 
 
+  const SummitEditCon = () => {
+    if (summitEditConcurrentNote === "false") {
+      setSummitEditConcurrentNote("true");
+    } else {
+      setSummitEditConcurrentNote("false");
+    }
+  };
+
+
   
   const SummitEditAcc = () => {
     if (summitEditAcc === "false") {
@@ -868,12 +929,14 @@ export default function Page({ data }) {
     axios
       .post(
         process.env.NEXT_PUBLIC_URL_PD +
-          process.env.NEXT_PUBLIC_URL_getOPDDischargeInvestigation,
+          process.env.NEXT_PUBLIC_URL_getIPDDischargeInvestigation,
         PatientInfoData
       )
       .then((response) => {
        // console.log(response.data)
         setInvestigation(response.data);
+        setCurrentDatainvestigation(response.data.Result.InvestigationInfo);
+
       })
       .catch((error) => {
      //   console.log(error);
@@ -893,12 +956,13 @@ export default function Page({ data }) {
     axios
       .post(
         process.env.NEXT_PUBLIC_URL_SV +
-          process.env.NEXT_PUBLIC_URL_getOPDDischargeOrderItem,
+          process.env.NEXT_PUBLIC_URL_getIPDDischargeOrderItem,
         PatientInfoData
       )
       .then((response) => {
-      //  console.log(response.data)
+        // console.log(response.data)
         setOrderItemz(response.data);
+        setCurrentDataorderItemz(response.data.Result.OrderItemInfo);
       })
       .catch((error) => {
      //   console.log(error);
@@ -914,31 +978,7 @@ export default function Page({ data }) {
       });
   }, [data]);
 
-  useEffect(() => {
-    axios
-      .post(
-        // process.env.NEXT_PUBLIC_URL_SV +
-        //   process.env.NEXT_PUBLIC_URL_getListClaimFormOPDByVN,
-        // PatientInfoData
-        '/api/v1/aia-opddischarge/getListClaimFormOPDByVN', PatientInfoData
-      )
-      .then((response) => {
-      //  console.log(response.data)
-      setListClaimForm(response.data);
-      })
-      .catch((error) => {
-     //   console.log(error);
-        try {
-          const ErrorMass = error.config.url;
-          const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
-          setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
-          setShowFormError("Error");
-        } catch (error) {
-          setMassError(error.response.data.HTTPStatus.message);
-          setShowFormError("Error");
-        }
-      });
-  }, [data]);
+
 
 
   useEffect(() => {
@@ -947,11 +987,11 @@ export default function Page({ data }) {
     axios
       .post(
         process.env.NEXT_PUBLIC_URL_SV +
-          process.env.NEXT_PUBLIC_URL_getOPDDischargeBilling,
+          process.env.NEXT_PUBLIC_URL_getIPDDischargeBilling,
         PatientInfoData
       )
       .then((response) => {
-        console.log(response.data)
+        // console.log(response.data)
     // console.log("5555")
     if(numberBilling === false){
       setBilling(response.data);
@@ -1126,6 +1166,7 @@ export default function Page({ data }) {
 
   //    //    //  //กดปุ่มส่งเคลม
   async function Claim(event) {
+    
     event.preventDefault();
 
 
@@ -1161,6 +1202,21 @@ export default function Page({ data }) {
       setShowSummitError("Error");
       Suc = "E";
     }
+    let admitDateTimex;
+    let DscDateTimex;
+    try{
+      DscDateTimex = dayjs(dscDateTime.$d).format("YYYY-MM-DD HH:MM");
+       } catch(error){
+        DscDateTimex = "";
+       }
+       
+
+       
+       try{
+        admitDateTimex = dayjs(admitDateTime.$d).format("YYYY-MM-DD HH:MM");
+         } catch(error){
+          admitDateTimex = "";
+         }
     try{
    signDate = dayjs(signSymptomsDate.$d).format("YYYY-MM-DD");
     } catch(error){
@@ -1208,270 +1264,317 @@ if(rows){
     } else {
       HaveProcedureCount = false;
     }
-    //console.log(Suc)
     if (Suc === "S") {
+
       try {
-        await stepOne();
-        await stepTwo();
-         await stepThree();
-         await stepFour();
+       
+        await stepOne();                  //SubmitAccidentIPD
+        await stepTwo();                  //SubmitProcedureIPD
+        await stepThree();                //SubmitIPDVisit
+        await stepFour();                 //getcheckclaimstatus
+        console.log("All steps completed");
       } catch (error) {
-   //     console.log(error);
+        console.log(error);
+         setMassSummitError("Error");
+        setShowSummitError("Error");
       }
+    }else{
+      console.log("Error")
     }
 
     function stepOne() {
-// console.log(accidentPlaceValue)
-      if(accidentPlaceValue){
-      return new Promise((resolve, reject) => {
-        const PatientInfo = {
-          RefId: PatientInfoData.PatientInfo.RefId,
-          TransactionNo: PatientInfoData.PatientInfo.TransactionNo,
-          InsurerCode: PatientInfoData.PatientInfo.InsurerCode,
-          HN: PatientInfoData.PatientInfo.HN,
-          VN: PatientInfoData.PatientInfo.VN,
-          HaveAccidentCauseOfInjuryDetail: HavecauseOfInjuryDetailsCount,
-          HaveAccidentInjuryDetail: HaveinjuryDetailsCount,
-          AccidentDetailInfo: {
-            AccidentDate: Datevalue,
-            AccidentPlace: accidentPlaceValue,
-            CauseOfInjuryDetail: causeOfInjuryDetails,
-            InjuryDetail: injuryDetails,
-          },
-        };
-
-        axios
-          .post(
-            process.env.NEXT_PUBLIC_URL_SV +
-              process.env.NEXT_PUBLIC_URL_SubmitAccident,
-            { PatientInfo }
-          )
-          .then((response) => {
-            console.log("1 Succ");
-
-            resolve("Step 1 completed");
-          })
-          .catch((error) => {
-          //  console.log(error);
-            try {
-              const ErrorMass = error.config.url;
-              const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
-              setMassSummitError(
-                error.code + " - " + error.message + " - " + ErrorMass2
-              );
-              setShowSummitError("Error");
-            } catch (error) {
-              setMassSummitError(error.response.data.HTTPStatus.message);
-              setShowSummitError("Error");
-            }
-          });
-
-        // ถ้ามีข้อผิดพลาดให้ใช้ reject(new Error('Error in Step 1'));
-      });
-  }else{
-    console.log("1 Succ (ไม่อุบัติเหตุ)");
-  }
-    }
-
-    function stepTwo() {
-
-      return new Promise((resolve, reject) => {
-        const PatientInfo = {
-          RefId: PatientInfoData.PatientInfo.RefId,
-          TransactionNo: PatientInfoData.PatientInfo.TransactionNo,
-          InsurerCode: PatientInfoData.PatientInfo.InsurerCode,
-          HN: PatientInfoData.PatientInfo.HN,
-          VN: PatientInfoData.PatientInfo.VN,
-          HaveProcedure: HaveProcedureCount,
-          ProcedureInfo: rows,
-        };
-        axios
-          .post(
-            process.env.NEXT_PUBLIC_URL_SV +
-              process.env.NEXT_PUBLIC_URL_SubmitProcedure,
-            { PatientInfo }
-          )
-          .then((response) => {
-          //  console.log("2 Succ");
-            resolve("Step 2 completed");
-          })
-          .catch((error) => {
-          //  console.log(error);
-            try {
-              const ErrorMass = error.config.url;
-              const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
-              setMassSummitError(
-                error.code + " - " + error.message + " - " + ErrorMass2
-              );
-              setShowSummitError("Error");
-            } catch (error) {
-              setMassSummitError(error.response.data.HTTPStatus.message);
-              setShowSummitError("Error");
-            }
-          });
-
-        // ถ้ามีข้อผิดพลาดให้ใช้ reject(new Error('Error in Step 2'));
-      });
-    }
-
-    function stepThree() {
-
-      return new Promise((resolve, reject) => {
-        let comaScoreP;
-        let expectedDayOfRecoveryP;
-        if (comaScore) {
-          comaScoreP = comaScore.target.value;
-        } else {
-          comaScoreP = "";
-        }
-        if (expectedDayOfRecovery) {
-          expectedDayOfRecoveryP = expectedDayOfRecovery.target.value;
-        } else {
-          expectedDayOfRecoveryP = "";
-        }
-        const PatientInfo = {
-          RefId: PatientInfoData.PatientInfo.RefId,
-          TransactionNo: PatientInfoData.PatientInfo.TransactionNo,
-          InsurerCode: PatientInfoData.PatientInfo.InsurerCode,
-          HN: PatientInfoData.PatientInfo.HN,
-          VN: PatientInfoData.PatientInfo.VN,
-
-          VisitDateTime: PatientInfoData.PatientInfo.VisitDateTime,
-          DxFreeText: event.target.DxFreeTextText.value,
-          PresentIllness: event.target.PresentIllness.value,
-          ChiefComplaint: event.target.ChiefComplaint.value,
-          UnderlyingCondition: event.target.UnderlyingCondition.value,
-          PhysicalExam: event.target.PhysicalExam.value,
-          PlanOfTreatment: event.target.PlanOfTreatment.value,
-          ProcedureFreeText: event.target.ProcedureFreeText.value,
-          AdditionalNote: event.target.AdditionalNote.value,
-          SignSymptomsDate: signDate,
-          ComaScore: comaScoreP,
-          ExpectedDayOfRecovery: expectedDayOfRecovery,
-          HaveProcedure: HaveProcedureCount,
-          HaveAccidentCauseOfInjuryDetail: HavecauseOfInjuryDetailsCount,
-          HaveAccidentInjuryDetail: HaveinjuryDetailsCount,
-          AlcoholRelated: alcoholRelated,
-          Pregnant: pregnant,
-          PrivateCase: privateCase,
-
-          PreviousTreatment: previousTreatment,
-          PreviousTreatmentDate: PreviousDate,
-          PreviousTreatmentDetail: PreviousDetail,
-
-          
-          An : an,
-          DscDateTime : dscDateTimevalue,
-        };
-      //  console.log(PatientInfo);
-        axios
-          .post(
-            process.env.NEXT_PUBLIC_URL_SV +
-              process.env.NEXT_PUBLIC_URL_SubmitVisit,
-            { PatientInfo }
-          )
-          .then((response) => {
-         //   console.log("3 Succ");
-            resolve("Step 3 completed");
-          })
-          .catch((error) => {
-         //   console.log(error);
-            try {
-              const ErrorMass = error.config.url;
-              const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
-              setMassSummitError(
-                error.code + " - " + error.message + " - " + ErrorMass2
-              );
-              setShowSummitError("Error");
-            } catch (error) {
-              // setMassSummitError(error.response.data.HTTPStatus.message);
-              // setShowSummitError("Error");
-            }
-          });
-
-        //     // ถ้ามีข้อผิดพลาดให้ใช้ reject(new Error('Error in Step 3'));
-      });
-
-    }
-    function stepFour() {
-
-      return new Promise((resolve, reject) => {
-        const PatientInfo = {
-          InsurerCode: PatientInfoData.PatientInfo.InsurerCode,
-          RefId: PatientInfoData.PatientInfo.RefId,
-          TransactionNo: PatientInfoData.PatientInfo.TransactionNo,
-          PID: PatientInfoData.PatientInfo.PID,
-          HN: PatientInfoData.PatientInfo.HN,
-          GivenNameTH: PatientInfoData.PatientInfo.GivenNameTH,
-          SurnameTH: PatientInfoData.PatientInfo.SurnameTH,
-          DateOfBirth: PatientInfoData.PatientInfo.DateOfBirth,
-          PassportNumber: PatientInfoData.PatientInfo.PassportNumber,
-          IdType: PatientInfoData.PatientInfo.IdType,
-          VN: PatientInfoData.PatientInfo.VN,
-          VisitDateTime: PatientInfoData.PatientInfo.VisitDateTime,
-          AccidentDate: PatientInfoData.PatientInfo.AccidentDate,
-          PolicyTypeCode: PatientInfoData.PatientInfo.PolicyTypeCode,
-          ServiceSettingCode: PatientInfoData.PatientInfo.ServiceSettingCode,
-          IllnessTypeCode: PatientInfoData.PatientInfo.IllnessTypeCode,
-          SurgeryTypeCode: PatientInfoData.PatientInfo.SurgeryTypeCode,
-          Runningdocument: PatientInfoData.PatientInfo.Runningdocument,
-          FurtherClaimVN: PatientInfoData.PatientInfo.FurtherClaimVN,
-        };
-       // console.log(PatientInfo)
-        axios
-          .post(
-            process.env.NEXT_PUBLIC_URL_SV +
-              process.env.NEXT_PUBLIC_URL_SubmitOPDDischargeToAIA,
-            { PatientInfo }
-          )
-          .then((response) => {
-       // console.log(response.data)
-            if (response.data.HTTPStatus.statusCode === 200) {
+      console.log("Step 1");
+      // console.log(accidentPlaceValue)
+            if(accidentPlaceValue){
+            return new Promise((resolve, reject) => {
+              const PatientInfo = {
+                RefId: PatientInfoData.PatientInfo.RefId,
+                TransactionNo: PatientInfoData.PatientInfo.TransactionNo,
+                InsurerCode: PatientInfoData.PatientInfo.InsurerCode,
+                HN: PatientInfoData.PatientInfo.HN,
+                VN: PatientInfoData.PatientInfo.VN,
+                HaveAccidentCauseOfInjuryDetail: HavecauseOfInjuryDetailsCount,
+                HaveAccidentInjuryDetail: HaveinjuryDetailsCount,
+                AccidentDetailInfo: {
+                  AccidentDate: Datevalue,
+                  AccidentPlace: accidentPlaceValue,
+                  CauseOfInjuryDetail: causeOfInjuryDetails,
+                  InjuryDetail: injuryDetails,
+                },
+              };
+      
               axios
-              .post(
-                process.env.NEXT_PUBLIC_URL_PD +
-                  process.env.NEXT_PUBLIC_URL_getcheckclaimstatus,
-                { PatientInfo }
-              )
-              .then((response) => {
-              //  console.log(response.data);
-              })
-              .catch((error) => {
-             //   console.log(error);
-              });
-              document.getElementById("my_modal_3").close();
-              console.log("4 Succ");
-              // console.log(response.data);
-              setShowModal(true);
+                .post(
+                  process.env.NEXT_PUBLIC_URL_SV +
+                    process.env.NEXT_PUBLIC_URL_SubmitAccidentIPD,
+                  { PatientInfo }
+                )
+                .then((response) => {
+                  console.log("1 Succ");
+      
+                  resolve("Step 1 completed");
+                })
+                .catch((error) => {
+                  console.log("1 Error");
+                  try {
+                    const ErrorMass = error.config.url;
+                    const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+                    setMassSummitError(
+                      error.code + " - " + error.message + " - " + ErrorMass2
+                    );
+                    setShowSummitError("Error");
+                  } catch (error) {
+                    setMassSummitError(error.response.data.HTTPStatus.message);
+                    setShowSummitError("Error");
+                  }
+                });
+      
+              // ถ้ามีข้อผิดพลาดให้ใช้ reject(new Error('Error in Step 1'));
+            });
+        }else{
+          console.log("1 Succ (ไม่อุบัติเหตุ)");
+          // resolve("Step 1 completed");
+        }
+          }
+      
+          function stepTwo() {
+            console.log("Step 2");
+            return new Promise((resolve, reject) => {
+              const PatientInfo = {
+                RefId: PatientInfoData.PatientInfo.RefId,
+                TransactionNo: PatientInfoData.PatientInfo.TransactionNo,
+                InsurerCode: PatientInfoData.PatientInfo.InsurerCode,
+                HN: PatientInfoData.PatientInfo.HN,
+                VN: PatientInfoData.PatientInfo.VN,
+                HaveProcedure: HaveProcedureCount,
+                ProcedureInfo: rows,
+              };
+              axios
+                .post(
+                  process.env.NEXT_PUBLIC_URL_SV +
+                    process.env.NEXT_PUBLIC_URL_SubmitProcedureIPD,
+                  { PatientInfo }
+                )
+                .then((response) => {
+                  console.log("2 Succ");
+                  resolve("Step 2 completed");
+                })
+                .catch((error) => {
+                  console.log("2 Error");
+                  try {
+                    const ErrorMass = error.config.url;
+                    const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+                    setMassSummitError(
+                      error.code + " - " + error.message + " - " + ErrorMass2
+                    );
+                    setShowSummitError("Error");
+                  } catch (error) {
+                    setMassSummitError(error.response.data.HTTPStatus.message);
+                    setShowSummitError("Error");
+                  }
+                });
+      
+              // ถ้ามีข้อผิดพลาดให้ใช้ reject(new Error('Error in Step 2'));
+            });
+          }
+      
+          function stepThree() {
+            console.log("Step 3");
+            console.log(comaScore)
+            return new Promise((resolve, reject) => {
+              let comaScoreP;
+              let expectedDayOfRecoveryP;
+              // if (comaScore) {
+              //   comaScoreP = comaScore.target.value;
+              // } else {
+              //   comaScoreP = "";
+              // }
+              if (expectedDayOfRecovery) {
+                expectedDayOfRecoveryP = expectedDayOfRecovery;
+              } else {
+                expectedDayOfRecoveryP = "";
+              }
+              const PatientInfo = {
+                RefId: PatientInfoData.PatientInfo.RefId,
+                TransactionNo: PatientInfoData.PatientInfo.TransactionNo,
+                InsurerCode: PatientInfoData.PatientInfo.InsurerCode,
+                HN: PatientInfoData.PatientInfo.HN,
+                VN: PatientInfoData.PatientInfo.VN,
+      
+                VisitDateTime: PatientInfoData.PatientInfo.VisitDateTime,
+                DxFreeText: event.target.DxFreeTextText.value,
+                PresentIllness: event.target.PresentIllness.value,
+                ChiefComplaint: event.target.ChiefComplaint.value,
+                AccidentCauseOver45Days: "",
+                UnderlyingCondition: event.target.UnderlyingCondition.value,
+                PhysicalExam: event.target.PhysicalExam.value,
+                PlanOfTreatment: event.target.PlanOfTreatment.value,
+                ProcedureFreeText: event.target.ProcedureFreeText.value,
+                AdditionalNote: event.target.AdditionalNote.value,
+                SignSymptomsDate: signDate,
+                ComaScore: "",
+                ExpectedDayOfRecovery: expectedDayOfRecoveryP,
+      
+                HaveProcedure: HaveProcedureCount,
+                HaveAccidentCauseOfInjuryDetail: HavecauseOfInjuryDetailsCount,
+                HaveAccidentInjuryDetail: HaveinjuryDetailsCount,
+                AlcoholRelated: alcoholRelated,
+                Pregnant: pregnant,
+                PrivateCase: privateCase,
+                AdmitDateTime: admitDateTimex,
 
-              resolve("Step 4 completed");
-              setTimeout(() => {
-                setShowModal(false);
-                router.push("/aia/checkClaimStatus");
-              }, 5000);
+                IndicationForAdmission: admissionValue,
+                PreauthReferClaimNo : "",
+                PreauthOcc: "",
+                PreviousTreatment: previousTreatment,
+                PreviousTreatmentDate: PreviousDate,
+                PreviousTreatmentDetail: PreviousDetail,
+                DscDateTime: DscDateTimex,
+                IsPackage: "",
+                TotalEstimatedCost: "",
+                AnesthesiaList: anesthesiaListValue,
+              };
+               console.log(PatientInfo);
+              axios
+                .post(
+                  process.env.NEXT_PUBLIC_URL_SV +
+                    process.env.NEXT_PUBLIC_URL_SubmitIPDVisit,
+                  { PatientInfo }
+                )
+                .then((response) => {
+                  console.log("3 Succ");
+                  resolve("Step 3 completed");
+                })
+                .catch((error) => {
+                  console.log("3 Error");
+                  try {
+                    const ErrorMass = error.config.url;
+                    const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+                    setMassSummitError(
+                      error.code + " - " + error.message + " - " + ErrorMass2
+                    );
+                    setShowSummitError("Error");
+                  } catch (error) {
+                    // setMassSummitError(error.response.data.HTTPStatus.message);
+                    // setShowSummitError("Error");
+                  }
+                });
+      
+              //     // ถ้ามีข้อผิดพลาดให้ใช้ reject(new Error('Error in Step 3'));
+            });
+      
+          }
+          function stepFour() {
+            console.log("Step 4");
+            let comaScoreP;
+            let expectedDayOfRecoveryP;
+            // if (comaScore) {
+            //   comaScoreP = comaScore.target.value;
+            // } else {
+            //   comaScoreP = "";
+            // }
+            if (expectedDayOfRecovery) {
+              expectedDayOfRecoveryP = expectedDayOfRecovery.target.value;
             } else {
-              setMassSummitError(response.data.HTTPStatus.message);
-              setShowSummitError("Error");
+              expectedDayOfRecoveryP = "";
             }
-          })
-          .catch((error) => {
-          //  console.log(error);
-            try {
-              const ErrorMass = error.config.url;
-              const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
-              setMassSummitError(
-                error.code + " - " + error.message + " - " + ErrorMass2
-              );
-              setShowSummitError("Error");
-            } catch (error) {
-              setMassSummitError(error.response.data.HTTPStatus.message);
-              setShowSummitError("Error");
-            }
-          });
+            return new Promise((resolve, reject) => {
+              const PatientInfo = {
+                IsIPDDischarge : isIPDDischargeValue,
+                RefId: PatientInfoData.PatientInfo.RefId,
+                TransactionNo: PatientInfoData.PatientInfo.TransactionNo,
+                InsurerCode: PatientInfoData.PatientInfo.InsurerCode,
+                HN: PatientInfoData.PatientInfo.HN,
+                VN: PatientInfoData.PatientInfo.VN,
+      
+                VisitDateTime: PatientInfoData.PatientInfo.VisitDateTime,
+                DxFreeText: event.target.DxFreeTextText.value,
+                PresentIllness: event.target.PresentIllness.value,
+                ChiefComplaint: event.target.ChiefComplaint.value,
+                AccidentCauseOver45Days: "",
+                UnderlyingCondition: event.target.UnderlyingCondition.value,
+                PhysicalExam: event.target.PhysicalExam.value,
+                PlanOfTreatment: event.target.PlanOfTreatment.value,
+                ProcedureFreeText: event.target.ProcedureFreeText.value,
+                AdditionalNote: event.target.AdditionalNote.value,
+                SignSymptomsDate: signDate,
+                ComaScore: "",
+                ExpectedDayOfRecovery: expectedDayOfRecoveryP,
+      
+                HaveProcedure: HaveProcedureCount,
+                HaveAccidentCauseOfInjuryDetail: HavecauseOfInjuryDetailsCount,
+                HaveAccidentInjuryDetail: HaveinjuryDetailsCount,
+                AlcoholRelated: alcoholRelated,
+                Pregnant: pregnant,
+                PrivateCase: privateCase,
+                AdmitDateTime: admitDateTimex,
 
-        //     // ถ้ามีข้อผิดพลาดให้ใช้ reject(new Error('Error in Step 3'));
-      });
-    }
+                IndicationForAdmission: admissionValue,
+                PreauthReferClaimNo : "",
+                PreauthOcc: "",
+                PreviousTreatment: previousTreatment,
+                PreviousTreatmentDate: PreviousDate,
+                PreviousTreatmentDetail: PreviousDetail,
+                DscDateTime: DscDateTimex,
+                IsPackage: "",
+                TotalEstimatedCost: "",
+                AnesthesiaList: anesthesiaListValue,
+              };
+              console.log(PatientInfo)
+              axios
+                .post(
+                  process.env.NEXT_PUBLIC_URL_SV +
+                    process.env.NEXT_PUBLIC_URL_SubmitIPDDischargeToAIA,
+                  { PatientInfo }
+                )
+                .then((response) => {
+              console.log(response.data)
+                  if (response.data.HTTPStatus.statusCode === 200) {
+                    axios
+                    .post(
+                      process.env.NEXT_PUBLIC_URL_PD +
+                        process.env.NEXT_PUBLIC_URL_getcheckclaimstatus,
+                      { PatientInfo }
+                    )
+                    .then((response) => {
+                    //  console.log(response.data);
+                    })
+                    .catch((error) => {
+                   //   console.log(error);
+                    });
+                    document.getElementById("my_modal_3").close();
+                    console.log("4 Succ");
+                    // console.log(response.data);
+                    setShowModal(true);
+      
+                    resolve("Step 4 completed");
+                    setTimeout(() => {
+                      setShowModal(false);
+                      router.push("/aia/checkClaimStatus");
+                    }, 5000);
+                  } else {
+                    setMassSummitError(response.data.HTTPStatus.message);
+                    setShowSummitError("Error");
+                  }
+                })
+                .catch((error) => {
+                //  console.log(error);
+                  try {
+                    const ErrorMass = error.config.url;
+                    const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+                    setMassSummitError(
+                      error.code + " - " + error.message + " - " + ErrorMass2
+                    );
+                    setShowSummitError("Error");
+                  } catch (error) {
+                    setMassSummitError(error.response.data.HTTPStatus.message);
+                    setShowSummitError("Error");
+                  }
+                });
+      
+              //     // ถ้ามีข้อผิดพลาดให้ใช้ reject(new Error('Error in Step 3'));
+            });
+          }
     
   }
   const IndicationForAdmission = (event) => {
@@ -1666,6 +1769,65 @@ if(rows){
       );
     }
   };
+    ////////////////////////// ตัวเลื่อน ตารางซ้าย - ขวา ///////////////////////////////////////////
+    const ITEMS_PER_PAGE = 10;
+
+    const handleNextPagevitalsign = () => {
+      setCurrentPagevitalsign(currentPagevitalsign + 1);
+    };
+  
+    const handlePreviousPagevitalsign = () => {
+      setCurrentPagevitalsign(currentPagevitalsign - 1);
+    };
+  
+    const startIndexvitalsign = (currentPagevitalsign - 1) * ITEMS_PER_PAGE;
+  
+    const endIndexvitalsign = startIndexvitalsign + ITEMS_PER_PAGE;
+    //console.log(endIndex +"="+startIndex+"+"+ITEMS_PER_PAGE)
+    const datavitalsign = currentDatavitalsign.slice(startIndexvitalsign, endIndexvitalsign);
+    useEffect(() => {
+      setCountvitalsign(datavitalsign.length);
+    }, [datavitalsign]);
+    /////////////////////////////////////////////////////////////////////
+    ////////////////////////// ตัวเลื่อน ตารางซ้าย - ขวา ///////////////////////////////////////////
+    const handleNextPageinvestigation = () => {
+      setCurrentPageinvestigation(currentPageinvestigation + 1);
+    };
+  
+    const handlePreviousPageinvestigation = () => {
+      setCurrentPageinvestigation(currentPageinvestigation - 1);
+    };
+  
+    const startIndexinvestigation = (currentPageinvestigation - 1) * ITEMS_PER_PAGE;
+  
+    const endIndexinvestigation = startIndexinvestigation + ITEMS_PER_PAGE;
+    //console.log(endIndex +"="+startIndex+"+"+ITEMS_PER_PAGE)
+    const datainvestigation = currentDatainvestigation.slice(startIndexinvestigation, endIndexinvestigation);
+    useEffect(() => {
+      setCountinvestigation(datainvestigation.length);
+    }, [datainvestigation]);
+    /////////////////////////////////////////////////////////////////////
+    ////////////////////////// ตัวเลื่อน ตารางซ้าย - ขวา ///////////////////////////////////////////
+    const handleNextPageorderItemz = () => {
+      setCurrentPageorderItemz(currentPageorderItemz + 1);
+    };
+  
+    const handlePreviousPageorderItemz = () => {
+      setCurrentPageorderItemz(currentPageorderItemz - 1);
+    };
+  
+    const startIndexorderItemz = (currentPageorderItemz - 1) * ITEMS_PER_PAGE;
+  
+    const endIndexorderItemz = startIndexorderItemz + ITEMS_PER_PAGE;
+    //console.log(endIndex +"="+startIndex+"+"+ITEMS_PER_PAGE)
+    const dataorderItemz = currentDataorderItemz.slice(startIndexorderItemz, endIndexorderItemz);
+    useEffect(() => {
+      setCountorderItemz(dataorderItemz.length);
+    }, [dataorderItemz]);
+    console.log(dataorderItemz)
+    /////////////////////////////////////////////////////////////////////
+
+
   const ArrowOpen = (e) =>{
   //  console.log(e)
     // console.log(showArrow)
@@ -1675,9 +1837,16 @@ if(rows){
     }else{
       setShowArrow(false)
     }
- 
   }
-  const handleOtherInsurer = (e) => {
+
+    const IsIPDDischarge = () =>{
+    if(isIPDDischargeValue === false){
+      setIsIPDDischargeValue(true)
+    }else{
+      setIsIPDDischargeValue(false)
+    }
+  }
+  const  handleOtherInsurer = (e) => {
     setOtherInsurer(e.target.value);
   };
   const handleAlcoholRelated = () => {
@@ -1953,19 +2122,21 @@ if(rows){
                     </div>
                   </div>
                   <div className="rounded-md">
-                    {/* <div className="flex items-center ">
+                    {PatientInfoData.PatientInfo.IsIPDDischarge === true ?
+                    "" :
+                    <div className="flex items-center ">
                       <input
                         type="checkbox"
                         id="OtherInsurer"
                         name="OtherInsurer"
-                        value={otherInsurer}
-                        className="checkbox checkbox-info"
-                        onChange={handleOtherInsurer}
+                        value={isIPDDischargeValue}
+                        className="checkbox checkbox-error"
+                        onChange={IsIPDDischarge}
                       />
                       <p className="text-left">
-                        &nbsp;ค่าส่วนเกินจากประกันอื่นๆ
+                        &nbsp;FinalDischarge
                       </p>
-                    </div> */}
+                    </div>  }
                   </div>
                   <div className="rounded-md"> </div>
                   <div className="rounded-md"> </div>
@@ -2021,6 +2192,24 @@ if(rows){
                     </Box>
                   </div>
                   {PatientInfoData.PatientInfo.PreauthReferClaimNo ? (
+                    <>
+                  <div className="rounded-md text-black mt-2">
+                    <Box
+                      sx={{
+                        backgroundColor: "#e5e7eb",
+                        padding: 0,
+                        borderRadius: 0,
+                      }}
+                    >
+                      <CustomTextField
+                        id="disabledInput"
+                        className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"
+                        label="PreauthReferOcc"
+                        defaultValue={PatientInfoData.PatientInfo.PreauthReferOcc}
+                        InputProps={{ readOnly: true }}
+                      />
+                    </Box>
+                  </div>
                     <div className="rounded-md text-black mt-2">
                   <Box
                       sx={{
@@ -2032,7 +2221,7 @@ if(rows){
                         <CustomTextField
                           id="disabledInput"
                           className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"
-                          label="ประวัติการรักษาครั้งก่อนหน้า เลขที่อ้างอิง"
+                          label="PreauthReferClaimNo"
                           defaultValue={
                             PatientInfoData.PatientInfo.PreauthReferClaimNo
                           }
@@ -2040,6 +2229,7 @@ if(rows){
                         />
                       </Box>
                     </div>
+                    </>
                   ) : (
                     ""
                   )}
@@ -2049,19 +2239,19 @@ if(rows){
                       <div className="rounded-md mt-2">
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                           <DemoItem>
-                            <DesktopDatePicker
+                            <DateTimePicker
                             label="วันเวลาทีเข้ารับการรักษาเป็นผู้ป่วยใน"
                             slotProps={{
                               openPickerButton: { color: "error" },
                               textField: { focused: true, color: "error" },
                               
                             }}
-                              value={admitDateTime}
+                            Value={admitDateTime}
                               onChange={(newAdmitDateTime) =>
                                 setAdmitDateTime(newAdmitDateTime)
                               }
                               required
-                              format="YYYY-MM-DD"
+                              format="YYYY-MM-DD HH:MM"
                             />
                           </DemoItem>
                         </LocalizationProvider>
@@ -2069,37 +2259,22 @@ if(rows){
                       <div className="rounded-md mt-2">
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                           <DemoItem>
-                            <DesktopDatePicker
+                            <DateTimePicker
                             label="วันเวลาที่ออกจากโรงพยาบาล"
                             slotProps={{
                               openPickerButton: { color: "error" },
                               textField: { focused: true, color: "error" },
-                              
                             }}
-                              value={dscDateTime}
+                            Value={dscDateTime}
                               onChange={(newDscDateTime) =>
                                 setDscDateTime(newDscDateTime)
                               }
                               required
-                              format="YYYY-MM-DD"
+                              format="YYYY-MM-DD HH:MM"
                             />
                           </DemoItem>
                         </LocalizationProvider>
                       </div>
-                      <div className="rounded-md mt-2">
-                    <TextField
-                      //    error
-                      className="w-full"
-                      id="outlined-multiline-static"
-                      label="Admission number"
-                      name="Admission number"
-                      value={an}
-                      onChange={(newAn) =>
-                        setAn(newAn)
-                      }
-                      //   required
-                    />
-                  </div>
                   <div className="rounded-md mt-2">
                     <TextField
                       type="number"
@@ -2124,23 +2299,22 @@ if(rows){
                     />
                   </div>
                   <div className="rounded-md mt-2">
-
                   <FormControl className="w-full">
               <InputLabel id="demo-simple-select-label">
-              ข้อบ่งชี้ในการ admit
+              IndicationForAdmission
               </InputLabel>
          
               <Select
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
                 value={admissionValue}
-                label="ข้อบ่งชี้ในการ admit"
+                label="IndicationForAdmission"
                 onChange={IndicationForAdmission}
               >
                 {indicationForAdmissionCode
-                  ? indicationForAdmissionCode.map((code, index) => (
-                      <MenuItem key={index} value={code.id}>
-                        {code.IndicationForAdmissionDesc}
+                  ? indicationForAdmissionCode.Result.map((code, index) => (
+                      <MenuItem key={index} value={code.ifacode}>
+                        {code.ifaname}
                       </MenuItem>
                     ))
                   :    <MenuItem>
@@ -2148,40 +2322,39 @@ if(rows){
                 </MenuItem>
                 }
               </Select>
-            </FormControl>
+              </FormControl>
 
 
                   </div>
                   <div className="rounded-md mt-2">
-<FormControl className="w-full">
-<InputLabel id="demo-simple-select-label">
-ชนิดของการดมยาสลบ
-</InputLabel>
-<Select
-labelId="demo-simple-select-label"
-id="demo-simple-select"
-value={anesthesiaListValue}
-label="ชนิดของการดมยาสลบ"
-onChange={AnesthesiaList}
->
-{anesthesiaListCode
-? anesthesiaListCode.map((code, index) => (
-    <MenuItem key={index} value={code.id}>
-      {code.AnesthesiaListDesc}
-    </MenuItem>
-  ))
-:    <MenuItem>
-</MenuItem>
-}
-</Select>
-</FormControl>
+              <FormControl className="w-full">
+                <InputLabel id="demo-simple-select-label">
+                ชนิดของการดมยาสลบ
+                </InputLabel>
+                <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={anesthesiaListValue}
+                label="ชนิดของการดมยาสลบ"
+                onChange={AnesthesiaList}
+                >
+                {anesthesiaListCode
+                ? anesthesiaListCode.Result.map((code, index) => (
+                    <MenuItem key={index} value={code.aneslistcode}>
+                      {code.aneslistname}
+                    </MenuItem>
+                  ))
+                :    <MenuItem>
+                </MenuItem>
+                }
+                </Select>
+                </FormControl>
 
 
-</div>
+                </div>
                   </div>
-                <div className="rounded-md mt-2 text-3xl text-error  flex ">
-               {/* <IoSettingsSharp className="mt-1 " onClick={Editfurtherclaimvn}/> */}
-               <div
+                {/* <div className="rounded-md mt-2 text-3xl text-error  flex "> 
+            <div
                         className="btn btn-secondary text-base-100 text-xl"
                         onClick={Editfurtherclaimvn}
                       >
@@ -2189,7 +2362,7 @@ onChange={AnesthesiaList}
                       </div>
                   <div className="mt-2 ml-2">Claim form จาก VN : {PatientInfoData.PatientInfo.FurtherClaimVN ? (PatientInfoData.PatientInfo.FurtherClaimVN === PatientInfoData.PatientInfo.VN ? PatientInfoData.PatientInfo.VN+" ( ปัจจุบัน )" : PatientInfoData.PatientInfo.FurtherClaimVN+" ( เก่า )") : PatientInfoData.PatientInfo.VN+" ( ปัจจุบัน )" }</div>                    
 
-                </div>
+                </div> */}
                 <div className="grid gap-2 sm:grid-cols-2 w-full mt-4">
                   <div className="rounded-md mt-2">
                     <TextField
@@ -2321,8 +2494,8 @@ onChange={AnesthesiaList}
                   </div>
                   <div className="w-1/4 ml-2">
                     <TextField
-                      label="ระดับความรู้สึกตัว (วัดแบบ Glascow Coma Score 3-15)"
-                      type="number"
+                      label="ระดับความรู้สึกตัว (Score 3-15)"
+
                       defaultValue={comaScore}
                       onChange={(newComaScore) => setComaScore(newComaScore)}
                       inputProps={{ min: 3, max: 15 }}
@@ -2469,14 +2642,14 @@ onChange={AnesthesiaList}
                   )}
                 </div>
               </div>
-            ) : (
+        ) : (
               ""
             )}
             {/* //////////////////////////////////////////////////////////////////////////// */}
-            {PatientInfoData.PatientInfo.IllnessTypeCode === "ACC" ||
+            {/* {PatientInfoData.PatientInfo.IllnessTypeCode === "ACC" ||
             PatientInfoData.PatientInfo.IllnessTypeCode === "ER" ? (
               accidentDetail ? (
-                <>
+                <> */}
                   <div className="justify-center border-solid w-4/5 m-auto border-2 border-error rounded-lg p-4 mt-2">
                     <h1 className="font-black text-error text-3xl ">
                       AccidentDetail{" "}
@@ -2537,7 +2710,7 @@ onChange={AnesthesiaList}
                     <TableContainer component={Paper} className="mt-2">
                       <Table className="table">
                         <TableHead>
-                          {/* <TableRow className="bg-primary">
+                          <TableRow className="bg-primary">
                             <TableCell className="w-2"></TableCell>
                             <TableCell>
                               <h1 className="text-base-100  text-sm w-2/5 text-center">
@@ -2554,7 +2727,7 @@ onChange={AnesthesiaList}
                             ) : (
                               ""
                             )}
-                          </TableRow> */}
+                          </TableRow>
                         </TableHead>
                         <TableBody>
                  
@@ -3004,13 +3177,13 @@ onChange={AnesthesiaList}
                       </div>
                     </TableContainer>
                   </div>
-                </>
+                {/* </>
               ) : (
                 ""
               )
             ) : (
               ""
-            )}
+            )} */}
 
             {/* //////////////////////////////////////////////////////////////////////////// */}
             <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
@@ -3030,13 +3203,14 @@ onChange={AnesthesiaList}
                     </tr>
                   </thead>
                   <tbody>
-                    {vitalsign ? (
-                      vitalsign.Result.VitalSignInfo.map(
+                    {/* {console.log(datavitalsign)} */}
+                    {datavitalsign  ? (
+                    //  vitalsign.Result.VitalSignInfo.map(
+                         datavitalsign.map(
                         (vts, index) =>
-                          vts.VitalSignEntryDateTime  && (
                             <tr key={index} className=" bg-neutral text-sm">
                               <td>
-                                {vts.VitalSignEntryDateTime ? index + 1 : ""}
+                                {startIndexvitalsign+ index + 1}
                               </td>
                               <td>
                                 <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
@@ -3104,12 +3278,10 @@ onChange={AnesthesiaList}
                                 </div>
                               </td>
                             </tr>
-                          )
+                            // )
                       )
                     ) : (
-                      <tr>
-                        <td></td>
-                      </tr>
+                     ""
                     )}
                   </tbody>
                 </table>
@@ -3120,6 +3292,42 @@ onChange={AnesthesiaList}
                 <div className="rounded-md "></div>
                 <div className="rounded-md ">&nbsp;</div>
               </div>
+
+              {vitalsign ? (
+            <div className="grid gap-1 sm:grid-cols-2 w-full mt-4">
+              <div className="flex justify-between text-right">
+                <div className="text-right">
+                  <h1 className="text-lg">
+                    Showing {startIndexvitalsign + 1} to {endIndexvitalsign} of{" "}
+                    {vitalsign ? vitalsign.Result.VitalSignInfo.length : ""}{" "}
+                    entries.
+                  </h1>
+                </div>
+              </div>
+              <div className="text-right text-base-100 ">
+                {/* <div className="text-left text-base-100"> */}
+
+                {currentPagevitalsign > 1 && (
+                  <div
+                    onClick={handlePreviousPagevitalsign}
+                    className="btn btn-primary "
+                  >
+                    <BiFirstPage className="text-base-100 text-xl text-right" />
+                  </div>
+                )}
+                {endIndexvitalsign < currentDatavitalsign.length && (
+                  <div
+                    onClick={handleNextPagevitalsign}
+                    className="btn btn-primary ml-2"
+                  >
+                    <BiLastPage className="text-base-100 text-xl" />
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : (
+            ""
+          )}
             </div>
             {/* //////////////////////////////////////////////////////////////////////////// */}
             <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
@@ -3432,13 +3640,13 @@ onChange={AnesthesiaList}
                     </tr>
                   </thead>
                   <tbody>
-                    {investigation ? (
-                      investigation.Result.InvestigationInfo.map(
+                    {datainvestigation ? (
+                      datainvestigation.map(
                         (inv, index) =>
-                          (inv.InvestigationCode) && (
+                          // (inv.InvestigationCode) && (
                             <tr key={index} className=" bg-neutral text-sm">
                               <td>
-                              {index + 1}
+                              {startIndexvitalsign+ index + 1}
                               </td>
                               <td>
                                 <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
@@ -3486,13 +3694,11 @@ onChange={AnesthesiaList}
                                 </div>
                               </td>
                             </tr>
-                          )
-                      )
-                    ) : (
-                      <tr>
-                        <td></td>
-                      </tr>
-                    )}
+                                      // )
+                                    )
+                                  ) : (
+                                   ""
+                                  )}
                   </tbody>
                 </table>
               </div>
@@ -3502,6 +3708,41 @@ onChange={AnesthesiaList}
                 <div className="rounded-md "></div>
                 <div className="rounded-md ">&nbsp;</div>
               </div>
+              {investigation ? (
+            <div className="grid gap-1 sm:grid-cols-2 w-full mt-4">
+              <div className="flex justify-between text-right">
+                <div className="text-right">
+                  <h1 className="text-lg">
+                    Showing {startIndexinvestigation + 1} to {endIndexinvestigation} of{" "}
+                    {investigation ? investigation.Result.InvestigationInfo.length : ""}{" "}
+                    entries.
+                  </h1>
+                </div>
+              </div>
+              <div className="text-right text-base-100 ">
+                {/* <div className="text-left text-base-100"> */}
+
+                {currentPageinvestigation > 1 && (
+                  <div
+                    onClick={handlePreviousPageinvestigation}
+                    className="btn btn-primary "
+                  >
+                    <BiFirstPage className="text-base-100 text-xl text-right" />
+                  </div>
+                )}
+                {endIndexinvestigation < currentDatainvestigation.length && (
+                  <div
+                    onClick={handleNextPageinvestigation}
+                    className="btn btn-primary ml-2"
+                  >
+                    <BiLastPage className="text-base-100 text-xl" />
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : (
+            ""
+          )}
             </div>
             {/* //////////////////////////////////////////////////////////////////////////// */}
             <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
@@ -3522,12 +3763,13 @@ onChange={AnesthesiaList}
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {orderItemz ? (
-                      orderItemz.Result.OrderItemInfo.map((order, index) => (
-                        (order.ItemId) && (
+                    
+                    {dataorderItemz ? (
+                      dataorderItemz.map(
+                        (order, index) => 
                         <tr key={index} className=" bg-neutral text-sm">
                           <td className="px-6 py-4 whitespace-nowrap">
-                            {order.ItemId ? index + 1 : ""}
+                          {startIndexorderItemz+ index + 1}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
@@ -3582,12 +3824,12 @@ onChange={AnesthesiaList}
                             </div>
                           </td>
                         </tr>
-                      )) )
-                    ) : (
-                      <tr>
-                        <td></td>
-                      </tr>
-                    )}
+                                                       
+                                    // )
+                                    )
+                                  ) : (
+                                   ""
+                                  )}
                   </tbody>
                 </table>
               </div>
@@ -3597,8 +3839,42 @@ onChange={AnesthesiaList}
                 <div className="rounded-md "></div>
                 <div className="rounded-md ">&nbsp;</div>
               </div>
-            </div>
+              {orderItemz ? (
+            <div className="grid gap-1 sm:grid-cols-2 w-full mt-4">
+              <div className="flex justify-between text-right">
+                <div className="text-right">
+                  <h1 className="text-lg">
+                    Showing {startIndexorderItemz + 1} to {endIndexorderItemz} of{" "}
+                    {orderItemz ? orderItemz.Result.OrderItemInfo.length : ""}{" "}
+                    entries.
+                  </h1>
+                </div>
+              </div>
+              <div className="text-right text-base-100 ">
+                {/* <div className="text-left text-base-100"> */}
 
+                {currentPageorderItemz > 1 && (
+                  <div
+                    onClick={handlePreviousPageorderItemz}
+                    className="btn btn-primary "
+                  >
+                    <BiFirstPage className="text-base-100 text-xl text-right" />
+                  </div>
+                )}
+                {endIndexorderItemz < currentDataorderItemz.length && (
+                  <div
+                    onClick={handleNextPageorderItemz}
+                    className="btn btn-primary ml-2"
+                  >
+                    <BiLastPage className="text-base-100 text-xl" />
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : (
+            ""
+          )}
+            </div>
             {/* //////////////////////////////////////////////////////////////////////////// */}
             <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
               <h1 className="font-black text-accent text-3xl ">
@@ -3690,6 +3966,172 @@ onChange={AnesthesiaList}
                 </div>
               </div>
             </div>
+            {/* //////////////////////////////////////////////////////////////////////////// */}
+                                    {/* //////////////////////////////////////////////////////////////////////////// */}
+                                    <div className="container mx-auto justify-center border-solid w-full m-auto border-2 border-warning rounded-lg p-4 mt-2">
+                  <h1 className="font-black text-accent text-3xl ">
+                  ConcurrentNote
+                    <div
+                      className="btn btn-secondary text-base-100 text-xl ml-2"
+                      onClick={SummitEditCon}
+                    >
+                      <FaEdit />
+                    </div>
+                  </h1>
+
+                  <TableContainer component={Paper} className="mt-2">
+                    <Table className="table">
+                      <TableHead>
+                        <TableRow className="bg-primary">
+                          <TableCell className="w-1/12"></TableCell>
+                          <TableCell className="w-2/12">
+                            <h1 className="text-base-100  text-sm">
+                            วันเวลา
+                            </h1>
+                          </TableCell>
+                          <TableCell className="w-8/12">
+                            <h1 className="text-base-100  text-sm">
+                            รายละเอียด
+                            </h1>
+                          </TableCell>
+                          <TableCell className="w-1/12"></TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {rows2
+                          ? rows2.map(
+                              (con, index) =>
+                                  <TableRow
+                                    key={index}
+                                    className=" bg-neutral text-sm"
+                                  >
+                                    <TableCell>{index + 1}</TableCell>
+                                    <TableCell>
+                       <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <DemoItem>
+                              <DateTimePicker
+                                  className="bg-base-100 w-full" 
+                              //  format="YYYY-MM-DD HH:MM"
+                                 value={con.ConcurrentDateTime}
+                                  onChange={(e) => 
+                                 handleChangeEditDateRow2(index, e)
+                                 }    
+
+                                //  onChange={(newSignSymptomsDate) =>
+                                //   setSignSymptomsDate(newSignSymptomsDate)
+                                // }
+
+                                   placeholder="ConcurrentDateTime"
+                                 />
+                                 </DemoItem>
+                                   </LocalizationProvider>
+                                    </TableCell>
+                                    <TableCell>
+                                       <TextField
+                                  className="bg-base-100 w-full"
+                                  value={con.ConcurrentDetail}
+                                  onChange={(e) =>
+                                    handleChangeEditDetailRow2(index, e)
+                                  }
+                             
+                                  inputProps={{ maxLength: 200 }}
+                                  multiline
+                                  rows={4}
+                                  placeholder="ConcurrentDetail"
+                                />
+                                    </TableCell>
+                                    <TableCell>
+                                      {summitEditConcurrentNote === "true" ? (
+                                        <div
+                                          onClick={() => handleDeleteRow2(index)}
+                                          className="btn btn-error text-base-100 text-xl"
+                                        >
+                                          <FaCircleMinus />
+                                        </div>
+                                      ) : (
+                                        ""
+                                      )}
+                                    </TableCell>
+                                  </TableRow>
+                               
+                            )
+                          : ""}
+                 
+                        {summitEditConcurrentNote === "true" ? (
+                          <>
+                            <TableRow>
+                              <TableCell>
+                                <FaCirclePlus className="text-xl " />
+                              </TableCell>
+
+                              <TableCell>
+                              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <DemoItem>
+                              <DateTimePicker
+                                  className="bg-base-100 w-full"
+                              //  format="YYYY-MM-DD MM:HH"
+                                 value={newRow2.ConcurrentDateTime}
+                                 onChange={(e) =>
+                           
+                                  setNewRow2({
+                                    ...newRow2,
+                                    ConcurrentDateTime: e,
+                                  })
+                                 }
+                                  placeholder="ConcurrentDateTime"
+                                  //  required
+                                />
+                                </DemoItem>
+                                  </LocalizationProvider>
+                              </TableCell>
+                              <TableCell>
+                                <TextField
+                                  className="bg-base-100 w-full"
+                                  value={newRow2.ConcurrentDetail}
+                                  onChange={(e) =>
+                                    setNewRow2({
+                                      ...newRow2,
+                                      ConcurrentDetail: e.target.value,
+                                    })
+                                  }
+                                  inputProps={{ maxLength: 200 }}
+                                  multiline
+                                  rows={4}
+                                  placeholder="ConcurrentDetail"
+                                  //   required
+                                />
+                              </TableCell>
+                              {
+                              newRow2.ConcurrentDateTime &&
+                              newRow2.ConcurrentDetail ? (
+                                <>
+                                  <TableCell>
+                                    <div
+                                      onClick={handleAddRow2}
+                                      className="btn btn-success text-base-100 text-xl"
+                                    >
+                                      <FaCirclePlus />
+                                    </div>
+                                  </TableCell>
+                                </>
+                              ) : (
+                                ""
+                              )}
+                            </TableRow>
+                          </>
+                        ) : (
+                          ""
+                        )}
+                      </TableBody>
+                    </Table>
+                    <div className="grid gap-2 sm:grid-cols-4 text-base-100 bg-primary w-full whitespace-normal text-center">
+                      <div className="rounded-md"></div>
+                      <div className="rounded-md"></div>
+                      <div className="rounded-md "></div>
+                      <div className="rounded-md ">&nbsp;</div>
+                    </div>
+                  </TableContainer>
+                </div>
             {/* //////////////////////////////////////////////////////////////////////////// */}
             <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
               <h1 className="font-black text-accent text-3xl ">Upload File</h1>
@@ -3798,7 +4240,7 @@ onChange={AnesthesiaList}
                   <div className="rounded-md "></div>
                   <div className="rounded-md ">&nbsp;</div>
                 </div>
-                {fileList ? (fileList.length >= 1 && dscDateTime && expectedAdmitDate && admitDateTime) ? (
+                {fileList ? (fileList.length >= 1 && dscDateTime && admitDateTime) ? (
                     <div className="py-2">
                     <div className="text-right">
                       <button
@@ -3825,200 +4267,7 @@ onChange={AnesthesiaList}
         </div>
       )}
 
-<dialog id="Editfurtherclaimvn" className="modal text-xl	">
-        <div className="modal-box w-11/12 max-w-full">
-          <form method="dialog">
-            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
-              ✕
-            </button>
-            <h3 className="font-bold text-lg">ตาราง Claim form</h3>
-            <hr />
-            {showSummitError === "Error" ? (
-              <div
-                role="alert"
-                className="alert alert-error mt-2 text-base-100"
-              >
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    className="h-6 w-6 shrink-0 stroke-current"
-    fill="none"
-    viewBox="0 0 24 24">
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth="2"
-      d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
 
-                </svg>
-                <span>{massSummitError}</span>
-              </div>
-            ) : ("")}
-           {showSummitSucc === "Succ" ? (
-      <div role="alert" className="alert alert-success text-base-100 mt-2">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        className="h-6 w-6 shrink-0 stroke-current"
-        fill="none"
-        viewBox="0 0 24 24">
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="2"
-          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
-                <span>{massSummitSucc}</span>
-              </div>
-            ) : ("")}
-
-                {massSummit ? (
-                  massSummit
-                ) : (
-                <table className="table  mt-2">
-                  <thead>
-                    <tr className="text-base-100 bg-primary py-8 text-sm w-full text-center">
-                      <th></th>
-                      <th className="w-1/12">VisiDate</th>
-                      <th className="w-1/12">Episode Number</th>
-                      <th className="w-2/12">Doctor</th>
-                      <th className="w-5/12">Location</th>
-                      <th className="w-3/12">Diagnosis</th>
-                      <th></th>
-                    </tr>
-                  </thead>
-                  {/* {console.log(listClaimForm)} */}
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {listClaimForm ? (
-                      listClaimForm.Result.ClaimFormListInfo.map((FormList, index) => (
-                  
-                        <tr key={index} className=" bg-neutral text-sm">
-                          <td className="px-6 py-4 whitespace-nowrap">
-                          {
-                          showArrowVN === FormList.VN ?
-                          showArrow === false ? <MdKeyboardArrowRight className="text-success text-3xl" onClick={() => ArrowOpen(FormList)}/> : <MdKeyboardArrowDown className="text-success text-3xl" onClick={() => ArrowOpen(FormList)}/>
-                          :
-                          <MdKeyboardArrowRight className="text-success text-3xl" onClick={() => ArrowOpen(FormList)}/>
-                          }
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                              {FormList.VisiDate ? (
-                                FormList.VisiDate
-                              ) : (
-                                <>&nbsp;</>
-                              )}
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                              {FormList.VN ? FormList.VN : <>&nbsp;</>}
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                              {FormList.DoctorFirstName ? (
-                                FormList.DoctorFirstName
-                              ) : (
-                                <>&nbsp;</>
-                              )}
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                              {FormList.LocationDesc ? FormList.LocationDesc : <>&nbsp;</>}
-                            </div>
-                            {
-                          showArrowVN === FormList.VN ?
-                          showArrow === false ? "" : 
-                                          <CustomTextField
-                                          id="disabledInput"
-                                          rows={4}
-                                          multiline
-                                                   defaultValue={FormList.PresentIllness}
-                                          className="w-full text-black rounded disabled:text-black disabled:bg-gray-300 cursor-not-allowed mt-2"
-                                          InputProps={{ readOnly: true }}
-                                        />
-                          :
-                          ""
-                          }
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="border-2 bg-base-100 break-all">
-
-
-  <table className="table">
-    {/* head */}
-    <thead>
-      <tr>
-        <th>Code</th>
-        <th>Name</th>
-      </tr>
-    </thead>
-    <tbody>
-
-
-                             {FormList.DiagnosisInfo ? (
-                            
-                            FormList.DiagnosisInfo.map((Diag, index) => (
-                              <tr  key={index}>
-                            <th>{Diag.DxCode}</th>
-                            <th>{Diag.DxName}</th>
-                            </tr>
-                            )
-                          )
-                              ) : (
-                              <tr>
-                                <th></th>
-                                <td></td>
-                              </tr>
-                              )} 
-
-
-
-</tbody>
-  </table>
-
-
-
-
-                            </div>
-                            {
-                          showArrowVN === FormList.VN ?
-                          showArrow === false ? "" : 
-                                          <CustomTextField
-                                          id="disabledInput"
-                                          rows={4}
-                                          multiline
-                                                   defaultValue={FormList.PresentIllness}
-                                          className="w-full text-black rounded disabled:text-black disabled:bg-gray-300 cursor-not-allowed mt-2"
-                                          InputProps={{ readOnly: true }}
-                                        />
-                          :
-                          ""
-                          }
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                          <div
-                    className="btn btn-success text-base-100 hover:text-success hover:bg-base-100 ml-2"
-                    onClick={() => Submitfurtherclaimvn(FormList)}
-                  >
-                               <IoIosSave  className="size-6" />
-                             </div>
-                          </td>
-                </tr>
-                      ) )
-                    ) : (
-                      <tr>
-                        <td></td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-
-                )}
-            
-          </form>
-        </div>
-      </dialog>
 
       <dialog id="my_modal_3" className="modal text-xl	">
         <div className="modal-box w-11/12 max-w-5xl">

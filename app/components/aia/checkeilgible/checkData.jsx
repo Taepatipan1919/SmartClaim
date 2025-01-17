@@ -12,6 +12,7 @@ import { FaCircleXmark } from "react-icons/fa6";
 import CircularProgress from '@mui/material/CircularProgress';
 import dayjs from "dayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { Box, TextField } from "@mui/material";
@@ -80,7 +81,7 @@ export default function checkData() {
   const [succFurtherClaim, setSuccFurtherClaim] = useState(false);
   const [succFurtherClaim2, setSuccFurtherClaim2] = useState(false);
   const [accidentDate, setAccidentDate] = useState("");
-  const [visitDateTime, setVisitDateTime] = useState("");
+  const [visitDateTime, setVisitDateTime] = useState(null);
   const [showbutton, setShowbutton] = useState("");
   const ReDux = useSelector((state) => ({ ...state }));
   const dispatch = useDispatch();
@@ -214,7 +215,7 @@ setSuccFurtherClaim2(true)
     let PatientInfo;
 
     const [RefId, TransactionNo] = data.split(" | ");
-
+    if((serviceValue === "OPD")||(serviceValue === "IPD")){
 if(idTypeValue === "NATIONAL_ID"){
   PatientInfo = {
     InsurerCode: InsurerCode, 
@@ -224,7 +225,8 @@ if(idTypeValue === "NATIONAL_ID"){
     GivenNameTH: patientDB.GivenNameTH,
     SurnameTH: patientDB.SurnameTH,
     DateOfBirth: patientDB.DateOfBirth,
-    VN: detailVN,
+    // VN: detailVN,
+    VN: "",
     VisitDateTime: visitDateTime,
     AccidentDate: accidentDate,
     PolicyTypeCode: policyTypeValue,
@@ -366,6 +368,165 @@ if(idTypeValue === "NATIONAL_ID"){
     VisitlocationCode: locationCode,
  }
 }
+    }else{
+      let visitDateTimePreIPD;
+      if(visitDateTime){
+        visitDateTimePreIPD = dayjs(visitDateTime.$d).format("YYYY-MM-DD HH:MM");
+      }else{
+        visitDateTimePreIPD=""
+      }
+      if(idTypeValue === "NATIONAL_ID"){
+        PatientInfo = {
+          InsurerCode: InsurerCode, 
+          RefId: RefId,
+          TransactionNo: TransactionNo,
+          HN: patientDB.HN,
+          GivenNameTH: patientDB.GivenNameTH,
+          SurnameTH: patientDB.SurnameTH,
+          DateOfBirth: patientDB.DateOfBirth,
+          VN: "",
+          VisitDateTime: visitDateTimePreIPD,
+          AccidentDate: accidentDate,
+          PolicyTypeCode: policyTypeValue,
+          ServiceSettingCode: serviceValue,
+          IllnessTypeCode: illnessTypeValue,
+          SurgeryTypeCode:  surgeryTypeValue,
+          Runningdocument: randomNumber,
+      
+          IdType: idTypeValue,
+          PID: numberValue,
+          PassportNumber: "",
+          MembershipId:"",  
+          CustomerId : "",
+          PolicyNumber:"",
+          FurtherClaimVN: furtherVN,
+          FurtherClaimNo: furtherClaimNo,
+          FurtherClaimId: furtherClaimId,
+          Visitlocation: visitlocation,
+          VisitlocationCode: locationCode,
+       }
+      }else if(idTypeValue === "PASSPORT"){
+        PatientInfo = {
+          InsurerCode: InsurerCode, 
+          RefId: RefId,
+          TransactionNo: TransactionNo,
+          HN: patientDB.HN,
+          GivenNameTH: patientDB.GivenNameTH,
+          SurnameTH: patientDB.SurnameTH,
+          DateOfBirth: patientDB.DateOfBirth,
+          VN: "",
+          VisitDateTime: visitDateTimePreIPD,
+          AccidentDate: accidentDate,
+          PolicyTypeCode: policyTypeValue,
+          ServiceSettingCode: serviceValue,
+          IllnessTypeCode: illnessTypeValue,
+          SurgeryTypeCode:  surgeryTypeValue,
+          Runningdocument: randomNumber,
+      
+          IdType: idTypeValue,
+          PID: "",
+          PassportNumber: numberValue,
+          MembershipId:"",  
+          CustomerId : "",
+          PolicyNumber:"",
+          FurtherClaimVN: furtherVN,
+          FurtherClaimNo: furtherClaimNo,
+          FurtherClaimId: furtherClaimId,
+          Visitlocation: visitlocation,
+          VisitlocationCode: locationCode,
+       }
+      }else if(idTypeValue === "MEMBERSHIP_ID"){
+        PatientInfo = {
+          InsurerCode: InsurerCode, 
+          RefId: RefId,
+          TransactionNo: TransactionNo,
+          HN: patientDB.HN,
+          GivenNameTH: patientDB.GivenNameTH,
+          SurnameTH: patientDB.SurnameTH,
+          DateOfBirth: patientDB.DateOfBirth,
+          VN: "",
+          VisitDateTime: visitDateTimePreIPD,
+          AccidentDate: accidentDate,
+          PolicyTypeCode: policyTypeValue,
+          ServiceSettingCode: serviceValue,
+          IllnessTypeCode: illnessTypeValue,
+          SurgeryTypeCode:  surgeryTypeValue,
+          Runningdocument: randomNumber,
+      
+          IdType: idTypeValue,
+          PID: "",
+          PassportNumber: "",
+          MembershipId: numberValue,  
+          CustomerId : "",
+          PolicyNumber:"",
+          FurtherClaimVN: furtherVN,
+          FurtherClaimNo: furtherClaimNo,
+          FurtherClaimId: furtherClaimId,
+          Visitlocation: visitlocation,
+          VisitlocationCode: locationCode,
+       }
+      }else if(idTypeValue === "POLICY_NUMBER"){
+        PatientInfo = {
+          InsurerCode: InsurerCode, 
+          RefId: RefId,
+          TransactionNo: TransactionNo,
+          HN: patientDB.HN,
+          GivenNameTH: patientDB.GivenNameTH,
+          SurnameTH: patientDB.SurnameTH,
+          DateOfBirth: patientDB.DateOfBirth,
+          VN: "",
+          VisitDateTime: visitDateTimePreIPD,
+          AccidentDate: accidentDate,
+          PolicyTypeCode: policyTypeValue,
+          ServiceSettingCode: serviceValue,
+          IllnessTypeCode: illnessTypeValue,
+          SurgeryTypeCode:  surgeryTypeValue,
+          Runningdocument: randomNumber,
+      
+          IdType: idTypeValue,
+          PID: "",
+          PassportNumber: "",
+          MembershipId: "",  
+          CustomerId : "",
+          PolicyNumber: numberValue,
+          FurtherClaimVN: furtherVN,
+          FurtherClaimNo: furtherClaimNo,
+          FurtherClaimId: furtherClaimId,
+          Visitlocation: visitlocation,
+          VisitlocationCode: locationCode,
+       }
+      }else if(idTypeValue === "CUSTOMER_ID"){
+        PatientInfo = {
+          InsurerCode: InsurerCode, 
+          RefId: RefId,
+          TransactionNo: TransactionNo,
+          HN: patientDB.HN,
+          GivenNameTH: patientDB.GivenNameTH,
+          SurnameTH: patientDB.SurnameTH,
+          DateOfBirth: patientDB.DateOfBirth,
+          VN: "",
+          VisitDateTime: visitDateTimePreIPD,
+          AccidentDate: accidentDate,
+          PolicyTypeCode: policyTypeValue,
+          ServiceSettingCode: serviceValue,
+          IllnessTypeCode: illnessTypeValue,
+          SurgeryTypeCode:  surgeryTypeValue,
+          Runningdocument: randomNumber,
+      
+          IdType: idTypeValue,
+          PID: "",
+          PassportNumber: "",
+          MembershipId: "",  
+          CustomerId : numberValue,
+          PolicyNumber: "",
+          FurtherClaimVN: furtherVN,
+          FurtherClaimNo: furtherClaimNo,
+          FurtherClaimId: furtherClaimId,
+          Visitlocation: visitlocation,
+          VisitlocationCode: locationCode,
+       }
+      }
+    }
     
     console.log(PatientInfo)
     axios
@@ -754,7 +915,8 @@ if(idTypeValue === "NATIONAL_ID"){
     setAI();
     setSuccFurtherClaim(false);
     setSuccPRE(false);
-    const [VNselectVN, VisitDateselectVN , LocationDesc , LocationCode] = event.target.selectVN.value.split(" | ");
+
+    
     //const [YearVN, MonthVN, DayVN] = VisitDateselectVN.split('-');
     // const Acc = accValue.split(" ");
     // setVisitDate(VisitDateTime)
@@ -769,162 +931,304 @@ if(idTypeValue === "NATIONAL_ID"){
     }
 
     setAccidentDate(DateAccValue);
-    setVisitDateTime(VisitDateselectVN);
-    setDetailVN(VNselectVN);
-    setVisitlocation(LocationDesc)
-    setLocationCode(LocationCode)
+    if(serviceValue === "OPD" || serviceValue === "IPD" ) {
+      // console.log("OPD & IPD")
+      const [VNselectVN, VisitDateselectVN , LocationDesc , LocationCode] = event.target.selectVN.value.split(" | ");
+      setVisitDateTime(VisitDateselectVN);
+      setDetailVN(VNselectVN);
+      setVisitlocation(LocationDesc)
+      setLocationCode(LocationCode)
 
+      if(idTypeValue === "NATIONAL_ID"){
+        PatientInfo = {
+          InsurerCode: InsurerCode, 
+          RefID: "",
+          TransactionNo: "",
+          HN: patientDB.HN,
+          GivenNameTH: patientDB.GivenNameTH,
+          SurnameTH: patientDB.SurnameTH,
+          DateOfBirth: patientDB.DateOfBirth,
+          VN: VNselectVN,
+          VisitDateTime: VisitDateselectVN,
+          AccidentDate: DateAccValue,
+          PolicyTypeCode: policyTypeValue,
+          ServiceSettingCode: serviceValue,
+          IllnessTypeCode: illnessTypeValue,
+          SurgeryTypeCode: surgeryTypeValue,
     
-    // console.log(serviceValue)
-    // if (illnessTypeValue === "DAY") {
-    //   TypeValue = "IPD";
-    // } else {
-    //   TypeValue = "OPD";
-    // }
+          IdType: idTypeValue,
+           PID: numberValue,
+          PassportNumber: "",
+          MembershipId:"",  
+          CustomerId : "",
+          PolicyNumber:"",
+          FurtherClaimVN:"",
+          FurtherClaimNo: "",
+          FurtherClaimId: ""
+        };
+      }else if(idTypeValue === "PASSPORT"){
+        PatientInfo = {
+          InsurerCode: InsurerCode, 
+          RefID: "",
+          TransactionNo: "",
+          HN: patientDB.HN,
+          GivenNameTH: patientDB.GivenNameTH,
+          SurnameTH: patientDB.SurnameTH,
+          DateOfBirth: patientDB.DateOfBirth,
+          VN: VNselectVN,
+          VisitDateTime: VisitDateselectVN,
+          AccidentDate: DateAccValue,
+          PolicyTypeCode: policyTypeValue,
+          ServiceSettingCode: serviceValue,
+          IllnessTypeCode: illnessTypeValue,
+          SurgeryTypeCode: surgeryTypeValue,
+    
+          IdType: idTypeValue,
+          PID: "",
+          PassportNumber: numberValue,
+          MembershipId:"",  
+          CustomerId : "",
+          PolicyNumber:"",
+          FurtherClaimVN:"",
+          FurtherClaimNo: "",
+          FurtherClaimId: ""
+        };
+      }else if(idTypeValue === "MEMBERSHIP_ID"){
+        PatientInfo = {
+          InsurerCode: InsurerCode, 
+          RefID: "",
+          TransactionNo: "",
+          HN: patientDB.HN,
+          GivenNameTH: patientDB.GivenNameTH,
+          SurnameTH: patientDB.SurnameTH,
+          DateOfBirth: patientDB.DateOfBirth,
+          VN: VNselectVN,
+          VisitDateTime: VisitDateselectVN,
+          AccidentDate: DateAccValue,
+          PolicyTypeCode: policyTypeValue,
+          ServiceSettingCode: serviceValue,
+          IllnessTypeCode: illnessTypeValue,
+          SurgeryTypeCode: surgeryTypeValue,
+    
+          IdType: idTypeValue,
+          PID: "",
+          PassportNumber: "",
+          MembershipId: numberValue,  
+          CustomerId : "",
+          PolicyNumber:"",
+          FurtherClaimVN:"",
+          FurtherClaimNo: "",
+          FurtherClaimId: ""
+        };
+      }else if(idTypeValue === "POLICY_NUMBER"){
+        PatientInfo = {
+          InsurerCode: InsurerCode, 
+          RefID: "",
+          TransactionNo: "",
+          HN: patientDB.HN,
+          GivenNameTH: patientDB.GivenNameTH,
+          SurnameTH: patientDB.SurnameTH,
+          DateOfBirth: patientDB.DateOfBirth,
+          VN: VNselectVN,
+          VisitDateTime: VisitDateselectVN,
+          AccidentDate: DateAccValue,
+          PolicyTypeCode: policyTypeValue,
+          ServiceSettingCode: serviceValue,
+          IllnessTypeCode: illnessTypeValue,
+          SurgeryTypeCode: surgeryTypeValue,
+    
+          IdType: idTypeValue,
+          PID: "",
+          PassportNumber: "",
+          MembershipId: "",  
+          CustomerId : "",
+          PolicyNumber: numberValue,
+          FurtherClaimVN: "",
+          FurtherClaimNo: "",
+          FurtherClaimId: ""
+        };
+      }else if(idTypeValue === "CUSTOMER_ID"){
+        PatientInfo = {
+          InsurerCode: InsurerCode, 
+          RefID: "",
+          TransactionNo: "",
+          HN: patientDB.HN,
+          GivenNameTH: patientDB.GivenNameTH,
+          SurnameTH: patientDB.SurnameTH,
+          DateOfBirth: patientDB.DateOfBirth,
+          VN: VNselectVN,
+          VisitDateTime: VisitDateselectVN,
+          AccidentDate: DateAccValue,
+          PolicyTypeCode: policyTypeValue,
+          ServiceSettingCode: serviceValue,
+          IllnessTypeCode: illnessTypeValue,
+          SurgeryTypeCode: surgeryTypeValue,
+    
+          IdType: idTypeValue,
+          PID: "",
+          PassportNumber: "",
+          MembershipId: "",  
+          CustomerId : numberValue,
+          PolicyNumber: "",
+          FurtherClaimVN: "",
+          FurtherClaimNo: "",
+          FurtherClaimId: ""
+        };
+      }
 
-    if(idTypeValue === "NATIONAL_ID"){
-      PatientInfo = {
-        InsurerCode: InsurerCode, 
-        RefID: "",
-        TransactionNo: "",
-        HN: patientDB.HN,
-        GivenNameTH: patientDB.GivenNameTH,
-        SurnameTH: patientDB.SurnameTH,
-        DateOfBirth: patientDB.DateOfBirth,
-        VN: VNselectVN,
-        VisitDateTime: VisitDateselectVN,
-        AccidentDate: DateAccValue,
-        PolicyTypeCode: policyTypeValue,
-        ServiceSettingCode: serviceValue,
-        IllnessTypeCode: illnessTypeValue,
-        SurgeryTypeCode: surgeryTypeValue,
-  
-        IdType: idTypeValue,
-         PID: numberValue,
-      //  PID: "3100500420908",
-        PassportNumber: "",
-        MembershipId:"",  
-        CustomerId : "",
-        PolicyNumber:"",
-        FurtherClaimVN:"",
-        FurtherClaimNo: "",
-        FurtherClaimId: ""
-      };
-    }else if(idTypeValue === "PASSPORT"){
-      PatientInfo = {
-        InsurerCode: InsurerCode, 
-        RefID: "",
-        TransactionNo: "",
-        HN: patientDB.HN,
-        GivenNameTH: patientDB.GivenNameTH,
-        SurnameTH: patientDB.SurnameTH,
-        DateOfBirth: patientDB.DateOfBirth,
-        VN: VNselectVN,
-        VisitDateTime: VisitDateselectVN,
-        AccidentDate: DateAccValue,
-        PolicyTypeCode: policyTypeValue,
-        ServiceSettingCode: serviceValue,
-        IllnessTypeCode: illnessTypeValue,
-        SurgeryTypeCode: surgeryTypeValue,
-  
-        IdType: idTypeValue,
-        PID: "",
-        PassportNumber: numberValue,
-        MembershipId:"",  
-        CustomerId : "",
-        PolicyNumber:"",
-        FurtherClaimVN:"",
-        FurtherClaimNo: "",
-        FurtherClaimId: ""
-      };
-    }else if(idTypeValue === "MEMBERSHIP_ID"){
-      PatientInfo = {
-        InsurerCode: InsurerCode, 
-        RefID: "",
-        TransactionNo: "",
-        HN: patientDB.HN,
-        GivenNameTH: patientDB.GivenNameTH,
-        SurnameTH: patientDB.SurnameTH,
-        DateOfBirth: patientDB.DateOfBirth,
-        VN: VNselectVN,
-        VisitDateTime: VisitDateselectVN,
-        AccidentDate: DateAccValue,
-        PolicyTypeCode: policyTypeValue,
-        ServiceSettingCode: serviceValue,
-        IllnessTypeCode: illnessTypeValue,
-        SurgeryTypeCode: surgeryTypeValue,
-  
-        IdType: idTypeValue,
-        PID: "",
-        PassportNumber: "",
-        MembershipId: numberValue,  
-        CustomerId : "",
-        PolicyNumber:"",
-        FurtherClaimVN:"",
-        FurtherClaimNo: "",
-        FurtherClaimId: ""
-      };
-    }else if(idTypeValue === "POLICY_NUMBER"){
-      PatientInfo = {
-        InsurerCode: InsurerCode, 
-        RefID: "",
-        TransactionNo: "",
-        HN: patientDB.HN,
-        GivenNameTH: patientDB.GivenNameTH,
-        SurnameTH: patientDB.SurnameTH,
-        DateOfBirth: patientDB.DateOfBirth,
-        VN: VNselectVN,
-        VisitDateTime: VisitDateselectVN,
-        AccidentDate: DateAccValue,
-        PolicyTypeCode: policyTypeValue,
-        ServiceSettingCode: serviceValue,
-        IllnessTypeCode: illnessTypeValue,
-        SurgeryTypeCode: surgeryTypeValue,
-  
-        IdType: idTypeValue,
-        PID: "",
-        PassportNumber: "",
-        MembershipId: "",  
-        CustomerId : "",
-        PolicyNumber: numberValue,
-        FurtherClaimVN: "",
-        FurtherClaimNo: "",
-        FurtherClaimId: ""
-      };
-    }else if(idTypeValue === "CUSTOMER_ID"){
-      PatientInfo = {
-        InsurerCode: InsurerCode, 
-        RefID: "",
-        TransactionNo: "",
-        HN: patientDB.HN,
-        GivenNameTH: patientDB.GivenNameTH,
-        SurnameTH: patientDB.SurnameTH,
-        DateOfBirth: patientDB.DateOfBirth,
-        VN: VNselectVN,
-        VisitDateTime: VisitDateselectVN,
-        AccidentDate: DateAccValue,
-        PolicyTypeCode: policyTypeValue,
-        ServiceSettingCode: serviceValue,
-        IllnessTypeCode: illnessTypeValue,
-        SurgeryTypeCode: surgeryTypeValue,
-  
-        IdType: idTypeValue,
-        PID: "",
-        PassportNumber: "",
-        MembershipId: "",  
-        CustomerId : numberValue,
-        PolicyNumber: "",
-        FurtherClaimVN: "",
-        FurtherClaimNo: "",
-        FurtherClaimId: ""
-      };
+    }else{
+      // console.log("PRE")
+      let visitDateTimePreIPD;
+      if(visitDateTime){
+        visitDateTimePreIPD = dayjs(visitDateTime.$d).format("YYYY-MM-DD HH:MM");
+      }else{
+        visitDateTimePreIPD=""
+      }
+      
+      if(idTypeValue === "NATIONAL_ID"){
+        PatientInfo = {
+          InsurerCode: InsurerCode, 
+          RefID: "",
+          TransactionNo: "",
+          HN: patientDB.HN,
+          GivenNameTH: patientDB.GivenNameTH,
+          SurnameTH: patientDB.SurnameTH,
+          DateOfBirth: patientDB.DateOfBirth,
+          VN: "",
+          VisitDateTime: visitDateTimePreIPD,
+          AccidentDate: DateAccValue,
+          PolicyTypeCode: policyTypeValue,
+          ServiceSettingCode: serviceValue,
+          IllnessTypeCode: illnessTypeValue,
+          SurgeryTypeCode: surgeryTypeValue,
+    
+          IdType: idTypeValue,
+           PID: numberValue,
+          PassportNumber: "",
+          MembershipId:"",  
+          CustomerId : "",
+          PolicyNumber:"",
+          FurtherClaimVN:"",
+          FurtherClaimNo: "",
+          FurtherClaimId: ""
+        };
+      }else if(idTypeValue === "PASSPORT"){
+        PatientInfo = {
+          InsurerCode: InsurerCode, 
+          RefID: "",
+          TransactionNo: "",
+          HN: patientDB.HN,
+          GivenNameTH: patientDB.GivenNameTH,
+          SurnameTH: patientDB.SurnameTH,
+          DateOfBirth: patientDB.DateOfBirth,
+          VN: "",
+          VisitDateTime: visitDateTimePreIPD,
+          AccidentDate: DateAccValue,
+          PolicyTypeCode: policyTypeValue,
+          ServiceSettingCode: serviceValue,
+          IllnessTypeCode: illnessTypeValue,
+          SurgeryTypeCode: surgeryTypeValue,
+    
+          IdType: idTypeValue,
+          PID: "",
+          PassportNumber: numberValue,
+          MembershipId:"",  
+          CustomerId : "",
+          PolicyNumber:"",
+          FurtherClaimVN:"",
+          FurtherClaimNo: "",
+          FurtherClaimId: ""
+        };
+      }else if(idTypeValue === "MEMBERSHIP_ID"){
+        PatientInfo = {
+          InsurerCode: InsurerCode, 
+          RefID: "",
+          TransactionNo: "",
+          HN: patientDB.HN,
+          GivenNameTH: patientDB.GivenNameTH,
+          SurnameTH: patientDB.SurnameTH,
+          DateOfBirth: patientDB.DateOfBirth,
+          VN: "",
+          VisitDateTime: visitDateTimePreIPD,
+          AccidentDate: DateAccValue,
+          PolicyTypeCode: policyTypeValue,
+          ServiceSettingCode: serviceValue,
+          IllnessTypeCode: illnessTypeValue,
+          SurgeryTypeCode: surgeryTypeValue,
+    
+          IdType: idTypeValue,
+          PID: "",
+          PassportNumber: "",
+          MembershipId: numberValue,  
+          CustomerId : "",
+          PolicyNumber:"",
+          FurtherClaimVN:"",
+          FurtherClaimNo: "",
+          FurtherClaimId: ""
+        };
+      }else if(idTypeValue === "POLICY_NUMBER"){
+        PatientInfo = {
+          InsurerCode: InsurerCode, 
+          RefID: "",
+          TransactionNo: "",
+          HN: patientDB.HN,
+          GivenNameTH: patientDB.GivenNameTH,
+          SurnameTH: patientDB.SurnameTH,
+          DateOfBirth: patientDB.DateOfBirth,
+          VN: "",
+          VisitDateTime: visitDateTimePreIPD,
+          AccidentDate: DateAccValue,
+          PolicyTypeCode: policyTypeValue,
+          ServiceSettingCode: serviceValue,
+          IllnessTypeCode: illnessTypeValue,
+          SurgeryTypeCode: surgeryTypeValue,
+    
+          IdType: idTypeValue,
+          PID: "",
+          PassportNumber: "",
+          MembershipId: "",  
+          CustomerId : "",
+          PolicyNumber: numberValue,
+          FurtherClaimVN: "",
+          FurtherClaimNo: "",
+          FurtherClaimId: ""
+        };
+      }else if(idTypeValue === "CUSTOMER_ID"){
+        PatientInfo = {
+          InsurerCode: InsurerCode, 
+          RefID: "",
+          TransactionNo: "",
+          HN: patientDB.HN,
+          GivenNameTH: patientDB.GivenNameTH,
+          SurnameTH: patientDB.SurnameTH,
+          DateOfBirth: patientDB.DateOfBirth,
+          VN: "",
+          VisitDateTime: visitDateTimePreIPD,
+          AccidentDate: DateAccValue,
+          PolicyTypeCode: policyTypeValue,
+          ServiceSettingCode: serviceValue,
+          IllnessTypeCode: illnessTypeValue,
+          SurgeryTypeCode: surgeryTypeValue,
+    
+          IdType: idTypeValue,
+          PID: "",
+          PassportNumber: "",
+          MembershipId: "",  
+          CustomerId : numberValue,
+          PolicyNumber: "",
+          FurtherClaimVN: "",
+          FurtherClaimNo: "",
+          FurtherClaimId: ""
+        };
+      }
     }
+ 
 
 
 
 
     
-   console.log(PatientInfo);
+    console.log(PatientInfo);
     setPatientInfo(PatientInfo)
      try {
       if(serviceValue === "OPD"){
@@ -1063,14 +1367,40 @@ if(idTypeValue === "NATIONAL_ID"){
           <div>{patientDB.CustomerId}</div>
 
         </div>
-
-        <h1 className="font-black text-accent text-3xl ">Visit Details</h1>
         <form onSubmit={handleSubmit}>
-          <div className="flex flex-row justify-center w-1/2 m-auto ">
-            <div className="px-2">
-              {" "}
-              <div className="">
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <h1 className="font-black text-accent text-3xl ">Visit Details</h1>
+        <div className="grid grid-cols-4 gap-2 ">
+          <div></div>
+          <div>
+          <FormControl className="w-full">
+              <InputLabel id="demo-simple-select-label">
+              ประเภทการรักษา
+              </InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={serviceValue}
+                label="ํประเภทการรักษา"
+                onChange={type}
+              >
+                {serviceCode
+                  ? serviceCode.Result.map((type, index) => (
+                      <MenuItem key={index} value={type.servicesettingcode}>
+                        {type.servicesettingcode} -{" "}
+                        {type.servicesettingdesc}
+                      </MenuItem>
+                    ))
+                  : (
+                    <MenuItem value="OPD">
+                      OPD - ผู้ป่วยนอก
+                  </MenuItem>
+                  )}
+              </Select>
+            </FormControl>
+          </div>
+          {((serviceValue === "OPD")||(serviceValue === "IPD")) ? (
+          <div>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DatePicker
                   
                     label="วันที่เข้ารับการรักษา"
@@ -1088,20 +1418,20 @@ if(idTypeValue === "NATIONAL_ID"){
                     )}
                   />
                 </LocalizationProvider>
-              </div>
-            </div>
- 
-            <div className="">
-              <div className="">
                 <button
                   className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 text-lg rounded-full px-3 py-2"
                   type="submit"
                 >
                   <FaSearch /> Search
                 </button>
-              </div>
-            </div>
-          </div>
+          </div> 
+        )   : ""}
+          {/*  <div>    */}
+ 
+          {/* </div> */}
+          <div></div>
+                     
+        </div>
         </form>
         {showFormError === "Error" ? (
           <div role="alert" className="alert alert-error mt-2 text-base-100">
@@ -1123,11 +1453,216 @@ if(idTypeValue === "NATIONAL_ID"){
         ) : (
           ""
         )}
+        {((serviceValue !== "OPD")&&(serviceValue !== "IPD")) ? (
+              <>
+                 <form onSubmit={check}> 
+                  <div className="grid grid-cols-8 gap-2 mt-4">
 
-        {post ? (
+                    <div>
+                    <FormControl fullWidth>
+                        <InputLabel id="policyTypeValue">
+                          Select Type
+                        </InputLabel>
+                        <Select
+                        error
+                          labelId="policyTypeValue"
+                          id="demo-simple-select"
+                          value={idTypeValue}
+                          label="Select Type"
+                          onChange={idtype}
+                          className=""
+                          required
+                        >
+                          {idType
+                            ? idType.Result.map((id, index) => (
+                                <MenuItem
+                                  key={index}
+                                  value={id.idtypecode}
+                                >
+                                  {id.idtypedesc_th}
+                                </MenuItem>
+                              ))
+                            : ""}
+                        </Select>
+                      </FormControl>
+                    </div>
+                    <div>
+                    <TextField
+                    error
+                id="outlined-basic"
+                label="หมายเลขบัตร"
+                // multiline
+                // maxRows={4}
+                variant="outlined"
+                className="w-full"
+                name="number"
+                type="text"
+                value={numberValue}
+                onChange={(e) => setNumberValue(e.target.value)}
+              />
+  
+                    </div>
+                    <div>
+                      <FormControl fullWidth>
+                        <InputLabel id="policyTypeValue">
+                          ประเภทกรมธรรม์
+                        </InputLabel>
+                        <Select
+                        error
+                          labelId="policyTypeValue"
+                          id="demo-simple-select"
+                          value={policyTypeValue}
+                          label="ประเภทกรมธรรม์"
+                          onChange={policy}
+                          className=""
+                          required
+                        >
+                          {policyType
+                            ? policyType.Result.map((policy, index) => (
+                                <MenuItem
+                                  key={index}
+                                  value={policy.policytypecode}
+                                >
+                                  {policy.policytypedesc}
+                                </MenuItem>
+                              ))
+                            : ""}
+                        </Select>
+                      </FormControl>
+                    </div>
+                    <div>
+                      <FormControl fullWidth>
+                        <InputLabel id="illnessTypeValue">
+                          ประเภทของการรักษา
+                        </InputLabel>
+                        <Select
+                        error
+                          labelId="illnessTypeValue"
+                          id="demo-simple-select"
+                          value={illnessTypeValue}
+                          label="ประเภทของการรักษา"
+                          onChange={Illness}
+                          className=""
+                          required
+                        >
+                          {illnessType
+                            ? illnessType.Result.map((ill, index) => 
+  
+                              
+                                serviceValue ===  "OPD"  ? (
+                                ((ill.illnesstypecode === "ILL")||(ill.illnesstypecode === "ACC")||(ill.illnesstypecode === "ER")||(ill.illnesstypecode === "DEN")
+                              ||(ill.illnesstypecode === "MET")||(ill.illnesstypecode === "HD")||(ill.illnesstypecode === "CMT")||(ill.illnesstypecode === "CHK")||(ill.illnesstypecode === "VAC")||(ill.illnesstypecode === "FU")
+                            )  ? (
+                                 <MenuItem key={index} value={ill.illnesstypecode}>
+                                  {ill.illnesstypedesc}
+                                </MenuItem>
+                                ) : ""
+                              
+                              )
+                                : 
+                                  serviceValue ===  "PRE"  ? (
+                                    (ill.illnesstypecode === "ILL")||(ill.illnesstypecode === "ACC")||(ill.illnesstypecode === "DAY")
+                              ? (
+                                 <MenuItem key={index} value={ill.illnesstypecode}>
+                                  {ill.illnesstypedesc}
+                                </MenuItem>
+                                )
+                                :"" 
+                                ) 
+                                : 
+                                serviceValue ===  "IPD"  ? (
+                                  (ill.illnesstypecode === "ILL")||(ill.illnesstypecode === "ACC")||(ill.illnesstypecode === "DAY")||(ill.illnesstypecode === "MAT")
+                            ? (
+                               <MenuItem key={index} value={ill.illnesstypecode}>
+                                {ill.illnesstypedesc}
+                              </MenuItem>
+                              )
+                              :"" 
+                              ) 
+                              : ""
+                           ): ""}
+                        </Select>
+                      </FormControl>
+                    </div>
+                    
+                    {((serviceValue !== "OPD")&&(serviceValue !== "IPD")) ? (
+                    <>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DateTimePicker
+                    label="วันที่จองสิทธิ์"
+                    value={visitDateTime}
+                    onChange={(newDate) => setVisitDateTime(newDate)}
+                    // format="YYYY-MM-DD "
+                    required
+                    slotProps={{
+                      openPickerButton: { color: "error" },
+                      textField: { focused: true, color: "error" },
+                    }}
+                  />
+                </LocalizationProvider> 
+                  </>
+                ) : ""}
+                    {textInputVisible &&
+  
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DatePicker
+                      label="วันที่เกิดอุบัติเหตุ"
+                      value={accValue}
+                      onChange={(newDate) => setAccValue(newDate)}
+                      format="YYYY-MM-DD"
+                      slotProps={{
+                        openPickerButton: { color: "error" },
+                        textField: { focused: true, color: "error" },
+                      }}
+          
+                    />
+                  </LocalizationProvider>
+  
+   }
+       
+                    <div>
+                      <FormControl fullWidth>
+                        <InputLabel id="surgeryTypeValue">การผ่าตัด</InputLabel>
+                        <Select
+                          labelId="surgeryTypeValue"
+                          id="demo-simple-select"
+                          value={surgeryTypeValue}
+                          label="การผ่าตัด"
+                          onChange={surgery}
+                          className=""
+                          required
+                        >
+                          {/* {console.log(surgeryTypeValue)} */}
+                          {surgeryType
+                            ? surgeryType.Result.map((surgery, index) => (
+                                <MenuItem key={index} value={surgery.iscode}>
+                                  {surgery.isdesc}
+                                </MenuItem>
+                              ))
+                            : ""}
+                        </Select>
+                      </FormControl>
+                    </div>
+         
+                    <div>
+                      <button
+                        className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 text-xl"
+                        type="submit"
+                        // onClick={() =>
+  
+                        // }
+                        //onClick={axiosFetch}
+                      >
+                        Check Eligible
+                      </button>
+                    </div>
+                  </div>
+                </form>
+              </>
+        ) : 
+        (post ? (
           post.HTTPStatus.statusCode === 200 ? (
             <>
-
                <form onSubmit={check}> 
                 <div className="overflow-x-auto mt-2">
                   <table className="table">
@@ -1186,34 +1721,8 @@ if(idTypeValue === "NATIONAL_ID"){
                     <div className="rounded-md ">&nbsp;</div>
                   </div>
                 </div>
-                <div className="grid grid-cols-8 gap-2 mt-4">
-                  <div>
-                  <FormControl className="w-full">
-              <InputLabel id="demo-simple-select-label">
-              ประเภทการรักษา
-              </InputLabel>
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                value={serviceValue}
-                label="ํประเภทการรักษา"
-                onChange={type}
-              >
-                {serviceCode
-                  ? serviceCode.Result.map((type, index) => (
-                      <MenuItem key={index} value={type.servicesettingcode}>
-                        {type.servicesettingcode} -{" "}
-                        {type.servicesettingdesc}
-                      </MenuItem>
-                    ))
-                  : (
-                    <MenuItem value="OPD">
-                      OPD - ผู้ป่วยนอก
-                  </MenuItem>
-                  )}
-              </Select>
-            </FormControl>
-                  </div>
+                <div className="grid grid-cols-7 gap-2 mt-4">
+
                   <div>
                   <FormControl fullWidth>
                       <InputLabel id="policyTypeValue">
@@ -1354,7 +1863,6 @@ if(idTypeValue === "NATIONAL_ID"){
                       openPickerButton: { color: "error" },
                       textField: { focused: true, color: "error" },
                     }}
-        
                   />
                 </LocalizationProvider>
 
@@ -1424,9 +1932,7 @@ if(idTypeValue === "NATIONAL_ID"){
               </div>
             </>
           )
-        ) : (
-          ""
-        )}
+        ): ("")) }
       </div>
 
       {/* </>
@@ -1858,8 +2364,6 @@ if(idTypeValue === "NATIONAL_ID"){
           <p className="">HN: {patientInfo.HN}</p>
           <p className="">ชื่อ: {patientInfo.GivenNameTH} {patientInfo.SurnameTH}</p>
           <p className="">วันเกิด: {patientInfo.DateOfBirth}</p>
-          <p className="">VN: {patientInfo.VN}</p>
-          <p className="">Location: {visitlocation}</p>
           <p className="">ประเภทในการรักษา: {serviceValue}</p>
         </div>
         
@@ -1888,7 +2392,7 @@ if(idTypeValue === "NATIONAL_ID"){
                     <div className="rounded-md">
                     วันที่เข้าการรักษา : {patientInfo.VisitDateTime}
                     </div>
-                    {selectPRETypeValue ?
+                    {/* {selectPRETypeValue ?
                     (
                     <div className="rounded-md">
                     เคยการจองสิทธิ์ : 
@@ -1896,7 +2400,7 @@ if(idTypeValue === "NATIONAL_ID"){
                     <br/>- วันที่มารับการรักษาครั้งก่อน : {visitDateTimeL}
                                     
                                     </div>
-                                   ) : ""} 
+                                   ) : ""}  */}
 
                                     
                                     {showFormCreateError === "Error" ? (
@@ -1920,12 +2424,13 @@ if(idTypeValue === "NATIONAL_ID"){
                 <span>{massCreateError}</span>
               </div>
             ) : ""}
+
         <div className="flex justify-center mt-4">   
         
 
-   {mass === true ? 
-   load === false ?
-   (
+  {mass === true ? 
+  ( load === false ?
+   ( 
    <div className="rounded-md">
    <div
      className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 ml-2"
@@ -1939,76 +2444,77 @@ if(idTypeValue === "NATIONAL_ID"){
    </div>
    
    </div>
-   )
-   :  ( succPRE === false ?
-        (
-          <div className="rounded-md w-full">
-             <div role="tablist" className="tabs-bordered">
-                <input
-                  type="radio"
-                  name="my_tabs_1"
-                  role="tab"
-                  className="tab text-xl"
-                  aria-label="ไม่เคยจองสิทธิ์"
-                  onChange={NotSelectPRE}
-                  defaultChecked
-                />
+  )
+   :  ( 
+    // succPRE === false ?
+    //     (
+    //       <div className="rounded-md w-full">
+    //          <div role="tablist" className="tabs-bordered">
+    //             <input
+    //               type="radio"
+    //               name="my_tabs_1"
+    //               role="tab"
+    //               className="tab text-xl"
+    //               aria-label="ไม่เคยจองสิทธิ์"
+    //               onChange={NotSelectPRE}
+    //               defaultChecked
+    //             />
 
-                <input
-                  type="radio"
-                  name="my_tabs_1"
-                  role="tab"
-                  className="tab text-xl"
-                  aria-label="เคยจองสิทธิ์"
-                />
-                <div role="tabpanel" className="tab-content mt-4">
-                  <label className="form-control w-full">
-                    <select
-                      className="select select-bordered"
-                      value={selectPRETypeValue}
-                      onChange={SelectPRE}
-                    >
-                      <option></option>
-               {preAuthTransactionList
-                        ? preAuthTransactionList.Data.PreAuthTransactionList.map(
-                            (ftc, index) => (
-                              <option
-                                key={index}
-                                value={JSON.stringify(ftc)}
-                              >
-                                เลขกรมธรรม์: {ftc.ClaimNo}, วันที่เข้ารักษา:{" "}
-                                {ftc.VisitDateTime.split("T")[0]} 
-                              </option>
-                            )
-                          )
-                        : ""} 
-                      <></>
-                    </select>
-                  </label>
-                </div>
-              </div>
-            <div className="flex justify-end p-4">
-              <div
-                className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 "
-                  onClick={gourl}
-              >
-                ยืนยัน
-              </div>
-            </div>
-          </div>
+    //             <input
+    //               type="radio"
+    //               name="my_tabs_1"
+    //               role="tab"
+    //               className="tab text-xl"
+    //               aria-label="เคยจองสิทธิ์"
+    //             />
+    //             <div role="tabpanel" className="tab-content mt-4">
+    //               <label className="form-control w-full">
+    //                 <select
+    //                   className="select select-bordered"
+    //                   value={selectPRETypeValue}
+    //                   onChange={SelectPRE}
+    //                 >
+    //                   <option></option>
+    //            {preAuthTransactionList
+    //                     ? preAuthTransactionList.Data.PreAuthTransactionList.map(
+    //                         (ftc, index) => (
+    //                           <option
+    //                             key={index}
+    //                             value={JSON.stringify(ftc)}
+    //                           >
+    //                             เลขกรมธรรม์: {ftc.ClaimNo}, วันที่เข้ารักษา:{" "}
+    //                             {ftc.VisitDateTime.split("T")[0]} 
+    //                           </option>
+    //                         )
+    //                       )
+    //                     : ""} 
+    //                   <></>
+    //                 </select>
+    //               </label>
+    //             </div>
+    //           </div> 
+    //         <div className="flex justify-end p-4">
+    //           <div
+    //             className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 "
+    //               onClick={gourl}
+    //           >
+    //             ยืนยัน
+    //           </div>
+    //         </div>
+    //       </div>
 
    
 
-         ) : (
+    //      ) : (
           <div className="rounded-md">
-                      <div
+                      {/* <div
     className="btn btn-error text-base-100 hover:text-error hover:bg-base-100 ml-2"
     onClick={() =>handleButtonBlackVNClick(
       `${result.Result.InsuranceData.RefId} | ${result.Result.InsuranceData.TransactionNo}`
     )}
   >
     ย้อนกลับ
-  </div>
+  </div> */}
                <div
                  className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 ml-2"
                  onClick={() =>handleButtonClick(
@@ -2018,8 +2524,8 @@ if(idTypeValue === "NATIONAL_ID"){
                  Print
                </div>
                </div> 
-         ) 
-           )   : ""}
+        //  ) 
+           ) )  : ("")} 
          </div>
         </div>
       </div>
@@ -2337,7 +2843,7 @@ if(idTypeValue === "NATIONAL_ID"){
                     วันที่เข้าการรักษา : {patientInfo.VisitDateTime}
                     </div>
                     {/* {console.log(claimNoL)} */}
-                    {selectPRETypeValue ?
+                    {/* {selectPRETypeValue ?
                     (
                     <div className="rounded-md">
                     เคยการจองสิทธิ์ : 
@@ -2345,7 +2851,7 @@ if(idTypeValue === "NATIONAL_ID"){
                     <br/>- วันที่มารับการรักษาครั้งก่อน : {visitDateTimeL}
                                     
                                     </div>
-                                   ) : ""} 
+                                   ) : ""}  */}
 
                                     
                                     {showFormCreateError === "Error" ? (
@@ -2389,75 +2895,76 @@ if(idTypeValue === "NATIONAL_ID"){
    
    </div>
    )
-   :  ( succPRE === false ?
-        (
-          <div className="rounded-md w-full">
-             <div role="tablist" className="tabs-bordered">
-                <input
-                  type="radio"
-                  name="my_tabs_1"
-                  role="tab"
-                  className="tab text-xl"
-                  aria-label="ไม่เคยจองสิทธิ์"
-                  onChange={NotSelectPRE}
-                  defaultChecked
-                />
+   :  ( 
+    // succPRE === false ?
+    //     (
+    //       <div className="rounded-md w-full">
+    //          <div role="tablist" className="tabs-bordered">
+    //             <input
+    //               type="radio"
+    //               name="my_tabs_1"
+    //               role="tab"
+    //               className="tab text-xl"
+    //               aria-label="ไม่เคยจองสิทธิ์"
+    //               onChange={NotSelectPRE}
+    //               defaultChecked
+    //             />
 
-                <input
-                  type="radio"
-                  name="my_tabs_1"
-                  role="tab"
-                  className="tab text-xl"
-                  aria-label="เคยจองสิทธิ์"
-                />
-                <div role="tabpanel" className="tab-content mt-4">
-                  <label className="form-control w-full">
-                    <select
-                      className="select select-bordered"
-                      value={selectPRETypeValue}
-                      onChange={SelectPRE}
-                    >
-                      <option></option>
-               {preAuthTransactionList
-                        ? preAuthTransactionList.Data.PreAuthTransactionList.map(
-                            (ftc, index) => (
-                              <option
-                                key={index}
-                                value={JSON.stringify(ftc)}
-                              >
-                                เลขกรมธรรม์: {ftc.ClaimNo}, วันที่เข้ารักษา:{" "}
-                                {ftc.VisitDateTime.split("T")[0]} 
-                              </option>
-                            )
-                          )
-                        : ""} 
-                      <></>
-                    </select>
-                  </label>
-                </div>
-              </div>
-            <div className="flex justify-end p-4">
-              <div
-                className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 "
-                  onClick={gourl}
-              >
-                ยืนยัน
-              </div>
-            </div>
-          </div>
+    //             <input
+    //               type="radio"
+    //               name="my_tabs_1"
+    //               role="tab"
+    //               className="tab text-xl"
+    //               aria-label="เคยจองสิทธิ์"
+    //             />
+    //             <div role="tabpanel" className="tab-content mt-4">
+    //               <label className="form-control w-full">
+    //                 <select
+    //                   className="select select-bordered"
+    //                   value={selectPRETypeValue}
+    //                   onChange={SelectPRE}
+    //                 >
+    //                   <option></option>
+    //            {preAuthTransactionList
+    //                     ? preAuthTransactionList.Data.PreAuthTransactionList.map(
+    //                         (ftc, index) => (
+    //                           <option
+    //                             key={index}
+    //                             value={JSON.stringify(ftc)}
+    //                           >
+    //                             เลขกรมธรรม์: {ftc.ClaimNo}, วันที่เข้ารักษา:{" "}
+    //                             {ftc.VisitDateTime.split("T")[0]} 
+    //                           </option>
+    //                         )
+    //                       )
+    //                     : ""} 
+    //                   <></>
+    //                 </select>
+    //               </label>
+    //             </div>
+    //           </div>
+    //         <div className="flex justify-end p-4">
+    //           <div
+    //             className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 "
+    //               onClick={gourl}
+    //           >
+    //             ยืนยัน
+    //           </div>
+    //         </div>
+    //       </div>
 
    
 
-         ) : (
+    //      ) : (
           <div className="rounded-md">
-                      <div
+                      {/* <div
     className="btn btn-error text-base-100 hover:text-error hover:bg-base-100 ml-2"
     onClick={() =>handleButtonBlackVNClick(
       `${result.Result.InsuranceData.RefId} | ${result.Result.InsuranceData.TransactionNo}`
     )}
   >
     ย้อนกลับ
-  </div>
+  </div> */}
                <div
                  className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 ml-2"
                  onClick={() =>handleButtonClick(
@@ -2467,8 +2974,8 @@ if(idTypeValue === "NATIONAL_ID"){
                  Print
                </div>
                </div> 
-         ) 
-           )   : ""}
+        //  ) 
+           )   : ("")}
          </div>
         </div>
       </div>

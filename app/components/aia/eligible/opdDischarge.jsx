@@ -13,6 +13,7 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import { FaEdit } from "react-icons/fa";
+import { BiFirstPage, BiLastPage } from "react-icons/bi";
 import { MdKeyboardArrowRight } from "react-icons/md";
 import { MdKeyboardArrowDown } from "react-icons/md";
 import OutlinedInput from "@mui/material/OutlinedInput";
@@ -29,6 +30,7 @@ import { FaCloudUploadAlt } from "react-icons/fa";
 import { IoSettingsSharp } from "react-icons/io5";
 import { IoIosSave } from "react-icons/io";
 import { save } from "../../../store/counterSlice";
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import {
   Table,
   TableBody,
@@ -53,7 +55,15 @@ export default function Page({ data }) {
       },
     },
   };
-
+  const [currentDatavitalsign, setCurrentDatavitalsign] = useState("");
+  const [currentPagevitalsign, setCurrentPagevitalsign] = useState(1);
+  const [countvitalsign, setCountvitalsign] = useState(0);
+  const [currentDatainvestigation, setCurrentDatainvestigation] = useState("");
+  const [currentPageinvestigation, setCurrentPageinvestigation] = useState(1);
+  const [countinvestigation, setCountinvestigation] = useState(0);
+  const [currentDataorderItemz, setCurrentDataorderItemz] = useState("");
+  const [currentPageorderItemz, setCurrentPageorderItemz] = useState(1);
+  const [countorderItemz, setCountorderItemz] = useState(0);
 
   const [textPresentIllness, setTextPresentIllness] = useState(''); 
   const [charCountPresentIllness, setCharCountPresentIllness] = useState(0);
@@ -642,6 +652,7 @@ export default function Page({ data }) {
       .then((response) => {
      //   console.log(response.data)
         setVitalsign(response.data);
+        setCurrentDatavitalsign(response.data.Result.VitalSignInfo);
       })
       .catch((error) => {
     //    console.log(error);
@@ -1131,6 +1142,7 @@ export default function Page({ data }) {
       .then((response) => {
        // console.log(response.data)
         setInvestigation(response.data);
+        setCurrentDatainvestigation(response.data.Result.InvestigationInfo);
       })
       .catch((error) => {
      //   console.log(error);
@@ -1156,6 +1168,7 @@ export default function Page({ data }) {
       .then((response) => {
       //  console.log(response.data)
         setOrderItemz(response.data);
+        setCurrentDataorderItemz(response.data.Result.OrderItemInfo);
       })
       .catch((error) => {
      //   console.log(error);
@@ -1461,19 +1474,24 @@ if(rows){
     } else {
       HaveProcedureCount = false;
     }
-    //console.log(Suc)
+    
     if (Suc === "S") {
+      console.log("เข้า 4 Step")
       try {
         await stepOne();
         await stepTwo();
          await stepThree();
          await stepFour();
+         console.log("All steps completed");
       } catch (error) {
-   //     console.log(error);
+        console.log(error);
       }
+    }else{
+      console.log("Error")
     }
 
     function stepOne() {
+      console.log("Step One");
 // console.log(accidentPlaceValue)
       if(accidentPlaceValue){
       return new Promise((resolve, reject) => {
@@ -1523,11 +1541,12 @@ if(rows){
       });
   }else{
     console.log("1 Succ (ไม่อุบัติเหตุ)");
+    resolve("Step 1 completed");
   }
     }
 
     function stepTwo() {
-
+      console.log("Step Two");
       return new Promise((resolve, reject) => {
         const PatientInfo = {
           RefId: PatientInfoData.PatientInfo.RefId,
@@ -1568,7 +1587,7 @@ if(rows){
     }
 
     function stepThree() {
-
+      console.log("Step Three");
       return new Promise((resolve, reject) => {
         let comaScoreP;
         let expectedDayOfRecoveryP;
@@ -1645,7 +1664,7 @@ if(rows){
 
     }
     function stepFour() {
-
+      console.log("Step Four");
       return new Promise((resolve, reject) => {
         const PatientInfo = {
           InsurerCode: PatientInfoData.PatientInfo.InsurerCode,
@@ -1725,6 +1744,63 @@ if(rows){
     }
     
   }
+      ////////////////////////// ตัวเลื่อน ตารางซ้าย - ขวา ///////////////////////////////////////////
+      const ITEMS_PER_PAGE = 10;
+
+      const handleNextPagevitalsign = () => {
+        setCurrentPagevitalsign(currentPagevitalsign + 1);
+      };
+    
+      const handlePreviousPagevitalsign = () => {
+        setCurrentPagevitalsign(currentPagevitalsign - 1);
+      };
+    
+      const startIndexvitalsign = (currentPagevitalsign - 1) * ITEMS_PER_PAGE;
+    
+      const endIndexvitalsign = startIndexvitalsign + ITEMS_PER_PAGE;
+      //console.log(endIndex +"="+startIndex+"+"+ITEMS_PER_PAGE)
+      const datavitalsign = currentDatavitalsign.slice(startIndexvitalsign, endIndexvitalsign);
+      useEffect(() => {
+        setCountvitalsign(datavitalsign.length);
+      }, [datavitalsign]);
+      /////////////////////////////////////////////////////////////////////
+      ////////////////////////// ตัวเลื่อน ตารางซ้าย - ขวา ///////////////////////////////////////////
+      const handleNextPageinvestigation = () => {
+        setCurrentPageinvestigation(currentPageinvestigation + 1);
+      };
+    
+      const handlePreviousPageinvestigation = () => {
+        setCurrentPageinvestigation(currentPageinvestigation - 1);
+      };
+    
+      const startIndexinvestigation = (currentPageinvestigation - 1) * ITEMS_PER_PAGE;
+    
+      const endIndexinvestigation = startIndexinvestigation + ITEMS_PER_PAGE;
+      //console.log(endIndex +"="+startIndex+"+"+ITEMS_PER_PAGE)
+      const datainvestigation = currentDatainvestigation.slice(startIndexinvestigation, endIndexinvestigation);
+      useEffect(() => {
+        setCountinvestigation(datainvestigation.length);
+      }, [datainvestigation]);
+      /////////////////////////////////////////////////////////////////////
+      ////////////////////////// ตัวเลื่อน ตารางซ้าย - ขวา ///////////////////////////////////////////
+      const handleNextPageorderItemz = () => {
+        setCurrentPageorderItemz(currentPageorderItemz + 1);
+      };
+    
+      const handlePreviousPageorderItemz = () => {
+        setCurrentPageorderItemz(currentPageorderItemz - 1);
+      };
+    
+      const startIndexorderItemz = (currentPageorderItemz - 1) * ITEMS_PER_PAGE;
+    
+      const endIndexorderItemz = startIndexorderItemz + ITEMS_PER_PAGE;
+      //console.log(endIndex +"="+startIndex+"+"+ITEMS_PER_PAGE)
+      const dataorderItemz = currentDataorderItemz.slice(startIndexorderItemz, endIndexorderItemz);
+      useEffect(() => {
+        setCountorderItemz(dataorderItemz.length);
+      }, [dataorderItemz]);
+      console.log(dataorderItemz)
+      /////////////////////////////////////////////////////////////////////
   const Cancel = () => {
     setShowFormError();
     // console.log("-Cancel-")
@@ -2128,6 +2204,42 @@ if(rows){
                         id="disabledInput"
                         label="Gender"
                         defaultValue={patientInfoByPID.Gender}
+                        className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"
+                        InputProps={{ readOnly: true }}
+                      />
+                    </Box>
+                  </div>
+                  <div className="rounded-md">
+                  </div>
+                  <div className="rounded-md">
+                    <Box
+                      sx={{
+                        backgroundColor: "#e5e7eb",
+                        padding: 0,
+                        borderRadius: 0,
+                      }}
+                    >
+                      <CustomTextField
+                        id="disabledInput"
+                        label="การผ่าตัด"
+                        defaultValue={PatientInfoData.PatientInfo.SurgeryTypeCode === "N" ? "ไม่มีผ่าตัด" : "มีผ่านตัด"}
+                        className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"
+                        InputProps={{ readOnly: true }}
+                      />
+                    </Box>
+                  </div>
+                  <div className="rounded-md">
+                    <Box
+                      sx={{
+                        backgroundColor: "#e5e7eb",
+                        padding: 0,
+                        borderRadius: 0,
+                      }}
+                    >
+                      <CustomTextField
+                        id="disabledInput"
+                        label="อุบัติเหตุ"
+                        defaultValue={accidentDetail ? "มีอุบัติเหตุ" : "ไม่มีอุบัติเหตุ"}
                         className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"
                         InputProps={{ readOnly: true }}
                       />
@@ -3175,13 +3287,12 @@ if(rows){
                     </tr>
                   </thead>
                   <tbody>
-                    {vitalsign ? (
-                      vitalsign.Result.VitalSignInfo.map(
+                  {datavitalsign  ? (
+                         datavitalsign.map(
                         (vts, index) =>
-                          vts.VitalSignEntryDateTime  && (
                             <tr key={index} className=" bg-neutral text-sm">
                               <td>
-                                {vts.VitalSignEntryDateTime ? index + 1 : ""}
+                              {startIndexvitalsign+ index + 1}
                               </td>
                               <td>
                                 <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
@@ -3249,14 +3360,12 @@ if(rows){
                                 </div>
                               </td>
                             </tr>
-                          )
-                      )
-                    ) : (
-                      <tr>
-                        <td></td>
-                      </tr>
-                    )}
-                  </tbody>
+                                       // )
+                                      )
+                                    ) : (
+                                     ""
+                                    )}
+                </tbody>
                 </table>
               </div>
               <div className="grid gap-2 sm:grid-cols-4 text-base-100 bg-primary w-full whitespace-normal text-center">
@@ -3265,6 +3374,42 @@ if(rows){
                 <div className="rounded-md "></div>
                 <div className="rounded-md ">&nbsp;</div>
               </div>
+              
+              {vitalsign ? (
+                <div className="grid gap-1 sm:grid-cols-2 w-full mt-4">
+                  <div className="flex justify-between text-right">
+                    <div className="text-right">
+                      <h1 className="text-lg">
+                        Showing {startIndexvitalsign + 1} to {endIndexvitalsign} of{" "}
+                        {vitalsign ? vitalsign.Result.VitalSignInfo.length : ""}{" "}
+                        entries.
+                      </h1>
+                    </div>
+                  </div>
+                  <div className="text-right text-base-100 ">
+                    {/* <div className="text-left text-base-100"> */}
+    
+                    {currentPagevitalsign > 1 && (
+                      <div
+                        onClick={handlePreviousPagevitalsign}
+                        className="btn btn-primary "
+                      >
+                        <BiFirstPage className="text-base-100 text-xl text-right" />
+                      </div>
+                    )}
+                    {endIndexvitalsign < currentDatavitalsign.length && (
+                      <div
+                        onClick={handleNextPagevitalsign}
+                        className="btn btn-primary ml-2"
+                      >
+                        <BiLastPage className="text-base-100 text-xl" />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                ""
+              )}
             </div>
             {/* //////////////////////////////////////////////////////////////////////////// */}
             <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
@@ -3574,13 +3719,13 @@ if(rows){
                     </tr>
                   </thead>
                   <tbody>
-                    {investigation ? (
-                      investigation.Result.InvestigationInfo.map(
+                  {datainvestigation ? (
+                      datainvestigation.map(
                         (inv, index) =>
-                          (inv.InvestigationCode) && (
+                          // (inv.InvestigationCode) && (
                             <tr key={index} className=" bg-neutral text-sm">
                               <td>
-                              {index + 1}
+                              {startIndexvitalsign+ index + 1}
                               </td>
                               <td>
                                 <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
@@ -3628,13 +3773,11 @@ if(rows){
                                 </div>
                               </td>
                             </tr>
-                          )
-                      )
-                    ) : (
-                      <tr>
-                        <td></td>
-                      </tr>
-                    )}
+                             // )
+                            )
+                          ) : (
+                           ""
+                          )}
                   </tbody>
                 </table>
               </div>
@@ -3644,6 +3787,41 @@ if(rows){
                 <div className="rounded-md "></div>
                 <div className="rounded-md ">&nbsp;</div>
               </div>
+              {investigation ? (
+            <div className="grid gap-1 sm:grid-cols-2 w-full mt-4">
+              <div className="flex justify-between text-right">
+                <div className="text-right">
+                  <h1 className="text-lg">
+                    Showing {startIndexinvestigation + 1} to {endIndexinvestigation} of{" "}
+                    {investigation ? investigation.Result.InvestigationInfo.length : ""}{" "}
+                    entries.
+                  </h1>
+                </div>
+              </div>
+              <div className="text-right text-base-100 ">
+                {/* <div className="text-left text-base-100"> */}
+
+                {currentPageinvestigation > 1 && (
+                  <div
+                    onClick={handlePreviousPageinvestigation}
+                    className="btn btn-primary "
+                  >
+                    <BiFirstPage className="text-base-100 text-xl text-right" />
+                  </div>
+                )}
+                {endIndexinvestigation < currentDatainvestigation.length && (
+                  <div
+                    onClick={handleNextPageinvestigation}
+                    className="btn btn-primary ml-2"
+                  >
+                    <BiLastPage className="text-base-100 text-xl" />
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : (
+            ""
+          )}
             </div>
             {/* //////////////////////////////////////////////////////////////////////////// */}
             <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
@@ -3664,12 +3842,12 @@ if(rows){
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {orderItemz ? (
-                      orderItemz.Result.OrderItemInfo.map((order, index) => (
-                        (order.ItemId) && (
+                  {dataorderItemz ? (
+                      dataorderItemz.map(
+                        (order, index) => 
                         <tr key={index} className=" bg-neutral text-sm">
                           <td className="px-6 py-4 whitespace-nowrap">
-                            {order.ItemId ? index + 1 : ""}
+                          {startIndexorderItemz+ index + 1}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
@@ -3724,21 +3902,56 @@ if(rows){
                             </div>
                           </td>
                         </tr>
-                      )) )
-                    ) : (
-                      <tr>
-                        <td></td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
+                                           
+                                    // )
+                                  )
+                                ) : (
+                                 ""
+                                )}
+                </tbody>
+              </table>
+            </div>
+            <div className="grid gap-2 sm:grid-cols-4 text-base-100 bg-primary w-full whitespace-normal text-center">
+              <div className="rounded-md"></div>
+              <div className="rounded-md"></div>
+              <div className="rounded-md "></div>
+              <div className="rounded-md ">&nbsp;</div>
+            </div>
+            {orderItemz ? (
+          <div className="grid gap-1 sm:grid-cols-2 w-full mt-4">
+            <div className="flex justify-between text-right">
+              <div className="text-right">
+                <h1 className="text-lg">
+                  Showing {startIndexorderItemz + 1} to {endIndexorderItemz} of{" "}
+                  {orderItemz ? orderItemz.Result.OrderItemInfo.length : ""}{" "}
+                  entries.
+                </h1>
               </div>
-              <div className="grid gap-2 sm:grid-cols-4 text-base-100 bg-primary w-full whitespace-normal text-center">
-                <div className="rounded-md"></div>
-                <div className="rounded-md"></div>
-                <div className="rounded-md "></div>
-                <div className="rounded-md ">&nbsp;</div>
-              </div>
+            </div>
+            <div className="text-right text-base-100 ">
+              {/* <div className="text-left text-base-100"> */}
+
+              {currentPageorderItemz > 1 && (
+                <div
+                  onClick={handlePreviousPageorderItemz}
+                  className="btn btn-primary "
+                >
+                  <BiFirstPage className="text-base-100 text-xl text-right" />
+                </div>
+              )}
+              {endIndexorderItemz < currentDataorderItemz.length && (
+                <div
+                  onClick={handleNextPageorderItemz}
+                  className="btn btn-primary ml-2"
+                >
+                  <BiLastPage className="text-base-100 text-xl" />
+                </div>
+              )}
+            </div>
+          </div>
+        ) : (
+          ""
+        )}
             </div>
 
             {/* //////////////////////////////////////////////////////////////////////////// */}

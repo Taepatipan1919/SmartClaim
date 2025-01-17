@@ -6,16 +6,17 @@ import Link from "next/link";
 import { FaSearch } from "react-icons/fa";
 import { LuRefreshCw } from "react-icons/lu";
 import { IoDocumentText } from "react-icons/io5";
-import TextField from "@mui/material/TextField";
 import { save } from "../../../store/counterSlice";
 import { save2 } from "../../../store/patientSlice";
 import { useSelector, useDispatch } from "react-redux";
 import { MdCancel } from "react-icons/md";
+import { Box, TextField } from "@mui/material";
 import { IoIosDocument } from "react-icons/io";
 import { AiOutlineUnorderedList } from "react-icons/ai";
 import { Button, Menu, MenuItem } from "@mui/material";
 import { useRouter } from "next/navigation";
 import CircularProgress from '@mui/material/CircularProgress';
+import { styled } from "@mui/material/styles";
 import Input from '@mui/material/Input';
 import {
   Table,
@@ -46,12 +47,21 @@ export default function checkData() {
   const [itemBillingDetails, setItemBillingDetails] = useState("");
   const [listBilling, setListBilling] = useState();
   const dispatch = useDispatch();
+  const [selectData, setSelectData] = useState("");
   const [postData, setPostData] = useState("");
-  const [currentData, setCurrentData] = useState("");
+  const [listClaimForm, setListClaimForm] = useState();
   const [selectedIdType, setSelectedIdType] = useState("");
   const [patientInfoDetail, setPatientInfoDetail] = useState();
   const [numberValue, setNumberValue] = useState("");
+  
+  const [showFormCheckEligibleError, setShowFormCheckEligibleError]=useState("");
+  const [massFurtherError, setMassFurtherError] = useState("");
+  const [formPRE, setFormPRE] = useState(false);
   const [fromValue, setFromValue] = useState(null);
+  const [selectPRETypeValue, setSelectPRETypeValue] = useState("");
+  const [preAuthTransactionList, setPreAuthTransactionList] = useState("");
+
+
   const [toValue, setToValue] = useState(null);
   const [massError, setMassError] = useState("");
   const [iCD10Value, setICD10Value] = useState();
@@ -84,11 +94,12 @@ export default function checkData() {
   const [patientUpdate, setPatientUpdate] = useState("");
   const [docType, setDocType] = useState("");
   const [randomNumber, setRandomNumber] = useState("");
+
+  const [serviceValue, setServiceValue] = useState("OPD");
+  const [serviceCode, setServiceCode] = useState("");
   const [total, setTotal] = useState(0);
   const [totalApprovedAmount, setTotalApprovedAmount  ] = useState("");
   const [totalExcessAmount, setTotalExcessAmount ] = useState("");
-  const [serviceValue, setServiceValue] = useState("OPD");
-  const [serviceCode, setServiceCode] = useState("");
   const [totalSum, setTotalSum] = useState("");
   const [fromTotalSum, setFromTotalSum] = useState(false);
   // const [selectedValue, setSelectedValue] = useState("");
@@ -255,8 +266,24 @@ export default function checkData() {
     });
   };
 
+  const SelectPRE = (event) => {
+    setSelectPRETypeValue("");
+    if(event.target.value){
+    const Datavalue = JSON.parse(event.target.value);
+    console.log(Datavalue)
+    setFormPRE(true);
+    setSelectPRETypeValue(Datavalue.ClaimNo);
+      setListClaimForm(Datavalue);
+    }else{
+      setFormPRE(false);
+    }
 
+  };
+  const NotSelectPRE = (event) => {
 
+    setSelectPRETypeValue("");
+    setFormPRE(false);
+};
 
   const DocumentList = (data) => {
     setShowDocError();
@@ -444,9 +471,10 @@ axios
 
     let sum = 0; 
     itemBillingDetails.forEach((bill) => { 
-      sum += parseInt(bill.BillingInitial, 10); 
+      sum += parseFloat(bill.BillingInitial); // ใช้ parseFloat แทน parseInt เพื่อรองรับค่าทศนิยม
     });
-    setTotal(sum);
+    const formattedSum = sum.toFixed(2); // กำหนดให้มีจุดทศนิยม 2 ตำแหน่ง
+    setTotal(formattedSum);
 
 
 
@@ -743,6 +771,15 @@ axios
       );
     }
   };
+  const confirmButton = (data) => {
+    console.log(data)
+
+    
+    const [RefId, TransactionNo,PreauthReferClaimNo,PreauthReferOcc] = data.split(" | ");
+      
+  
+  };
+
 
   const Refresh = (data) => {
     setStatusNew();
@@ -813,7 +850,8 @@ axios
   };
 
   const Detail = (data) => {
-        console.log(data)
+        //  console.log(data)
+        setSelectData(data)
     //console.log("-Detail-")
     setShowFormError();
 
@@ -828,35 +866,37 @@ axios
       VisitDatefrom: data.VisitDate,
       VisitDateto: "",
     };
-     //  console.log(PatientInfo)
+        //  console.log(PatientInfo)
 
     axios
       .post(
         process.env.NEXT_PUBLIC_URL_PD +
-          process.env.NEXT_PUBLIC_URL_getEpisodeByHN,
-        { PatientInfo }
+          process.env.NEXT_PUBLIC_URL_PatientSearch,
+          {
+            PatientInfo
+          }
       )
       .then((response) => {
-        const getEpisodeByHN = response.data.Result.PatientInfo;
-        //  console.log(response.data)
+         const PatientSearch = response.data.Result.PatientInfo[0];
+          // console.log(PatientSearch)
         dispatch(
           save2({
             value: "มีรายชื่อ",
             Data: {
-              IdType: data.IdType,
-              InsurerCode: InsuranceCode,
-              DateOfBirth: getEpisodeByHN.DateOfBirth,
-              Gender: getEpisodeByHN.Gender,
-              GivenNameEN: getEpisodeByHN.GivenNameEN,
-              GivenNameTH: getEpisodeByHN.GivenNameTH,
-              HN: getEpisodeByHN.HN,
-              MobilePhone: getEpisodeByHN.MobilePhone,
-              PID: getEpisodeByHN.PID,
-              PassportNumber: getEpisodeByHN.PassportNumber,
-              SurnameEN: getEpisodeByHN.SurnameEN,
-              SurnameTH: getEpisodeByHN.SurnameTH,
-              TitleEN: getEpisodeByHN.TitleEN,
-              TitleTH: getEpisodeByHN.TitleTH,
+              IdType: PatientInfo.IdType,
+              InsurerCode: PatientInfo.InsuranceCode,
+              DateOfBirth: PatientSearch.DateOfBirth,
+              Gender: PatientSearch.Gender,
+              GivenNameEN: PatientSearch.GivenNameEN,
+              GivenNameTH: PatientSearch.GivenNameTH,
+              HN: PatientSearch.HN,
+              MobilePhone: PatientSearch.MobilePhone,
+              PID: PatientSearch.PID,
+              PassportNumber: PatientSearch.PassportNumber,
+              SurnameEN: PatientSearch.SurnameEN,
+              SurnameTH: PatientSearch.SurnameTH,
+              TitleEN: PatientSearch.TitleEN,
+              TitleTHc: PatientSearch.TitleTH,
             },
           })
         );
@@ -870,7 +910,7 @@ axios
         );
       });
 
-        if(PatientInfo.ServiceSettingCode === "OPD"){
+
     dispatch(
       save({
         value: "มีข้อมูล",
@@ -892,8 +932,98 @@ axios
           Visitlocation: data.Visitlocation,
         },
       })
+      // save({
+      //   value: "มีข้อมูล",
+      //   Data: {
+      //     RefId: data.RefId,
+      //     TransactionNo: data.TransactionNo,
+      //     VN: data.VN,
+      //     InsurerCode: InsuranceCode,
+      //     ServiceSettingCode: data.ServiceSettingCode,
+      //     IllnessTypeCode: data.IllnessTypeCode,
+      //     SurgeryTypeCode: data.SurgeryTypeCode,
+      //     PolicyTypeCode: data.PolicyTypeCode,
+      //     AccidentDate: data.AccidentDate,
+      //     VisitDateTime: data.VisitDateTime,
+      //     IsIPDDischarge: data.IsIPDDischarge,
+      //     // PreauthReferClaimNo: data.PreauthReferClaimNo,
+      //     // PreauthReferOcc: data.PreauthReferOcc,   
+      //     PreauthReferClaimNo: "",
+      //     PreauthReferOcc: "",   
+      //     Runningdocument: data.randomNumberold,
+      //     Visitlocation: data.Visitlocation,
+      //   },
+      // })
     );
-        }else{
+       
+
+
+      router.push("/aia/eligible");
+  };
+
+  const Detail2 = (data) => {
+          //  console.log(data)
+           setSelectData(data)
+    //console.log("-Detail-")
+    setShowFormError();
+    setPreAuthTransactionList();
+    setFormPRE(false)
+    const PatientInfo = {
+      Insurerid: InsuranceCode,
+      PID: data.PID,
+      PassportNumber: data.PassportNumber,
+      IdType: data.IdType,
+      ServiceSettingCode: data.ServiceSettingCode,
+      VN: data.VN,
+      HN: data.HN,
+      VisitDatefrom: data.VisitDate,
+      VisitDateto: "",
+    };
+        //  console.log(PatientInfo)
+
+    axios
+      .post(
+        process.env.NEXT_PUBLIC_URL_PD +
+          process.env.NEXT_PUBLIC_URL_PatientSearch,
+          {
+            PatientInfo
+          }
+      )
+      .then((response) => {
+         const PatientSearch = response.data.Result.PatientInfo[0];
+          // console.log(PatientSearch)
+        dispatch(
+          save2({
+            value: "มีรายชื่อ",
+            Data: {
+              IdType: PatientInfo.IdType,
+              InsurerCode: PatientInfo.InsuranceCode,
+              DateOfBirth: PatientSearch.DateOfBirth,
+              Gender: PatientSearch.Gender,
+              GivenNameEN: PatientSearch.GivenNameEN,
+              GivenNameTH: PatientSearch.GivenNameTH,
+              HN: PatientSearch.HN,
+              MobilePhone: PatientSearch.MobilePhone,
+              PID: PatientSearch.PID,
+              PassportNumber: PatientSearch.PassportNumber,
+              SurnameEN: PatientSearch.SurnameEN,
+              SurnameTH: PatientSearch.SurnameTH,
+              TitleEN: PatientSearch.TitleEN,
+              TitleTHc: PatientSearch.TitleTH,
+            },
+          })
+        );
+      })
+      .catch((error) => {
+        console.log(error);
+        setShowFormError("Error");
+        //setMassError(error.response.data.HTTPStatus.message);
+        setMassError(
+          error.response?.data?.HTTPStatus?.message || "Unknown error"
+        );
+      });
+
+
           dispatch(
             save({
               value: "มีข้อมูล",
@@ -908,6 +1038,7 @@ axios
                 PolicyTypeCode: data.PolicyTypeCode,
                 AccidentDate: data.AccidentDate,
                 VisitDateTime: data.VisitDateTime,
+                IsIPDDischarge: data.IsIPDDischarge,
                 // PreauthReferClaimNo: data.PreauthReferClaimNo,
                 // PreauthReferOcc: data.PreauthReferOcc,   
                 PreauthReferClaimNo: "",
@@ -917,12 +1048,61 @@ axios
               },
             })
           );
+       
+
+          if(data.ClaimStatusDesc === "waitting for discharge"){ 
+            setSelectPRETypeValue("");
+          const  PatientInfo = {
+              InsurerCode: InsuranceCode, 
+              // RefId: data.RefId,
+              // TransactionNo: data.TransactionNo,
+              RefId: "ZnjsqdlIujcXdPQelfw0co6JKVudw7myrq2lp60UrhMjaJ2vad4+6pDrbeaHmBfn",
+              TransactionNo: "447567cd-8d8c-421c-89e6-d09d9d23c0c3",
+              HN: "",
+              VN:""
+            }
+    axios
+    .post(
+      // '/api/v1/aia-checkeligible/preauthSubmission',{PatientInfo} 
+      process.env.NEXT_PUBLIC_URL_PD +
+        process.env.NEXT_PUBLIC_URL_getretrievepreauthlist,
+        {
+          PatientInfo
         }
+    )
+    .then((response) => {
+      console.log(response.data)
+      if(response.data.HTTPStatus.statusCode === 200){
+        setPreAuthTransactionList(response.data);
+         document.getElementById("waitting").showModal();
+      }else{
+        setShowFormError("Error")
+        setMassError(response.data.HTTPStatus.message);
+      }
 
-
-      router.push("/aia/eligible");
+    })
+    .catch((error) => {
+      console.log(error);
+      try {
+        const ErrorMass = error.config.url;
+        const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+        setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
+        setShowFormError("Error");
+      } catch (error) {
+        setMassError(error.response.data.HTTPStatus.message);
+        setShowFormError("Error");
+      }
+    })
+          
+          }else{
+            console.log("Dis")  
+     // router.push("/aia/eligible");
+          }
+ 
   };
-  
+
+
+
   const DocumentBase64 = (data) => {
     setMsg();
     setProgress({ started: false, pc: 0 });
@@ -1303,6 +1483,7 @@ axios
         ServiceSettingCode: serviceValue,
       };
     } else if (statusValue) {
+
       if(fromValue && toValue){
         PatientInfo = {
           InsurerCode: InsuranceCode,
@@ -1319,7 +1500,7 @@ axios
           ServiceSettingCode: serviceValue,
         };
       }else{
-
+     
         const today = dayjs().format('YYYY-MM-DD');
            PatientInfo = {
         InsurerCode: InsuranceCode,
@@ -1348,14 +1529,16 @@ axios
    PID: "",
    PassportNumber: "",
    HN: "",
-   VisitDatefrom: today,
-   VisitDateto: today,
+  //  VisitDatefrom: today,
+  //  VisitDateto: today,
+  VisitDatefrom: "",
+  VisitDateto: "",
    StatusClaimCode: statusValue,
    ServiceSettingCode: serviceValue,
  }; 
     }
 
-   // console.log(PatientInfo);
+    // console.log(PatientInfo);
     setPatientUpdate({ PatientInfo });
     if (PatientInfo) {
       setPatientInfoDetail(PatientInfo);
@@ -1391,6 +1574,7 @@ axios
 
   ////////////////////////// ตัวเลื่อน ตารางซ้าย - ขวา ///////////////////////////////////////////
   const ITEMS_PER_PAGE = 10;
+  const [currentData, setCurrentData] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [count, setCount] = useState(0);
   const handleNextPage = () => {
@@ -1405,8 +1589,10 @@ axios
 
   const endIndex = startIndex + ITEMS_PER_PAGE;
   //console.log(endIndex +"="+startIndex+"+"+ITEMS_PER_PAGE)
-  const data = currentData.slice(startIndex, endIndex);
-
+  const datax = currentData.slice(startIndex, endIndex);
+  useEffect(() => {
+    setCount(datax.length);
+  }, [datax]);
   //////////////////// Chack Status All///////////////////////////
 
   const RefreshAll = () => {
@@ -1470,10 +1656,13 @@ axios
   };
 
   ///////////////////////////////////////////////
+  const CustomTextField = styled(TextField)({
+    "& .MuiInputBase-input.Mui-disabled": {
+      color: "black", // เปลี่ยนสีข้อความเป็นสีดำ
+      cursor: "default", // เปลี่ยนเคอร์เซอร์เป็นแบบปกติ
+    },
+  });
 
-  useEffect(() => {
-    setCount(data.length);
-  }, [data]);
   /////////////////////////////////////////////////////////////////////
 
   return (
@@ -1662,9 +1851,7 @@ axios
               </svg>
               <span>{massError}</span>
             </div>
-          ) : (
-            ""
-          )}
+          ) : ("")}
           {/* {showFormCancel === "Cancel" ? (
             <div
               role="alert"
@@ -1715,15 +1902,15 @@ axios
             <tbody>
               {/* {console.log(postData)} */}
               {postData ? (
-                postData.HTTPStatus.statusCode === 200 ? (
-                  data.map(
+                // postData.HTTPStatus.statusCode === 200 ? (
+                  datax.map(
                     (bill, index) =>
                       (bill.VisitDate || bill.HN) !== "" && (
                         <tr className="hover text-center" key={index}>
                           <th>{startIndex + index + 1}</th>
                           <td className="whitespace-nowrap">{bill.VisitDate}</td>
                           <td className="whitespace-nowrap">
-                            {bill.TitleTH} {bill.GivenNameTH} {bill.SurnameTH}
+                            {bill.TitleTH} {bill.GivenNameTH}  {bill.SurnameTH}
                           </td>
                           <td className="whitespace-nowrap">{bill.HN} <br/> {bill.VN}</td>
                           <td className="">{bill.VisitLocation}</td>
@@ -1895,14 +2082,10 @@ axios
                                     className="tooltip ml-4"
                                     data-tip="ข้อมูลส่งเคลม"
                                   >
-                                    <h1
-                                      className="text-primary text-2xl"
-                                      onClick={() =>
-                                        Detail(bill)
-                                      }
-                                    >
-                                      <IoDocumentText />
-                                    </h1>
+                                   {bill.ServiceSettingCode === "OPD" ? (<h1 className="text-primary text-2xl" onClick={() => Detail(bill)}><IoDocumentText /></h1>) : (
+                                                                          <h1 className="text-primary text-2xl" onClick={() => Detail2(bill)}><IoDocumentText /></h1>
+                                    )} 
+                                  {/* <h1 className="text-primary text-2xl" onClick={() => Detail(bill)}><IoDocumentText /></h1> */}
                                   </div>
                                   <br/>
                                 </>
@@ -1973,9 +2156,9 @@ axios
                         </tr>
                       )
                   )
-                ) : (
-                  ""
-                )
+                // ) : (
+                //   ""
+                // )
               ) : (
                 <tr>
                   <th></th>
@@ -2499,6 +2682,253 @@ onChange={(e) => { const selectedType = JSON.parse(e.target.value);
             </div>
           </dialog>
 
+
+          
+
+
+<dialog id="waitting" className="modal text-xl ">
+    <div className="modal-box w-full h-full max-w-7xl items-center">
+          <form method="dialog">
+            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
+              ✕
+            </button>
+                <h1 className="text-accent text-3xl text-center">เคยจองสิทธิ์มาก่อนไหม</h1>
+
+   
+      <div className="flex items-center justify-center">
+          <div className="rounded-md w-full text-center">
+           <div className="p-4 border-2  rounded-md bg-white w-2/6 shadow-md ml-2 ">
+              <div role="tablist" className="tabs-bordered">
+                  <input
+                  type="radio"
+                  name="my_tabs_1"
+                  role="tab"
+                  className="tab text-xl"
+                  aria-label="ไม่เคยจองสิทธิ์"
+                  onChange={NotSelectPRE}
+                  defaultChecked
+                  />
+
+                <input
+                  type="radio"
+                  name="my_tabs_1"
+                  role="tab"
+                  className="tab text-xl"
+                  aria-label="เคยจองสิทธิ์"
+                />
+              <div role="tabpanel" className="tab-content mt-4">
+                  <label className="form-control w-full">
+                    <select
+                      className="select select-bordered"
+                      defaultvalue={selectPRETypeValue}
+                      onChange={SelectPRE}
+                    >
+                       <option value="">-กรุณาเลือก-</option>
+                    {preAuthTransactionList
+                        ? preAuthTransactionList.Result.InsuranceData.PreAuthTransactionList.map(
+                            (ftc, index) => (
+                              <option
+                                key={index}
+                                value={JSON.stringify(ftc)}
+                              >
+                                เลขกรมธรรม์: {ftc.ClaimNo}, วันที่เข้ารักษา:{" "}
+                                {ftc.VisitDateTime.split("T")[0]} 
+                              </option>
+                            )
+                          )
+                        : ""} 
+                      <></>
+                    </select>
+                  </label>
+                </div> 
+            </div> 
+            <div className="flex justify-end p-4">
+                <div
+                  className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 "
+                  onClick={() =>
+                    confirmButton(
+                      `${selectData.RefId} | ${selectData.TransactionNo} | ${listClaimForm.ClaimNo} | ${listClaimForm.OccerrenceNo}`
+                    )
+                  }
+                  >
+                  ยืนยัน
+                </div>
+              </div>
+              {((showFormCheckEligibleError)) === "Error" ? (
+              <div
+                role="alert"
+                className="alert alert-error mt-2 text-base-100"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6 shrink-0 stroke-current"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                <span>{(massError)||(massFurtherError)}</span>
+            </div>
+             ) : ("")}
+          </div>
+        </div>
+      </div>
+                  {formPRE && (
+                    <>
+                    <div className="p-4 border-2  rounded-md bg-white w-full mt-4 shadow-md">  
+                        <div className="grid gap-2 sm:grid-cols-5 w-full mt-2">
+                          <div className="rounded-md">
+                          <Box
+                      sx={{
+                        backgroundColor: "#e5e7eb",
+                        padding: 0,
+                        borderRadius: 0,
+                      }}
+                    >
+                      <CustomTextField
+                        id="disabledInput"
+                        label="รหัสอนุมัติการเรียกร้อง (Claim ID)"
+                        className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"
+                        defaultValue={listClaimForm.ClaimNo}
+                        InputProps={{ readOnly: true }}
+                      />
+                    </Box>
+                          </div>
+                          <div className="rounded-md">
+                          <Box
+                      sx={{
+                        backgroundColor: "#e5e7eb",
+                        padding: 0,
+                        borderRadius: 0,
+                      }}
+                    >
+                      <CustomTextField
+                        id="disabledInput"
+                        label="จำนวนครั้งของการพิจารณาครั้งก่อน"
+                        className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"
+                        defaultValue={listClaimForm.OccerrenceNo}
+                        InputProps={{ readOnly: true }}
+                      />
+                    </Box>
+                          </div>
+                          <div className="rounded-md">
+                          <Box
+                      sx={{
+                        backgroundColor: "#e5e7eb",
+                        padding: 0,
+                        borderRadius: 0,
+                      }}
+                    >
+                      <CustomTextField
+                        id="disabledInput"
+                        label="วันที่มารับการรักษาที่โรงพยาบาลของการพิจารณาครั้งก่อน"
+                        className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"
+                        defaultValue={listClaimForm.VisitDateTime}
+                        InputProps={{ readOnly: true }}
+                      />
+                    </Box>
+                          </div>
+                          <div className="rounded-md">
+                          <Box
+                      sx={{
+                        backgroundColor: "#e5e7eb",
+                        padding: 0,
+                        borderRadius: 0,
+                      }}
+                    >
+                      <CustomTextField
+                        id="disabledInput"
+                        label="สถานะของการพิจารณาครั้งก่อน"
+                        className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"
+                        defaultValue={listClaimForm.ClaimStatusDesc}
+                        InputProps={{ readOnly: true }}
+                      />
+                    </Box>
+                          </div>
+                          <div className="rounded-md">
+                          <Box
+                      sx={{
+                        backgroundColor: "#e5e7eb",
+                        padding: 0,
+                        borderRadius: 0,
+                      }}
+                    >
+                      <CustomTextField
+                        id="disabledInput"
+                        label="วันที่คาดว่าจะเข้ารับการผ่าตัดที่โรงพยาบาลของการพิจารณาครั้งก่อน"
+                        className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"
+                        defaultValue={listClaimForm.ExpectedAdmitDate}
+                        InputProps={{ readOnly: true }}
+                      />
+                    </Box>
+                          </div>
+                        </div>
+                        <div className="overflow-x-auto mt-2">
+                          <h1>Diagnosis</h1>
+                        <table className="table">
+                           <thead>
+                          <tr className="bg-info text-base-100">
+                                  <th>Icd10</th>
+                                  <th>DxName</th>
+                              </tr>
+                                    </thead>
+                                 <tbody>
+                                      {listClaimForm    ? listClaimForm.Diagnosis.map(
+                                                            (Diagnosis, index) => (
+                            <tr className="bg-base-200" key={index}>
+                                <td>{Diagnosis.Icd10}</td>
+                                <td>{Diagnosis.DxName}</td>
+                           </tr>
+                                                     ) 
+                                                          ): ""}
+
+                          </tbody>
+                                   </table>
+                        </div>
+                        <div className="overflow-x-auto mt-2">
+                        <h1>Procedure</h1>
+                                         <table className="table">
+                                     <thead>
+                                <tr className="bg-info text-base-100">
+                                 <th>Icd9</th>
+                            <th>ProcedureName</th>
+                                  <th>ProcedureDate</th>
+                        </tr>
+                                  </thead>
+                                 <tbody>
+                             {listClaimForm    ? listClaimForm.Procedure.map(
+                                                        (Procedure, index) => (
+                              <tr className="bg-base-200" key={index}>
+                                        <td>{Procedure.Icd9}</td>
+                                <td>{Procedure.ProcedureName}</td>
+                           <td>{Procedure.ProcedureDate}</td>
+                                         </tr>
+                                                   ) 
+                                                     ): ""}
+
+                                              </tbody>
+                             </table>
+                            </div>
+                         </div>
+     
+
+                    </>
+                  )}               
+           
+    
+              
+          </form>
+        </div>
+      </dialog>
+
+
+
+      
           {showModal ? (
             <>
               <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">

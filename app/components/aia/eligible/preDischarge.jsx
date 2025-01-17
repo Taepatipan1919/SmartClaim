@@ -42,7 +42,7 @@ import {
 import { styled } from "@mui/material/styles";
 
 export default function Page({ data }) {
- // console.log(data)
+//  console.log(data)
   const error = {
     response: {
       data: {
@@ -59,7 +59,7 @@ export default function Page({ data }) {
   const [massError, setMassError] = useState("");
   const [showFormError, setShowFormError] = useState("");
   const [patientInfoByPID, setPatientInfoByPID] = useState();
-  const [visit, setVisit] = useState();
+  // const [visit, setVisit] = useState();
   const [combinedString, setCombinedString] = useState();
   const [accidentDetail, setAccidentDetail] = useState();
   const [accidentPlaceValue, setAccidentPlaceValue] = useState("");
@@ -68,18 +68,24 @@ export default function Page({ data }) {
   const [injurySide, setInjurySide] = useState("");
   const [DataWoundType, setDataWoundType] = useState("");
   const [woundType, setWoundType] = useState("");
-  const [vitalsign, setVitalsign] = useState();
   const [accidentDate, setAccidentDate] = useState(null);
-  const [doctor, setDoctor] = useState();
-  const [diagnosis, setDiagnosis] = useState();
   const [injuryWoundType, setInjuryWoundType] = useState();
   const [injurySideType, setInjurySideType] = useState();
-  const [investigation, setInvestigation] = useState();
   const [billing, setBilling] = useState();
   const [numberBilling, setNumberBilling] = useState(false);
-  const [orderItemz, setOrderItemz] = useState();
   const [listClaimForm, setListClaimForm] = useState();
-  const [totalEstimatedCost, setTotalEstimatedCost] = useState();
+
+  const [summitEditBill, setSummitEditBill] = useState("false");
+  const [itemBillingDetails, setItemBillingDetails] = useState("");
+  const [listBilling, setListBilling] = useState();
+  const [totalEstimatedCost, setTotalEstimatedCost] = useState("");
+  const [total, setTotal] = useState(0);
+  const [totalApprovedAmount, setTotalApprovedAmount  ] = useState("");
+  const [totalExcessAmount, setTotalExcessAmount ] = useState("");
+  const [totalSum, setTotalSum] = useState("");
+  // const [fromTotalSum, setFromTotalSum] = useState(false);
+
+
   const [showModal, setShowModal] = useState(false);
   const [showArrowVN, setShowArrowVN] = useState();
   
@@ -112,10 +118,10 @@ export default function Page({ data }) {
   const [expectedAdmitDate, setExpectedAdmitDate] = useState(null);
   const [admitDateTime, setAdmitDateTime] = useState(null);
   const [dscDateTime, setDscDateTime] = useState(null);
-  const [an, setAn] = useState("");
   const [expectedLos, setExpectedLos] = useState("");
   const [otherInsurer, setOtherInsurer] = useState("false");
   const [rows, setRows] = useState("");
+  const [rowsDia, setRowsDia] = useState("");
   const [rows2, setRows2] = useState("");
   const [procedure, setProcedure] = useState("");
   const [causeOfInjuryDetails, setCauseOfInjuryDetails] = useState("");
@@ -123,7 +129,11 @@ export default function Page({ data }) {
 
   const [randomNumber, setRandomNumber] = useState('');
 
-
+  const [newRowDia, setNewRowDia] = useState({
+    Icd10: "",
+    DxName: "",
+    DxType: "",
+  });
   const [newRow, setNewRow] = useState({
     Icd9: "",
     ProcedureName: "",
@@ -144,11 +154,10 @@ export default function Page({ data }) {
   });
   
   const [summitEditPreAuthNote, setSummitEditPreAuthNote] = useState("false");
-
+  const [summitEditDia, setSummitEditDia] = useState("false");
   const [summitEditProcedure, setSummitEditProcedure] = useState("false");
   const [summitEditAcc, setSummitEditAcc] = useState("false");
   const [comaScore, setComaScore] = useState("");
-  const [expectedDayOfRecovery, setExpectedDayOfRecovery] = useState("");
   const [signSymptomsDate, setSignSymptomsDate] = useState(null);
   const [privateCase, setPrivateCase] = useState(false);
   const [pregnant, setPregnant] = useState(false);
@@ -264,11 +273,10 @@ export default function Page({ data }) {
       });
 
 
-            axios
+      axios
       .get(
-        `/api/v1/utils/IndicationForAdmission/`+
-        // process.env.NEXT_PUBLIC_URL_SV +
-        //   process.env.NEXT_PUBLIC_URL_IndicationForAdmission +
+        process.env.NEXT_PUBLIC_URL_SV +
+          process.env.NEXT_PUBLIC_URL_getIndicationsForAdmission +
            InsuranceCode
       )
       .then((response) => {
@@ -282,9 +290,8 @@ export default function Page({ data }) {
 
       axios
       .get(
-        `/api/v1/utils/AnesthesiaList/`+
-        // process.env.NEXT_PUBLIC_URL_SV +
-        //   process.env.NEXT_PUBLIC_URL_IndicationForAdmission +
+        process.env.NEXT_PUBLIC_URL_SV +
+          process.env.NEXT_PUBLIC_URL_getAnesthesiaList +
            InsuranceCode
       )
       .then((response) => {
@@ -297,9 +304,8 @@ export default function Page({ data }) {
 
       axios
       .get(
-        `/api/v1/utils/IsPackage/`+
-        // process.env.NEXT_PUBLIC_URL_SV +
-        //   process.env.NEXT_PUBLIC_URL_IndicationForAdmission +
+        process.env.NEXT_PUBLIC_URL_SV +
+          process.env.NEXT_PUBLIC_URL_getOpeartionisPackage +
            InsuranceCode
       )
       .then((response) => {
@@ -349,107 +355,107 @@ export default function Page({ data }) {
       });
   }, [data]);
 
-  useEffect(() => {
+  // useEffect(() => {
 
-    axios
-      .post(
-        process.env.NEXT_PUBLIC_URL_SV +
-          process.env.NEXT_PUBLIC_URL_getOPDDischargeVisit,
-      //  Data 
-      PatientInfoData 
-      )
-      .then((response) => {
-    //     console.log(response.data)
-        setVisit(response.data);
-        //const dateValue = dayjs(response.data.Result.VisitInfo.SignSymptomsDate);
-        //console.log(response.data.Result.VisitInfo.SignSymptomsDate)
-        // setSignSymptomsDate(dateValue);
-        setComaScore(response.data.Result.VisitInfo.ComaScore);
+  //   axios
+  //     .post(
+  //       process.env.NEXT_PUBLIC_URL_SV +
+  //         process.env.NEXT_PUBLIC_URL_getIPDDischargeVisit,
+  //     //  Data 
+  //     PatientInfoData 
+  //     )
+  //     .then((response) => {
+  //   //     console.log(response.data)
+  //       setVisit(response.data);
+  //       //const dateValue = dayjs(response.data.Result.VisitInfo.SignSymptomsDate);
+  //       //console.log(response.data.Result.VisitInfo.SignSymptomsDate)
+  //       // setSignSymptomsDate(dateValue);
+  //       setComaScore(response.data.Result.VisitInfo.ComaScore);
 
-      })
-      .catch((error) => {
-        console.log(error);
-        // try {
-          const ErrorMass = error.config.url;
-          const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
-          setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
-          setShowFormError("Error");
-        // } catch (error) {
-        //   setMassError(error.response.data.HTTPStatus.message);
-        //   setShowFormError("Error");
-        // }
-      });
+  //     })
+  //     .catch((error) => {
+  //       console.log(error);
+  //       // try {
+  //         const ErrorMass = error.config.url;
+  //         const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+  //         setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
+  //         setShowFormError("Error");
+  //       // } catch (error) {
+  //       //   setMassError(error.response.data.HTTPStatus.message);
+  //       //   setShowFormError("Error");
+  //       // }
+  //     });
 
 
       
-      axios
-      .post(
-        process.env.NEXT_PUBLIC_URL_SV +
-          process.env.NEXT_PUBLIC_URL_getOPDDischargeVisit,
-          PatientInfoData  
-      )
-      .then((response) => {
-        // console.log(response.data)
-         setCombinedString(
-          response
-            ? `${response.data.Result.VisitInfo.Weight} / ${response.data.Result.VisitInfo.Height}`
-            : ""
-        );
-      })
-      .catch((error) => {
-    //    console.log(error);
-        try {
-          const ErrorMass = error.config.url;
-          const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
-          setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
-          setShowFormError("Error");
-        } catch (error) {
-          setMassError(error.response.data.HTTPStatus.message);
-          setShowFormError("Error");
-        }
-      });
-  }, [data]);
+  //     axios
+  //     .post(
+  //       process.env.NEXT_PUBLIC_URL_SV +
+  //         process.env.NEXT_PUBLIC_URL_getIPDVisit,
+  //         PatientInfoData  
+  //     )
+  //     .then((response) => {
+  //       // console.log(response.data)
+  //        setCombinedString(
+  //         response
+  //           ? `${response.data.Result.VisitInfo.Weight} / ${response.data.Result.VisitInfo.Height}`
+  //           : ""
+  //       );
+  //     })
+  //     .catch((error) => {
+  //   //    console.log(error);
+  //       try {
+  //         const ErrorMass = error.config.url;
+  //         const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+  //         setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
+  //         setShowFormError("Error");
+  //       } catch (error) {
+  //         setMassError(error.response.data.HTTPStatus.message);
+  //         setShowFormError("Error");
+  //       }
+  //     });
+  // }, [data]);
 
-  useEffect(() => {
+  // useEffect(() => {
 
-    const dateValue = dayjs(PatientInfoData.PatientInfo.AccidentDate);
-    setAccidentDate(dateValue);
-        //console.log(Data)
-    axios
-      .post(
-        process.env.NEXT_PUBLIC_URL_PD +
-          process.env.NEXT_PUBLIC_URL_getOPDDischargeAccident,
-       // Data
-       PatientInfoData
-      )
-      .then((response) => {
-      //  console.log(response.data)
-         setAccidentDetail(response.data);
-          setCauseOfInjuryDetails(response.data.Result.AccidentDetailInfo.CauseOfInjuryDetail);
-          setInjuryDetails(response.data.Result.AccidentDetailInfo.InjuryDetail);
-          setAccidentPlaceValue(response.data.Result.AccidentDetailInfo.AccidentPlace)
+  //   const dateValue = dayjs(PatientInfoData.PatientInfo.AccidentDate);
+  //   setAccidentDate(dateValue);
+  //       //console.log(Data)
+  //   axios
+  //     .post(
+  //       process.env.NEXT_PUBLIC_URL_PD +
+  //         process.env.NEXT_PUBLIC_URL_getIPDDischargeAccident,
+  //      // Data
+  //      PatientInfoData
+  //     )
+  //     .then((response) => {
+  //     //  console.log(response.data)
+  //        setAccidentDetail(response.data);
+  //         setCauseOfInjuryDetails(response.data.Result.AccidentDetailInfo.CauseOfInjuryDetail);
+  //         setInjuryDetails(response.data.Result.AccidentDetailInfo.InjuryDetail);
+  //         setAccidentPlaceValue(response.data.Result.AccidentDetailInfo.AccidentPlace)
 
-        // if (response.data.Result.AccidentDetailInfo.CauseOfInjuryDetail.CauseOfInjury){
-        //   setCauseOfInjuryDetails(response.data.Result.AccidentDetailInfo.CauseOfInjuryDetail[0]);
-        // }
-        // if (response.data.Result.AccidentDetailInfo.InjuryDetail.InjuryArea){
-        //   setInjuryDetails(response.data.Result.AccidentDetailInfo.InjuryDetail[0]);
-        // }
-      })
-      .catch((error) => {
-        console.log(error);
-        // try {
-        //   const ErrorMass = error.config.url;
-        //   const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
-        //   setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
-        //   setShowFormError("Error");
-        // } catch (error) {
-        //   setMassError("Error Accident");
-        //   setShowFormError("Error");
-        // }
+  //       // if (response.data.Result.AccidentDetailInfo.CauseOfInjuryDetail.CauseOfInjury){
+  //       //   setCauseOfInjuryDetails(response.data.Result.AccidentDetailInfo.CauseOfInjuryDetail[0]);
+  //       // }
+  //       // if (response.data.Result.AccidentDetailInfo.InjuryDetail.InjuryArea){
+  //       //   setInjuryDetails(response.data.Result.AccidentDetailInfo.InjuryDetail[0]);
+  //       // }
+  //     })
+  //     .catch((error) => {
+  //       console.log(error);
+  //       // try {
+  //       //   const ErrorMass = error.config.url;
+  //       //   const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+  //       //   setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
+  //       //   setShowFormError("Error");
+  //       // } catch (error) {
+  //       //   setMassError("Error Accident");
+  //       //   setShowFormError("Error");
+  //       // }
       
-      });
-  }, [data]);
+  //     });
+  // }, [data]);
 
   useEffect(() => {
     axios
@@ -528,113 +534,35 @@ export default function Page({ data }) {
       });
   }, [data]);
  
-  useEffect(() => {
-    
-    axios
-      .post(
-        process.env.NEXT_PUBLIC_URL_PD +
-          process.env.NEXT_PUBLIC_URL_getOPDDischargeVitalSign,
-        PatientInfoData
-      )
-      .then((response) => {
-     //   console.log(response.data)
-        setVitalsign(response.data);
-      })
-      .catch((error) => {
-    //    console.log(error);
-        try {
-          const ErrorMass = error.config.url;
-          const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
-          setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
-          setShowFormError("Error");
-        } catch (error) {
-          setMassError(error.response.data.HTTPStatus.message);
-          setShowFormError("Error");
-        }
-      });
-  }, [data]);
 
-  useEffect(() => {
-
-    axios
-      .post(
-        process.env.NEXT_PUBLIC_URL_PD +
-          process.env.NEXT_PUBLIC_URL_getOPDDischargeDoctor,
-      //  Data
-      PatientInfoData
-      )
-      .then((response) => {
-     //   console.log(response.data)
-        setDoctor(response.data);
-      })
-      .catch((error) => {
-    //    console.log(error);
-        try {
-          const ErrorMass = error.config.url;
-          const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
-          setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
-          setShowFormError("Error");
-        } catch (error) {
-          setMassError(error.response.data.HTTPStatus.message);
-          setShowFormError("Error");
-        }
-      });
-  }, [data]);
-
-  useEffect(() => {
-
-    axios
-      .post(
-        process.env.NEXT_PUBLIC_URL_PD +
-          process.env.NEXT_PUBLIC_URL_getOPDDischargeDiagnosis,
-       // Data
-        PatientInfoData
-      )
-      .then((response) => {
-    //    console.log(response.data)
-        setDiagnosis(response.data);
-      })
-      .catch((error) => {
-    //    console.log(error);
-        try {
-          const ErrorMass = error.config.url;
-          const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
-          setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
-          setShowFormError("Error");
-        } catch (error) {
-          setMassError(error.response.data.HTTPStatus.message);
-          setShowFormError("Error");
-        }
-      });
-  }, [data]);
-  useEffect(() => {
-    axios
-      .post(
-        process.env.NEXT_PUBLIC_URL_SV +
-          process.env.NEXT_PUBLIC_URL_getOPDDischargeProcedure,
-        PatientInfoData
-      )
-      .then((response) => {
-        //    console.log(response.data)
-        setProcedure(response.data);
-        if (response.data.Result.ProcedureInfo[0].Icd9) {
-          setRows(response.data.Result.ProcedureInfo);
-        }
-        //console.log(rows);
-      })
-      .catch((error) => {
-      //  console.log(error);
-        try {
-          const ErrorMass = error.config.url;
-          const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
-          setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
-          setShowFormError("Error");
-        } catch (error) {
-          setMassError(error.response.data.HTTPStatus.message);
-          setShowFormError("Error");
-        }
-      });
-  }, [data]);
+  // useEffect(() => {
+  //   axios
+  //     .post(
+  //       process.env.NEXT_PUBLIC_URL_SV +
+  //         process.env.NEXT_PUBLIC_URL_getIPDDischargeProcedure,
+  //       PatientInfoData
+  //     )
+  //     .then((response) => {
+  //       //    console.log(response.data)
+  //       setProcedure(response.data);
+  //       if (response.data.Result.ProcedureInfo[0].Icd9) {
+  //         setRows(response.data.Result.ProcedureInfo);
+  //       }
+  //       //console.log(rows);
+  //     })
+  //     .catch((error) => {
+  //     //  console.log(error);
+  //       try {
+  //         const ErrorMass = error.config.url;
+  //         const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+  //         setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
+  //         setShowFormError("Error");
+  //       } catch (error) {
+  //         setMassError(error.response.data.HTTPStatus.message);
+  //         setShowFormError("Error");
+  //       }
+  //     });
+  // }, [data]);
 
   const handleChangeEditDateRow2 = (index2, even) => {
     const neweditrow2 = rows2.map((Pre, index) => {
@@ -669,7 +597,15 @@ export default function Page({ data }) {
     setRows2([...rows2, newRow2]);
     setNewRow2({ PreAuthDateTime: null, PreAuthDetail: "" });
   };
-
+/////////////////////////////////
+const handleAddRowDia = () => {
+  setRowsDia([...rowsDia, newRowDia]);
+  setNewRowDia({ Icd10: "", DxName: "", DxType: "" });
+};
+const handleDeleteRowDia = (index) => {
+  const newRowsDia = rowsDia.filter((_, i) => i !== index);
+  setRowsDia(newRowsDia);
+};
   ////////////////////////////////
   const handleDeleteRow = (index) => {
     const newRows = rows.filter((_, i) => i !== index);
@@ -907,6 +843,15 @@ export default function Page({ data }) {
       setSummitEditProcedure("false");
     }
   };
+  
+  const SummitEditDia = () => {
+    if (summitEditDia === "false") {
+      setSummitEditDia("true");
+    } else {
+      setSummitEditDia("false");
+    }
+  };
+
 
   const SummitEditPre = () => {
     if (summitEditPreAuthNote === "false") {
@@ -923,57 +868,42 @@ export default function Page({ data }) {
       setSummitEditAcc("false");
     }
   };
+  const SummitEditBill = () => {
+    if (summitEditBill === "false") {
+      setSummitEditBill("true");
+    } else {
+      setSummitEditBill("false");
+    }
+  };
+
 
   useEffect(() => {
-    axios
-      .post(
-        process.env.NEXT_PUBLIC_URL_PD +
-          process.env.NEXT_PUBLIC_URL_getOPDDischargeInvestigation,
-        PatientInfoData
-      )
-      .then((response) => {
-       // console.log(response.data)
-        setInvestigation(response.data);
-      })
-      .catch((error) => {
-     //   console.log(error);
-        try {
-          const ErrorMass = error.config.url;
-          const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
-          setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
-          setShowFormError("Error");
-        } catch (error) {
-          setMassError(error.response.data.HTTPStatus.message);
-          setShowFormError("Error");
-        }
-      });
-  }, [data]);
 
-  useEffect(() => {
-    axios
-      .post(
-        process.env.NEXT_PUBLIC_URL_SV +
-          process.env.NEXT_PUBLIC_URL_getOPDDischargeOrderItem,
-        PatientInfoData
-      )
-      .then((response) => {
-      //  console.log(response.data)
-        setOrderItemz(response.data);
-      })
-      .catch((error) => {
-     //   console.log(error);
-        try {
-          const ErrorMass = error.config.url;
-          const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
-          setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
-          setShowFormError("Error");
-        } catch (error) {
-          setMassError(error.response.data.HTTPStatus.message);
-          setShowFormError("Error");
-        }
-      });
-  }, [data]);
 
+    axios
+.get(
+  process.env.NEXT_PUBLIC_URL_PD +
+    process.env.NEXT_PUBLIC_URL_getListBilling +
+     PatientInfoData.PatientInfo.HN
+)
+.then((response) => {
+  // console.log(response.data)
+  setListBilling(response.data.Result);
+})
+.catch((error) => {
+  console.log(error);
+  try {
+    const ErrorMass = error.config.url;
+    const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+    setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
+    setShowFormError("Error");
+  } catch (error) {
+    setMassError(error.response.data.HTTPStatus.message);
+    setShowFormError("Error");
+  }
+});
+
+  }, [data]);
   useEffect(() => {
     axios
       .post(
@@ -1001,37 +931,37 @@ export default function Page({ data }) {
   }, [data]);
 
 
-  useEffect(() => {
+  // useEffect(() => {
    
-    setBilling();
-    axios
-      .post(
-        process.env.NEXT_PUBLIC_URL_SV +
-          process.env.NEXT_PUBLIC_URL_getOPDDischargeBilling,
-        PatientInfoData
-      )
-      .then((response) => {
-        console.log(response.data)
-    // console.log("5555")
-    if(numberBilling === false){
-      setBilling(response.data);
-      setNumberBilling(true);
-    }
+  //   setBilling();
+  //   axios
+  //     .post(
+  //       process.env.NEXT_PUBLIC_URL_SV +
+  //         process.env.NEXT_PUBLIC_URL_getIPDDischargeBilling,
+  //       PatientInfoData
+  //     )
+  //     .then((response) => {
+  //       console.log(response.data)
+  //   // console.log("5555")
+  //   if(numberBilling === false){
+  //     setBilling(response.data);
+  //     setNumberBilling(true);
+  //   }
        
-      })
-      .catch((error) => {
-     //   console.log(error);
-        try {
-          const ErrorMass = error.config.url;
-          const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
-          setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
-          setShowFormError("Error");
-        } catch (error) {
-          setMassError(error.response.data.HTTPStatus.message);
-          setShowFormError("Error");
-        }
-      });
-  }, []);
+  //     })
+  //     .catch((error) => {
+  //    //   console.log(error);
+  //       try {
+  //         const ErrorMass = error.config.url;
+  //         const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+  //         setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
+  //         setShowFormError("Error");
+  //       } catch (error) {
+  //         setMassError(error.response.data.HTTPStatus.message);
+  //         setShowFormError("Error");
+  //       }
+  //     });
+  // }, []);
 
   const DocumentBase64 = (data) => {
     setMsg();
@@ -1087,6 +1017,7 @@ export default function Page({ data }) {
         }
       });
   };
+  
   const CancleDoc = (data) => {
     const isConfirmed = window.confirm("แน่ใจแล้วที่จะลบเอกสารใช่ไหม");
     if (isConfirmed) {
@@ -1184,20 +1115,224 @@ export default function Page({ data }) {
     };
   };
 
+  const handleChangeBill = (index2, event) => {
+    const selectedType = JSON.parse(event.target.value); 
+  //   setNewItemBillingCheckBalance({ ...newItemBillingCheckBalance, 
+  //     LocalBillingCode: selectedType.LocalBillingCode, 
+  //     LocalBillingName: selectedType.LocalBillingName, 
+  //   }); 
+
+  const newcauses = itemBillingDetails.map((cause, index) => {
+    if (index === index2) {
+      return {
+        ...cause,
+        LocalBillingCode: selectedType.LocalBillingCode,
+        LocalBillingName: selectedType.LocalBillingName,
+      };
+    }
+    return cause;
+  });
+  setItemBillingDetails(newcauses);
+};
+// console.log(itemBillingDetails)
+const handleChangeBillA2 = (index2, event) => {
+  // console.log(itemBillingDetails)
+  const newcauses = itemBillingDetails.map((cause, index) => {
+
+
+    // let sum = 0; 
+    // itemBillingDetails.forEach((bill) => { 
+    //   sum += parseInt(bill.BillingInitial, 10); 
+    // });
+    //  setTotal(sum);
+
+
+
+
+   // console.log(cause.BillingInitial+event.target.value)
+    if (index === index2) {
+      return {
+        ...cause,
+        BillingInitial: event.target.value,
+      };
+    }
+    return cause;
+  });
+  setItemBillingDetails(newcauses);
+};
+////////////////////////////////
+
+// const handleSumBillingInitial = () => { 
+//   let sum = 0; itemBillingDetails.forEach((bill) => { 
+//     sum += parseInt(bill.BillingInitial, 10); 
+//   });
+//    setTotal(sum);
+//    };
+//////////////////////////////////
+const handleDeleteBillingDetail = (index) => {
+  const newItemBillingCheckBalances = itemBillingDetails.filter(
+    (_, i) => i !== index
+  );
+  setItemBillingDetails(newItemBillingCheckBalances);
+};
+
+/////////////////////////////////////////////////////
+const [newItemBillingCheckBalance, setNewItemBillingCheckBalance] = useState({
+  LocalBillingCode: "",
+  LocalBillingName: "",
+  SimbBillingCode: "",
+  BillingInitial: "",
+});
+
+////////////////////////////////////////////////////////
+const handleAddItemBillingDetail = () => {
+  setItemBillingDetails([...itemBillingDetails, newItemBillingCheckBalance]);
+  setNewItemBillingCheckBalance({ 
+    LocalBillingCode: "",
+    LocalBillingName: "",
+    SimbBillingCode: "",
+    BillingInitial: "",
+  });
+};
+////////////////////////////////////////////////////////
+const SubmitSumBilling = () => {
+  console.log(itemBillingDetails)
+  // setFromTotalSum(false);
+if (itemBillingDetails){
+  let sum = 0; 
+  itemBillingDetails.forEach((bill) => { 
+    sum += parseFloat(bill.BillingInitial); // ใช้ parseFloat แทน parseInt เพื่อรองรับค่าทศนิยม
+  });
+  const formattedSum = sum.toFixed(2); // กำหนดให้มีจุดทศนิยม 2 ตำแหน่ง
+  setTotal(formattedSum);
+  
+}else{
+  console.log("Error")
+}
+
+
+}
+const SubmitBillingCheckBalance = () => {
+  // setFromTotalSum(true)
+  setTotalApprovedAmount();
+  setTotalExcessAmount();
+      setShowFormError();
+  setMassError();
+
+  let sum = 0; 
+  itemBillingDetails.forEach((bill) => { 
+    sum += parseInt(bill.BillingInitial, 10); 
+  });
+    // console.log(sum);
+    // console.log(itemBillingDetails)
+     let num = 0;
+    const result = itemBillingDetails.reduce((acc, item) => { 
+//          console.log(item)
+//       console.log(num = num + 1)
+// console.log(item.LocalBillingCode)
+// console.log(item.LocalBillingName)
+// console.log(item.BillingInitial)
+// console.log(item.SimbBillingCode)
+    acc.BillingInfo.push({
+        LocalBillingCode: item.LocalBillingCode,		
+        LocalBillingName: item.LocalBillingName,	
+        SimbBillingCode: item.SimbBillingCode,		
+        PayorBillingCode: item.SimbBillingCode,	
+        BillingInitial: item.BillingInitial,		
+        BillingDiscount: "0",			
+        BillingNetAmount: item.BillingInitial,			
+      });
+      acc.OrderItem.push({
+        Discount: "0",				
+        Initial: item.BillingInitial,			
+        ItemAmount: "1",				
+        ItemId: item.LocalBillingCode,	
+        ItemName: item.LocalBillingName,		
+        LocalBillingCode: item.LocalBillingCode,	
+        LocalBillingName: item.LocalBillingName,		
+        NetAmount: item.BillingInitial,	
+
+      });
+      return acc;
+         },
+         {
+          BillingInfo: [], OrderItem: [], TotalBillAmount: sum,
+          }
+        );
+
+//console.log(transactionClaimInfo)
+// console.log(result)
+
+const PatientInfo = {
+InsurerCode: InsuranceCode,
+  RefId: transactionClaimInfo.RefId,
+  TransactionNo: transactionClaimInfo.TransactionNo,   
+  // PID: transactionClaimInfo.PID,
+  // IdType: transactionClaimInfo.IdType,
+  IllnessTypeCode : transactionClaimInfo.IllnessTypeCode,
+  HN: transactionClaimInfo.HN,
+  VN: transactionClaimInfo.VN,
+  VisitDateTime: transactionClaimInfo.VisitDateTime,
+  AccidentDate: transactionClaimInfo.AccidentDate,
+ItemBillingCheckBalance : result,
+ICD10: iCD10Value,
+FurtherClaimId: furtherClaimId,
+AccidentCauseOver45Days: over45,
+}
+// console.log(PatientInfo)
+axios
+.post(
+process.env.NEXT_PUBLIC_URL_PD2 +
+  process.env.NEXT_PUBLIC_URL_SubmitBillingCheckBalance,
+{ 
+  PatientInfo
+}
+)
+.then((response) => {
+
+// console.log(response.data);
+if(response.data.HTTPStatus.statusCode === 200){
+ // setTotalSum(response.data.Result)
+
+ setTotalApprovedAmount(response.data.Result.TotalApprovedAmount)
+ setTotalExcessAmount(response.data.Result.TotalExcessAmount)
+}else{
+  setShowFormError("Error");
+  setMassError(response.data.HTTPStatus.message +"\n"+response.data.HTTPStatus.error);
+}
+
+
+})
+.catch((err) => {
+// console.error("Error", err)
+console.log(err);
+//  if (err.response.request.status === 500) {
+setShowFormError("Error");
+setMassError(err.response.data.HTTPStatus.message);
+});
+
+
+
+
+}
+////////////////////////////////////////////////////////
   //    //    //  //กดปุ่มส่งเคลม
   async function Claim(event) {
     event.preventDefault();
 
-
-    const dscDateTimevalue = dayjs(dscDateTime.$d).format("YYYY-MM-DD");
+   const dscDateTimevalue = dayjs(dscDateTime.$d).format("YYYY-MM-DD");
     const expectedAdmitDatevalue = dayjs(expectedAdmitDate.$d).format("YYYY-MM-DD");
+ 
     // console.log(dscDateTimevalue);
     // console.log(expectedAdmitDatevalue);
     setShowSummitError();
     setMassSummitError();
     setMassSummit();
     document.getElementById("my_modal_3").showModal();
-    const Datevalue = dayjs(accidentDate.$d).format("YYYY-MM-DD");
+    if (accidentDate){
+      const Datevalue = dayjs(accidentDate.$d).format("YYYY-MM-DD");
+     }
+ 
     let PreviousDate;
     let PreviousDetail;
     let Suc;
@@ -1233,16 +1368,25 @@ export default function Page({ data }) {
     //  }
     //   console.log(dayjs(signSymptomsDate))
 
-    let HavecauseOfInjuryDetailsCount;
-    let HaveinjuryDetailsCount;
-    let HaveProcedureCount;
-    let injuryDetailsCount;
     let causeOfInjuryDetailsCount;
-    let ProcedureInfoCount;
+    let HavecauseOfInjuryDetailsCount;
 
-//console.log(injuryDetails)
-//console.log(causeOfInjuryDetails)
-//console.log(rows)
+
+    let DiagnosisCount;
+    let HaveDiagnosisCount;
+ 
+    let injuryDetailsCount;
+    let HaveinjuryDetailsCount;
+
+    let ProcedureInfoCount;
+    let HaveProcedureCount;
+
+    let BillingCount; 
+    let HaveBillingCount;
+
+    let PreAuthNoteCount;
+    let HavePreAuthNoteCount;
+
 
 if(injuryDetails){
   injuryDetailsCount = injuryDetails.length;
@@ -1253,7 +1397,17 @@ if(causeOfInjuryDetails){
 if(rows){
   ProcedureInfoCount = rows.length;
 }   
- 
+if(rowsDia){
+  DiagnosisCount = rowsDia.length;
+} 
+if(itemBillingDetails){
+  BillingCount = itemBillingDetails.length;
+}
+if(rows2){
+  PreAuthNoteCount = rows2.length;
+}
+
+
 
     if (causeOfInjuryDetailsCount >= 1) {
       HavecauseOfInjuryDetailsCount = true;
@@ -1270,22 +1424,45 @@ if(rows){
     } else {
       HaveProcedureCount = false;
     }
+    if (DiagnosisCount >= 1) {
+      HaveDiagnosisCount = true;
+    } else {
+      HaveDiagnosisCount = false;
+    }
+    if (BillingCount >= 1) {
+      HaveBillingCount = true;
+    } else {
+      HaveBillingCount = false;
+    }
+    if (PreAuthNoteCount >= 1) {
+      HavePreAuthNoteCount = true;
+    } else {
+      HavePreAuthNoteCount = false;
+    }
+
+
+
+
     //console.log(Suc)
     if (Suc === "S") {
       try {
         await stepOne();
-        await stepTwo();
+         await stepTwo();
          await stepThree();
-         await stepFour();
+          await stepFour();
+          await stepFive();
+          await stepSix();
+          // await stepSeven();
+
       } catch (error) {
-   //     console.log(error);
+        console.log(error);
       }
     }
 
     function stepOne() {
+console.log("Start Step 1 Accident")
 // console.log(accidentPlaceValue)
       if(accidentPlaceValue){
-      return new Promise((resolve, reject) => {
         const PatientInfo = {
           RefId: PatientInfoData.PatientInfo.RefId,
           TransactionNo: PatientInfoData.PatientInfo.TransactionNo,
@@ -1301,15 +1478,17 @@ if(rows){
             InjuryDetail: injuryDetails,
           },
         };
+        console.log(PatientInfo)
+      return new Promise((resolve, reject) => {
 
         axios
           .post(
             process.env.NEXT_PUBLIC_URL_SV +
-              process.env.NEXT_PUBLIC_URL_SubmitAccident,
+              process.env.NEXT_PUBLIC_URL_PRESubmitAccident,
             { PatientInfo }
           )
           .then((response) => {
-            console.log("1 Succ");
+            console.log("Step 1 Accident Succ");
 
             resolve("Step 1 completed");
           })
@@ -1330,13 +1509,11 @@ if(rows){
 
         // ถ้ามีข้อผิดพลาดให้ใช้ reject(new Error('Error in Step 1'));
       });
-  }else{
-    console.log("1 Succ (ไม่อุบัติเหตุ)");
-  }
+    }
     }
 
     function stepTwo() {
-
+      console.log("Start Step 2 Procedure")
       return new Promise((resolve, reject) => {
         const PatientInfo = {
           RefId: PatientInfoData.PatientInfo.RefId,
@@ -1347,14 +1524,15 @@ if(rows){
           HaveProcedure: HaveProcedureCount,
           ProcedureInfo: rows,
         };
+        console.log(PatientInfo)
         axios
           .post(
             process.env.NEXT_PUBLIC_URL_SV +
-              process.env.NEXT_PUBLIC_URL_SubmitProcedure,
+              process.env.NEXT_PUBLIC_URL_PRESubmitProcedure,
             { PatientInfo }
           )
           .then((response) => {
-          //  console.log("2 Succ");
+            console.log("Step 2 Procedure - Succ");
             resolve("Step 2 completed");
           })
           .catch((error) => {
@@ -1377,68 +1555,64 @@ if(rows){
     }
 
     function stepThree() {
-
+      console.log("Start Step 3 PreAuthVisit")
       return new Promise((resolve, reject) => {
         let comaScoreP;
-        let expectedDayOfRecoveryP;
+
         if (comaScore) {
           comaScoreP = comaScore.target.value;
         } else {
           comaScoreP = "";
         }
-        if (expectedDayOfRecovery) {
-          expectedDayOfRecoveryP = expectedDayOfRecovery.target.value;
-        } else {
-          expectedDayOfRecoveryP = "";
-        }
+
         const PatientInfo = {
           RefId: PatientInfoData.PatientInfo.RefId,
           TransactionNo: PatientInfoData.PatientInfo.TransactionNo,
           InsurerCode: PatientInfoData.PatientInfo.InsurerCode,
           HN: PatientInfoData.PatientInfo.HN,
           VN: PatientInfoData.PatientInfo.VN,
-
           VisitDateTime: PatientInfoData.PatientInfo.VisitDateTime,
+
           DxFreeText: event.target.DxFreeTextText.value,
-          PresentIllness: event.target.PresentIllness.value,
-          ChiefComplaint: event.target.ChiefComplaint.value,
-          UnderlyingCondition: event.target.UnderlyingCondition.value,
-          PhysicalExam: event.target.PhysicalExam.value,
-          PlanOfTreatment: event.target.PlanOfTreatment.value,
-          ProcedureFreeText: event.target.ProcedureFreeText.value,
-          AdditionalNote: event.target.AdditionalNote.value,
           SignSymptomsDate: signDate,
-          ComaScore: comaScoreP,
-          ExpectedDayOfRecovery: expectedDayOfRecovery,
           HaveProcedure: HaveProcedureCount,
           HaveAccidentCauseOfInjuryDetail: HavecauseOfInjuryDetailsCount,
           HaveAccidentInjuryDetail: HaveinjuryDetailsCount,
           AlcoholRelated: alcoholRelated,
           Pregnant: pregnant,
           PrivateCase: privateCase,
-
+          PreauthReferClaimNo: PatientInfoData.PatientInfo.PreauthReferClaimNo,
+          PreauthReferOcc: PatientInfoData.PatientInfo.PreauthReferOcc,
+          ExpectedAdmitDate:  expectedAdmitDatevalue,
+          IsPackage: isPackageValue,
           PreviousTreatment: previousTreatment,
           PreviousTreatmentDate: PreviousDate,
           PreviousTreatmentDetail: PreviousDetail,
-
-          
-          An : an,
           DscDateTime : dscDateTimevalue,
-          ExpectedAdmitDate:  expectedAdmitDatevalue,
+          AnesthesiaList : anesthesiaListValue,
+          TotalEstimatedCost: totalEstimatedCost.target.value,
+          IndicationForAdmission: admissionValue,
+         HaveDiagnosis: HaveDiagnosisCount, 
+
+        
+        HavepreBilling: HaveBillingCount,
+         HavePreAuthNote: HavePreAuthNoteCount,
+   
+          
         };
-      //  console.log(PatientInfo);
+        console.log(PatientInfo);
         axios
           .post(
             process.env.NEXT_PUBLIC_URL_SV +
-              process.env.NEXT_PUBLIC_URL_SubmitVisit,
+              process.env.NEXT_PUBLIC_URL_PRESubmitPreAuthVisit,
             { PatientInfo }
           )
           .then((response) => {
-         //   console.log("3 Succ");
+            console.log("Step 3 PreAuthVisit - Succ");
             resolve("Step 3 completed");
           })
           .catch((error) => {
-         //   console.log(error);
+            console.log(error);
             try {
               const ErrorMass = error.config.url;
               const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -1457,68 +1631,32 @@ if(rows){
 
     }
     function stepFour() {
-
+      console.log("Start Step 4 Diagnosis")
       return new Promise((resolve, reject) => {
+
+
         const PatientInfo = {
-          InsurerCode: PatientInfoData.PatientInfo.InsurerCode,
           RefId: PatientInfoData.PatientInfo.RefId,
           TransactionNo: PatientInfoData.PatientInfo.TransactionNo,
-          PID: PatientInfoData.PatientInfo.PID,
+          InsurerCode: PatientInfoData.PatientInfo.InsurerCode,
           HN: PatientInfoData.PatientInfo.HN,
-          GivenNameTH: PatientInfoData.PatientInfo.GivenNameTH,
-          SurnameTH: PatientInfoData.PatientInfo.SurnameTH,
-          DateOfBirth: PatientInfoData.PatientInfo.DateOfBirth,
-          PassportNumber: PatientInfoData.PatientInfo.PassportNumber,
-          IdType: PatientInfoData.PatientInfo.IdType,
           VN: PatientInfoData.PatientInfo.VN,
-          VisitDateTime: PatientInfoData.PatientInfo.VisitDateTime,
-          AccidentDate: PatientInfoData.PatientInfo.AccidentDate,
-          PolicyTypeCode: PatientInfoData.PatientInfo.PolicyTypeCode,
-          ServiceSettingCode: PatientInfoData.PatientInfo.ServiceSettingCode,
-          IllnessTypeCode: PatientInfoData.PatientInfo.IllnessTypeCode,
-          SurgeryTypeCode: PatientInfoData.PatientInfo.SurgeryTypeCode,
-          Runningdocument: PatientInfoData.PatientInfo.Runningdocument,
-          FurtherClaimVN: PatientInfoData.PatientInfo.FurtherClaimVN,
+          HaveDiagnosis: HaveDiagnosisCount, 
+          DiagnosisInfo : rowsDia ,          
         };
-       // console.log(PatientInfo)
+        console.log(PatientInfo);
         axios
           .post(
             process.env.NEXT_PUBLIC_URL_SV +
-              process.env.NEXT_PUBLIC_URL_SubmitOPDDischargeToAIA,
+              process.env.NEXT_PUBLIC_URL_SubmitDiagnosis,
             { PatientInfo }
           )
           .then((response) => {
-       // console.log(response.data)
-            if (response.data.HTTPStatus.statusCode === 200) {
-              axios
-              .post(
-                process.env.NEXT_PUBLIC_URL_PD +
-                  process.env.NEXT_PUBLIC_URL_getcheckclaimstatus,
-                { PatientInfo }
-              )
-              .then((response) => {
-              //  console.log(response.data);
-              })
-              .catch((error) => {
-             //   console.log(error);
-              });
-              document.getElementById("my_modal_3").close();
-              console.log("4 Succ");
-              // console.log(response.data);
-              setShowModal(true);
-
-              resolve("Step 4 completed");
-              setTimeout(() => {
-                setShowModal(false);
-                router.push("/aia/checkClaimStatus");
-              }, 5000);
-            } else {
-              setMassSummitError(response.data.HTTPStatus.message);
-              setShowSummitError("Error");
-            }
+            console.log("Step 4 Diagnosis - Succ");
+            resolve("Step 4 completed");
           })
           .catch((error) => {
-          //  console.log(error);
+            console.log(error);
             try {
               const ErrorMass = error.config.url;
               const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -1527,16 +1665,213 @@ if(rows){
               );
               setShowSummitError("Error");
             } catch (error) {
-              setMassSummitError(error.response.data.HTTPStatus.message);
-              setShowSummitError("Error");
+              // setMassSummitError(error.response.data.HTTPStatus.message);
+              // setShowSummitError("Error");
             }
           });
 
         //     // ถ้ามีข้อผิดพลาดให้ใช้ reject(new Error('Error in Step 3'));
       });
+  }
+  function stepFive() {
+    console.log("Start Step 5 Billing")
+    
+
+  let sum = 0; 
+  itemBillingDetails.forEach((bill) => { 
+    sum += parseFloat(bill.BillingInitial); // ใช้ parseFloat แทน parseInt เพื่อรองรับค่าทศนิยม
+  });
+  const formattedSum = sum.toFixed(2); // กำหนดให้มีจุดทศนิยม 2 ตำแหน่ง
+
+  let num = 0;
+  const result = itemBillingDetails.reduce((acc, item) => {
+    // ตรวจสอบว่า acc.PreBillingInfo เป็น array หรือไม่
+    if (!acc.PreBillingInfo) {
+      acc.PreBillingInfo = [];
     }
+  
+    acc.PreBillingInfo.push({
+      LocalBillingCode: item.LocalBillingCode,
+      LocalBillingName: item.LocalBillingName,
+      SimbBillingCode: item.SimbBillingCode,
+      PayorBillingCode: item.SimbBillingCode,
+      BillingInitial: item.BillingInitial,
+      BillingDiscount: "0",
+      BillingNetAmount: item.BillingInitial,
+    });
+    
+    return acc;
+  }, {}); // กำหนดค่าเริ่มต้นของ reduce เป็น object เปล่า {}
+    return new Promise((resolve, reject) => {  
+
+
+      const PatientInfo = {
+        RefId: PatientInfoData.PatientInfo.RefId,
+        TransactionNo: PatientInfoData.PatientInfo.TransactionNo,
+        InsurerCode: PatientInfoData.PatientInfo.InsurerCode,
+        HN: PatientInfoData.PatientInfo.HN,
+        VN: PatientInfoData.PatientInfo.VN,
+        HavePreBilling: HaveBillingCount, 
+        PreBillingInfo : result.PreBillingInfo,          
+      };
+       console.log(PatientInfo);
+      axios
+        .post(
+          process.env.NEXT_PUBLIC_URL_SV +
+            process.env.NEXT_PUBLIC_URL_SubmitPreBilling,
+          { PatientInfo }
+        )
+        .then((response) => {
+          console.log("Step 5 Billing - Succ");
+          resolve("Step 5 completed");
+        })
+        .catch((error) => {
+          console.log(error);
+          try {
+            const ErrorMass = error.config.url;
+            const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+            setMassSummitError(
+              error.code + " - " + error.message + " - " + ErrorMass2
+            );
+            setShowSummitError("Error");
+          } catch (error) {
+            // setMassSummitError(error.response.data.HTTPStatus.message);
+            // setShowSummitError("Error");
+          }
+        });
+
+      //     // ถ้ามีข้อผิดพลาดให้ใช้ reject(new Error('Error in Step 3'));
+    });
+}
+    function stepSix() {
+      console.log("Start Step 6 PreAuthNote")
+      return new Promise((resolve, reject) => {
+
+
+        const PatientInfo = {
+          RefId: PatientInfoData.PatientInfo.RefId,
+          TransactionNo: PatientInfoData.PatientInfo.TransactionNo,
+          InsurerCode: PatientInfoData.PatientInfo.InsurerCode,
+          HN: PatientInfoData.PatientInfo.HN,
+          VN: PatientInfoData.PatientInfo.VN,
+          HavePreAuthNote: HavePreAuthNoteCount, 
+          PreAuthNoteInfo : rows2,          
+        };
+        console.log(PatientInfo);
+        axios
+          .post(
+            process.env.NEXT_PUBLIC_URL_SV +
+              process.env.NEXT_PUBLIC_URL_SubmitPreAuthNote,
+            { PatientInfo }
+          )
+          .then((response) => {
+            console.log("Step 6 PreAuthNote - Succ");
+            resolve("Step 6 completed");
+          })
+          .catch((error) => {
+            console.log(error);
+            try {
+              const ErrorMass = error.config.url;
+              const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+              setMassSummitError(
+                error.code + " - " + error.message + " - " + ErrorMass2
+              );
+              setShowSummitError("Error");
+            } catch (error) {
+              // setMassSummitError(error.response.data.HTTPStatus.message);
+              // setShowSummitError("Error");
+            }
+          });
+
+        //     // ถ้ามีข้อผิดพลาดให้ใช้ reject(new Error('Error in Step 3'));
+      });
+  }
+
+
+
+    // function stepSeven() {
+    //   console.log("Start Step 7 DischargeToAIA")
+    //   return new Promise((resolve, reject) => {
+    //     const PatientInfo = {
+    //       InsurerCode: PatientInfoData.PatientInfo.InsurerCode,
+    //       RefId: PatientInfoData.PatientInfo.RefId,
+    //       TransactionNo: PatientInfoData.PatientInfo.TransactionNo,
+    //       PID: PatientInfoData.PatientInfo.PID,
+    //       HN: PatientInfoData.PatientInfo.HN,
+    //       GivenNameTH: PatientInfoData.PatientInfo.GivenNameTH,
+    //       SurnameTH: PatientInfoData.PatientInfo.SurnameTH,
+    //       DateOfBirth: PatientInfoData.PatientInfo.DateOfBirth,
+    //       PassportNumber: PatientInfoData.PatientInfo.PassportNumber,
+    //       IdType: PatientInfoData.PatientInfo.IdType,
+    //       VN: PatientInfoData.PatientInfo.VN,
+    //       VisitDateTime: PatientInfoData.PatientInfo.VisitDateTime,
+    //       AccidentDate: PatientInfoData.PatientInfo.AccidentDate,
+    //       PolicyTypeCode: PatientInfoData.PatientInfo.PolicyTypeCode,
+    //       ServiceSettingCode: PatientInfoData.PatientInfo.ServiceSettingCode,
+    //       IllnessTypeCode: PatientInfoData.PatientInfo.IllnessTypeCode,
+    //       SurgeryTypeCode: PatientInfoData.PatientInfo.SurgeryTypeCode,
+    //       Runningdocument: PatientInfoData.PatientInfo.Runningdocument,
+    //       FurtherClaimVN: PatientInfoData.PatientInfo.FurtherClaimVN,
+    //     };
+    //    // console.log(PatientInfo)
+    //     axios
+    //       .post(
+    //         process.env.NEXT_PUBLIC_URL_SV +
+    //           process.env.NEXT_PUBLIC_URL_SubmitOPDDischargeToAIA,
+    //         { PatientInfo }
+    //       )
+    //       .then((response) => {
+    //    // console.log(response.data)
+    //         if (response.data.HTTPStatus.statusCode === 200) {
+    //           axios
+    //           .post(
+    //             process.env.NEXT_PUBLIC_URL_PD +
+    //               process.env.NEXT_PUBLIC_URL_getcheckclaimstatus,
+    //             { PatientInfo }
+    //           )
+    //           .then((response) => {
+    //           //  console.log(response.data);
+    //           })
+    //           .catch((error) => {
+    //          //   console.log(error);
+    //           });
+    //           document.getElementById("my_modal_3").close();
+    //           console.log("Step 7 DischargeToAIA Succ");
+    //           // console.log(response.data);
+    //           setShowModal(true);
+
+    //           resolve("Step 4 completed");
+    //           setTimeout(() => {
+    //             setShowModal(false);
+    //             router.push("/aia/checkClaimStatus");
+    //           }, 5000);
+    //         } else {
+    //           setMassSummitError(response.data.HTTPStatus.message);
+    //           setShowSummitError("Error");
+    //         }
+    //       })
+    //       .catch((error) => {
+    //       //  console.log(error);
+    //         try {
+    //           const ErrorMass = error.config.url;
+    //           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+    //           setMassSummitError(
+    //             error.code + " - " + error.message + " - " + ErrorMass2
+    //           );
+    //           setShowSummitError("Error");
+    //         } catch (error) {
+    //           setMassSummitError(error.response.data.HTTPStatus.message);
+    //           setShowSummitError("Error");
+    //         }
+    //       });
+
+    //         // ถ้ามีข้อผิดพลาดให้ใช้ reject(new Error('Error in Step 3'));
+    //   });
+    // }
     
   }
+
+  
   const IndicationForAdmission = (event) => {
     setAdmissionValue(event.target.value);
   };
@@ -1954,13 +2289,49 @@ if(rows){
                       />
                     </Box>
                   </div>
+                  <div className="rounded-md">
+                  </div>
+                  <div className="rounded-md">
+                    <Box
+                      sx={{
+                        backgroundColor: "#e5e7eb",
+                        padding: 0,
+                        borderRadius: 0,
+                      }}
+                    >
+                      <CustomTextField
+                        id="disabledInput"
+                        label="การผ่าตัด"
+                        defaultValue={PatientInfoData.PatientInfo.SurgeryTypeCode === "N" ? "ไม่มีผ่าตัด" : "มีผ่านตัด"}
+                        className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"
+                        InputProps={{ readOnly: true }}
+                      />
+                    </Box>
+                  </div>
+                  <div className="rounded-md">
+                    <Box
+                      sx={{
+                        backgroundColor: "#e5e7eb",
+                        padding: 0,
+                        borderRadius: 0,
+                      }}
+                    >
+                      <CustomTextField
+                        id="disabledInput"
+                        label="อุบัติเหตุ"
+                        defaultValue={accidentDetail ? "มีอุบัติเหตุ" : "ไม่มีอุบัติเหตุ"}
+                        className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"
+                        InputProps={{ readOnly: true }}
+                      />
+                    </Box>
+                  </div>
                 </div>
               </div>
             ) : (
               ""
             )}
             {/* //////////////////////////////////////////////////////////////////////////// */}
-            {visit ? (
+            {/* {visit ? ( */}
               <div className="container mx-auto justify-center border-solid w-4/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
                 <h1 className="font-black text-accent text-3xl ">Visit</h1>
                 <div className="grid gap-2 sm:grid-cols-4 w-full mt-2">
@@ -2031,6 +2402,9 @@ if(rows){
                         &nbsp;ค่าส่วนเกินจากประกันอื่นๆ
                       </p>
                     </div> */}
+                                      <div className="rounded-md">
+
+</div>
                   </div>
                   <div className="rounded-md"> </div>
                   <div className="rounded-md"> </div>
@@ -2068,7 +2442,9 @@ if(rows){
                       />
                     </Box>
                   </div>
-                  <div className="rounded-md mt-2">
+                  {PatientInfoData.PatientInfo.PreauthReferClaimNo ? (
+                    <>
+                  <div className="rounded-md text-black mt-2">
                     <Box
                       sx={{
                         backgroundColor: "#e5e7eb",
@@ -2079,13 +2455,12 @@ if(rows){
                       <CustomTextField
                         id="disabledInput"
                         className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"
-                        label="น้ำหนัก / ส่วนสูง"
-                        defaultValue={combinedString}
+                        label="PreauthReferOcc"
+                        defaultValue={PatientInfoData.PatientInfo.PreauthReferOcc}
                         InputProps={{ readOnly: true }}
                       />
                     </Box>
                   </div>
-                  {PatientInfoData.PatientInfo.PreauthReferClaimNo ? (
                     <div className="rounded-md text-black mt-2">
                   <Box
                       sx={{
@@ -2097,7 +2472,7 @@ if(rows){
                         <CustomTextField
                           id="disabledInput"
                           className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"
-                          label="ประวัติการรักษาครั้งก่อนหน้า เลขที่อ้างอิง"
+                          label="PreauthReferClaimNo"
                           defaultValue={
                             PatientInfoData.PatientInfo.PreauthReferClaimNo
                           }
@@ -2105,6 +2480,7 @@ if(rows){
                         />
                       </Box>
                     </div>
+                    </>
                   ) : (
                     ""
                   )}
@@ -2131,27 +2507,7 @@ if(rows){
                         </LocalizationProvider>
                       </div>
                       <div className="rounded-md mt-2">
-                        <LocalizationProvider dateAdapter={AdapterDayjs}>
-                          <DemoItem>
-                            <DesktopDatePicker
-                            label="วันเวลาทีเข้ารับการรักษาเป็นผู้ป่วยใน"
-                            slotProps={{
-                              openPickerButton: { color: "error" },
-                              textField: { focused: true, color: "error" },
-                              
-                            }}
-                              value={admitDateTime}
-                              onChange={(newAdmitDateTime) =>
-                                setAdmitDateTime(newAdmitDateTime)
-                              }
-                              required
-                              format="YYYY-MM-DD"
-                            />
-                          </DemoItem>
-                        </LocalizationProvider>
-                      </div>
-                      <div className="rounded-md mt-2">
-                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <LocalizationProvider dateAdapter={AdapterDayjs}>
                           <DemoItem>
                             <DesktopDatePicker
                             label="วันเวลาที่ออกจากโรงพยาบาล"
@@ -2171,13 +2527,14 @@ if(rows){
                         </LocalizationProvider>
                       </div>
                       <div className="rounded-md mt-2">
-                    <TextField
+                      <TextField
                           error
+                          type="number"
                       className="w-full"
-                      id="outlined-multiline-static"
-                      label="จำนวนเงินที่ประเมินการผ่าตัดเบื้องต้นที่ยื่นพิจารณาก่อนการผ่าตัด"
-                      name="จำนวนเงินที่ประเมินการผ่าตัดเบื้องต้นที่ยื่นพิจารณาก่อนการผ่าตัด"
-                      value={totalEstimatedCost}
+                     // id="outlined-multiline-static"
+                      label="เงินที่ประเมินการผ่าตัดเบื้องต้นที่ยื่นพิจารณาก่อนการผ่าตัด"
+                      name="totalEstimatedCost"
+                      defaultValue={totalEstimatedCost}
                       onChange={(newTotalEstimatedCost) =>
                         setTotalEstimatedCost(newTotalEstimatedCost)
                       }
@@ -2191,64 +2548,25 @@ if(rows){
                         },
                       }}
                     />
-                  </div>
+                      </div>
                       <div className="rounded-md mt-2">
-                    <TextField
-                      //    error
-                      className="w-full"
-                      id="outlined-multiline-static"
-                      label="Admission number"
-                      name="Admission number"
-                      value={an}
-                      onChange={(newAn) =>
-                        setAn(newAn)
-                      }
-                      //   required
-                    />
-                  </div>
-                  <div className="rounded-md mt-2">
-                    <TextField
-                      type="number"
-                      className="w-full"
-                      label="ประมาณการจำนวนวันที่นอนโรงพยาบาล"
-                      id="outlined-start-adornment"
-                      // sx={{ m: 1 }}
-                      defaultValue={expectedLos}
-                      onChange={(newExpectedLos) =>
-                        setExpectedLos(newExpectedLos)
-                      }
-                      inputProps={{ min: 0 }}
-                      slotProps={{
-                        input: {
-                          startAdornment: (
-                            <InputAdornment position="start">
-                              Days
-                            </InputAdornment>
-                          ),
-                        },
-                      }}
-                    />
-                  </div>
-                  
-                  <div className="rounded-md mt-2">
-
-                  <FormControl className="w-full">
+                      <FormControl className="w-full">
               <InputLabel id="demo-simple-select-label">
-              ข้อบ่งชี้ในการ admit
+              IndicationForAdmission
               </InputLabel>
          
               <Select
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
                 value={admissionValue}
-                label="ข้อบ่งชี้ในการ admit"
+                label="IndicationForAdmission"
                 onChange={IndicationForAdmission}
               >
                 {indicationForAdmissionCode
-                  ? indicationForAdmissionCode.map((code, index) => (
-                      <MenuItem key={index} value={code.id}>
-                        {code.IndicationForAdmissionDesc}
-                      </MenuItem>
+                  ? indicationForAdmissionCode.Result.map((code, index) => (
+                    <MenuItem key={index} value={code.ifacode}>
+                    {code.ifaname}
+                  </MenuItem>
                     ))
                   :    <MenuItem>
                   
@@ -2256,164 +2574,9 @@ if(rows){
                 }
               </Select>
             </FormControl>
-
-
                   </div>
-                  <div className="rounded-md mt-2">
-<FormControl className="w-full">
-<InputLabel id="demo-simple-select-label">
-ชนิดของการดมยาสลบ
-</InputLabel>
-<Select
-labelId="demo-simple-select-label"
-id="demo-simple-select"
-value={anesthesiaListValue}
-label="ชนิดของการดมยาสลบ"
-onChange={AnesthesiaList}
->
-{anesthesiaListCode
-? anesthesiaListCode.map((code, index) => (
-    <MenuItem key={index} value={code.id}>
-      {code.AnesthesiaListDesc}
-    </MenuItem>
-  ))
-:    <MenuItem>
-</MenuItem>
-}
-</Select>
-</FormControl>
-
-
-</div>
-                  </div>
-                <div className="rounded-md mt-2 text-3xl text-error  flex ">
-               {/* <IoSettingsSharp className="mt-1 " onClick={Editfurtherclaimvn}/> */}
-               <div
-                        className="btn btn-secondary text-base-100 text-xl"
-                        onClick={Editfurtherclaimvn}
-                      >
-                        <FaEdit className="text-base-100" />
-                      </div>
-                  <div className="mt-2 ml-2">Claim form จาก VN : {PatientInfoData.PatientInfo.FurtherClaimVN ? (PatientInfoData.PatientInfo.FurtherClaimVN === PatientInfoData.PatientInfo.VN ? PatientInfoData.PatientInfo.VN+" ( ปัจจุบัน )" : PatientInfoData.PatientInfo.FurtherClaimVN+" ( เก่า )") : PatientInfoData.PatientInfo.VN+" ( ปัจจุบัน )" }</div>                    
-
-                </div>
-                <div className="grid gap-2 sm:grid-cols-2 w-full mt-4">
-                  <div className="rounded-md mt-2">
-                    <TextField
-                      //    error
-                      className="w-full"
-                      id="outlined-multiline-static"
-                      label="Cheif Complaint and duration"
-                      name="ChiefComplaint"
-                      multiline
-                      rows={4}
-                      defaultValue={visit.Result.VisitInfo.ChiefComplaint}
-                      inputProps={{ maxLength: 200 }}
-                      //   required
-                    />
-                  </div>
-                  <div className="rounded-md mt-2">
-                    <TextField
-                      //   error
-                      className="w-full"
-                      id="outlined-multiline-static"
-                      label="Chronic disease"
-                      name="UnderlyingCondition"
-                      multiline
-                      rows={4}
-                      defaultValue={visit.Result.VisitInfo.UnderlyingCondition}
-                      inputProps={{ maxLength: 500 }}
-                      //    required
-                    />
-                  </div>
-                  <div className="rounded-md mt-2">
-                    <TextField
-                      error
-                      className="w-full"
-                      id="outlined-multiline-static"
-                      label="Diagnosis"
-                      name="DxFreeTextText"
-                      multiline
-                      rows={4}
-                      defaultValue={visit.Result.VisitInfo.DxFreeText}
-                      inputProps={{ maxLength: 200 }}
-                      required
-                    />
-                  </div>
-                  <div className="rounded-md mt-2">
-                    <TextField
-                      //     error
-                      className="w-full"
-                      name="PresentIllness"
-                      id="outlined-multiline-static"
-                      label="Present illness or Cause of Injury"
-                      multiline
-                      rows={4}
-                      defaultValue={visit.Result.VisitInfo.PresentIllness}
-                      inputProps={{ maxLength: 500 }}
-                      //   required
-                    />
-                  </div>
-                  <div className="rounded-md mt-2">
-                    <TextField
-                      //   error
-                      className="w-full"
-                      name="PhysicalExam"
-                      id="outlined-multiline-static"
-                      label="Physical exam"
-                      multiline
-                      rows={4}
-                      defaultValue={visit.Result.VisitInfo.PhysicalExam}
-                      //   required
-                    />
-                  </div>
-                  <div className="rounded-md mt-2">
-                    <TextField
-                      // error
-                      className="w-full"
-                      name="PlanOfTreatment"
-                      id="outlined-multiline-static"
-                      label="Treatment"
-                      multiline
-                      rows={4}
-                      defaultValue={visit.Result.VisitInfo.PlanOfTreatment}
-                      inputProps={{ maxLength: 500 }}
-                      //   required
-                    />
-                  </div>
-                  <div className="rounded-md mt-2">
-                    <TextField
-                      //  error
-                      className="w-full"
-                      name="ProcedureFreeText"
-                      id="outlined-multiline-static"
-                      label="ProcedureFreeText"
-                      multiline
-                      rows={4}
-                      defaultValue={visit.Result.VisitInfo.ProcedureFreeText}
-                      inputProps={{ maxLength: 500 }}
-                      //   required
-                    />
-                  </div>
-                  <div className="rounded-md mt-2">
-                    <TextField
-                      //  error
-                      className="w-full"
-                      name="AdditionalNote"
-                      id="outlined-multiline-static"
-                      label="AdditionalNote"
-                      multiline
-                      rows={4}
-                      defaultValue={visit.Result.VisitInfo.AdditionalNote}
-                      inputProps={{ maxLength: 500 }}
-                      //   required
-                    />
-                  </div>
-                </div>
-
-                <div className="flex  w-full mt-4">
-                  <div className="w-1/5">
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <div className="rounded-md mt-2">
+                      <LocalizationProvider dateAdapter={AdapterDayjs}>
                       <DemoItem>
                         <DesktopDatePicker
                           label="วันที่เริ่มมีอาการ"
@@ -2426,42 +2589,25 @@ onChange={AnesthesiaList}
                       </DemoItem>
                     </LocalizationProvider>
                   </div>
-                  <div className="w-1/4 ml-2">
+                  </div>
+                <div className="grid gap-2 sm:grid-cols-2 w-full mt-4">
+                  <div className="rounded-md mt-2">
                     <TextField
-                      label="ระดับความรู้สึกตัว (วัดแบบ Glascow Coma Score 3-15)"
-                      type="number"
-                      defaultValue={comaScore}
-                      onChange={(newComaScore) => setComaScore(newComaScore)}
-                      inputProps={{ min: 3, max: 15 }}
-                      variant="outlined"
-                      fullWidth
+                      error
+                      className="w-full"
+                      id="outlined-multiline-static"
+                      label="Diagnosis"
+                      name="DxFreeTextText"
+                      multiline
+                      rows={4}
+                      // defaultValue={visit.Result.VisitInfo.DxFreeText}
+                      inputProps={{ maxLength: 200 }}
+                      required
                     />
                   </div>
-
-                  <div className="w-1/4 ml-2">
-                    <TextField
-                      type="number"
-                      label="จำนวนวันพักฟื้นหลังการผ่าตัด"
-                      id="outlined-start-adornment"
-                      // sx={{ m: 1 }}
-                      defaultValue={expectedDayOfRecovery}
-                      onChange={(newExpectedDayOfRecovery) =>
-                        setExpectedDayOfRecovery(newExpectedDayOfRecovery)
-                      }
-                      inputProps={{ min: 0 }}
-                      slotProps={{
-                        input: {
-                          startAdornment: (
-                            <InputAdornment position="start">
-                              Days
-                            </InputAdornment>
-                          ),
-                        },
-                      }}
-                    />
+                  <div className="rounded-md mt-2">
                   </div>
                 </div>
-
                 <div className="border-solid border-2 mt-2">
                   <h1 className="mt-2 ml-2 text-accent text-lg">
                     การเจ็บป่วยนี่เกี่ยวข้องกับสิ่งแวดล้อมอื่นๆ (
@@ -2469,8 +2615,18 @@ onChange={AnesthesiaList}
                     สามารถเลือกได้มากกว่า 1 ข้อ )
                   </h1>
                   <div className="flex items-center mt-2 ml-2">
-                    {visit ? (
-                      visit.Result.VisitInfo.AlcoholRelated === "true" ? (
+                    {/* {visit ? (
+                      visit.Result.VisitInfo.AlcoholRelated === "true" ? ( */}
+                        {/* <input
+                          type="checkbox"
+                          id="alcoholRelated"
+                          name="alcoholRelated"
+                          value={alcoholRelated}
+                          className="checkbox"
+                          onChange={handleAlcoholRelated}
+                          defaultChecked 
+                        />
+                      ) : ( */}
                         <input
                           type="checkbox"
                           id="alcoholRelated"
@@ -2478,26 +2634,29 @@ onChange={AnesthesiaList}
                           value={alcoholRelated}
                           className="checkbox"
                           onChange={handleAlcoholRelated}
-                          defaultChecked
                         />
-                      ) : (
-                        <input
-                          type="checkbox"
-                          id="alcoholRelated"
-                          name="alcoholRelated"
-                          value={alcoholRelated}
-                          className="checkbox"
-                          onChange={handleAlcoholRelated}
-                        />
-                      )
+                      {/* )
                     ) : (
                       ""
-                    )}
+                    )}  */}
 
                     <p className="text-left ml-2">
                       การเจ็บป่วยครั้งนี้เกี่ยวข้องกับแอลกอฮอล์ หรือ ยาเสพติด
                     </p>
                   </div>
+                  <div className="flex items-center mt-2 ml-2">
+                      <input
+                        type="checkbox"
+                        id="IsPackage"
+                        name="IsPackage"
+                        value={isPackageValue}
+                        className="checkbox"
+                        onChange={IsPackage}
+                      />
+                      <p className="text-left">
+                        &nbsp;การทำแพคเกจหัตถการผ่าตัด
+                      </p>
+                    </div>
                   <div className="flex items-center mt-2 ml-2">
                     <input
                       type="checkbox"
@@ -2576,15 +2735,359 @@ onChange={AnesthesiaList}
                   )}
                 </div>
               </div>
+            {/*  ) : (
+               ""
+             )} */}
+                          {/* //////////////////////////////////////////////////////////////////////////// */}
+                          {/* //////////////////////////////////////////////////////////////////////////// */}
+                          {/* //////////////////////////////////////////////////////////////////////////// */}
+                          {/* //////////////////////////////////////////////////////////////////////////// */}
+            <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
+                  <h1 className="font-black text-accent text-3xl ">
+                  Diagnosis
+                    <div
+                      className="btn btn-secondary text-base-100 text-xl ml-2"
+                      onClick={SummitEditDia}
+                    >
+                      <FaEdit />
+                    </div>
+                  </h1>
+                  <div className="grid gap-4 sm:grid-cols-4 w-full mt-4">
+                  </div>
+                  <TableContainer component={Paper} className="mt-2">
+                    <Table className="table">
+                      <TableHead>
+                        <TableRow className="bg-primary">
+                          <TableCell className="w-2"></TableCell>
+                          <TableCell>
+                            <h1 className="text-base-100  text-sm w-1/5 text-center">
+                           ICD10
+                            </h1>
+                          </TableCell>
+                          <TableCell>
+                            <h1 className="text-base-100  text-sm w-3/5 text-center">
+                            ชื่อของการวินิจฉัยโรค
+                            </h1>
+                          </TableCell>
+                          <TableCell></TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {rowsDia
+                          ? rowsDia.map(
+                              (dia, index) =>
+                                dia.Icd10  && (
+                                  <TableRow
+                                    key={index}
+                                    className=" bg-neutral text-sm"
+                                  >
+                                    <TableCell>{index + 1}</TableCell>
+                                    <TableCell>
+                                      <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                                        {dia.Icd10 === "" ? (
+                                          <>&nbsp;</>
+                                        ) : (
+                                          dia.Icd10
+                                        )}
+                                      </div>
+                                    </TableCell>
+                                    <TableCell>
+                                      <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                                        {dia.DxName === "" ? (
+                                          <>&nbsp;</>
+                                        ) : (
+                                          dia.DxName
+                                        )}
+                                      </div>
+                                    </TableCell>
+                                    <TableCell>
+                                      {summitEditDia === "true" ? (
+                                        <div
+                                          onClick={() => handleDeleteRowDia(index)}
+                                          className="btn btn-error text-base-100 text-xl"
+                                        >
+                                          <FaCircleMinus />
+                                        </div>
+                                      ) : (
+                                        ""
+                                      )}
+                                    </TableCell>
+                                  </TableRow>
+                                )
+                            )
+                          : ""}
+                        {summitEditDia === "true" ? (
+                          <>
+                            <TableRow>
+                              <TableCell>
+                                <FaCirclePlus className="text-xl" />
+                              </TableCell>
+
+                              <TableCell>
+                                <TextField
+                                  className="bg-base-100 w-full"
+                                  value={newRowDia.Icd10}
+                                  onChange={(e) =>
+                                    setNewRowDia({
+                                      ...newRowDia,
+                                      Icd10: e.target.value,
+                                    })
+                                  }
+                                  placeholder="Icd10"
+                                  //  required
+                                />
+                              </TableCell>
+                              <TableCell>
+                                <TextField
+                                  className="bg-base-100 w-full"
+                                  value={newRowDia.DxName}
+                                  onChange={(e) =>
+                                    setNewRowDia({
+                                      ...newRowDia,
+                                      DxName: e.target.value,
+                                    })
+                                  }
+                                  placeholder="DxName"
+                                  //   required
+                                />
+                              </TableCell>
+                              {newRowDia.Icd10 &&
+                              newRowDia.DxName  ? (
+                                <>
+                                  <TableCell>
+                                    <div
+                                      onClick={handleAddRowDia}
+                                      className="btn btn-success text-base-100 text-xl"
+                                    >
+                                      <FaCirclePlus />
+                                    </div>
+                                  </TableCell>
+                                </>
+                              ) : (
+                                ""
+                              )}
+                            </TableRow>
+                          </>
+                        ) : (
+                          ""
+                        )}
+                      </TableBody>
+                    </Table>
+                    <div className="grid gap-2 sm:grid-cols-4 text-base-100 bg-primary w-full whitespace-normal text-center">
+                      <div className="rounded-md"></div>
+                      <div className="rounded-md"></div>
+                      <div className="rounded-md "></div>
+                      <div className="rounded-md ">&nbsp;</div>
+                    </div>
+                  </TableContainer>
+                </div>
+           {/* //////////////////////////////////////////////////////////////////////////// */}
+                       {/* //////////////////////////////////////////////////////////////////////////// */}
+            {/* {procedure ? (
+              PatientInfoData.PatientInfo.SurgeryTypeCode === "Y" ? ( */}
+                <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
+                  <h1 className="font-black text-accent text-3xl ">
+                    Procedure
+                    <div
+                      className="btn btn-secondary text-base-100 text-xl ml-2"
+                      onClick={SummitEditProce}
+                    >
+                      <FaEdit />
+                    </div>
+                  </h1>
+                  <div className="grid gap-4 sm:grid-cols-4 w-full mt-4">
+                  <FormControl className="w-full">
+                <InputLabel id="demo-simple-select-label">
+                ชนิดของการดมยาสลบ
+                </InputLabel>
+                <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={anesthesiaListValue}
+                label="ชนิดของการดมยาสลบ"
+                onChange={AnesthesiaList}
+                >
+                {anesthesiaListCode
+                ? anesthesiaListCode.Result.map((code, index) => (
+                    <MenuItem key={index} value={code.aneslistcode}>
+                      {code.aneslistname}
+                    </MenuItem>
+                  ))
+                :    <MenuItem>
+                </MenuItem>
+                }
+                </Select>
+                </FormControl>
+                  </div>
+                  <TableContainer component={Paper} className="mt-2">
+                    <Table className="table">
+                      <TableHead>
+                        <TableRow className="bg-primary">
+                          <TableCell className="w-2"></TableCell>
+                          <TableCell>
+                            <h1 className="text-base-100  text-sm w-1/5 text-center">
+                              Icd9
+                            </h1>
+                          </TableCell>
+                          <TableCell>
+                            <h1 className="text-base-100  text-sm w-3/5 text-center">
+                              ชื่อของหัตถการหรือการผ่าตัด
+                            </h1>
+                          </TableCell>
+                          <TableCell>
+                            <h1 className="text-base-100  text-sm w-1/5 text-center">
+                              วันที่ทำหัตถการหรือทำการผ่าตัด
+                            </h1>
+                          </TableCell>
+                          <TableCell></TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {rows
+                          ? rows.map(
+                              (proce, index) =>
+                                proce.Icd9  && (
+                                  <TableRow
+                                    key={index}
+                                    className=" bg-neutral text-sm"
+                                  >
+                                    <TableCell>{index + 1}</TableCell>
+                                    <TableCell>
+                                      <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                                        {proce.Icd9 === "" ? (
+                                          <>&nbsp;</>
+                                        ) : (
+                                          proce.Icd9
+                                        )}
+                                      </div>
+                                    </TableCell>
+                                    <TableCell>
+                                      <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                                        {proce.ProcedureName === "" ? (
+                                          <>&nbsp;</>
+                                        ) : (
+                                          proce.ProcedureName
+                                        )}
+                                      </div>
+                                    </TableCell>
+                                    <TableCell>
+                                      <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                                        {proce.ProcedureDate === "" ? (
+                                          <>&nbsp;</>
+                                        ) : (
+                                          proce.ProcedureDate
+                                        )}
+                                      </div>
+                                    </TableCell>
+                                    <TableCell>
+                                      {summitEditProcedure === "true" ? (
+                                        <div
+                                          onClick={() => handleDeleteRow(index)}
+                                          className="btn btn-error text-base-100 text-xl"
+                                        >
+                                          <FaCircleMinus />
+                                        </div>
+                                      ) : (
+                                        ""
+                                      )}
+                                    </TableCell>
+                                  </TableRow>
+                                )
+                            )
+                          : ""}
+                        {summitEditProcedure === "true" ? (
+                          <>
+                            <TableRow>
+                              <TableCell>
+                                <FaCirclePlus className="text-xl" />
+                              </TableCell>
+
+                              <TableCell>
+                                <TextField
+                                  className="bg-base-100 w-full"
+                                  value={newRow.Icd9}
+                                  onChange={(e) =>
+                                    setNewRow({
+                                      ...newRow,
+                                      Icd9: e.target.value,
+                                    })
+                                  }
+                                  placeholder="Icd9"
+                                  //  required
+                                />
+                              </TableCell>
+                              <TableCell>
+                                <TextField
+                                  className="bg-base-100 w-full"
+                                  value={newRow.ProcedureName}
+                                  onChange={(e) =>
+                                    setNewRow({
+                                      ...newRow,
+                                      ProcedureName: e.target.value,
+                                    })
+                                  }
+                                  placeholder="ProcedureName"
+                                  //   required
+                                />
+                              </TableCell>
+                              <TableCell>
+                                <TextField
+                                  className="bg-base-100 w-full"
+                                  type="date"
+                                  value={newRow.ProcedureDate}
+                                  onChange={(e) =>
+                                    setNewRow({
+                                      ...newRow,
+                                      ProcedureDate: e.target.value,
+                                    })
+                                  }
+                                  placeholder="ProcedureDate"
+                                  //  required
+                                />
+                              </TableCell>
+                              {newRow.Icd9 &&
+                              newRow.ProcedureName &&
+                              newRow.ProcedureDate ? (
+                                <>
+                                  <TableCell>
+                                    <div
+                                      onClick={handleAddRow}
+                                      className="btn btn-success text-base-100 text-xl"
+                                    >
+                                      <FaCirclePlus />
+                                    </div>
+                                  </TableCell>
+                                </>
+                              ) : (
+                                ""
+                              )}
+                            </TableRow>
+                          </>
+                        ) : (
+                          ""
+                        )}
+                      </TableBody>
+                    </Table>
+                    <div className="grid gap-2 sm:grid-cols-4 text-base-100 bg-primary w-full whitespace-normal text-center">
+                      <div className="rounded-md"></div>
+                      <div className="rounded-md"></div>
+                      <div className="rounded-md "></div>
+                      <div className="rounded-md ">&nbsp;</div>
+                    </div>
+                  </TableContainer>
+                </div>
+               {/* ) : (
+                 ""
+               )
             ) : (
               ""
-            )}
+            )
+            }   */}
+                 {/* //////////////////////////////////////////////////////////////////////////// */}
             {/* //////////////////////////////////////////////////////////////////////////// */}
-            {PatientInfoData.PatientInfo.IllnessTypeCode === "ACC" ||
-            PatientInfoData.PatientInfo.IllnessTypeCode === "ER" ? (
-              accidentDetail ? (
-                <>
-                  <div className="justify-center border-solid w-4/5 m-auto border-2 border-error rounded-lg p-4 mt-2">
+            {/* {accidentDetail ? (
+                <> */}
+                    <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-error rounded-lg p-4 mt-2">
                     <h1 className="font-black text-error text-3xl ">
                       AccidentDetail{" "}
                       <div
@@ -2644,7 +3147,7 @@ onChange={AnesthesiaList}
                     <TableContainer component={Paper} className="mt-2">
                       <Table className="table">
                         <TableHead>
-                          {/* <TableRow className="bg-primary">
+                         <TableRow className="bg-primary">
                             <TableCell className="w-2"></TableCell>
                             <TableCell>
                               <h1 className="text-base-100  text-sm w-2/5 text-center">
@@ -2661,7 +3164,7 @@ onChange={AnesthesiaList}
                             ) : (
                               ""
                             )}
-                          </TableRow> */}
+                          </TableRow> 
                         </TableHead>
                         <TableBody>
                  
@@ -3111,240 +3614,293 @@ onChange={AnesthesiaList}
                       </div>
                     </TableContainer>
                   </div>
-                </>
+                {/* </>
               ) : (
                 ""
               )
-            ) : (
-              ""
-            )}
+           } */}
 
             {/* //////////////////////////////////////////////////////////////////////////// */}
-            <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
-              <h1 className="font-black text-accent text-3xl ">VitalSign</h1>
-              <div className="overflow-x-auto">
-                <table className="table mt-2">
-                  <thead>
-                    <tr className="text-base-100 bg-primary py-8 text-sm w-full text-center">
-                      <th></th>
-                      <th className="">วันเวลาที่วัดสัญญาณชีพ</th>
-                      <th>การเต้นของชีพจร</th>
-                      <th>ความเข้มข้นของออกซิเจนในเลือด</th>
-                      <th>คะแนนระดับของความเจ็บปวด</th>
-                      <th>อัตราการหายใจ</th>
-                      <th>ค่าความดันโลหิต</th>
-                      <th>อุณหภูมิร่างกาย</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {vitalsign ? (
-                      vitalsign.Result.VitalSignInfo.map(
-                        (vts, index) =>
-                          vts.VitalSignEntryDateTime  && (
-                            <tr key={index} className=" bg-neutral text-sm">
-                              <td>
-                                {vts.VitalSignEntryDateTime ? index + 1 : ""}
-                              </td>
-                              <td>
-                                <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                                  {vts.VitalSignEntryDateTime}
-                                </div>
-                              </td>
-                              <td>
-                                <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                                  {vts.HeartRate === "" ? (
-                                    <>&nbsp;</>
-                                  ) : (
-                                    vts.HeartRate + " bpm"
-                                  )}
-                                </div>
-                              </td>
-                              <td>
-                                <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                                  {vts.OxygenSaturation === "" ? (
-                                    <>&nbsp;</>
-                                  ) : (
-                                    vts.OxygenSaturation + " %"
-                                  )}
-                                </div>
-                              </td>
-                              <td>
-                                <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                                  {vts.PainScore === "" ? (
-                                    <>&nbsp;</>
-                                  ) : (
-                                    vts.PainScore
-                                  )}
-                                </div>
-                              </td>
-                              <td>
-                                <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                                  {vts.RespiratoryRate === "" ? (
-                                    <>&nbsp;</>
-                                  ) : (
-                                    vts.RespiratoryRate + " bt/min"
-                                  )}
-                                </div>
-                              </td>
-                              <td>
-                                <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                                  {vts.SystolicBp === "" ? (
-                                    <>&nbsp;</>
-                                  ) : (
-                                    vts.SystolicBp
-                                  )}{" "}
-                                  /{" "}
-                                  {vts.DiastolicBp === "" ? (
-                                    <>&nbsp;</>
-                                  ) : (
-                                    vts.DiastolicBp
-                                  )}
-                                </div>
-                              </td>
-                              <td>
-                                <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                                  {vts.Temperature === "" ? (
-                                    <>&nbsp;</>
-                                  ) : (
-                                    vts.Temperature + " °C"
-                                  )}
-                                </div>
-                              </td>
-                            </tr>
-                          )
-                      )
-                    ) : (
-                      <tr>
-                        <td></td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-              <div className="grid gap-2 sm:grid-cols-4 text-base-100 bg-primary w-full whitespace-normal text-center">
-                <div className="rounded-md"></div>
-                <div className="rounded-md"></div>
-                <div className="rounded-md "></div>
-                <div className="rounded-md ">&nbsp;</div>
-              </div>
-            </div>
-            {/* //////////////////////////////////////////////////////////////////////////// */}
-            <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
-              <h1 className="font-black text-accent text-3xl ">Doctor</h1>
-              <div className="overflow-x-auto">
-                <table className="table  mt-2">
-                  <thead>
-                    <tr className="text-base-100 bg-primary py-8 text-sm w-full text-center">
-                      <th></th>
-                      <th className="">
-                        เลขใบประกอบวิชาชีพแพทย์ผู้ให้การรักษา
-                      </th>
-                      <th>ชื่อ - นามสกุล แพทย์ผู้ให้การรักษา</th>
-                      <th>สถานะของแพทย์ผู้ให้การรักษา</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {doctor ? (
-                      doctor.Result.DoctorInfo.map(
-                        (dc, index) =>
-                          dc.DoctorLicense  && (
-                            <tr key={index} className=" bg-neutral text-sm">
-                              <td>{dc.DoctorLicense ? index + 1 : ""}</td>
-                              <td>
-                                {" "}
-                                <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                                  {dc.DoctorLicense}
-                                </div>
-                              </td>
-                              <td>
-                                <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                                  {dc.DoctorFirstName}
-                                </div>
-                              </td>
-                              <td>
-                                <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                                  {" "}
-                                  {dc.DoctorRole}
-                                </div>
-                              </td>
-                            </tr>
-                          )
-                      )
-                    ) : (
-                      <tr>
-                        <td></td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-              <div className="grid gap-2 sm:grid-cols-4 text-base-100 bg-primary w-full whitespace-normal text-center">
-                <div className="rounded-md"></div>
-                <div className="rounded-md"></div>
-                <div className="rounded-md "></div>
-                <div className="rounded-md ">&nbsp;</div>
-              </div>
-            </div>
-            {/* //////////////////////////////////////////////////////////////////////////// */}
-            <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
-              <h1 className="font-black text-accent text-3xl ">Diagnosis
-                    </h1>
-              <div className="overflow-x-auto">
-                <table className="table  mt-2">
-                  <thead>
-                    <tr className="text-base-100 bg-primary py-8 text-sm w-full text-center">
-                      <th></th>
-                      <th>รหัส</th>
-                      <th className="">ชื่อของการวินิจฉัยโรค</th>
-                      <th>ชนิดของการวินิจฉัยโรค</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {diagnosis ? (
-                      diagnosis.Result.DiagnosisInfo.map(
-                        (dns, index) =>
-                          dns.DxCode  && (
-                            <tr key={index} className=" bg-neutral text-sm">
-                              <td>{dns.DxCode ? index + 1 : ""}</td>
-                              <td>
-                                <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                                  {dns.DxCode}
-                                </div>
-                              </td>
-                              <td>
-                                <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                                  {dns.DxName}
-                                </div>
-                              </td>
-                              <td>
-                                <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                                  {dns.Dxtypenameinsurance}
-                                </div>
-                              </td>
-                            </tr>
-                          )
-                      )
-                    ) : (
-                      <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-              <div className="grid gap-2 sm:grid-cols-4 text-base-100 bg-primary w-full whitespace-normal text-center">
-                <div className="rounded-md"></div>
-                <div className="rounded-md"></div>
-                <div className="rounded-md "></div>
-                <div className="rounded-md ">&nbsp;</div>
-              </div>
-            </div>
              {/* //////////////////////////////////////////////////////////////////////////// */}
+             <div className="container mx-auto justify-center border-solid w-full m-auto border-2 border-warning rounded-lg p-4 mt-2">
+             <h1 className="font-black text-accent text-3xl ">
+                รายละเอียดค่ารักษาพยาบาล
+              
+              <div className="btn btn-secondary text-base-100 text-xl ml-2"
+                        onClick={SummitEditBill}
+                      >
+                        <FaEdit />
+                      </div>
+                      </h1>
+
+              <div className="overflow-x-auto">
+            <TableContainer component={Paper} className="mt-2">
+                      <Table className="table">
+                        <TableHead>
+                          <TableRow className="bg-primary">
+                            <TableCell className="w-2"></TableCell>
+                            <TableCell>
+                              <h1 className="text-base-100  text-sm w-2/5 text-center">
+                              Billing Sub-Group
+                              </h1>
+                            </TableCell>
+                            <TableCell>
+                              <h1 className="text-base-100  text-sm w-2/5 text-center">
+                              Price
+                              </h1>
+                            </TableCell>
+                            <TableCell>
+                            </TableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {/* {console.log(itemBillingDetails)} */}
+                          {itemBillingDetails
+                            ? itemBillingDetails.map(
+                                (cause, index) =>
+                                    <TableRow
+                                      key={index}
+                                      className=" bg-neutral text-sm"
+                                    >
+                                      <TableCell>{index + 1}</TableCell>
+                                      <TableCell>
+                                      <select  className="select select-bordered mt-2 x-3 py-2 border-2 bg-base-100 break-all w-full"    
+                                    // value={`${cause.LocalBillingCode}`}  
+                                       onChange={(e) =>
+                                        handleChangeBill(index, e)
+                                      }          
+                                     >
+                           <option>{cause.LocalBillingCode} - {cause.LocalBillingName}</option>
+                      {listBilling
+                  ? listBilling.ItemBillingCheckBalance.map((type, index) => (
+                              <option
+                                key={index}
+                                value={JSON.stringify(type)}>
+                                      {type.LocalBillingCode} - {type.LocalBillingName}
+                              </option>
+                            )
+                          )
+                        : ""}
+                    </select>
+                
+                                      </TableCell>
+                                      <TableCell>
+                                            <TextField
+                                              type="number"
+                                              className="bg-base-100 w-full m-2"
+                                              value={cause.BillingInitial}
+                                              onChange={(e) =>
+                                                handleChangeBillA2(index, e)
+                                              }
+                                            />
+                                      </TableCell>
+                                        <TableCell>
+                                          <div
+                                            onClick={() =>
+                                              handleDeleteBillingDetail(
+                                                index
+                                              )
+                                            }
+                                            className="btn btn-error text-base-100 text-xl"
+                                          >
+                                            <FaCircleMinus />
+                                          </div>
+                                        </TableCell>
+                                    </TableRow>
+                                  
+                              )
+                            : ""}
+
+{summitEditBill === "true" ? (
+                                          <>
+
+                              <TableRow>
+                                <TableCell>
+                                  <FaCirclePlus className="text-xl" />
+                                </TableCell>
+
+                                <TableCell>   
+                    <select  className="select select-bordered w-full mt-2"                
+onChange={(e) => { const selectedType = JSON.parse(e.target.value); 
+  // console.log(selectedType);
+  setNewItemBillingCheckBalance({ ...newItemBillingCheckBalance, 
+    LocalBillingCode: selectedType.LocalBillingCode, 
+    LocalBillingName: selectedType.LocalBillingName, 
+    SimbBillingCode: selectedType.SimbBillingCode,
+  }); }}
+
+                                     required>
+                      <option>- กรุณาเลือก -</option>
+                      {listBilling
+                  ? listBilling.ItemBillingCheckBalance.map((type, index) => (
+                              <option
+                                key={index}
+                                value={JSON.stringify(type)}>
+                                      {type.LocalBillingCode} - {type.LocalBillingName}
+                              </option>
+                            )
+                          )
+                        : ""}
+                    </select>
+                                </TableCell>
+                                <TableCell>
+                                <div className="m-2">
+                                  <TextField
+                                    type="number"
+                                    className="bg-base-100 w-full "
+                                    value={
+                                      newItemBillingCheckBalance.BillingInitial
+                                    }
+                                    onChange={(e) =>
+                                      
+                                      setNewItemBillingCheckBalance({
+                                        ...newItemBillingCheckBalance,
+                                        BillingInitial: e.target.value,
+                                      })
+                                    }
+                                    placeholder=""
+                                  />
+                                </div>
+                                </TableCell>
+                                {newItemBillingCheckBalance.LocalBillingCode ? (
+                                  <>
+                                    <TableCell>
+                                      <div
+                                        onClick={handleAddItemBillingDetail}
+                                        className="btn btn-success text-base-100 text-xl"
+                                      >
+                                        <FaCirclePlus />
+                                      </div>
+                                    </TableCell>
+                                  </>
+                                ) : (
+                                  ""
+                                )}
+                              </TableRow>
+                              </>) : ("")}
+                        </TableBody>
+                      </Table>
+              <div className="grid gap-2 sm:grid-cols-6  bg-primary w-full whitespace-normal text-center text-lg">
+                <div className=""></div>
+                <div className="rounded-md"></div>
+                <div className="rounded-md"></div>
+                {itemBillingDetails ? 
+                <div className="px-3 py-2 m-1 w-full btn btn-success text-base-100 hover:text-success hover:bg-base-100" type="submit" onClick={SubmitSumBilling}>รวมยอดเงิน</div> : <div></div>}
+                <div className="rounded-md px-3 py-2 border-2 bg-base-100 break-all m-1">{parseFloat(total).toLocaleString("en-US", {minimumFractionDigits: 2,maximumFractionDigits: 2})}</div>
+                <div className="rounded-md"></div>
+              </div>
+                {/* {fromTotalSum && (
+             <div className="grid gap-2 sm:grid-cols-6  bg-primary w-full whitespace-normal text-center text-lg">
+                <div className="rounded-md"></div>
+                <div className="rounded-md"></div>
+                <div className="rounded-md"></div>
+                <div className="rounded-md text-base-100 mt-4">จำนวนเงินที่คุ้มครอง</div>
+                <div className="rounded-md px-3 py-2 border-2 bg-base-100 break-all m-1">{totalApprovedAmount ? totalApprovedAmount : <CircularProgress size="30px" className="text-error text-lg" />}</div>
+                <div className="rounded-md"></div>
+                <div className="rounded-md"></div>
+                <div className="rounded-md"></div>
+                <div className="rounded-md"></div>
+                <div className="rounded-md text-base-100 mt-4">ส่วนเกินความคุ้มครอง</div>
+                <div className="rounded-md px-3 py-2 border-2 bg-base-100 break-all m-1">{totalExcessAmount ? totalExcessAmount : <CircularProgress size="30px" className="text-error text-lg" />}</div>
+              </div>
+              )   } */}
+              
+                    </TableContainer>
+                    </div>
+         </div>           
             {/* //////////////////////////////////////////////////////////////////////////// */}
-            <div className="container mx-auto justify-center border-solid w-full m-auto border-2 border-warning rounded-lg p-4 mt-2">
+            {/* //////////////////////////////////////////////////////////////////////////// */}
+            {/* <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
+              <h1 className="font-black text-accent text-3xl ">
+                รายละเอียดค่ารักษาพยาบาล
+              </h1>
+              <div className="overflow-x-auto">
+                <table className="table  mt-2">
+                  <thead>
+                    <tr className="text-base-100 bg-primary py-8 text-sm w-full text-center">
+                      <th></th>
+                      <th>SIMB</th>
+                      <th>รายละเอียดค่ารักษาพยาบาล</th>
+                      <th>จำนวนเงิน (ก่อนหักส่วนลด)</th>
+                      <th>ส่วนลด</th>
+                      <th>จำนวนเงิน (หลังหักส่วนลด)</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {billing ? (
+                      billing.Result.BillingInfo.map((bill, index) => (
+                        (bill.SimbBillingCode) && (
+                        <tr key={index} className=" bg-neutral text-sm">
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            {bill.SimbBillingCode ? index + 1 : ""}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                              {bill.SimbBillingCode ? (
+                                bill.SimbBillingCode
+                              ) : (
+                                <>&nbsp;</>
+                              )}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                              {bill.LocalBillingName ? (
+                                bill.LocalBillingName
+                              ) : (
+                                <>&nbsp;</>
+                              )}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                              {bill.BillingInitial ? (
+                                bill.BillingInitial
+                              ) : (
+                                <>&nbsp;</>
+                              )}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                              {bill.BillingDiscount ? (
+                                bill.BillingDiscount
+                              ) : (
+                                <>&nbsp;</>
+                              )}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                              {bill.BillingNetAmount ? (
+                                bill.BillingNetAmount
+                              ) : (
+                                <>&nbsp;</>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      )))
+                    ) : (
+                     ""
+                    )}
+                  </tbody>
+                </table>
+              </div>
+              <div className="grid gap-2 sm:grid-cols-6  bg-primary w-full whitespace-normal text-center text-lg">
+                <div className="rounded-md"></div>
+                <div className="rounded-md"></div>
+                <div className="rounded-md"></div>
+                <div className="rounded-md"></div>
+                <div className="rounded-md px-3 py-2 border-2 bg-base-100 break-all m-1">สรุปค่ารักษาพยาบาล</div>
+                <div className="rounded-md px-3 py-2 border-2 bg-base-100 break-all m-1">
+                  { billing ? billing.Result.TotalBillAmount : "" } 
+                </div>
+              </div>
+            </div> */}
+                        {/* //////////////////////////////////////////////////////////////////////////// */}
+                        {/* //////////////////////////////////////////////////////////////////////////// */}
+                        <div className="container mx-auto justify-center border-solid w-full m-auto border-2 border-warning rounded-lg p-4 mt-2">
                   <h1 className="font-black text-accent text-3xl ">
                   PreAuthNote
                     <div
@@ -3511,487 +4067,6 @@ onChange={AnesthesiaList}
                 </div>
             {/* //////////////////////////////////////////////////////////////////////////// */}
             {/* //////////////////////////////////////////////////////////////////////////// */}
-            {procedure ? (
-              PatientInfoData.PatientInfo.SurgeryTypeCode === "Y" ? (
-                <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
-                  <h1 className="font-black text-accent text-3xl ">
-                    Procedure
-                    <div
-                      className="btn btn-secondary text-base-100 text-xl ml-2"
-                      onClick={SummitEditProce}
-                    >
-                      <FaEdit />
-                    </div>
-                  </h1>
-                  <div className="grid gap-4 sm:grid-cols-4 w-full mt-4">
-                  <div className="rounded-md mt-2">
-<FormControl className="w-full">
-<InputLabel id="demo-simple-select-label">
-การทำแพคเกจหัตถการผ่าตัด
-</InputLabel>
-<Select
-labelId="demo-simple-select-label"
-id="demo-simple-select"
-value={isPackageValue}
-label="การทำแพคเกจหัตถการผ่าตัด"
-onChange={IsPackage}
->
-{isPackageCode
-? isPackageCode.map((code, index) => (
-    <MenuItem key={index} value={code.id}>
-      {code.IsPackageDesc}
-    </MenuItem>
-  ))
-:    <MenuItem>
-
-</MenuItem>
-}
-</Select>
-</FormControl>
-
-
-</div>
-                  </div>
-                  <TableContainer component={Paper} className="mt-2">
-                    <Table className="table">
-                      <TableHead>
-                        <TableRow className="bg-primary">
-                          <TableCell className="w-2"></TableCell>
-                          <TableCell>
-                            <h1 className="text-base-100  text-sm w-1/5 text-center">
-                              Icd 9 Code ของหัตถการหรือการผ่าตัด
-                            </h1>
-                          </TableCell>
-                          <TableCell>
-                            <h1 className="text-base-100  text-sm w-3/5 text-center">
-                              ชื่อของหัตถการหรือการผ่าตัด
-                            </h1>
-                          </TableCell>
-                          <TableCell>
-                            <h1 className="text-base-100  text-sm w-1/5 text-center">
-                              วันที่ทำหัตถการหรือทำการผ่าตัด
-                            </h1>
-                          </TableCell>
-                          <TableCell></TableCell>
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        {rows
-                          ? rows.map(
-                              (proce, index) =>
-                                proce.Icd9  && (
-                                  <TableRow
-                                    key={index}
-                                    className=" bg-neutral text-sm"
-                                  >
-                                    <TableCell>{index + 1}</TableCell>
-                                    <TableCell>
-                                      <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                                        {proce.Icd9 === "" ? (
-                                          <>&nbsp;</>
-                                        ) : (
-                                          proce.Icd9
-                                        )}
-                                      </div>
-                                    </TableCell>
-                                    <TableCell>
-                                      <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                                        {proce.ProcedureName === "" ? (
-                                          <>&nbsp;</>
-                                        ) : (
-                                          proce.ProcedureName
-                                        )}
-                                      </div>
-                                    </TableCell>
-                                    <TableCell>
-                                      <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                                        {proce.ProcedureDate === "" ? (
-                                          <>&nbsp;</>
-                                        ) : (
-                                          proce.ProcedureDate
-                                        )}
-                                      </div>
-                                    </TableCell>
-                                    <TableCell>
-                                      {summitEditProcedure === "true" ? (
-                                        <div
-                                          onClick={() => handleDeleteRow(index)}
-                                          className="btn btn-error text-base-100 text-xl"
-                                        >
-                                          <FaCircleMinus />
-                                        </div>
-                                      ) : (
-                                        ""
-                                      )}
-                                    </TableCell>
-                                  </TableRow>
-                                )
-                            )
-                          : ""}
-                        {summitEditProcedure === "true" ? (
-                          <>
-                            <TableRow>
-                              <TableCell>
-                                <FaCirclePlus className="text-xl" />
-                              </TableCell>
-
-                              <TableCell>
-                                <TextField
-                                  className="bg-base-100 w-full"
-                                  value={newRow.Icd9}
-                                  onChange={(e) =>
-                                    setNewRow({
-                                      ...newRow,
-                                      Icd9: e.target.value,
-                                    })
-                                  }
-                                  placeholder="Icd9"
-                                  //  required
-                                />
-                              </TableCell>
-                              <TableCell>
-                                <TextField
-                                  className="bg-base-100 w-full"
-                                  value={newRow.ProcedureName}
-                                  onChange={(e) =>
-                                    setNewRow({
-                                      ...newRow,
-                                      ProcedureName: e.target.value,
-                                    })
-                                  }
-                                  placeholder="ProcedureName"
-                                  //   required
-                                />
-                              </TableCell>
-                              <TableCell>
-                                <TextField
-                                  className="bg-base-100 w-full"
-                                  type="date"
-                                  value={newRow.ProcedureDate}
-                                  onChange={(e) =>
-                                    setNewRow({
-                                      ...newRow,
-                                      ProcedureDate: e.target.value,
-                                    })
-                                  }
-                                  placeholder="ProcedureDate"
-                                  //  required
-                                />
-                              </TableCell>
-                              {newRow.Icd9 &&
-                              newRow.ProcedureName &&
-                              newRow.ProcedureDate ? (
-                                <>
-                                  <TableCell>
-                                    <div
-                                      onClick={handleAddRow}
-                                      className="btn btn-success text-base-100 text-xl"
-                                    >
-                                      <FaCirclePlus />
-                                    </div>
-                                  </TableCell>
-                                </>
-                              ) : (
-                                ""
-                              )}
-                            </TableRow>
-                          </>
-                        ) : (
-                          ""
-                        )}
-                      </TableBody>
-                    </Table>
-                    <div className="grid gap-2 sm:grid-cols-4 text-base-100 bg-primary w-full whitespace-normal text-center">
-                      <div className="rounded-md"></div>
-                      <div className="rounded-md"></div>
-                      <div className="rounded-md "></div>
-                      <div className="rounded-md ">&nbsp;</div>
-                    </div>
-                  </TableContainer>
-                </div>
-              ) : (
-                ""
-              )
-            ) : (
-              ""
-            )}
-            {/* //////////////////////////////////////////////////////////////////////////// */}
-            <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
-              <h1 className="font-black text-accent text-3xl ">
-                Investigation
-              </h1>
-              <div className="overflow-x-auto">
-                <table className="table  mt-2">
-                  <thead>
-                    <tr className="text-base-100 bg-primary py-8 text-sm w-full text-center">
-                      <th></th>
-                      <th>รหัสอ้างอิง</th>
-                      <th>ชื่อกลุ่มของการตรวจทางห้องปฏิบัติการ</th>
-                      <th>ชื่อของการตรวจทางห้องปฏิบัติการ</th>
-                      <th>ผลของการตรวจทางห้องปฏิบัติการ</th>
-                      <th>วันเวลาที่แสดงผลของการตรวจทางห้องปฏิบัติการ</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {investigation ? (
-                      investigation.Result.InvestigationInfo.map(
-                        (inv, index) =>
-                          (inv.InvestigationCode) && (
-                            <tr key={index} className=" bg-neutral text-sm">
-                              <td>
-                              {index + 1}
-                              </td>
-                              <td>
-                                <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                                  {inv.InvestigationCode === "" ? (
-                                    <>&nbsp;</>
-                                  ) : (
-                                    inv.InvestigationCode
-                                  )}
-                                </div>
-                              </td>
-                              <td>
-                                <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                                  {inv.InvestigationGroup === "" ? (
-                                    <>&nbsp;</>
-                                  ) : (
-                                    inv.InvestigationGroup
-                                  )}
-                                </div>
-                              </td>
-                              <td>
-                                <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                                  {inv.InvestigationName === "" ? (
-                                    <>&nbsp;</>
-                                  ) : (
-                                    inv.InvestigationName
-                                  )}
-                                </div>
-                              </td>
-                              <td>
-                                <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                                  {inv.InvestigationResult === "" ? (
-                                    <>&nbsp;</>
-                                  ) : (
-                                    inv.InvestigationResult
-                                  )}
-                                </div>
-                              </td>
-                              <td>
-                                <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                                  {inv.ResultDateTime === "" ? (
-                                    <>&nbsp;</>
-                                  ) : (
-                                    inv.ResultDateTime
-                                  )}
-                                </div>
-                              </td>
-                            </tr>
-                          )
-                      )
-                    ) : (
-                      <tr>
-                        <td></td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-              <div className="grid gap-2 sm:grid-cols-4 text-base-100 bg-primary w-full whitespace-normal text-center">
-                <div className="rounded-md"></div>
-                <div className="rounded-md"></div>
-                <div className="rounded-md "></div>
-                <div className="rounded-md ">&nbsp;</div>
-              </div>
-            </div>
-            {/* //////////////////////////////////////////////////////////////////////////// */}
-            <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
-              <h1 className="font-black text-accent text-3xl ">OrderItem</h1>
-              <div className="overflow-x-auto">
-                <table className="table  mt-2">
-                  <thead>
-                    <tr className="text-base-100 bg-primary py-8 text-sm w-full text-center">
-                      <th></th>
-                      <th>รหัสของรายการ</th>
-                      <th>ชื่อรายการ</th>
-                      <th>Code ของรายการ</th>
-                      <th>ชื่อของรายการ</th>
-                      <th>จำนวนปริมาณของรายการ</th>
-                      <th>จำนวนเงินตั้งต้นของรายการ</th>
-                      <th>จำนวนส่วนลดของรายการ</th>
-                      <th>จำนวนเงินหลังหักส่วนลดของรายการ</th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {orderItemz ? (
-                      orderItemz.Result.OrderItemInfo.map((order, index) => (
-                        (order.ItemId) && (
-                        <tr key={index} className=" bg-neutral text-sm">
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            {order.ItemId ? index + 1 : ""}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                              {order.ItemId ? order.ItemId : <>&nbsp;</>}
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                              {order.ItemName ? order.ItemName : <>&nbsp;</>}
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                              {order.LocalBillingCode ? (
-                                order.LocalBillingCode
-                              ) : (
-                                <>&nbsp;</>
-                              )}
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                              {order.LocalBillingName ? (
-                                order.LocalBillingName
-                              ) : (
-                                <>&nbsp;</>
-                              )}
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                              {order.ItemAmount ? (
-                                order.ItemAmount
-                              ) : (
-                                <>&nbsp;</>
-                              )}
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                              {order.Initial ? order.Initial : <>&nbsp;</>}
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                              {order.Discount ? order.Discount : <>&nbsp;</>}
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                              {order.NetAmount ? order.NetAmount : <>&nbsp;</>}
-                            </div>
-                          </td>
-                        </tr>
-                      )) )
-                    ) : (
-                      <tr>
-                        <td></td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-              <div className="grid gap-2 sm:grid-cols-4 text-base-100 bg-primary w-full whitespace-normal text-center">
-                <div className="rounded-md"></div>
-                <div className="rounded-md"></div>
-                <div className="rounded-md "></div>
-                <div className="rounded-md ">&nbsp;</div>
-              </div>
-            </div>
-
-            {/* //////////////////////////////////////////////////////////////////////////// */}
-            <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
-              <h1 className="font-black text-accent text-3xl ">
-                รายละเอียดค่ารักษาพยาบาล
-              </h1>
-              <div className="overflow-x-auto">
-                <table className="table  mt-2">
-                  <thead>
-                    <tr className="text-base-100 bg-primary py-8 text-sm w-full text-center">
-                      <th></th>
-                      <th>SIMB</th>
-                      <th>รายละเอียดค่ารักษาพยาบาล</th>
-                      <th>จำนวนเงิน (ก่อนหักส่วนลด)</th>
-                      <th>ส่วนลด</th>
-                      <th>จำนวนเงิน (หลังหักส่วนลด)</th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {billing ? (
-                      billing.Result.BillingInfo.map((bill, index) => (
-                        (bill.SimbBillingCode) && (
-                        <tr key={index} className=" bg-neutral text-sm">
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            {bill.SimbBillingCode ? index + 1 : ""}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                              {bill.SimbBillingCode ? (
-                                bill.SimbBillingCode
-                              ) : (
-                                <>&nbsp;</>
-                              )}
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                              {bill.LocalBillingName ? (
-                                bill.LocalBillingName
-                              ) : (
-                                <>&nbsp;</>
-                              )}
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                              {bill.BillingInitial ? (
-                                bill.BillingInitial
-                              ) : (
-                                <>&nbsp;</>
-                              )}
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                              {bill.BillingDiscount ? (
-                                bill.BillingDiscount
-                              ) : (
-                                <>&nbsp;</>
-                              )}
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                              {bill.BillingNetAmount ? (
-                                bill.BillingNetAmount
-                              ) : (
-                                <>&nbsp;</>
-                              )}
-                            </div>
-                          </td>
-                        </tr>
-                      )))
-                    ) : (
-                      <tr>
-                        <td></td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-              <div className="grid gap-2 sm:grid-cols-6  bg-primary w-full whitespace-normal text-center text-lg">
-                <div className="rounded-md"></div>
-                <div className="rounded-md"></div>
-                <div className="rounded-md"></div>
-                <div className="rounded-md"></div>
-                <div className="rounded-md px-3 py-2 border-2 bg-base-100 break-all m-1">สรุปค่ารักษาพยาบาล</div>
-                <div className="rounded-md px-3 py-2 border-2 bg-base-100 break-all m-1">
-                  { billing ? billing.Result.TotalBillAmount : "" } 
-                </div>
-              </div>
-            </div>
-            {/* //////////////////////////////////////////////////////////////////////////// */}
             <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
               <h1 className="font-black text-accent text-3xl ">Upload File</h1>
               <div className="overflow-x-auto mt-6">
@@ -4099,7 +4174,7 @@ onChange={IsPackage}
                   <div className="rounded-md "></div>
                   <div className="rounded-md ">&nbsp;</div>
                 </div>
-                {fileList ? (fileList.length >= 1 && dscDateTime && expectedAdmitDate && admitDateTime) ? (
+                {/* {fileList ? (fileList.length >= 1 && dscDateTime && expectedAdmitDate && admitDateTime) ? ( */}
                     <div className="py-2">
                     <div className="text-right">
                       <button
@@ -4110,7 +4185,7 @@ onChange={IsPackage}
                       </button>
                     </div>
                   </div>
-                ) : "" : ""}
+                {/* ) : "" : ""} */}
               </div>
             </div>
           </form>
