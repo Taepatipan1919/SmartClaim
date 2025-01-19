@@ -93,7 +93,7 @@ export default function Page({ data }) {
   const [numberBilling, setNumberBilling] = useState(false);
   const [orderItemz, setOrderItemz] = useState("");
   const [showModal, setShowModal] = useState(false);
-  const [showArrowVN, setShowArrowVN] = useState("");
+
   
   const [anesthesiaListValue, setAnesthesiaListValue] = useState("");
   const [anesthesiaListCode, setAnesthesiaListCode] = useState("");
@@ -1824,20 +1824,9 @@ if(rows){
     useEffect(() => {
       setCountorderItemz(dataorderItemz.length);
     }, [dataorderItemz]);
-    console.log(dataorderItemz)
+    // console.log(dataorderItemz)
     /////////////////////////////////////////////////////////////////////
 
-
-  const ArrowOpen = (e) =>{
-  //  console.log(e)
-    // console.log(showArrow)
-    setShowArrowVN(e.VN)
-    if(showArrow === false){
-      setShowArrow(true)
-    }else{
-      setShowArrow(false)
-    }
-  }
 
     const IsIPDDischarge = () =>{
     if(isIPDDischargeValue === false){

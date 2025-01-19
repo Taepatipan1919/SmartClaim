@@ -34,7 +34,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { FaCloudUploadAlt } from "react-icons/fa";
-import DetailDischarge from "../submitBilling/detailDischarge";
+import DetailDischarge from "../eligible/detailDischarge";
 import { BiFirstPage, BiLastPage } from "react-icons/bi";
 import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
@@ -45,6 +45,7 @@ export default function checkData() {
   const [transactionClaimInfo, setTransactionClaimInfo] = useState("");
   const [base64, setBase64] = useState("");
   const [itemBillingDetails, setItemBillingDetails] = useState("");
+  const [detailData, setDetailData] = useState("");
   const [listBilling, setListBilling] = useState();
   const dispatch = useDispatch();
   const [selectData, setSelectData] = useState("");
@@ -60,7 +61,8 @@ export default function checkData() {
   const [fromValue, setFromValue] = useState(null);
   const [selectPRETypeValue, setSelectPRETypeValue] = useState("");
   const [preAuthTransactionList, setPreAuthTransactionList] = useState("");
-
+  const [dataSelect, setDataSelect] = useState("");
+  
 
   const [toValue, setToValue] = useState(null);
   const [massError, setMassError] = useState("");
@@ -267,6 +269,7 @@ export default function checkData() {
   };
 
   const SelectPRE = (event) => {
+    setListClaimForm("");
     setSelectPRETypeValue("");
     if(event.target.value){
     const Datavalue = JSON.parse(event.target.value);
@@ -280,7 +283,7 @@ export default function checkData() {
 
   };
   const NotSelectPRE = (event) => {
-
+    setListClaimForm("");
     setSelectPRETypeValue("");
     setFormPRE(false);
 };
@@ -772,11 +775,98 @@ axios
     }
   };
   const confirmButton = (data) => {
-    console.log(data)
-
+    console.log(dataSelect)
+    // console.log(data)
     
     const [RefId, TransactionNo,PreauthReferClaimNo,PreauthReferOcc] = data.split(" | ");
-      
+
+
+
+    const PatientInfo = {
+      Insurerid: InsuranceCode,
+      PID: dataSelect.PID,
+      PassportNumber: dataSelect.PassportNumber,
+      IdType: dataSelect.IdType,
+      ServiceSettingCode: dataSelect.ServiceSettingCode,
+      VN: dataSelect.VN,
+      HN: dataSelect.HN,
+      VisitDatefrom: dataSelect.VisitDate,
+      VisitDateto: "",
+    };
+        //  console.log(PatientInfo)
+
+    axios
+      .post(
+        process.env.NEXT_PUBLIC_URL_PD +
+          process.env.NEXT_PUBLIC_URL_PatientSearch,
+          {
+            PatientInfo
+          }
+      )
+      .then((response) => {
+         const PatientSearch = response.data.Result.PatientInfo[0];
+          // console.log(PatientSearch)
+        dispatch(
+          save2({
+            value: "มีรายชื่อ",
+            Data: {
+              IdType: PatientInfo.IdType,
+              InsurerCode: PatientInfo.InsuranceCode,
+              DateOfBirth: PatientSearch.DateOfBirth,
+              Gender: PatientSearch.Gender,
+              GivenNameEN: PatientSearch.GivenNameEN,
+              GivenNameTH: PatientSearch.GivenNameTH,
+              HN: PatientSearch.HN,
+              MobilePhone: PatientSearch.MobilePhone,
+              PID: PatientSearch.PID,
+              PassportNumber: PatientSearch.PassportNumber,
+              SurnameEN: PatientSearch.SurnameEN,
+              SurnameTH: PatientSearch.SurnameTH,
+              TitleEN: PatientSearch.TitleEN,
+              TitleTHc: PatientSearch.TitleTH,
+            },
+          })
+        );
+      })
+      .catch((error) => {
+        console.log(error);
+        setShowFormError("Error");
+        //setMassError(error.response.data.HTTPStatus.message);
+        setMassError(
+          error.response?.data?.HTTPStatus?.message || "Unknown error"
+        );
+      });
+
+
+          dispatch(
+            save({
+              value: "มีข้อมูล",
+              Data: {
+                RefId: RefId,
+                TransactionNo: TransactionNo,
+                VN: dataSelect.VN,
+                InsurerCode: InsuranceCode,
+                ServiceSettingCode: dataSelect.ServiceSettingCode,
+                IllnessTypeCode: dataSelect.IllnessTypeCode,
+                SurgeryTypeCode: dataSelect.SurgeryTypeCode,
+                PolicyTypeCode: dataSelect.PolicyTypeCode,
+                AccidentDate: dataSelect.AccidentDate,
+                VisitDateTime: dataSelect.VisitDateTime,
+                IsIPDDischarge: dataSelect.IsIPDDischarge,
+                PreauthReferClaimNo: PreauthReferClaimNo,
+                PreauthReferOcc: PreauthReferOcc,     
+                Runningdocument: dataSelect.Runningdocument,
+                Visitlocation: dataSelect.Visitlocation,
+                TotalBillAmount : dataSelect.TotalBillAmount,
+                TotalExcessAmount:  dataSelect.TotalExcessAmount,
+              },
+            })
+          );
+       
+
+     router.push("/aia/eligible");
+          
+ 
   
   };
 
@@ -962,9 +1052,10 @@ axios
   };
 
   const Detail2 = (data) => {
-          //  console.log(data)
+            console.log(data)
            setSelectData(data)
     //console.log("-Detail-")
+    setDataSelect(data);
     setShowFormError();
     setPreAuthTransactionList();
     setFormPRE(false)
@@ -1054,10 +1145,10 @@ axios
             setSelectPRETypeValue("");
           const  PatientInfo = {
               InsurerCode: InsuranceCode, 
-              // RefId: data.RefId,
-              // TransactionNo: data.TransactionNo,
-              RefId: "ZnjsqdlIujcXdPQelfw0co6JKVudw7myrq2lp60UrhMjaJ2vad4+6pDrbeaHmBfn",
-              TransactionNo: "447567cd-8d8c-421c-89e6-d09d9d23c0c3",
+              RefId: data.RefId,
+              TransactionNo: data.TransactionNo,
+              // RefId: "ZnjsqdlIujcXdPQelfw0co6JKVudw7myrq2lp60UrhMjaJ2vad4+6pDrbeaHmBfn",
+              // TransactionNo: "447567cd-8d8c-421c-89e6-d09d9d23c0c3",
               HN: "",
               VN:""
             }
@@ -1095,12 +1186,41 @@ axios
     })
           
           }else{
-            console.log("Dis")  
-     // router.push("/aia/eligible");
+            // console.log("Dis")  
+      router.push("/aia/eligible");
           }
  
   };
-
+  const Detail3 = (data) => {
+    //  console.log(data)
+      setShowFormError();
+    //  const [RefId, TransactionNo, PID, PassportNumber, HN, VN, 
+    //    InvoiceNumber,PolicyTypeCode, IdType, IllnessTypeCode, ServiceSettingCode, SurgeryTypeCode, FurtherClaimNo, FurtherClaimId, AccidentDate, VisitDateTime] = data.split(" | ");
+      setDetailData(data
+      //   {
+      //   RefId: RefId,
+      //   TransactionNo: TransactionNo,
+      //   HN: HN,
+      //   VN: VN,
+      //   GivenNameEN: "",
+      //   GivenNameTH: "",
+      //   IllnessType: "",
+      //   SurnameEN: "",
+      //   SurnameTH: "",
+      //   TitleEN: "",
+      //   TitleTH: "",
+      //   VisitDateTime: VisitDateTime,
+      //   IdType : IdType,
+      //   PID: PID,
+      //   PassportNumber: PassportNumber,
+      //   SurgeryTypeCode: "",
+      //   FurtherClaimNo: "",
+      //   FurtherClaimId: "",
+      //   DateOfBirth: "",
+      // }
+      );
+  
+    };
 
 
   const DocumentBase64 = (data) => {
@@ -1914,7 +2034,7 @@ axios
                           </td>
                           <td className="whitespace-nowrap">{bill.HN} <br/> {bill.VN}</td>
                           <td className="">{bill.VisitLocation}</td>
-                          <td className="whitespace-nowrap">{bill.ClaimNo} <br/>  ( {bill.ServiceSettingCode} )</td>
+                          <td className="whitespace-nowrap">{bill.ClaimNo} <br/>  ( {bill.ServiceSettingCode} {bill.IsIPDDischarge === true ? "Final" : ""} )</td>
                           <td className="whitespace-nowrap">{bill.InvoiceNumber}</td>
                           <td className="whitespace-nowrap">
                             {
@@ -2077,7 +2197,9 @@ axios
                                 ((bill.ClaimStatusDesc === "Received" || bill.ClaimStatusDesc === "waitting for discharge") && bill.ClaimStatusDesc !== "Cancelled to AIA") ||
                                 ((bill.ClaimStatusDesc === "waitting discharge" || bill.ClaimStatusDesc === "waitting for discharge") && bill.ClaimStatusDesc !== "Cancelled to AIA") ||
                                 bill.ClaimStatusDesc === "Pending" ? (
-                                <>
+                                  ((bill.IsIPDDischarge === false)||(bill.IsIPDDischarge === null)) ?
+                                
+                              
                                   <div
                                     className="tooltip ml-4"
                                     data-tip="ข้อมูลส่งเคลม"
@@ -2087,8 +2209,23 @@ axios
                                     )} 
                                   {/* <h1 className="text-primary text-2xl" onClick={() => Detail(bill)}><IoDocumentText /></h1> */}
                                   </div>
-                                  <br/>
-                                </>
+                                   : 
+                                  <div className="tooltip ml-4" data-tip="ข้อมูลส่งเคลม">
+                                                          <h1
+                                                            className="text-primary text-2xl"
+                                                            onClick={() =>
+                                                              Detail3(bill
+                                                             //    `${bill.RefId} | ${bill.TransactionNo} | ${bill.PID} | ${bill.PassportNumber} | ${bill.HN} | ${bill.VN} | ${bill.InvoiceNumber} | ${bill.PolicyTypeCode} | ${bill.IdType} | ${bill.IllnessTypeCode} | ${bill.ServiceSettingCode} | ${bill.SurgeryTypeCode} | ${bill.FurtherClaimNo} | ${bill.FurtherClaimId} | ${bill.AccidentDate} | ${bill.VisitDateTime} | ${bill.VisitDate} | ${bill.Runningdocument} | ${bill.futherclaimVN} | ${bill.Visitlocation}`
+                                                              )
+                                                            }
+                                                          >
+                                                            <IoDocumentText />
+                                                          </h1>
+                                                        </div>
+
+
+                                  
+                                
                               ) : (
                                 ""
                               )
@@ -2426,6 +2563,11 @@ axios
             </div>
           </dialog>
 
+
+          {detailData ? <DetailDischarge data={detailData} /> : ""}
+
+
+
           <dialog id="DoMoney" className="modal text-xl	">
             <div className="modal-box max-w-7xl">
               <form method="dialog">
@@ -2743,6 +2885,7 @@ onChange={(e) => { const selectedType = JSON.parse(e.target.value);
                 </div> 
             </div> 
             <div className="flex justify-end p-4">
+              {listClaimForm ?
                 <div
                   className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 "
                   onClick={() =>
@@ -2752,7 +2895,18 @@ onChange={(e) => { const selectedType = JSON.parse(e.target.value);
                   }
                   >
                   ยืนยัน
-                </div>
+                </div> : 
+                 <div
+                 className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 "
+                 onClick={() =>
+                   confirmButton(
+                     `${selectData.RefId} | ${selectData.TransactionNo} |  | `
+                   )
+                 }
+                 >
+                 ยืนยัน
+               </div>
+                }
               </div>
               {((showFormCheckEligibleError)) === "Error" ? (
               <div
