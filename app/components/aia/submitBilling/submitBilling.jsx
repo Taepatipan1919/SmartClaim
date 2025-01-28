@@ -155,8 +155,8 @@ setBilltype(Billtype)
         { PatientInfo }
       )
       .then((response) => {
-        setPost(response.data);
-        setCurrentData(response.data.Result.TransactionClaimInfo)
+        setPost(response.data.Result.TransactionClaimInfo);
+        setCurrentData(response.data.Result.TransactionClaimInfo);
        // console.log(response.data)
        // setShowFormError();
       })
@@ -396,8 +396,8 @@ axios
     { PatientInfo }
   )
   .then((response) => {
-    setPost(response.data);
-    console.log(response.data);
+    setPost(response.data.Result.TransactionClaimInfo);
+    console.log(response.data.Result.TransactionClaimInfo);
     setCurrentData(response.data.Result.TransactionClaimInfo);
     setShowFormError();
   })
@@ -726,7 +726,7 @@ axios
     //   setShowFormError("Error");
     //   setMassError("กรุณากรอก ข้อความที่จะค้นหาให้ครบ");
     // }
-console.log(PatientInfo)
+// console.log(PatientInfo)
   
 
     if(PatientInfo){
@@ -739,8 +739,16 @@ console.log(PatientInfo)
          { PatientInfo }
        )
        .then((response) => {
-         setPost(response.data);
-       //  console.log(response.data);
+
+        if(serviceValue === "IPD"){
+          const filteredClaims = response.data.Result.TransactionClaimInfo.filter(claim => claim.IsIPDDischarge === true);
+          setPost(filteredClaims);
+          // console.log(filteredClaims);
+        }else{
+          setPost(response.data.Result.TransactionClaimInfo);
+        }
+         
+      
          setCurrentData(response.data.Result.TransactionClaimInfo)
          setShowFormError();
        })
@@ -898,7 +906,7 @@ axios
     DocumentName : "",
     Runningdocument : "",
   }
-  //console.log(PatientInfo)
+  // console.log(PatientInfo)
   axios
     .post(
       process.env.NEXT_PUBLIC_URL_PD2 +
@@ -935,13 +943,6 @@ axios
   }
 });
 
-
-
-
-
-
-
-
 /////////////////////////////////////////////////////
     axios
       .post(
@@ -968,14 +969,6 @@ axios
         const url = URL.createObjectURL(blob);
         window.open(url);
 
-        // console.log(response.data)
-        //   const base64String = response.data.base64;
-
-        // const linkSource = `data:application/pdf;base64,${base64String}`;
-        //   const pdfWindow = window.open();
-        //   pdfWindow.document.write(
-        //       `<iframe width='100%' height='99%' src='${linkSource}'></iframe>`
-        // );
       })
       .catch((error) => {
         console.log(error);
@@ -1233,7 +1226,7 @@ axios
            { PatientInfo }
          )
          .then((response) => {
-           setPost(response.data);
+           setPost(response.data.Result.TransactionClaimInfo);
          //  console.log(response.data);
            setCurrentData(response.data.Result.TransactionClaimInfo)
            setShowFormError();
@@ -1474,10 +1467,8 @@ axios
               </tr>
             </thead>
             <tbody>
-               {/* {console.log(billValue)} */}
             {post ? (
-    post.HTTPStatus.statusCode === 200 ? (
-      data.map((bill, index) => 
+      post.map((bill, index) => 
       ((bill.VisitDate||bill.HN) !== "" && 
         ((billValue === "ทั้งหมด") ?(
                     <tr className="hover text-center" key={index}>
@@ -1686,7 +1677,7 @@ axios
                     ) : ""
         ))
         )
-                  ): "")  : (
+                  )  : (
                   <tr>
                     <th></th>
                     <th></th>
@@ -1701,7 +1692,7 @@ axios
       <div className="grid gap-1 sm:grid-cols-2 w-full mt-4">
       <div className="flex justify-between text-right">
         <div className="text-right">
-          <h1 className="text-lg">Showing {startIndex+1} to {endIndex} of {post ? post.Result.TransactionClaimInfo.length : ""} entries.</h1>
+          <h1 className="text-lg">Showing {startIndex+1} to {endIndex} of {post ? post.length : ""} entries.</h1>
         </div>
       </div>
       <div className="text-right text-base-100 ">
@@ -1800,8 +1791,8 @@ axios
             <tbody>
               {/* {console.log(billValue)} */}
             {post ? (
-    post.HTTPStatus.statusCode === 200 ? (
-      data.map((bill, index) => 
+
+post.map((bill, index) => 
       ((bill.VisitDate||bill.HN) !== "" && 
  (!bill.BatchNumber ? (
   //  console.log("ยังไม่วางบิล")
@@ -1822,41 +1813,41 @@ axios
   (statusNew ? (bill.TransactionNo === statusNew.TransactionNo ? statusNew.BatchNumber : bill.BatchNumber): "Loading...")}
     </td>
     <td>
-    <div className="grid gap-1 sm:grid-cols-1 w-full">
+    <div className="grid gap-1 sm:grid-cols-1 w-full  break-all">
     {
                         (statusNew ? bill.TransactionNo === statusNew.TransactionNo ? statusNew.ClaimStatusDesc ?  (((statusNew.ClaimStatus !== "Cancelled")&&(statusNew.ClaimStatus !== "Cancelled to AIA")&&(statusNew.ClaimStatus !== "Reversed")) ? ((statusNew.ClaimStatus === "Approved")||(statusNew.ClaimStatus === "Settle")) ? <a className="bg-info text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatus}</a> : 
                         ((statusNew.ClaimStatus === "Approve")||(statusNew.ClaimStatus === "Received")||(statusNew.ClaimStatus === "Pending") || (statusNew.ClaimStatus === "AddDoc")) ? 
 
                         statusNew.ClaimStatus === "Pending" ? (
-                          <a className="bg-accent text-base-100 rounded-full px-3 py-2 w-full">
+                          <a className="bg-accent text-base-100 rounded-full px-3 py-2 w-full  break-all">
                             {statusNew.ClaimStatus}
                           </a>
                         )
                          :  (
-                          <a className="bg-success text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatus}</a>
+                          <a className="bg-success text-base-100 rounded-full px-3 py-2 break-all">{statusNew.ClaimStatus}</a>
                         ) 
                         : (
-                        <a className="bg-warning rounded-full px-3 py-2">{statusNew.ClaimStatus}</a>
+                        <a className="bg-warning rounded-full px-3 py-2 break-all">{statusNew.ClaimStatus}</a>
                       )
-                         : <a className="bg-error text-base-100 rounded-full px-3 py-2">{statusNew.ClaimStatus}</a>): "" : bill.ClaimStatusDesc ? 
+                         : <a className="bg-error text-base-100 rounded-full px-3 py-2 break-all">{statusNew.ClaimStatus}</a>): "" : bill.ClaimStatusDesc ? 
                         (((bill.ClaimStatusDesc_EN !== "Cancelled")&&(bill.ClaimStatusDesc_EN !== "Cancelled to AIA")&&(bill.ClaimStatusDesc_EN !== "Reversed")) ? ((bill.ClaimStatusDesc_EN === "Approved")||(bill.ClaimStatusDesc_EN === "Settle")) ? <a className="bg-info text-base-100 rounded-full px-3 py-2">{bill.ClaimStatusDesc_EN}</a> : 
                      ((bill.ClaimStatusDesc_EN === "Approve")||(bill.ClaimStatusDesc_EN === "Received")|| (bill.ClaimStatusDesc_EN === "Pending") || (bill.ClaimStatusDesc_EN === "AddDoc")) ? (
                         bill.ClaimStatusDesc_EN === "Pending" ? (
-                        <a className="bg-accent text-base-100 rounded-full px-3 py-2 w-full">
+                        <a className="bg-accent text-base-100 rounded-full px-3 py-2 w-full break-all">
                           {bill.ClaimStatusDesc_EN}
                         </a>
                       )
                        : ( 
-                       <a className="bg-success text-base-100 rounded-full px-3 py-2 w-full">
+                       <a className="bg-success text-base-100 rounded-full px-3 py-2 w-full break-all">
                         {bill.ClaimStatusDesc_EN}
                       </a>
                       )
                        )
 
                         : (
-                      <a className="bg-warning rounded-full px-3 py-2">{bill.ClaimStatusDesc_EN}</a>  
+                      <a className="bg-warning rounded-full px-3 py-2 break-all">{bill.ClaimStatusDesc_EN}</a>  
                       )
-                       : <a className="bg-error text-base-100 rounded-full px-3 py-2">{bill.ClaimStatusDesc_EN}</a>): "": "Loading...")}
+                       : <a className="bg-error text-base-100 rounded-full px-3 py-2 break-all">{bill.ClaimStatusDesc_EN}</a>): "": "Loading...")}
                  
 
 
@@ -1865,8 +1856,11 @@ axios
                       </div>
     </td>
     <th>
-    {bill.TotalApprovedAmount
-        ? parseFloat(bill.TotalApprovedAmount).toLocaleString('en-US', {
+    {bill.TotalBillAmount
+        ? parseFloat(
+           //statusAllNew ? (statusAllNew.map(ALLnew => (ALLnew.TransactionNo === ((bill.TransactionNo)||(statusNew.TransactionNo)) ? (ALLnew.TotalBillAmount) : (bill.TotalBillAmount)))):
+           (statusNew ? bill.TransactionNo === statusNew.TransactionNo ? statusNew.TotalBillAmount : (bill.TotalBillAmount ? (bill.TotalBillAmount): ("")): "Loading...")
+        ).toLocaleString('en-US', {
           minimumFractionDigits: 2,
           maximumFractionDigits: 2,
         })
@@ -1881,16 +1875,13 @@ axios
         })
         : ""} */}
 
-        {bill.TotalBillAmount
-        ? parseFloat(
-           //statusAllNew ? (statusAllNew.map(ALLnew => (ALLnew.TransactionNo === ((bill.TransactionNo)||(statusNew.TransactionNo)) ? (ALLnew.TotalBillAmount) : (bill.TotalBillAmount)))):
-           (statusNew ? bill.TransactionNo === statusNew.TransactionNo ? statusNew.TotalBillAmount : (bill.TotalBillAmount ? (bill.TotalBillAmount): ("")): "Loading...")
-        ).toLocaleString('en-US', {
+
+    {bill.TotalApprovedAmount
+        ? parseFloat(bill.TotalApprovedAmount).toLocaleString('en-US', {
           minimumFractionDigits: 2,
           maximumFractionDigits: 2,
         })
         : ""}
-
     </th>
     <th>
       {bill.TotalExcessAmount
@@ -2000,7 +1991,7 @@ axios
   </tr>
   ): "")
         ))
-        ) : ""): (
+        ): (
                   <tr>
                     <th></th>
                     <th></th>
@@ -2015,7 +2006,7 @@ axios
       <div className="grid gap-1 sm:grid-cols-2 w-full mt-4">
       <div className="flex justify-between text-right">
         <div className="text-right">
-          <h1 className="text-lg">Showing {startIndex+1} to {endIndex} of {post ? post.Result.TransactionClaimInfo.length : ""} entries.</h1>
+          <h1 className="text-lg">Showing {startIndex+1} to {endIndex} of {post ? post.length : ""} entries.</h1>
         </div>
       </div>
       <div className="text-right text-base-100 ">
@@ -2111,8 +2102,7 @@ axios
             <tbody>
               {/* {console.log(billValue)} */}
             {post ? (
-    post.HTTPStatus.statusCode === 200 ? (
-      data.map((bill, index) => 
+      post.map((bill, index) => 
       ((bill.VisitDate||bill.HN) !== "" && 
  (bill.BatchNumber ? (
   //  console.log("ยังไม่วางบิล")
@@ -2303,7 +2293,7 @@ axios
   </tr>
   ): "")
         ))
-        ) : ""): (
+        ): (
                   <tr>
                     <th></th>
                     <th></th>
@@ -2318,7 +2308,7 @@ axios
       <div className="grid gap-1 sm:grid-cols-2 w-full mt-4">
       <div className="flex justify-between text-right">
         <div className="text-right">
-          <h1 className="text-lg">Showing {startIndex+1} to {endIndex} of {post ? post.Result.TransactionClaimInfo.length : ""} entries.</h1>
+          <h1 className="text-lg">Showing {startIndex+1} to {endIndex} of {post ? post.length : ""} entries.</h1>
         </div>
       </div>
       <div className="text-right text-base-100 ">
@@ -2626,11 +2616,11 @@ axios
                       {billList ? (
                         billList.map((list, index) => (
                           <tr key={index} className=" bg-neutral text-sm">
-                            <td className="px-6 py-4 break-words">
+                            <td className="px-6 py-4 break-all">
                               {list.filename}
                               <br/>{list.originalname}
                             </td>
-                            <td className="px-6 py-4 break-words">
+                            <td className="px-6 py-4 break-all">
                             {
                   
                               docType.Result.map((type,index) => 
@@ -2640,7 +2630,7 @@ axios
                             ) 
                           }
                           </td>
-                          <td className="px-6 py-4 break-words flex items-center">
+                          <td className="px-6 py-4 break-all flex items-center">
                         
                                 <div
                                   className="btn btn-primary  mr-2 text-base-100 hover:text-primary hover:bg-base-100"

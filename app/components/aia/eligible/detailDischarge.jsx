@@ -24,8 +24,29 @@ export default function DetailDischarge({ data }) {
       },
     },
   };
-     console.log(data)
-     const InsuranceCode = 13;
+    //  console.log(data)
+    const InsuranceCode = 13;
+ const  PatientInfo= {
+    InsurerCode: InsuranceCode, 
+   RefId: data.RefId,
+    TransactionNo: data.TransactionNo,
+            
+    PID: data.PID,
+    HN: data.HN,
+    GivenNameTH: data.GivenNameTH,
+    SurnameTH: data.SurnameTH,
+    DateOfBirth: data.DateOfBirth,
+    PassportNumber: data.PassportNumber,
+    IdType: data.IdType,
+    VN: data.VN,
+    VisitDateTime: data.VisitDateTime,
+    AccidentDate: data.AccidentDate,
+    PolicyTypeCode: data.PolicyTypeCode,
+    ServiceSettingCode: data.ServiceSettingCode, 
+    IllnessTypeCode: data.IllnessTypeCode,
+    SurgeryTypeCode:  data.SurgeryTypeCode
+    }
+   
      const [massError, setMassError] = useState("");
      const [showFormError, setShowFormError] = useState("");
   const [patientInfo, setPatientInfo] = useState({});
@@ -36,14 +57,15 @@ export default function DetailDischarge({ data }) {
   const [massDocError, setMassDocError] = useState("");
   const [showDocError, setShowDocError] = useState("");
   const [over45Days, setOver45Days] = useState("");
+  const [otherInsurer, setOtherInsurer] = useState(false);
   const [over45, setOver45] = useState("");
   const [accidentOver45DaysName, setAccidentOver45DaysName] = useState("");
   const [dataaccidentPlace, setDataaccidentPlace] = useState("");
   const [accidentPlaceName, setAccidentPlaceName] = useState("");
-
-
+  const [visitInfo, setVisitInfo] = useState("");
+  const [rows2, setRows2] = useState("");
+  const [indicationForAdmissionCode, setIndicationForAdmissionCode] = useState("");
   useEffect(() => {
-
     axios
     .post(
       process.env.NEXT_PUBLIC_URL_SV +
@@ -64,7 +86,7 @@ export default function DetailDischarge({ data }) {
     )
     .then((response) => {
       setTransactionClaimInfo();
-      //console.log(response.data.Result.TransactionClaimInfo[0]);
+      // console.log(response.data.Result.TransactionClaimInfo[0]);
     setPatientInfo(response.data.Result.TransactionClaimInfo[0]);
 
     })
@@ -76,13 +98,48 @@ export default function DetailDischarge({ data }) {
   }, [data]);
   useEffect(() => {
     axios
+    .post(
+      process.env.NEXT_PUBLIC_URL_SV +
+        process.env.NEXT_PUBLIC_URL_getIPDDischargeVisit,
+     {
+      PatientInfo
+    }
+    )
+    .then((response) => {
+    // console.log(response.data)
+    setVisitInfo(response.data.Result.VisitInfo);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+
+
+  }, [data]);
+  useEffect(() => {
+    axios
+    .get(
+      process.env.NEXT_PUBLIC_URL_SV +
+        process.env.NEXT_PUBLIC_URL_getIndicationsForAdmission +
+         InsuranceCode
+    )
+    .then((response) => {
+//      console.log(response.data)
+      setIndicationForAdmissionCode(response.data);
+  
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  }, [data]);
+  useEffect(() => {
+    axios
     .get(
       process.env.NEXT_PUBLIC_URL_PD2 +
         process.env.NEXT_PUBLIC_URL_accidentCauseOver45Day +
         InsuranceCode
     )
       .then((response) => {
-        console.log(response.data)
+        // console.log(response.data)
         setOver45Days(response.data);
       })
       .catch((error) => {
@@ -124,6 +181,39 @@ export default function DetailDischarge({ data }) {
       });
   }, []);
   useEffect(() => {
+
+    axios
+      .post(
+        process.env.NEXT_PUBLIC_URL_PD +
+          process.env.NEXT_PUBLIC_URL_getIPDDischargeConcurNote,
+          
+          {
+            "PatientInfo" : PatientInfo
+          }
+      )
+      .then((response) => {
+       //    console.log(response.data)
+       setRows2("");
+           if(response.data.Result.ConcurNoteList[0].ConcurrentDatetime){
+            setRows2(response.data.Result.ConcurNoteList);
+           }
+       
+      
+      })
+      .catch((error) => {
+        console.log(error);
+        try {
+          const ErrorMass = error.config.url;
+          const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+          setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
+          setShowFormError("Error");
+        } catch (error) {
+          setMassError(error.response.data.HTTPStatus.message);
+          setShowFormError("Error");
+        }
+      });
+  });
+  useEffect(() => {
     setMassDocError();
     setShowDocError();
     axios
@@ -155,7 +245,6 @@ export default function DetailDischarge({ data }) {
 
   useEffect(() => {
     setPatien();
-    // setPatientInfo();
     document.getElementById("my_modal_5").showModal();
   }, [data]);
 
@@ -180,7 +269,7 @@ const   PatientInfo = {
   "SurgeryTypeCode":  ""
 
   }
-  console.log(PatientInfo)
+  // console.log(PatientInfo)
     axios
   .post(process.env.NEXT_PUBLIC_URL_SV + process.env.NEXT_PUBLIC_URL_ReviewOPDDischarge,
     {
@@ -190,7 +279,7 @@ const   PatientInfo = {
   )
   .then((response) => {
     setTransactionClaimInfo(response.data.Result.InsuranceData);
-    console.log(response.data.Result.InsuranceData)
+    // console.log(response.data.Result.InsuranceData)
   })
   .catch((error) => {
    // console.error("Error", err)
@@ -198,7 +287,9 @@ const   PatientInfo = {
   });
 
   }, [data]);
-
+  // const  handleOtherInsurer = (e) => {
+  //   setOtherInsurer(e.target.value);
+  // };
   const DocumentBase64 = (docname) => {
     //console.log(data.VN)
     //console.log(docname)
@@ -311,6 +402,23 @@ useEffect(() => {
           <div className="justify-center border-solid m-auto border-2 border-warning rounded-lg p-4">
             <h1 className="font-black text-accent text-3xl ">Patient Info</h1>
             <div className="grid gap-2 sm:grid-cols-4 w-full mt-2">
+            <div className="rounded-md">
+                  <div className="flex flex-col mb-4">
+                    <label className="text-gray-700 mb-2">TitleName (TH)</label>
+                      <input
+                          type="text"
+                          value={
+                            patientInfo
+                              ? patientInfo.TitleTH
+                                ? patientInfo.TitleTH
+                                : ""
+                              : ""
+                          }
+                          readOnly
+                          className="border-2 border-gray-300 rounded-md px-4 py-2 bg-gray-100"
+                        />
+                   </div>
+              </div>
               <div className="rounded-md">
                   <div className="flex flex-col mb-4">
                     <label className="text-gray-700 mb-2">FirstName (TH)</label>
@@ -396,25 +504,15 @@ useEffect(() => {
                         />
                    </div>
               </div>
-              <div className="rounded-md">
-              <div className="flex flex-col mb-4">
-                    <label className="text-gray-700 mb-2">VN</label>
-                      <input
-                          type="text"
-                          defaultValue={patientInfo.VN}
-                          readOnly
-                          className="border-2 border-gray-300 rounded-md px-4 py-2 bg-gray-100"
-                        />
-                   </div>
-              </div>
+
               {patien ? (
 
                 <div className="rounded-md">
                               <div className="flex flex-col mb-4">
-                              <label className="text-gray-700 mb-2">Sex</label>
+                              <label className="text-gray-700 mb-2">Gender</label>
                                 <input
                                     type="text"
-                                    defaultValue={patien.Result.PatientInfo.Gender}
+                                    defaultValue={patientInfo.Gender}
                                     readOnly
                                     className="border-2 border-gray-300 rounded-md px-4 py-2 bg-gray-100"
                                   />
@@ -427,13 +525,109 @@ useEffect(() => {
           </div>
           <div className="justify-center border-solid m-auto border-2 border-warning rounded-lg p-4 mt-2">
             <h1 className="font-black text-accent text-3xl ">Visit</h1>
+            <div className="grid gap-2 sm:grid-cols-4 w-full mt-2">
+                <div className="rounded-md">
+                    <div className="flex flex-col mb-4">
+                      <label className="text-gray-700 mb-2">VN</label>
+                      <input
+                          type="text"
+                          defaultValue={patientInfo.VN}
+                          readOnly
+                          className="border-2 border-gray-300 rounded-md px-4 py-2 bg-gray-100"
+                        />
+                    </div>
+                  </div>
+                  <div className="rounded-md">
+                    <div className="flex flex-col mb-4">
+                     <label className="text-gray-700 mb-2">VisitDataTime</label>
+                      <input
+                          type="text"
+                          defaultValue={data.VisitDateTime}
+                          readOnly
+                          className="border-2 border-gray-300 rounded-md px-4 py-2 bg-gray-100"
+                        />
+                    </div>
+                </div>
+
+                  {data.PreauthReferClaimNo ? (
+                    <>
+                  <div className="rounded-md">
+                    <div className="flex flex-col mb-4">
+                     <label className="text-gray-700 mb-2">PreauthReferOcc</label>
+                      <input
+                          type="text"
+                          defaultValue={data.PreauthReferOcc}
+                          readOnly
+                          className="border-2 border-gray-300 rounded-md px-4 py-2 bg-gray-100"
+                        />
+                    </div>
+                  </div>
+                    <div className="rounded-md">
+                      <div className="flex flex-col mb-4">
+                      <label className="text-gray-700 mb-2">PreauthReferClaimNo</label>
+                        <input
+                          type="text"
+                          defaultValue={data.PreauthReferClaimNo}
+                          readOnly
+                          className="border-2 border-gray-300 rounded-md px-4 py-2 bg-gray-100"
+                        />
+                    </div>
+                    </div>
+                    </>
+                  ) : (
+                    ""
+                  )}
+                  <div className="rounded-md">
+                    <div className="flex flex-col mb-4">
+                     <label className="text-gray-700 mb-2">วันเวลาทีเข้ารับการรักษาเป็นผู้ป่วยใน</label>
+                      <input
+                          type="text"
+                          defaultValue={visitInfo.AdmitDateTime}
+                          readOnly
+                          className="border-2 border-gray-300 rounded-md px-4 py-2 bg-gray-100"
+                        />
+                    </div>
+                  </div>
+                  <div className="rounded-md">
+                    <div className="flex flex-col mb-4">
+                     <label className="text-gray-700 mb-2">วันเวลาที่ออกจากโรงพยาบาล</label>
+                      <input
+                          type="text"
+                          defaultValue={visitInfo.DscDateTime}
+                          readOnly
+                          className="border-2 border-gray-300 rounded-md px-4 py-2 bg-gray-100"
+                        />
+                    </div>
+                  </div>
+                  <div className="rounded-md">
+                    <div className="flex flex-col mb-4">
+                     <label className="text-gray-700 mb-2">IndicationForAdmission</label>
+                      <input
+                          type="text"
+                          defaultValue={
+                          //   indicationForAdmissionCode ? 
+                          //  indicationForAdmissionCode.Result.map((code) => 
+                          //   code.ifacode === 
+                           visitInfo.IndicationForAdmission
+                            // ? ( <>{code.ifaname}</>
+                            //     ):""): ""
+                              }
+                          readOnly
+                          className="border-2 border-gray-300 rounded-md px-4 py-2 bg-gray-100"
+                        />  
+                    </div>
+                  </div>
+            </div>
+
+
+
             <div className="grid gap-2 sm:grid-cols-2 w-full mt-4">
                   <div className="rounded-md mt-2">
                                                 <div className="flex flex-col">
                               <label className="text-gray-700 mb-2">ChiefComplaint</label>
                                 <textarea
                                     type="text"
-                                    defaultValue={transactionClaimInfo ? transactionClaimInfo.Visit.ChiefComplaint : ""}
+                                    defaultValue={visitInfo ? visitInfo.ChiefComplaint : ""}
                                     readOnly
                                     rows={4}
                                     inputProps={{ maxLength: 200 }}
@@ -446,7 +640,7 @@ useEffect(() => {
                               <label className="text-gray-700 mb-2">Chronic disease</label>
                                 <textarea
                                     type="text"
-                                    defaultValue={transactionClaimInfo ? transactionClaimInfo.Visit.UnderlyingCondition : ""}
+                                    defaultValue={visitInfo ? visitInfo.UnderlyingCondition : ""}
                                     readOnly
                                     rows={4}
                                     inputProps={{ maxLength: 200 }}
@@ -459,7 +653,7 @@ useEffect(() => {
                               <label className="text-gray-700 mb-2">Diagnosis</label>
                                 <textarea
                                     type="text"
-                                    defaultValue={transactionClaimInfo ? transactionClaimInfo.Visit.DxFreeText : ""}
+                                    defaultValue={visitInfo ? visitInfo.DxFreeText : ""}
                                     readOnly
                                     rows={4}
                                     inputProps={{ maxLength: 200 }}
@@ -472,7 +666,7 @@ useEffect(() => {
                               <label className="text-gray-700 mb-2">Present illness or Cause of Injury</label>
                                 <textarea
                                     type="text"
-                                    defaultValue={transactionClaimInfo ? transactionClaimInfo.Visit.PresentIllness : ""}
+                                    defaultValue={visitInfo ? visitInfo.PresentIllness : ""}
                                     readOnly
                                     rows={4}
                                     inputProps={{ maxLength: 200 }}
@@ -485,7 +679,7 @@ useEffect(() => {
                               <label className="text-gray-700 mb-2">Physical exam</label>
                                 <textarea
                                     type="text"
-                                    defaultValue={transactionClaimInfo ? transactionClaimInfo.Visit.PhysicalExam : ""}
+                                    defaultValue={visitInfo ? visitInfo.PhysicalExam : ""}
                                     readOnly
                                     rows={4}
                                     inputProps={{ maxLength: 200 }}
@@ -498,7 +692,7 @@ useEffect(() => {
                               <label className="text-gray-700 mb-2">Treatment</label>
                                 <textarea
                                     type="text"
-                                    defaultValue={transactionClaimInfo ? transactionClaimInfo.Visit.PlanOfTreatment : ""}
+                                    defaultValue={visitInfo ? visitInfo.PlanOfTreatment : ""}
                                     readOnly
                                     rows={4}
                                     inputProps={{ maxLength: 200 }}
@@ -511,7 +705,7 @@ useEffect(() => {
                               <label className="text-gray-700 mb-2">ProcedureFreeText</label>
                                 <textarea
                                     type="text"
-                                    defaultValue={transactionClaimInfo ? transactionClaimInfo.Visit.ProcedureFreeText : ""}
+                                    defaultValue={visitInfo ? visitInfo.ProcedureFreeText : ""}
                                     readOnly
                                     rows={4}
                                     inputProps={{ maxLength: 200 }}
@@ -524,7 +718,7 @@ useEffect(() => {
                               <label className="text-gray-700 mb-2">AdditionalNote</label>
                                 <textarea
                                     type="text"
-                                    defaultValue={transactionClaimInfo ? transactionClaimInfo.Visit.AdditionalNote : ""}
+                                    defaultValue={visitInfo ? visitInfo.AdditionalNote : ""}
                                     readOnly
                                     rows={4}
                                     inputProps={{ maxLength: 200 }}
@@ -539,7 +733,7 @@ useEffect(() => {
                               <label className="text-gray-700 mb-2">วันที่เริ่มมีอาการ</label>
                                 <input
                                     type="text"
-                                    defaultValue={transactionClaimInfo ? transactionClaimInfo.Visit.signSymptomsDate : ""}
+                                    defaultValue={visitInfo ? visitInfo.SignSymptomsDate : ""}
                                     readOnly
                                     className="border-2 border-gray-300 rounded-md px-4 py-2 bg-gray-100"
                                   />
@@ -547,10 +741,10 @@ useEffect(() => {
                   </div>
                   <div className="w-1/5 ml-2">
                                       <div className="flex flex-col mb-4">
-                              <label className="text-gray-700 mb-2">ระดับความรู้สึกตัว</label>
+                              <label className="text-gray-700 mb-2">ระดับความรู้สึกตัว (3-15)</label>
                                 <input
                                     type="text"
-                                    defaultValue={transactionClaimInfo ? transactionClaimInfo.Visit.comaScore : ""}
+                                    defaultValue={visitInfo ? visitInfo.ComaScore : ""}
                                     readOnly
                                     className="border-2 border-gray-300 rounded-md px-4 py-2 bg-gray-100"
                                   />
@@ -558,10 +752,10 @@ useEffect(() => {
                   </div>
                   <div className="w-1/5 ml-2">
                     <div className="flex flex-col mb-4">
-                              <label className="text-gray-700 mb-2">วันพักฟื้นหลังการผ่าตัด</label>
+                              <label className="text-gray-700 mb-2">จำนวนวันพักฟื้นหลังการผ่าตัด</label>
                                 <input
                                     type="text"
-                                    defaultValue={transactionClaimInfo ? transactionClaimInfo.Visit.expectedDayOfRecovery : ""}
+                                    defaultValue={visitInfo ? visitInfo.ExpectedDayOfRecovery+" Days" : ""}
                                     readOnly
                                     className="border-2 border-gray-300 rounded-md px-4 py-2 bg-gray-100"
                                   />
@@ -573,8 +767,8 @@ useEffect(() => {
                     การเจ็บป่วยนี่เกี่ยวข้องกับสิ่งแวดล้อมอื่นๆ 
                   </h1>
                   <div className="flex items-center mt-2 ml-2">
-                    {transactionClaimInfo ? (
-                      transactionClaimInfo.Visit.AlcoholRelated === true ? (
+                    {visitInfo ? (
+                      visitInfo.AlcoholRelated === true ? (
                         <input
                           type="checkbox"
                           id="alcoholRelated"
@@ -600,8 +794,8 @@ useEffect(() => {
                     </p>
                   </div>
                   <div className="flex items-center mt-2 ml-2">
-                    {transactionClaimInfo ? (
-                      transactionClaimInfo.Visit.Pregnant === true ? (
+                    {visitInfo ? (
+                      visitInfo.Pregnant  === true ? (
                         <input
                           type="checkbox"
                           id="pregnant"
@@ -630,8 +824,8 @@ useEffect(() => {
                     </p>
                   </div>
                   <div className="flex items-center mt-2 ml-2">
-                    {transactionClaimInfo ? (
-                      transactionClaimInfo.Visit.PrivateCase === true ? (
+                    {visitInfo ? (
+                      visitInfo.PrivateCase === true ? (
                         <input
                           type="checkbox"
                           id="privateCase"
@@ -657,8 +851,8 @@ useEffect(() => {
                     </p>
                   </div>
                   <div className="flex items-center mt-2 ml-2">
-                    {transactionClaimInfo ? (
-                      (transactionClaimInfo.Visit.PreviousTreatmentDate||transactionClaimInfo.Visit.PreviousTreatmentDetail) ? (
+                    {visitInfo ? (
+                      (visitInfo.PreviousTreatmentDate||visitInfo.PreviousTreatmentDetail) ? (
                         <input
                           type="checkbox"
                           id="privateCase"
@@ -686,15 +880,15 @@ useEffect(() => {
                     </p>
                   </div> 
                   <div className="flex items-center mt-2 ml-2"></div> 
-                    {transactionClaimInfo ? (
-                       (transactionClaimInfo.Visit.PreviousTreatmentDate||transactionClaimInfo.Visit.PreviousTreatmentDetail) ? (
+                    {visitInfo ? (
+                       (visitInfo.PreviousTreatmentDate||visitInfo.PreviousTreatmentDetail) ? (
                     <div className="flex  w-full mt-2">
                         <div className="w-1/4">
                         <div className="flex flex-col mb-4">
                               <label className="text-gray-700 mb-2">วันที่เข้ารับการรักษาก่อนการรักษาครั้งนี้</label>
                                 <input
                                     type="text"
-                                    defaultValue={transactionClaimInfo ? transactionClaimInfo.Visit.PreviousTreatmentDate : ""}
+                                    defaultValue={visitInfo ? visitInfo.PreviousTreatmentDate : ""}
                                     readOnly
                                     className="border-2 border-gray-300 rounded-md px-4 py-2 bg-gray-100"
                                   />
@@ -705,7 +899,7 @@ useEffect(() => {
                               <label className="text-gray-700 mb-2">ชื่อโรงพยาบาลที่เข้ารับการรักษาก่อนการรักษาครั้งนี้</label>
                                 <input
                                     type="text"
-                                    defaultValue={transactionClaimInfo ? transactionClaimInfo.Visit.PreviousTreatmentDetail : ""}
+                                    defaultValue={visitInfo ? visitInfo.PreviousTreatmentDetail : ""}
                                     readOnly
                                     className="border-2 border-gray-300 rounded-md px-4 py-2 bg-gray-100"
                                   />
@@ -717,7 +911,7 @@ useEffect(() => {
                   <div className="flex items-center mt-2 ml-2"></div> 
           </div>
            {/* //////////////////////////////////////////////////////////////////////////// */}
-          {transactionClaimInfo ? (transactionClaimInfo.AccidentDetail.AccidentDate ? (
+
                       <div className="justify-center border-solid m-auto border-2 border-warning rounded-lg p-4 mt-2">
             <h1 className="font-black text-error text-3xl ">AccidentDetail</h1>
             <div className="flex  w-full mt-2">
@@ -739,17 +933,6 @@ useEffect(() => {
                                     type="text"
                                     defaultValue={accidentPlaceName ? accidentPlaceName : ""}
                                     // defaultValue={accidentPlaceName}
-                                    readOnly
-                                    className="border-2 border-gray-300 rounded-md px-4 py-2 bg-gray-100"
-                                  />
-                      </div>
-              </div>
-              <div className="w-3/5 ml-2">
-              <div className="flex flex-col mb-4">
-                              <label className="text-gray-700 mb-2">สาเหตุของการมารับการรักษาเกิน 45 วัน จากการเกิดอุบัติเหตุ</label>
-                                <input
-                                    type="text"
-                                    defaultValue={accidentOver45DaysName ? accidentOver45DaysName : ""}
                                     readOnly
                                     className="border-2 border-gray-300 rounded-md px-4 py-2 bg-gray-100"
                                   />
@@ -876,7 +1059,7 @@ useEffect(() => {
                     </Table>
             </TableContainer>
           </div>
-          ) : ""): ""}
+
  {/* //////////////////////////////////////////////////////////////////////////// */}
     <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
               <h1 className="font-black text-accent text-3xl ">VitalSign</h1>
@@ -1579,6 +1762,64 @@ useEffect(() => {
               </div>
             </div>
           </div>
+           {/* //////////////////////////////////////////////////////////////////////////// */}
+ <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
+              <h1 className="font-black text-accent text-3xl ">ConcurNote</h1>
+              <div className="overflow-x-auto">
+ <TableContainer component={Paper} className="mt-2">
+                      <Table className="table">
+                        <TableHead>
+                          <TableRow className="bg-primary">
+                            <TableCell className="w-2"></TableCell>
+                            <TableCell>
+                              <h1 className="text-base-100 bg-primary text-sm w-full text-center">
+                              วันเวลา
+                              </h1>
+                            </TableCell>
+                            <TableCell>
+                              <h1 className="text-base-100 bg-primary text-sm w-full text-center">
+                              รายละเอียด
+                              </h1>
+                            </TableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {rows2
+                            ? rows2.map(
+                                (con, index) =>
+   
+                                    <TableRow
+                                      key={index}
+                                      className=" bg-neutral text-sm"
+                                    >
+                                      <TableCell>{index + 1}</TableCell>
+                                      <TableCell>
+                                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                                              {con.ConcurrentDatetime ? (
+                                                con.ConcurrentDatetime
+                                              ) : (
+                                                <>&nbsp;</>
+                                              )}
+                                            </div>
+                                      </TableCell>
+                                      <TableCell>
+                                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                                              {con.ConcurrentDetail ? (
+                                                con.ConcurrentDetail
+                                              ) : (
+                                                <>&nbsp;</>
+                                              )}
+                                            </div>
+                                      </TableCell>
+                                      </TableRow>
+                              
+                            )
+                          : ""}
+                        </TableBody>
+                    </Table>
+            </TableContainer>
+            </div>
+          </div>
  {/* //////////////////////////////////////////////////////////////////////////// */}
   <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
               <h1 className="font-black text-accent text-3xl ">Upload File</h1>
@@ -1619,11 +1860,11 @@ useEffect(() => {
                     {fileList ? (
                       fileList.map((list, index) => (
                         <tr key={index} className=" bg-neutral text-sm">
-                          <td className="px-6 py-4 whitespace-nowrap">
+                          <td className="px-6 py-4 whitespace-nowrap break-all">
                           {list.filename}
                           <br/>{list.originalname}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
+                          <td className="px-6 py-4 whitespace-nowrap break-all">
                           
                               <div
                                 className="btn btn-primary  mr-2 text-base-100 hover:text-primary hover:bg-base-100"

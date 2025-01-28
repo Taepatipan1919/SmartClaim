@@ -102,7 +102,6 @@ export default function Page({ data }) {
   const [listClaimForm, setListClaimForm] = useState();
   const [result, setResult] = useState("");
   const [showModal, setShowModal] = useState(false);
-  const [showArrowVN, setShowArrowVN] = useState();
   const [showArrow, setShowArrow] = useState(false);
   const router = useRouter();
   const [bmi, setBmi] = useState("");
@@ -1185,12 +1184,13 @@ export default function Page({ data }) {
   }, [data]);
 
   useEffect(() => {
+    
     axios
       .post(
-        // process.env.NEXT_PUBLIC_URL_SV +
-        //   process.env.NEXT_PUBLIC_URL_getListClaimFormOPDByVN,
-        // PatientInfoData
-        '/api/v1/aia-opddischarge/getListClaimFormOPDByVN', PatientInfoData
+        process.env.NEXT_PUBLIC_URL_SV +
+          process.env.NEXT_PUBLIC_URL_getListVisitClaimAIA,
+        PatientInfoData
+        // '/api/v1/aia-opddischarge/getListClaimFormOPDByVN', PatientInfoData
       )
       .then((response) => {
       //  console.log(response.data)
@@ -1208,6 +1208,7 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
+
   }, [data]);
 
 
@@ -1541,7 +1542,7 @@ if(rows){
       });
   }else{
     console.log("1 Succ (ไม่อุบัติเหตุ)");
-    resolve("Step 1 completed");
+    // resolve("Step 1 completed");
   }
     }
 
@@ -1799,7 +1800,7 @@ if(rows){
       useEffect(() => {
         setCountorderItemz(dataorderItemz.length);
       }, [dataorderItemz]);
-      console.log(dataorderItemz)
+      // console.log(dataorderItemz)
       /////////////////////////////////////////////////////////////////////
   const Cancel = () => {
     setShowFormError();
@@ -1986,17 +1987,7 @@ if(rows){
       );
     }
   };
-  const ArrowOpen = (e) =>{
-  //  console.log(e)
-    // console.log(showArrow)
-    setShowArrowVN(e.VN)
-    if(showArrow === false){
-      setShowArrow(true)
-    }else{
-      setShowArrow(false)
-    }
- 
-  }
+
   const handleOtherInsurer = (e) => {
     setOtherInsurer(e.target.value);
   };
@@ -4230,87 +4221,59 @@ if(rows){
                 ) : (
                 <table className="table  mt-2">
                   <thead>
-                    <tr className="text-base-100 bg-primary py-8 text-sm w-full text-center">
-                      <th></th>
-                      <th className="w-1/12">VisiDate</th>
-                      <th className="w-1/12">Episode Number</th>
-                      <th className="w-2/12">Doctor</th>
-                      <th className="w-5/12">Location</th>
-                      <th className="w-3/12">Diagnosis</th>
+                    <tr className="text-base-100 bg-primary py-8 text-sm w-full text-center break-all">
+                      <th className="">VisiDate <br/> Episode Number</th>
+                      <th className="">Doctor <br/> Location</th>
+                      <th className="">PresentIllness</th>
+                      <th className="">Diagnosis</th>
+                      <th className="">InsuranceNote</th>
                       <th></th>
                     </tr>
                   </thead>
-                  {/* {console.log(listClaimForm)} */}
+                  {/* {console.log(listClaimForm)}  */}
                   <tbody className="bg-white divide-y divide-gray-200">
                     {listClaimForm ? (
                       listClaimForm.Result.ClaimFormListInfo.map((FormList, index) => (
                   
                         <tr key={index} className=" bg-neutral text-sm">
                           <td className="px-6 py-4 whitespace-nowrap">
-                          {
-                          showArrowVN === FormList.VN ?
-                          showArrow === false ? <MdKeyboardArrowRight className="text-success text-3xl" onClick={() => ArrowOpen(FormList)}/> : <MdKeyboardArrowDown className="text-success text-3xl" onClick={() => ArrowOpen(FormList)}/>
-                          :
-                          <MdKeyboardArrowRight className="text-success text-3xl" onClick={() => ArrowOpen(FormList)}/>
-                          }
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all text-center ">
                               {FormList.VisiDate ? (
                                 FormList.VisiDate
                               ) : (
-                                <>&nbsp;</>
+                                ""
                               )}
+                              <br/>
+                              {FormList.VN ? FormList.VN : ""}
                             </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                              {FormList.VN ? FormList.VN : <>&nbsp;</>}
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                              {FormList.DoctorFirstName ? (
+                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all text-center">
+                            {FormList.DoctorFirstName ? (
                                 FormList.DoctorFirstName
                               ) : (
-                                <>&nbsp;</>
-                              )}
+                               ""
+                              )} 
+                               <br/>
+                               {FormList.LocationDesc ? FormList.LocationDesc : ""}
                             </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                              {FormList.LocationDesc ? FormList.LocationDesc : <>&nbsp;</>}
-                            </div>
-                            {
-                          showArrowVN === FormList.VN ?
-                          showArrow === false ? "" : 
-                                          <CustomTextField
-                                          id="disabledInput"
-                                          rows={4}
-                                          multiline
-                                                   defaultValue={FormList.PresentIllness}
-                                          className="w-full text-black rounded disabled:text-black disabled:bg-gray-300 cursor-not-allowed mt-2"
-                                          InputProps={{ readOnly: true }}
-                                        />
-                          :
-                          ""
-                          }
+                          {FormList.PresentIllness ? 
+                          <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all text-center text-balance">
+                         {FormList.PresentIllness}
+                            </div>  : ""}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="border-2 bg-base-100 break-all">
-
-
-  <table className="table">
-    {/* head */}
-    <thead>
-      <tr>
-        <th>Code</th>
-        <th>Name</th>
-      </tr>
-    </thead>
-    <tbody>
-
-
+                          <div className="border-2 bg-base-100 break-all text-center">
+                            <table className="table">
+                          <thead>
+                             <tr>
+                                 <th>Code</th>
+                                <th>Name</th>
+                        </tr>
+                       </thead>
+                        <tbody>
                              {FormList.DiagnosisInfo ? (
                             
                             FormList.DiagnosisInfo.map((Diag, index) => (
@@ -4326,27 +4289,16 @@ if(rows){
                                 <td></td>
                               </tr>
                               )} 
-
-
-
-</tbody>
-  </table>
-
+                          </tbody>
+                      </table>
                             </div>
-                            {
-                          showArrowVN === FormList.VN ?
-                          showArrow === false ? "" : 
-                                          <CustomTextField
-                                          id="disabledInput"
-                                          rows={4}
-                                          multiline
-                                                   defaultValue={FormList.PresentIllness}
-                                          className="w-full text-black rounded disabled:text-black disabled:bg-gray-300 cursor-not-allowed mt-2"
-                                          InputProps={{ readOnly: true }}
-                                        />
-                          :
-                          ""
-                          }
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap ">
+                          {FormList.InsuranceNote ?
+                          <h1 className="rounded-full px-3 py-2 border-2 bg-base-100 break-all text-center text-balance">
+                           {FormList.InsuranceNote}
+                            </h1>
+                            : ""}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                           <div
@@ -4365,24 +4317,6 @@ if(rows){
                     )}
                   </tbody>
                 </table>
-                  //   <div className="flex items-center text-center mt-2">
-                  //     <TextField
-                  //       id="disabledInput"
-                  //       className=""
-                  //       label=""
-                  //      // defaultValue={PatientInfoData.PatientInfo.FurtherClaimVN ? PatientInfoData.PatientInfo.FurtherClaimVN : PatientInfoData.PatientInfo.VN }
-                  //       value={numberValue}
-                  //       onChange={(e) => setNumberValue(e.target.value)}
-                  //      // InputProps={{ readOnly: true }}
-                  //     />
-
-                  // <div
-                  //   className="btn btn-success text-base-100 hover:text-success hover:bg-base-100 ml-2"
-                  //   onClick={Submitfurtherclaimvn}
-                  // >
-                  //   <IoIosSave  className="size-6" />
-                  // </div>
-                  //   </div>
 
                 )}
             

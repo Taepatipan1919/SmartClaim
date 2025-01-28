@@ -99,9 +99,6 @@ export default function Page({ data }) {
   const [anesthesiaListCode, setAnesthesiaListCode] = useState("");
 
 
-
-
-  
   const [admissionValue, setAdmissionValue] = useState("");
   const [indicationForAdmissionCode, setIndicationForAdmissionCode] = useState("");
   
@@ -121,7 +118,7 @@ export default function Page({ data }) {
   const [showSummitSucc, setShowSummitSucc] = useState("");
   const [massSummit, setMassSummit] = useState("");
   const [admitDateTime, setAdmitDateTime] = useState(null);
-  const [dscDateTime, setDscDateTime] = useState(dayjs());
+  const [dscDateTime, setDscDateTime] = useState(null);
   const [an, setAn] = useState("");
   const [expectedLos, setExpectedLos] = useState("");
   const [otherInsurer, setOtherInsurer] = useState(false);
@@ -150,9 +147,10 @@ export default function Page({ data }) {
   });
   const [rows2, setRows2] = useState("");
   const [newRow2, setNewRow2] = useState({
-    ConcurrentDateTime: null,
+    ConcurrentDatetime: dayjs(),
     ConcurrentDetail: "",
   });
+
 
 
   const [summitEditProcedure, setSummitEditProcedure] = useState("false");
@@ -167,8 +165,6 @@ export default function Page({ data }) {
   const [previousTreatmentDetail, setPreviousTreatmentDetail] = useState("");
   const [previousTreatmentDate, setPreviousTreatmentDate] = useState(null);
 
-  // console.log(previousTreatmentDetail.target.value)
-  // const [editProcedure, setEditProcedure] = useState("false");
 
 
   const AccidentPlace = (event) => {
@@ -215,7 +211,6 @@ export default function Page({ data }) {
         DscDateTime : "",
         ExpectedLos : "",
         Runningdocument: randomNumber,
-
     },
   };
   // console.log(PatientInfoData.PatientInfo)
@@ -225,12 +220,14 @@ export default function Page({ data }) {
     const generateRandomFiveDigitNumber = () => {
       return String(Math.floor(Math.random() * 100000)).padStart(5, '0');
     };
-    setFileList()
+    setFileList("")
     const newRandomNumber = generateRandomFiveDigitNumber();
     setRandomNumber(newRandomNumber);
-  //  console.log(newRandomNumber);
+    console.log("Runnig อันใหม่ "+ newRandomNumber);
   }else{
     setRandomNumber(data.DataTran.Data.Runningdocument)
+    console.log("")
+    console.log("Runnig อันเก่า "+ data.DataTran.Data.Runningdocument);
   }
 
   }, [data]);
@@ -252,14 +249,14 @@ export default function Page({ data }) {
           TransactionNo: PatientInfoData.PatientInfo.TransactionNo,
           HN: PatientInfoData.PatientInfo.HN,
           VN: PatientInfoData.PatientInfo.VN,
-          DocumenttypeCode : "001",
+          DocumenttypeCode : "002",
           Runningdocument : PatientInfoData.PatientInfo.Runningdocument,
         }
         }
       )
       .then((response) => {
         setFileList(response.data);
-      //  console.log(response.data)
+        // console.log(response.data)
       })
       .catch((error) => {
   //      console.log(error);
@@ -350,15 +347,52 @@ export default function Page({ data }) {
       PatientInfoData 
       )
       .then((response) => {
-        //  console.log(response.data)
-        setVisit(response.data);
-        //const dateValue = dayjs(response.data.Result.VisitInfo.SignSymptomsDate);
-        //console.log(response.data.Result.VisitInfo.SignSymptomsDate)
-        // setSignSymptomsDate(dateValue);
-        // setAdmitDateTime(response.data.Result.VisitInfo.AdmitDateTime);
-        // setDscDateTime(response.data.Result.VisitInfo.DscDateTime);
-        setComaScore(response.data.Result.VisitInfo.ComaScore);
+          console.log(response.data)
+       setCombinedString(response ? `${response.data.Result.VisitInfo.Weight} / ${response.data.Result.VisitInfo.Height}` : "");
 
+        setVisit(response.data);
+
+        
+        if(response.data.Result.VisitInfo.OtherInsurer === true){
+          setOtherInsurer(true);
+        }
+
+        if(response.data.Result.VisitInfo.AlcoholRelated === true){
+          setAlcoholRelated(true);
+        }
+        if(response.data.Result.VisitInfo.Pregnant === true){
+          setPregnant(true);
+        }
+        if(response.data.Result.VisitInfo.PrivateCase  === true){
+          setPrivateCase(true);
+        }
+        if((response.data.Result.VisitInfo.PreviousTreatmentDate)&&(response.data.Result.VisitInfo.PreviousTreatmentDetail)){
+          setPreviousTreatment(true);
+          const TreatmentDate = dayjs(response.data.Result.VisitInfo.PreviousTreatmentDate);
+          setPreviousTreatmentDate(TreatmentDate);
+          setPreviousTreatmentDetail(response.data.Result.VisitInfo.PreviousTreatmentDetail);
+        }
+
+
+        setExpectedDayOfRecovery(response.data.Result.VisitInfo.ExpectedDayOfRecovery)
+        if(response.data.Result.VisitInfo.SignSymptomsDate){
+          const dateValueSignSymptomsDate = dayjs(response.data.Result.VisitInfo.SignSymptomsDate);
+          setSignSymptomsDate(dateValueSignSymptomsDate);
+        }
+        if(response.data.Result.VisitInfo.AdmitDateTime){
+        const dateValueAdmitDateTime = dayjs(response.data.Result.VisitInfo.AdmitDateTime);
+        setAdmitDateTime(dateValueAdmitDateTime);
+        }
+        if(response.data.Result.VisitInfo.DscDateTime){
+        const dateValueDscDateTime = dayjs(response.data.Result.VisitInfo.DscDateTime);
+        setDscDateTime(dateValueDscDateTime);
+        }
+        if(response.data.Result.VisitInfo.IndicationForAdmission){
+        setAdmissionValue(response.data.Result.VisitInfo.IndicationForAdmission)
+        }
+        if(response.data.Result.VisitInfo.ComaScore){
+          setComaScore(response.data.Result.VisitInfo.ComaScore)
+        }
       })
       .catch((error) => {
         console.log(error);
@@ -373,25 +407,42 @@ export default function Page({ data }) {
         // }
       });
 
+  }, [data]);
 
-      
-      axios
+  useEffect(() => {
+// console.log(PatientInfoData.PatientInfo.AccidentDate)
+
+
+        console.log(PatientInfoData)
+    axios
       .post(
-        process.env.NEXT_PUBLIC_URL_SV +
-          process.env.NEXT_PUBLIC_URL_getIPDDischargeVisit,
-          PatientInfoData  
+        process.env.NEXT_PUBLIC_URL_PD +
+          process.env.NEXT_PUBLIC_URL_getIPDDischargeAccident,
+
+       PatientInfoData
       )
       .then((response) => {
         // console.log(response.data)
-         setCombinedString(
-          response
-            ? `${response.data.Result.VisitInfo.Weight} / ${response.data.Result.VisitInfo.Height}`
-            : ""
-        );
+         setAccidentDetail(response.data);
+
+         if(response.data.Result.AccidentDetailInfo.AccidentDate){
+          console.log("มีAccDate")
+        const  AccidentDatex = dayjs(response.data.Result.AccidentDetailInfo.AccidentDate)
+          setAccidentDate(AccidentDatex);
+        }else{
+          console.log("ไม่มีAccDate")
+        }
+
+
+          setCauseOfInjuryDetails(response.data.Result.AccidentDetailInfo.CauseOfInjuryDetail);
+          setInjuryDetails(response.data.Result.AccidentDetailInfo.InjuryDetail);
+          setAccidentPlaceValue(response.data.Result.AccidentDetailInfo.AccidentPlace)
+
+
       })
       .catch((error) => {
-    //    console.log(error);
-        try {
+        console.log(error);
+       try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
           setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
@@ -400,49 +451,9 @@ export default function Page({ data }) {
           setMassError(error.response.data.HTTPStatus.message);
           setShowFormError("Error");
         }
+      
       });
   }, [data]);
-
-  // useEffect(() => {
-
-  //   const dateValue = dayjs(PatientInfoData.PatientInfo.AccidentDate);
-  //   setAccidentDate(dateValue);
-  //       //console.log(Data)
-  //   axios
-  //     .post(
-  //       process.env.NEXT_PUBLIC_URL_PD +
-  //         process.env.NEXT_PUBLIC_URL_getIPDDischargeAccident,
-  //      // Data
-  //      PatientInfoData
-  //     )
-  //     .then((response) => {
-  //     //  console.log(response.data)
-  //        setAccidentDetail(response.data);
-  //         setCauseOfInjuryDetails(response.data.Result.AccidentDetailInfo.CauseOfInjuryDetail);
-  //         setInjuryDetails(response.data.Result.AccidentDetailInfo.InjuryDetail);
-  //         setAccidentPlaceValue(response.data.Result.AccidentDetailInfo.AccidentPlace)
-
-  //       // if (response.data.Result.AccidentDetailInfo.CauseOfInjuryDetail.CauseOfInjury){
-  //       //   setCauseOfInjuryDetails(response.data.Result.AccidentDetailInfo.CauseOfInjuryDetail[0]);
-  //       // }
-  //       // if (response.data.Result.AccidentDetailInfo.InjuryDetail.InjuryArea){
-  //       //   setInjuryDetails(response.data.Result.AccidentDetailInfo.InjuryDetail[0]);
-  //       // }
-  //     })
-  //     .catch((error) => {
-  //       console.log(error);
-  //       // try {
-  //       //   const ErrorMass = error.config.url;
-  //       //   const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
-  //       //   setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
-  //       //   setShowFormError("Error");
-  //       // } catch (error) {
-  //       //   setMassError("Error Accident");
-  //       //   setShowFormError("Error");
-  //       // }
-      
-  //     });
-  // }, [data]);
 
   useEffect(() => {
     axios
@@ -548,12 +559,51 @@ export default function Page({ data }) {
       });
   }, [data]);
 
+  useEffect(() => {
+    
+    axios
+      .post(
+        process.env.NEXT_PUBLIC_URL_PD +
+          process.env.NEXT_PUBLIC_URL_getIPDDischargeConcurNote,
+        PatientInfoData
+      )
+      .then((response) => {
+          //  console.log(response.data)
+           if(response.data.Result.ConcurNoteList[0].ConcurrentDatetime){
+            setRows2(response.data.Result.ConcurNoteList);
+           }
+       
+      
+      })
+      .catch((error) => {
+        console.log(error);
+        try {
+          const ErrorMass = error.config.url;
+          const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+          setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
+          setShowFormError("Error");
+        } catch (error) {
+          setMassError(error.response.data.HTTPStatus.message);
+          setShowFormError("Error");
+        }
+      });
+  }, [data]);
+
+  const handleDateChange = (newDate) => {
+     const formattedDate = dayjs(newDate).format("YYYY-MM-DD HH:mm");
+      setNewRow2((prevState) => ({
+         ...prevState, ConcurrentDatetime: formattedDate,
+         })); };
+
+
+
   const handleChangeEditDateRow2 = (index2, even) => {
+    const formattedDate = dayjs(even).format("YYYY-MM-DD HH:mm");
     const neweditrow2 = rows2.map((Pre, index) => {
       if (index === index2) {
         return {
           ...Pre,
-          ConcurrentDateTime: even,
+          ConcurrentDatetime: formattedDate,
         };
       }
       return Pre;
@@ -576,12 +626,14 @@ export default function Page({ data }) {
 
   const handleAddRow2 = () => {
     setRows2([...rows2, newRow2]);
-    setNewRow2({ ConcurrentDateTime: null, ConcurrentDetail: "" });
+    setNewRow2({ ConcurrentDatetime: dayjs(), ConcurrentDetail: "" });
   };
   const handleDeleteRow2 = (index) => {
     const newRows2 = rows2.filter((_, i) => i !== index);
     setRows2(newRows2);
   };
+
+
   useEffect(() => {
 
     axios
@@ -992,7 +1044,6 @@ export default function Page({ data }) {
       )
       .then((response) => {
         // console.log(response.data)
-    // console.log("5555")
     if(numberBilling === false){
       setBilling(response.data);
       setNumberBilling(true);
@@ -1043,14 +1094,6 @@ export default function Page({ data }) {
         const blob = base64ToBlob(response.data.base64);
         const url = URL.createObjectURL(blob);
         window.open(url);
-
-        //         const base64String = response.data.base64;
-        // console.log(base64String)
-        //       const linkSource = `data:application/pdf;base64,${base64String}`;
-        //         const pdfWindow = window.open();
-        //         pdfWindow.document.write(
-        //             `<iframe width='100%' height='99%' src='${linkSource}'></iframe>`
-        //        );
       })
       .catch((error) => {
     //    console.log(error);
@@ -1109,6 +1152,7 @@ export default function Page({ data }) {
           Cancel Successful
         </div>
       );
+
       axios
       .post(
         process.env.NEXT_PUBLIC_URL_PD2 +
@@ -1119,14 +1163,14 @@ export default function Page({ data }) {
           TransactionNo: PatientInfoData.PatientInfo.TransactionNo,
           HN: PatientInfoData.PatientInfo.HN,
           VN: PatientInfoData.PatientInfo.VN,
-          DocumenttypeCode : "001",
+          DocumenttypeCode : "002",
           Runningdocument : PatientInfoData.PatientInfo.Runningdocument,
           }
         }
       )
       .then((response) => {
         setFileList(response.data);
-        //console.log(response.data)
+        console.log(response.data)
       })
       .catch((error) => {
        // console.log(error);
@@ -1168,15 +1212,17 @@ export default function Page({ data }) {
   async function Claim(event) {
     
     event.preventDefault();
-
+    let Datevalue="";
 
     const dscDateTimevalue = dayjs(dscDateTime.$d).format("YYYY-MM-DD");
     // console.log(dscDateTimevalue);
-    setShowSummitError();
+    setShowSummitError("");
     setMassSummitError();
     setMassSummit();
     document.getElementById("my_modal_3").showModal();
-    const Datevalue = dayjs(accidentDate.$d).format("YYYY-MM-DD");
+    if(accidentDate){
+    Datevalue = dayjs(accidentDate.$d).format("YYYY-MM-DD");
+    }
     let PreviousDate;
     let PreviousDetail;
     let Suc;
@@ -1185,11 +1231,11 @@ export default function Page({ data }) {
     if (
       previousTreatment === true &&
       previousTreatmentDate &&
-      previousTreatmentDetail.target.value
+      previousTreatmentDetail
     ){
-      //console.log(previousTreatmentDetail)
+
       PreviousDate = dayjs(previousTreatmentDate.$d).format("YYYY-MM-DD");
-      PreviousDetail = previousTreatmentDetail.target.value;
+      PreviousDetail = previousTreatmentDetail;
       Suc = "S";
     } else if (previousTreatment === false) {
       Suc = "S";
@@ -1197,11 +1243,12 @@ export default function Page({ data }) {
       PreviousDetail = "";
     } else {
       setMassSummitError(
-        "กรุณากรอก ' เคยเข้ารับการรักษาก่อนการรักษาครั้งนี้ ให้ครบ '"
+        "กรุณากรอก ** เคยเข้ารับการรักษาก่อนการรักษาครั้งนี้ ให้ครบ **"
       );
       setShowSummitError("Error");
       Suc = "E";
     }
+
     let admitDateTimex;
     let DscDateTimex;
     try{
@@ -1233,10 +1280,12 @@ export default function Page({ data }) {
     let injuryDetailsCount;
     let causeOfInjuryDetailsCount;
     let ProcedureInfoCount;
+    let HaveConcurNoteCount;
+    let ConcurNoteCount;
 
 //console.log(injuryDetails)
 //console.log(causeOfInjuryDetails)
-//console.log(rows)
+// console.log(rows2)
 
 if(injuryDetails){
   injuryDetailsCount = injuryDetails.length;
@@ -1247,7 +1296,9 @@ if(causeOfInjuryDetails){
 if(rows){
   ProcedureInfoCount = rows.length;
 }   
- 
+if(rows2){
+  HaveConcurNoteCount = rows2.length;
+}   
 
     if (causeOfInjuryDetailsCount >= 1) {
       HavecauseOfInjuryDetailsCount = true;
@@ -1264,14 +1315,23 @@ if(rows){
     } else {
       HaveProcedureCount = false;
     }
+
+    if (HaveConcurNoteCount >= 1) {
+      ConcurNoteCount = true;
+    } else {
+      ConcurNoteCount = false;
+    }
+
+
     if (Suc === "S") {
 
       try {
        
-        await stepOne();                  //SubmitAccidentIPD
-        await stepTwo();                  //SubmitProcedureIPD
-        await stepThree();                //SubmitIPDVisit
-        await stepFour();                 //getcheckclaimstatus
+         await stepOne();                  //SubmitAccidentIPD
+         await stepTwo();                  //SubmitProcedureIPD
+         await stepThree();                //SubmitIPDVisit
+         await stepFour();                 //SubmitConcurNote
+         await stepFive();                 //getcheckclaimstatus
         console.log("All steps completed");
       } catch (error) {
         console.log(error);
@@ -1283,9 +1343,9 @@ if(rows){
     }
 
     function stepOne() {
-      console.log("Step 1");
+      console.log("Step 1 SubmitAccidentIPD");
       // console.log(accidentPlaceValue)
-            if(accidentPlaceValue){
+            // if(accidentPlaceValue){
             return new Promise((resolve, reject) => {
               const PatientInfo = {
                 RefId: PatientInfoData.PatientInfo.RefId,
@@ -1302,7 +1362,7 @@ if(rows){
                   InjuryDetail: injuryDetails,
                 },
               };
-      
+              console.log(PatientInfo)
               axios
                 .post(
                   process.env.NEXT_PUBLIC_URL_SV +
@@ -1310,7 +1370,7 @@ if(rows){
                   { PatientInfo }
                 )
                 .then((response) => {
-                  console.log("1 Succ");
+                  console.log("1 Succ SubmitAccidentIPD");
       
                   resolve("Step 1 completed");
                 })
@@ -1331,14 +1391,14 @@ if(rows){
       
               // ถ้ามีข้อผิดพลาดให้ใช้ reject(new Error('Error in Step 1'));
             });
-        }else{
-          console.log("1 Succ (ไม่อุบัติเหตุ)");
-          // resolve("Step 1 completed");
-        }
+        // }else{
+        //   console.log("1 Succ (ไม่อุบัติเหตุ)");
+        //   // resolve("Step 1 completed");
+        // }
           }
       
           function stepTwo() {
-            console.log("Step 2");
+            console.log("Step 2 SubmitProcedureIPD");
             return new Promise((resolve, reject) => {
               const PatientInfo = {
                 RefId: PatientInfoData.PatientInfo.RefId,
@@ -1349,6 +1409,7 @@ if(rows){
                 HaveProcedure: HaveProcedureCount,
                 ProcedureInfo: rows,
               };
+              console.log(PatientInfo)
               axios
                 .post(
                   process.env.NEXT_PUBLIC_URL_SV +
@@ -1356,7 +1417,7 @@ if(rows){
                   { PatientInfo }
                 )
                 .then((response) => {
-                  console.log("2 Succ");
+                  console.log("2 Succ SubmitProcedureIPD");
                   resolve("Step 2 completed");
                 })
                 .catch((error) => {
@@ -1379,28 +1440,24 @@ if(rows){
           }
       
           function stepThree() {
-            console.log("Step 3");
-            console.log(comaScore)
+            console.log("Step 3 SubmitIPDVisit");
             return new Promise((resolve, reject) => {
-              let comaScoreP;
-              let expectedDayOfRecoveryP;
-              // if (comaScore) {
-              //   comaScoreP = comaScore.target.value;
-              // } else {
-              //   comaScoreP = "";
-              // }
+              let comaScoreP="";
+              let expectedDayOfRecoveryP="";
+              if (comaScore) {
+                comaScoreP = comaScore;
+              }
               if (expectedDayOfRecovery) {
                 expectedDayOfRecoveryP = expectedDayOfRecovery;
-              } else {
-                expectedDayOfRecoveryP = "";
               }
               const PatientInfo = {
+                OtherInsurer : otherInsurer,
                 RefId: PatientInfoData.PatientInfo.RefId,
                 TransactionNo: PatientInfoData.PatientInfo.TransactionNo,
                 InsurerCode: PatientInfoData.PatientInfo.InsurerCode,
                 HN: PatientInfoData.PatientInfo.HN,
                 VN: PatientInfoData.PatientInfo.VN,
-      
+                IsIPDDischarge : isIPDDischargeValue,
                 VisitDateTime: PatientInfoData.PatientInfo.VisitDateTime,
                 DxFreeText: event.target.DxFreeTextText.value,
                 PresentIllness: event.target.PresentIllness.value,
@@ -1412,9 +1469,8 @@ if(rows){
                 ProcedureFreeText: event.target.ProcedureFreeText.value,
                 AdditionalNote: event.target.AdditionalNote.value,
                 SignSymptomsDate: signDate,
-                ComaScore: "",
                 ExpectedDayOfRecovery: expectedDayOfRecoveryP,
-      
+                HaveConcurNote: ConcurNoteCount,
                 HaveProcedure: HaveProcedureCount,
                 HaveAccidentCauseOfInjuryDetail: HavecauseOfInjuryDetailsCount,
                 HaveAccidentInjuryDetail: HaveinjuryDetailsCount,
@@ -1422,10 +1478,10 @@ if(rows){
                 Pregnant: pregnant,
                 PrivateCase: privateCase,
                 AdmitDateTime: admitDateTimex,
-
+                ComaScore: comaScoreP,
                 IndicationForAdmission: admissionValue,
-                PreauthReferClaimNo : "",
-                PreauthOcc: "",
+                PreauthReferClaimNo : PatientInfoData.PatientInfo.PreauthReferClaimNo,
+                PreauthReferOcc: PatientInfoData.PatientInfo.PreauthReferOcc,
                 PreviousTreatment: previousTreatment,
                 PreviousTreatmentDate: PreviousDate,
                 PreviousTreatmentDetail: PreviousDetail,
@@ -1442,7 +1498,7 @@ if(rows){
                   { PatientInfo }
                 )
                 .then((response) => {
-                  console.log("3 Succ");
+                  console.log("3 Succ SubmitIPDVisit");
                   resolve("Step 3 completed");
                 })
                 .catch((error) => {
@@ -1465,18 +1521,76 @@ if(rows){
       
           }
           function stepFour() {
-            console.log("Step 4");
-            let comaScoreP;
-            let expectedDayOfRecoveryP;
-            // if (comaScore) {
-            //   comaScoreP = comaScore.target.value;
-            // } else {
-            //   comaScoreP = "";
-            // }
+            console.log("Step 4 SubmitConcurNote");
+
+            return new Promise((resolve, reject) => {
+              const PatientInfo = {
+                RefId: PatientInfoData.PatientInfo.RefId,
+                TransactionNo: PatientInfoData.PatientInfo.TransactionNo,
+                InsurerCode: PatientInfoData.PatientInfo.InsurerCode,
+                HN: PatientInfoData.PatientInfo.HN,
+                VN: PatientInfoData.PatientInfo.VN,
+                HaveConcurNote: ConcurNoteCount,
+                ConcurNoteInfo : rows2
+              };
+              console.log(PatientInfo)
+              axios
+                .post(
+                  process.env.NEXT_PUBLIC_URL_SV +
+                    process.env.NEXT_PUBLIC_URL_SubmitConcurNote,
+                  { PatientInfo }
+                )
+                .then((response) => {
+              console.log(response.data)
+                  if (response.data.HTTPStatus.statusCode === 200) {
+                    axios
+                    .post(
+                      process.env.NEXT_PUBLIC_URL_PD +
+                        process.env.NEXT_PUBLIC_URL_getcheckclaimstatus,
+                      { PatientInfo }
+                    )
+                    .then((response) => {
+                    //  console.log(response.data);
+                    })
+                    .catch((error) => {
+                   //   console.log(error);
+                    });
+
+                    console.log("4 Succ SubmitConcurNote");
+ 
+                    resolve("Step 4 completed");
+                 
+                  } else {
+                    setMassSummitError(response.data.HTTPStatus.message);
+                    setShowSummitError("Error");
+                  }
+                })
+                .catch((error) => {
+                //  console.log(error);
+                  try {
+                    const ErrorMass = error.config.url;
+                    const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+                    setMassSummitError(
+                      error.code + " - " + error.message + " - " + ErrorMass2
+                    );
+                    setShowSummitError("Error");
+                  } catch (error) {
+                    setMassSummitError(error.response.data.HTTPStatus.message);
+                    setShowSummitError("Error");
+                  }
+                });
+            });
+          }
+
+          function stepFive() {
+            console.log("Step 5 SubmitIPDDischargeToAIA");
+            let comaScoreP="";
+            let expectedDayOfRecoveryP="";
+            if (comaScore) {
+              comaScoreP = comaScore;
+            }
             if (expectedDayOfRecovery) {
-              expectedDayOfRecoveryP = expectedDayOfRecovery.target.value;
-            } else {
-              expectedDayOfRecoveryP = "";
+              expectedDayOfRecoveryP = expectedDayOfRecovery;
             }
             return new Promise((resolve, reject) => {
               const PatientInfo = {
@@ -1498,9 +1612,8 @@ if(rows){
                 ProcedureFreeText: event.target.ProcedureFreeText.value,
                 AdditionalNote: event.target.AdditionalNote.value,
                 SignSymptomsDate: signDate,
-                ComaScore: "",
                 ExpectedDayOfRecovery: expectedDayOfRecoveryP,
-      
+                ComaScore: comaScoreP,
                 HaveProcedure: HaveProcedureCount,
                 HaveAccidentCauseOfInjuryDetail: HavecauseOfInjuryDetailsCount,
                 HaveAccidentInjuryDetail: HaveinjuryDetailsCount,
@@ -1510,8 +1623,8 @@ if(rows){
                 AdmitDateTime: admitDateTimex,
 
                 IndicationForAdmission: admissionValue,
-                PreauthReferClaimNo : "",
-                PreauthOcc: "",
+                PreauthReferClaimNo : PatientInfoData.PatientInfo.PreauthReferClaimNo,
+                PreauthOcc: PatientInfoData.PatientInfo.PreauthReferOcc,
                 PreviousTreatment: previousTreatment,
                 PreviousTreatmentDate: PreviousDate,
                 PreviousTreatmentDetail: PreviousDetail,
@@ -1543,11 +1656,11 @@ if(rows){
                    //   console.log(error);
                     });
                     document.getElementById("my_modal_3").close();
-                    console.log("4 Succ");
+                    console.log("5 Succ SubmitIPDDischargeToAIA");
                     // console.log(response.data);
                     setShowModal(true);
       
-                    resolve("Step 4 completed");
+                    resolve("Step 5 completed");
                     setTimeout(() => {
                       setShowModal(false);
                       router.push("/aia/checkClaimStatus");
@@ -1669,7 +1782,7 @@ if(rows){
     formData.append("HN", PatientInfoData.PatientInfo.HN);
     formData.append("VN", PatientInfoData.PatientInfo.VN);
     formData.append("insurerid", 13);
-    formData.append("DocumenttypeCode", "001");
+    formData.append("DocumenttypeCode", "002");
     formData.append("UploadedBy", "");
     formData.append("Runningdocument", PatientInfoData.PatientInfo.Runningdocument);
     setMsg(
@@ -1723,7 +1836,7 @@ if(rows){
             TransactionNo: PatientInfoData.PatientInfo.TransactionNo,
             HN: PatientInfoData.PatientInfo.HN,
             VN: PatientInfoData.PatientInfo.VN,
-            DocumenttypeCode : "001",
+            DocumenttypeCode : "002",
             Runningdocument : PatientInfoData.PatientInfo.Runningdocument,
             }
           }
@@ -1783,7 +1896,7 @@ if(rows){
     const startIndexvitalsign = (currentPagevitalsign - 1) * ITEMS_PER_PAGE;
   
     const endIndexvitalsign = startIndexvitalsign + ITEMS_PER_PAGE;
-    //console.log(endIndex +"="+startIndex+"+"+ITEMS_PER_PAGE)
+
     const datavitalsign = currentDatavitalsign.slice(startIndexvitalsign, endIndexvitalsign);
     useEffect(() => {
       setCountvitalsign(datavitalsign.length);
@@ -1801,7 +1914,7 @@ if(rows){
     const startIndexinvestigation = (currentPageinvestigation - 1) * ITEMS_PER_PAGE;
   
     const endIndexinvestigation = startIndexinvestigation + ITEMS_PER_PAGE;
-    //console.log(endIndex +"="+startIndex+"+"+ITEMS_PER_PAGE)
+
     const datainvestigation = currentDatainvestigation.slice(startIndexinvestigation, endIndexinvestigation);
     useEffect(() => {
       setCountinvestigation(datainvestigation.length);
@@ -1819,12 +1932,12 @@ if(rows){
     const startIndexorderItemz = (currentPageorderItemz - 1) * ITEMS_PER_PAGE;
   
     const endIndexorderItemz = startIndexorderItemz + ITEMS_PER_PAGE;
-    //console.log(endIndex +"="+startIndex+"+"+ITEMS_PER_PAGE)
+
     const dataorderItemz = currentDataorderItemz.slice(startIndexorderItemz, endIndexorderItemz);
     useEffect(() => {
       setCountorderItemz(dataorderItemz.length);
     }, [dataorderItemz]);
-    // console.log(dataorderItemz)
+
     /////////////////////////////////////////////////////////////////////
 
 
@@ -1839,18 +1952,39 @@ if(rows){
     setOtherInsurer(e.target.value);
   };
   const handleAlcoholRelated = () => {
-    setAlcoholRelated(!alcoholRelated);
+    if(alcoholRelated === false){
+      setAlcoholRelated(true);
+    }else{
+      setAlcoholRelated(false);
+    }
   };
   const handlePregnant = () => {
-    setPregnant(!pregnant);
+
+    if(pregnant === false){
+      setPregnant(true);
+    }else{
+      setPregnant(false);
+    }
   };
   const handlePrivateCase = () => {
-    setPrivateCase(!privateCase);
+
+    if(privateCase === false){
+      setPrivateCase(true);
+    }else{
+      setPrivateCase(false);
+    }
   };
   const handlePreviousTreatment = () => {
-    setPreviousTreatmentDetail("");
-    setPreviousTreatmentDate(null);
-    setPreviousTreatment(!previousTreatment);
+
+
+    if(previousTreatment === false){
+      setPreviousTreatment(true);
+    }else{
+      setPreviousTreatment(false);
+      setPreviousTreatmentDetail("");
+      setPreviousTreatmentDate(null);
+    }
+    
   };
 
   const CustomTextField = styled(TextField)({
@@ -1915,7 +2049,7 @@ if(rows){
                     >
                       <CustomTextField
                         id="disabledInput"
-                        label="คำนำหน้าชื่อ"
+                        label="TitleName"
                         defaultValue={patientInfoByPID.TitleTHc}
                         className="w-full text-black rounded disabled:text-black disabled:bg-gray-300 cursor-not-allowed"
                         InputProps={{ readOnly: true }}
@@ -2056,6 +2190,9 @@ if(rows){
             {visit ? (
               <div className="container mx-auto justify-center border-solid w-4/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
                 <h1 className="font-black text-accent text-3xl ">Visit</h1>
+
+
+
                 <div className="grid gap-2 sm:grid-cols-4 w-full mt-2">
                   <div className="rounded-md">
                     <div className="flex items-center ">
@@ -2065,9 +2202,7 @@ if(rows){
                             type="radio"
                             id="OtherInsurer"
                             name="OtherInsurer"
-                            value={otherInsurer}
                             className="checkbox "
-                            onChange={handleOtherInsurer}
                             disabled
                           />
                           <p className="text-left ml-2">จองสิทธิ์ครั้งแรก</p>
@@ -2075,9 +2210,7 @@ if(rows){
                             type="radio"
                             id="OtherInsurer"
                             name="OtherInsurer"
-                            value={otherInsurer}
                             className="checkbox ml-2"
-                            onChange={handleOtherInsurer}
                             defaultChecked
                             disabled
                           />
@@ -2089,9 +2222,7 @@ if(rows){
                             type="radio"
                             id="OtherInsurer"
                             name="OtherInsurer"
-                            value={otherInsurer}
                             className="checkbox"
-                            onChange={handleOtherInsurer}
                             defaultChecked
                             disabled
                           />
@@ -2100,15 +2231,29 @@ if(rows){
                             type="radio"
                             id="OtherInsurer"
                             name="OtherInsurer"
-                            value={otherInsurer}
                             className="checkbox  ml-2"
-                            onChange={handleOtherInsurer}
                             disabled
                           />
                           <p className="text-left ml-2">เคยจองสิทธิ์มาก่อน</p>
                         </>
                       )}
                     </div>
+
+                </div>
+                <div className="rounded-md">
+                     <div className="flex items-center ">
+                      <input
+                        type="checkbox"
+                        id="OtherInsurer"
+                        name="OtherInsurer"
+                        defaultValue={otherInsurer}
+                        className="checkbox checkbox-info"
+                        onChange={handleOtherInsurer}
+                      />
+                      <p className="text-left">
+                        &nbsp;ค่าส่วนเกินจากประกันอื่นๆ
+                      </p>
+                    </div> 
                   </div>
                   <div className="rounded-md">
                     {PatientInfoData.PatientInfo.IsIPDDischarge === true ?
@@ -2127,7 +2272,7 @@ if(rows){
                       </p>
                     </div>  }
                   </div>
-                  <div className="rounded-md"> </div>
+      
                   <div className="rounded-md"> </div>
                   <div className="rounded-md mt-2">
                     <Box
@@ -2180,6 +2325,8 @@ if(rows){
                       />
                     </Box>
                   </div>
+                  <div className="rounded-md text-black mt-2">
+                    </div>
                   {PatientInfoData.PatientInfo.PreauthReferClaimNo ? (
                     <>
                   <div className="rounded-md text-black mt-2">
@@ -2233,9 +2380,8 @@ if(rows){
                             slotProps={{
                               openPickerButton: { color: "error" },
                               textField: { focused: true, color: "error" },
-                              
                             }}
-                            Value={admitDateTime}
+                            defaultValue={admitDateTime}
                               onChange={(newAdmitDateTime) =>
                                 setAdmitDateTime(newAdmitDateTime)
                               }
@@ -2254,7 +2400,7 @@ if(rows){
                               openPickerButton: { color: "error" },
                               textField: { focused: true, color: "error" },
                             }}
-                            Value={dscDateTime}
+                            defaultValue={dscDateTime}
                               onChange={(newDscDateTime) =>
                                 setDscDateTime(newDscDateTime)
                               }
@@ -2264,7 +2410,7 @@ if(rows){
                           </DemoItem>
                         </LocalizationProvider>
                       </div>
-                  <div className="rounded-md mt-2">
+                  {/* <div className="rounded-md mt-2">
                     <TextField
                       type="number"
                       className="w-full"
@@ -2286,7 +2432,7 @@ if(rows){
                         },
                       }}
                     />
-                  </div>
+                  </div> */}
                   <div className="rounded-md mt-2">
                   <FormControl className="w-full">
               <InputLabel id="demo-simple-select-label">
@@ -2296,7 +2442,7 @@ if(rows){
               <Select
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
-                value={admissionValue}
+                defaultValue={admissionValue}
                 label="IndicationForAdmission"
                 onChange={IndicationForAdmission}
               >
@@ -2315,32 +2461,7 @@ if(rows){
 
 
                   </div>
-                  <div className="rounded-md mt-2">
-              <FormControl className="w-full">
-                <InputLabel id="demo-simple-select-label">
-                ชนิดของการดมยาสลบ
-                </InputLabel>
-                <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                value={anesthesiaListValue}
-                label="ชนิดของการดมยาสลบ"
-                onChange={AnesthesiaList}
-                >
-                {anesthesiaListCode
-                ? anesthesiaListCode.Result.map((code, index) => (
-                    <MenuItem key={index} value={code.aneslistcode}>
-                      {code.aneslistname}
-                    </MenuItem>
-                  ))
-                :    <MenuItem>
-                </MenuItem>
-                }
-                </Select>
-                </FormControl>
 
-
-                </div>
                   </div>
                 {/* <div className="rounded-md mt-2 text-3xl text-error  flex "> 
             <div
@@ -2486,8 +2607,8 @@ if(rows){
                       label="ระดับความรู้สึกตัว (Score 3-15)"
 
                       defaultValue={comaScore}
-                      onChange={(newComaScore) => setComaScore(newComaScore)}
-                      inputProps={{ min: 3, max: 15 }}
+                      onChange={(newComaScore) => setComaScore(newComaScore.target.value)}
+                      // inputProps={{ min: 3, max: 15 }}
                       variant="outlined"
                       fullWidth
                     />
@@ -2501,7 +2622,7 @@ if(rows){
                       // sx={{ m: 1 }}
                       defaultValue={expectedDayOfRecovery}
                       onChange={(newExpectedDayOfRecovery) =>
-                        setExpectedDayOfRecovery(newExpectedDayOfRecovery)
+                        setExpectedDayOfRecovery(newExpectedDayOfRecovery.target.value)
                       }
                       inputProps={{ min: 0 }}
                       slotProps={{
@@ -2525,7 +2646,7 @@ if(rows){
                   </h1>
                   <div className="flex items-center mt-2 ml-2">
                     {visit ? (
-                      visit.Result.VisitInfo.AlcoholRelated === "true" ? (
+                      visit.Result.VisitInfo.AlcoholRelated === true ? (
                         <input
                           type="checkbox"
                           id="alcoholRelated"
@@ -2553,18 +2674,37 @@ if(rows){
                       การเจ็บป่วยครั้งนี้เกี่ยวข้องกับแอลกอฮอล์ หรือ ยาเสพติด
                     </p>
                   </div>
+                
                   <div className="flex items-center mt-2 ml-2">
+                  {visit ? (
+                      visit.Result.VisitInfo.Pregnant  === true ? (
                     <input
                       type="checkbox"
                       id="pregnant"
                       name="pregnant"
                       value={pregnant}
-                      className="checkbox "
+                      className="checkbox"
+                      onChange={handlePregnant}
+                      defaultChecked
+                    />
+                     ) : (
+                      <input
+                      type="checkbox"
+                      id="pregnant"
+                      name="pregnant"
+                      value={pregnant}
+                      className="checkbox"
                       onChange={handlePregnant}
                     />
+                      )
+                    ) : (
+                      ""
+                    )}
                     <p className="text-left ml-2">ตั้งครรภ์</p>
                   </div>
                   <div className="flex items-center mt-2 ml-2">
+                  {visit ? (
+                      visit.Result.VisitInfo.PrivateCase  === true ? (
                     <input
                       type="checkbox"
                       id="privateCase"
@@ -2572,10 +2712,26 @@ if(rows){
                       value={privateCase}
                       className="checkbox "
                       onChange={handlePrivateCase}
+                      defaultChecked
                     />
+                  ) : (
+                    <input
+                    type="checkbox"
+                    id="privateCase"
+                    name="privateCase"
+                    value={privateCase}
+                    className="checkbox "
+                    onChange={handlePrivateCase}
+                  />
+                    )
+                  ) : (
+                    ""
+                  )}
                     <p className="text-left ml-2">เป็นเคสพิเศษ</p>
                   </div>
                   <div className="flex items-center mt-2 ml-2">
+                  {visit ? (
+                      previousTreatment === true ? (
                     <input
                       type="checkbox"
                       id="previousTreatment"
@@ -2583,12 +2739,27 @@ if(rows){
                       //value={previousTreatment}
                       className="checkbox "
                       onChange={handlePreviousTreatment}
-                    />
+                      defaultChecked
+                      />
+                    ) : (
+                      <input
+                      type="checkbox"
+                      id="previousTreatment"
+                      name="previousTreatment"
+                      //value={previousTreatment}
+                      className="checkbox "
+                      onChange={handlePreviousTreatment}
+                      
+                      />
+                      )
+                    ) : (
+                      ""
+                    )}
                     <p className="text-left ml-2 pb-2">
                       เคยเข้ารับการรักษาก่อนการรักษาครั้งนี้
                     </p>
                   </div>
-                  {previousTreatment && (
+                  {previousTreatment === true && (
                     <>
                       <div className="flex  w-full mt-2">
                         <div className="w-1/4">
@@ -2600,7 +2771,7 @@ if(rows){
                                   textField: { focused: true, color: "error" },
                                 }}
                                 label="วันที่เข้ารับการรักษาก่อนการรักษาครั้งนี้"
-                                value={previousTreatmentDate}
+                                defaultValue={previousTreatmentDate ? dayjs(previousTreatmentDate) : ""}
                                 onChange={(newPreviousTreatmentDate) =>
                                   setPreviousTreatmentDate(
                                     newPreviousTreatmentDate
@@ -2621,7 +2792,7 @@ if(rows){
                             defaultValue={previousTreatmentDetail}
                             onChange={(newPreviousTreatmentDetail) =>
                               setPreviousTreatmentDetail(
-                                newPreviousTreatmentDetail
+                                newPreviousTreatmentDetail.target.value
                               )
                             }
                           />
@@ -2635,27 +2806,27 @@ if(rows){
               ""
             )}
             {/* //////////////////////////////////////////////////////////////////////////// */}
-            {/* {PatientInfoData.PatientInfo.IllnessTypeCode === "ACC" ||
+            {PatientInfoData.PatientInfo.IllnessTypeCode === "ACC" ||
             PatientInfoData.PatientInfo.IllnessTypeCode === "ER" ? (
-              accidentDetail ? (
-                <> */}
-                  <div className="justify-center border-solid w-4/5 m-auto border-2 border-error rounded-lg p-4 mt-2">
+              // accidentDetail ? (
+              //   <>
+                  // <div className="justify-center border-solid w-5/5 m-auto border-2 border-error rounded-lg p-4 mt-2">
+                    <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-error rounded-lg p-4 mt-2">
                     <h1 className="font-black text-error text-3xl ">
-                      AccidentDetail{" "}
+                      AccidentDetail
                       <div
-                        className="btn btn-secondary text-base-100 text-xl"
+                        className="btn btn-secondary text-base-100 text-xl ml-2"
                         onClick={SummitEditAcc}
                       >
                         <FaEdit />
                       </div>
                     </h1>
-
                     <div className="flex  w-full mt-2">
                       <div className="w-1/5 ">
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                           <DemoItem>
                             <DesktopDatePicker
-                              value={accidentDate}
+                              defaultValue={accidentDate}
                               onChange={(newAccidentDate) =>
                                 setAccidentDate(newAccidentDate)
                               }
@@ -2665,7 +2836,7 @@ if(rows){
                           </DemoItem>
                         </LocalizationProvider>
                       </div>
-                      {/* <div className="w-2/5">
+                      <div className="w-2/5">
                         <FormControl fullWidth>
                           <InputLabel id="demo-error-select-label">
                             สถานที่เกิดอุบัติเหตุ
@@ -2693,7 +2864,7 @@ if(rows){
                               : ""}
                           </Select>
                         </FormControl>
-                      </div> */}
+                      </div>
                     </div>
 
                     <TableContainer component={Paper} className="mt-2">
@@ -2736,6 +2907,7 @@ if(rows){
                                               type="text"
                                               className="rounded-full px-3 py-2 border-2 bg-base-100 break-all w-full"
                                               value={cause.CauseOfInjury}
+                                              required
                                               onChange={(e) =>
                                                 handleChangeA1(index, e)
                                               }
@@ -2763,6 +2935,7 @@ if(rows){
                                               onChange={(e) =>
                                                 handleChangeA2(index, e)
                                               }
+                                              required
                                               inputProps={{ maxLength: 200 }}
                                               placeholder="CommentOfInjury"
                                               multiline
@@ -2819,7 +2992,7 @@ if(rows){
                                       })
                                     }
                                     placeholder="CauseOfInjury"
-                                    //  required
+                                   //   required
                                   />
                                 </TableCell>
                                 {/* <TableCell> */}
@@ -2840,7 +3013,7 @@ if(rows){
                                     placeholder="CommentOfInjury"
                                     multiline
                                     rows={4}
-                                    //   required
+                                  //     required
                                   />
                                 </div>
                                 {/* </TableCell> */}
@@ -3166,13 +3339,542 @@ if(rows){
                       </div>
                     </TableContainer>
                   </div>
-                {/* </>
-              ) : (
-                ""
-              )
+              //   </>
+
+              // ) : (
+              //   ""
+              // )
             ) : (
-              ""
-            )} */}
+              <>
+                  <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
+                    <h1 className="font-black text-accent text-3xl ">
+                      AccidentDetail
+                      <div
+                        className="btn btn-secondary text-base-100 text-xl ml-2"
+                        onClick={SummitEditAcc}
+                      >
+                        <FaEdit />
+                      </div>
+                    </h1>
+
+                    <div className="flex  w-full mt-2">
+                      <div className="w-1/5 ">
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                          <DemoItem>
+                            <DesktopDatePicker
+                              defaultValue={accidentDate}
+                              onChange={(newAccidentDate) =>
+                                setAccidentDate(newAccidentDate)
+                              }
+                            //  required
+                              format="YYYY-MM-DD"
+                            />
+                          </DemoItem>
+                        </LocalizationProvider>
+                      </div>
+                      <div className="w-2/5">
+                        <FormControl fullWidth>
+                          <InputLabel id="demo-error-select-label">
+                            สถานที่เกิดอุบัติเหตุ
+                          </InputLabel>
+                          <Select
+                            className="mx-2"
+                            labelId="demo-error-select-label"
+                            id="demo-error-select"
+                            //name="accidentPlaceText"
+                            value={accidentPlaceValue}
+                            label="สถานที่เกิดอุบัติเหตุ"
+                            onChange={AccidentPlace}
+                           // required
+                          >
+                            {dataaccidentPlace
+                              ? dataaccidentPlace.Result.map((acc, index) => (
+                                  <MenuItem
+                                    key={index}
+                                    value={acc.accidentplacecode}
+                                  >
+                                    {acc.accidentplacename}
+                                  </MenuItem>
+                                ))
+                              : ""}
+                          </Select>
+                        </FormControl>
+                      </div>
+                    </div>
+
+                    <TableContainer component={Paper} className="mt-2">
+                      <Table className="table">
+                        <TableHead>
+                          <TableRow className="bg-primary">
+                            <TableCell className="w-2"></TableCell>
+                            <TableCell>
+                              <h1 className="text-base-100  text-sm w-2/5 text-center">
+                                สาเหตุของการเกิดอุบัติเหตุ (ICD10 code)
+                              </h1>
+                            </TableCell>
+                            <TableCell>
+                              <h1 className="text-base-100  text-sm w-2/5 text-center">
+                                คำอธิบายอวัยวะที่ได้รับจากการเกิดอุบัติเหตุว่ามีลักษณะบาดแผลอย่างไร
+                              </h1>
+                            </TableCell>
+                            {summitEditAcc === "true" ? (
+                              <TableCell></TableCell>
+                            ) : (
+                              ""
+                            )}
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                 
+                          {causeOfInjuryDetails
+                            ? causeOfInjuryDetails.map(
+                                (cause, index) =>
+                                  cause.CauseOfInjury  && (
+                                    <TableRow
+                                      key={index}
+                                      className=" bg-neutral text-sm"
+                                    >
+                                      <TableCell>{index + 1}</TableCell>
+                                      <TableCell>
+                                        {summitEditAcc === "true" ? (
+                                          <>
+                                            <input
+                                              type="text"
+                                              className="rounded-full px-3 py-2 border-2 bg-base-100 break-all w-full"
+                                              value={cause.CauseOfInjury}
+                                              onChange={(e) =>
+                                                handleChangeA1(index, e)
+                                              }
+                                            />
+                                          </>
+                                        ) : (
+                                          <>
+                                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                                              {cause.CauseOfInjury ? (
+                                                cause.CauseOfInjury
+                                              ) : (
+                                                <>&nbsp;</>
+                                              )}
+                                            </div>
+                                          </>
+                                        )}
+                                      </TableCell>
+                                      <TableCell>
+                                        {summitEditAcc === "true" ? (
+                                          <>
+                                            <TextField
+                                              type="text"
+                                              className="bg-base-100 w-full m-2"
+                                              value={cause.CommentOfInjury}
+                                              onChange={(e) =>
+                                                handleChangeA2(index, e)
+                                              }
+                                              inputProps={{ maxLength: 200 }}
+                                              placeholder="CommentOfInjury"
+                                              multiline
+                                              rows={4}
+                                            />
+                                          </>
+                                        ) : (
+                                          <>
+                                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                                              {cause.CommentOfInjury ? (
+                                                cause.CommentOfInjury
+                                              ) : (
+                                                <>&nbsp;</>
+                                              )}
+                                            </div>
+                                          </>
+                                        )}
+                                      </TableCell>
+                                      {summitEditAcc === "true" ? (
+                                        <TableCell>
+                                          <div
+                                            onClick={() =>
+                                              handleDeleteCauseOfInjuryDetail(
+                                                index
+                                              )
+                                            }
+                                            className="btn btn-error text-base-100 text-xl"
+                                          >
+                                            <FaCircleMinus />
+                                          </div>
+                                        </TableCell>
+                                      ) : (
+                                        ""
+                                      )}
+                                    </TableRow>
+                                  )
+                              )
+                            : ""}
+                          {summitEditAcc === "true" ? (
+                            <>
+                              <TableRow>
+                                <TableCell>
+                                  <FaCirclePlus className="text-xl" />
+                                </TableCell>
+
+                                <TableCell>
+                                  <TextField
+                                    className="bg-base-100 w-full"
+                                    value={newCauseOfInjuryDetail.CauseOfInjury}
+                                    onChange={(e) =>
+                                      setNewCauseOfInjuryDetail({
+                                        ...newCauseOfInjuryDetail,
+                                        CauseOfInjury: e.target.value,
+                                      })
+                                    }
+                                    placeholder="CauseOfInjury"
+                                 //     required
+                                  />
+                                </TableCell>
+                                {/* <TableCell> */}
+                                <div className="m-2">
+                                  <TextField
+                                    type="text"
+                                    className="bg-base-100 w-full "
+                                    value={
+                                      newCauseOfInjuryDetail.CommentOfInjury
+                                    }
+                                    onChange={(e) =>
+                                      setNewCauseOfInjuryDetail({
+                                        ...newCauseOfInjuryDetail,
+                                        CommentOfInjury: e.target.value,
+                                      })
+                                    }
+                                    inputProps={{ maxLength: 200 }}
+                                    placeholder="CommentOfInjury"
+                                    multiline
+                                    rows={4}
+                                  //     required
+                                  />
+                                </div>
+                                {/* </TableCell> */}
+                                {newCauseOfInjuryDetail.CauseOfInjury &&
+                                newCauseOfInjuryDetail.CommentOfInjury ? (
+                                  <>
+                                    <TableCell>
+                                      <div
+                                        onClick={handleAddCauseOfInjuryDetail}
+                                        className="btn btn-success text-base-100 text-xl"
+                                      >
+                                        <FaCirclePlus />
+                                      </div>
+                                    </TableCell>
+                                  </>
+                                ) : (
+                                  ""
+                                )}
+                              </TableRow>
+                            </>
+                          ) : (
+                            ""
+                          )}
+                        </TableBody>
+                      </Table>
+                      <div className="grid gap-2 sm:grid-cols-4 text-base-100 bg-primary w-full whitespace-normal text-center">
+                        <div className="rounded-md"></div>
+                        <div className="rounded-md"></div>
+                        <div className="rounded-md "></div>
+                        <div className="rounded-md ">&nbsp;</div>
+                      </div>
+                    </TableContainer>
+
+                    <TableContainer component={Paper} className="mt-2">
+                      <Table className="table">
+                        <TableHead>
+                          <TableRow className="bg-primary">
+                            <TableCell className="w-2"></TableCell>
+                            <TableCell>
+                              <h1 className="text-base-100  text-sm w-1/7 text-center">
+                                อวัยวะที่ได้บาดเจ็บจากการเกิดอุบัติเหตุ (ICD10
+                                code)
+                              </h1>
+                            </TableCell>
+                            <TableCell>
+                              <h1 className="text-base-100  text-sm w-3/7 text-center">
+                                ข้างของอวัยวะที่ได้รับบาดเจ็บจากการเกิดอุบัติเหตุ
+                              </h1>
+                            </TableCell>
+                            <TableCell>
+                              <h1 className="text-base-100  text-sm w-3/7 text-center">
+                                ลักษณะบาดแผลที่ได้รับจากการเกิดอุบัติเหตุ
+                              </h1>
+                            </TableCell>
+                            {summitEditAcc === "true" ? (
+                              <TableCell></TableCell>
+                            ) : (
+                              ""
+                            )}
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {injuryDetails
+                            ? injuryDetails.map(
+                                (injury, index) =>
+                                  injury.InjuryArea  && (
+                                    <TableRow
+                                      key={index}
+                                      className=" bg-neutral text-sm"
+                                    >
+                                      <TableCell>{index + 1}</TableCell>
+
+                                      <TableCell>
+                                        {summitEditAcc === "true" ? (
+                                          <>
+                                            <input
+                                              type="text"
+                                              className="rounded-full px-3 py-2 border-2 bg-base-100 break-all w-full"
+                                              value={injury.InjuryArea}
+                                              onChange={(e) =>
+                                                handleChangeB1(index, e)
+                                              }
+                                            />
+                                          </>
+                                        ) : (
+                                          <>
+                                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                                              {injury.InjuryArea ? (
+                                                injury.InjuryArea
+                                              ) : (
+                                                <>&nbsp;</>
+                                              )}
+                                            </div>
+                                          </>
+                                        )}
+                                      </TableCell>
+                                      <TableCell>
+                                        {summitEditAcc === "true" ? (
+                                          <>
+                                            <FormControl fullWidth>
+                                              <Select
+                                                className="bg-base-100 w-full m-2"
+                                                labelId="policyTypeValue"
+                                                id="demo-simple-select"
+                                                value={injury.InjurySide}
+                                                label=""
+                                                onChange={(e) =>
+                                                  handleChangeB2(index, e)
+                                                }
+                                                required
+                                              >
+                                                {injurySideType
+                                                  ? injurySideType.Result.map(
+                                                      (injury, index) => (
+                                                        <MenuItem
+                                                          key={index}
+                                                          value={
+                                                            injury.injurysidecode
+                                                          }
+                                                        >
+                                                          {
+                                                            injury.injurysidecode
+                                                          }{" "}
+                                                          -{" "}
+                                                          {
+                                                            injury.injurysidename
+                                                          }
+                                                        </MenuItem>
+                                                      )
+                                                    )
+                                                  : ""}
+                                              </Select>
+                                            </FormControl>
+                                          </>
+                                        ) : (
+                                          <>
+                                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                                              {injury.InjurySide ? (
+                                                injury.InjurySide
+                                              ) : (
+                                                <>&nbsp;</>
+                                              )}
+                                            </div>
+                                          </>
+                                        )}
+                                      </TableCell>
+                                      <TableCell>
+                                        {summitEditAcc === "true" ? (
+                                          <>
+                                            <FormControl fullWidth>
+                                              <Select
+                                                className="bg-base-100 w-full m-2"
+                                                labelId="policyTypeValue"
+                                                id="demo-simple-select"
+                                                value={injury.WoundType}
+                                                label=""
+                                                onChange={(e) =>
+                                                  handleChangeB3(index, e)
+                                                }
+                                              //  required
+                                              >
+                                                {injuryWoundType
+                                                  ? injuryWoundType.Result.map(
+                                                      (Wound, index) => (
+                                                        <MenuItem
+                                                          key={index}
+                                                          value={
+                                                            Wound.woundtypecode
+                                                          }
+                                                        >
+                                                          {Wound.woundtypecode}{" "}
+                                                          -{" "}
+                                                          {Wound.woundtypename}
+                                                        </MenuItem>
+                                                      )
+                                                    )
+                                                  : ""}
+                                              </Select>
+                                            </FormControl>
+                                          </>
+                                        ) : (
+                                          <>
+                                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                                              {injury.WoundType ? (
+                                                injury.WoundType
+                                              ) : (
+                                                <>&nbsp;</>
+                                              )}
+                                            </div>
+                                          </>
+                                        )}
+                                      </TableCell>
+                                      {summitEditAcc === "true" ? (
+                                        
+                                        <TableCell>
+                                          <div
+                                            onClick={() =>
+                                              handleDeleteInjuryDetail(index)
+                                            }
+                                            className="btn btn-error text-base-100 text-xl"
+                                          >
+                                            <FaCircleMinus />
+                                          </div>
+                                        </TableCell>
+                                        
+                                      ) : (
+                                        ""
+                                      )}
+                                    </TableRow>
+                                  )
+                              )
+                            : ""}
+                          {summitEditAcc === "true" ? (
+                            <>
+                              <TableRow>
+                                <TableCell>
+                                  <FaCirclePlus className="text-xl" />
+                                </TableCell>
+
+                                <TableCell>
+                                  <TextField
+                                    className="bg-base-100 w-full"
+                                    value={newInjuryDetail.InjuryArea}
+                                    onChange={(e) =>
+                                      setNewInjuryDetail({
+                                        ...newInjuryDetail,
+                                        InjuryArea: e.target.value,
+                                      })
+                                    }
+                                    placeholder="InjuryArea"
+                                  />
+                                </TableCell>
+                                <TableCell>
+                                  <FormControl fullWidth>
+                                    <Select
+                                      className="bg-base-100 w-full m-2"
+                                      labelId="policyTypeValue"
+                                      id="demo-simple-select"
+                                      value={newInjuryDetail.InjurySide}
+                                      label=""
+                                      onChange={(e) =>
+                                        setNewInjuryDetail({
+                                          ...newInjuryDetail,
+                                          InjurySide: e.target.value,
+                                        })
+                                      }
+                                    >
+                                      {injurySideType
+                                        ? injurySideType.Result.map(
+                                            (injury, index) => (
+                                              <MenuItem
+                                                key={index}
+                                                value={injury.injurysidecode}
+                                              >
+                                                {injury.injurysidecode} -{" "}
+                                                {injury.injurysidename}
+                                              </MenuItem>
+                                            )
+                                          )
+                                        : ""}
+                                    </Select>
+                                  </FormControl>
+                                </TableCell>
+                                <TableCell>
+                                  <FormControl fullWidth>
+                                    <Select
+                                      className="bg-base-100 w-full m-2"
+                                      labelId="policyTypeValue"
+                                      id="demo-simple-select"
+                                      value={newInjuryDetail.WoundType}
+                                      label=""
+                                      onChange={(e) =>
+                                        setNewInjuryDetail({
+                                          ...newInjuryDetail,
+                                          WoundType: e.target.value,
+                                        })
+                                      }
+                                    >
+                                      {injuryWoundType
+                                        ? injuryWoundType.Result.map(
+                                            (Wound, index) => (
+                                              <MenuItem
+                                                key={index}
+                                                value={Wound.woundtypecode}
+                                              >
+                                                {Wound.woundtypecode} -{" "}
+                                                {Wound.woundtypename}
+                                              </MenuItem>
+                                            )
+                                          )
+                                        : ""}
+                                    </Select>
+                                  </FormControl>
+                                </TableCell>
+                                {newInjuryDetail.InjuryArea &&
+                                newInjuryDetail.InjurySide &&
+                                newInjuryDetail.WoundType ? (
+                                  <>
+                                    <TableCell>
+                                      <div
+                                        onClick={handleAddInjuryDetail}
+                                        className="btn btn-success text-base-100 text-xl"
+                                      >
+                                        <FaCirclePlus />
+                                      </div>
+                                    </TableCell>
+                                  </>
+                                ) : (
+                                  ""
+                                )}
+                              </TableRow>
+                            </>
+                          ) : (
+                            ""
+                          )}
+                        </TableBody>
+                      </Table>
+                      <div className="grid gap-2 sm:grid-cols-4 text-base-100 bg-primary w-full whitespace-normal text-center">
+                        <div className="rounded-md"></div>
+                        <div className="rounded-md"></div>
+                        <div className="rounded-md "></div>
+                        <div className="rounded-md ">&nbsp;</div>
+                      </div>
+                    </TableContainer>
+                  </div>
+                </>
+
+            )}
 
             {/* //////////////////////////////////////////////////////////////////////////// */}
             <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
@@ -3192,7 +3894,6 @@ if(rows){
                     </tr>
                   </thead>
                   <tbody>
-                    {/* {console.log(datavitalsign)} */}
                     {datavitalsign  ? (
                     //  vitalsign.Result.VitalSignInfo.map(
                          datavitalsign.map(
@@ -3447,6 +4148,32 @@ if(rows){
                     </div>
                   </h1>
                   <div className="grid gap-4 sm:grid-cols-4 w-full mt-4">
+                  <div className="rounded-md mt-2">
+              <FormControl className="w-full">
+                <InputLabel id="demo-simple-select-label">
+                ชนิดของการดมยาสลบ
+                </InputLabel>
+                <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={anesthesiaListValue}
+                label="ชนิดของการดมยาสลบ"
+                onChange={AnesthesiaList}
+                >
+                {anesthesiaListCode
+                ? anesthesiaListCode.Result.map((code, index) => (
+                    <MenuItem key={index} value={code.aneslistcode}>
+                      {code.aneslistname}
+                    </MenuItem>
+                  ))
+                :    <MenuItem>
+                </MenuItem>
+                }
+                </Select>
+                </FormControl>
+
+
+                </div>
                   </div>
                   <TableContainer component={Paper} className="mt-2">
                     <Table className="table">
@@ -3742,9 +4469,9 @@ if(rows){
                     <tr className="text-base-100 bg-primary py-8 text-sm w-full text-center">
                       <th></th>
                       <th>รหัสของรายการ</th>
-                      <th>ชื่อรายการ</th>
+                      <th>ItemName</th>
                       <th>Code ของรายการ</th>
-                      <th>ชื่อของรายการ</th>
+                      <th>LocalBillingName</th>
                       <th>จำนวนปริมาณของรายการ</th>
                       <th>จำนวนเงินตั้งต้นของรายการ</th>
                       <th>จำนวนส่วนลดของรายการ</th>
@@ -3973,12 +4700,12 @@ if(rows){
                       <TableHead>
                         <TableRow className="bg-primary">
                           <TableCell className="w-1/12"></TableCell>
-                          <TableCell className="w-2/12">
+                          <TableCell className="w-3/12">
                             <h1 className="text-base-100  text-sm">
                             วันเวลา
                             </h1>
                           </TableCell>
-                          <TableCell className="w-8/12">
+                          <TableCell className="w-7/12">
                             <h1 className="text-base-100  text-sm">
                             รายละเอียด
                             </h1>
@@ -3997,25 +4724,36 @@ if(rows){
                                     <TableCell>{index + 1}</TableCell>
                                     <TableCell>
                        <LocalizationProvider dateAdapter={AdapterDayjs}>
-                            <DemoItem>
-                              <DateTimePicker
-                                  className="bg-base-100 w-full" 
-                              //  format="YYYY-MM-DD HH:MM"
-                                 value={con.ConcurrentDateTime}
-                                  onChange={(e) => 
-                                 handleChangeEditDateRow2(index, e)
-                                 }    
+                       <DemoItem>
+                       {summitEditConcurrentNote === "true" ? 
+                        <DateTimePicker
+                        className="bg-base-100 w-full" 
+                        format="YYYY-MM-DD HH:MM"
+                        value={con.ConcurrentDatetime ? dayjs(con.ConcurrentDatetime) : ""}
+                        // value=""
+                        onChange={(e) => 
+                        handleChangeEditDateRow2(index, e)
+                        }    
+                        placeholder="ConcurrentDatetime"
+                        />
 
-                                //  onChange={(newSignSymptomsDate) =>
-                                //   setSignSymptomsDate(newSignSymptomsDate)
-                                // }
 
-                                   placeholder="ConcurrentDateTime"
-                                 />
-                                 </DemoItem>
+                                    : 
+                        <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                                      {con.ConcurrentDatetime ? (
+                                        con.ConcurrentDatetime
+                                      ) : (
+                                        <>&nbsp;</>
+                                      )}
+                                    </div>
+                                }
+
+
+                                  </DemoItem> 
                                    </LocalizationProvider>
                                     </TableCell>
                                     <TableCell>
+                                    {summitEditConcurrentNote === "true" ? 
                                        <TextField
                                   className="bg-base-100 w-full"
                                   value={con.ConcurrentDetail}
@@ -4028,6 +4766,16 @@ if(rows){
                                   rows={4}
                                   placeholder="ConcurrentDetail"
                                 />
+
+: 
+<div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+              {con.ConcurrentDetail ? (
+                con.ConcurrentDetail
+              ) : (
+                <>&nbsp;</>
+              )}
+            </div>
+                                }
                                     </TableCell>
                                     <TableCell>
                                       {summitEditConcurrentNote === "true" ? (
@@ -4045,7 +4793,7 @@ if(rows){
                                
                             )
                           : ""}
-                 
+                
                         {summitEditConcurrentNote === "true" ? (
                           <>
                             <TableRow>
@@ -4058,16 +4806,10 @@ if(rows){
                             <DemoItem>
                               <DateTimePicker
                                   className="bg-base-100 w-full"
-                              //  format="YYYY-MM-DD MM:HH"
-                                 value={newRow2.ConcurrentDateTime}
-                                 onChange={(e) =>
-                           
-                                  setNewRow2({
-                                    ...newRow2,
-                                    ConcurrentDateTime: e,
-                                  })
-                                 }
-                                  placeholder="ConcurrentDateTime"
+                                 value={newRow2.ConcurrentDatetime ? dayjs(newRow2.ConcurrentDatetime) : ""}
+                                 onChange ={handleDateChange}
+                                  placeholder="ConcurrentDatetime"
+                                  format="YYYY-MM-DD HH:MM"
                                   //  required
                                 />
                                 </DemoItem>
@@ -4091,7 +4833,7 @@ if(rows){
                                 />
                               </TableCell>
                               {
-                              newRow2.ConcurrentDateTime &&
+                              newRow2.ConcurrentDatetime &&
                               newRow2.ConcurrentDetail ? (
                                 <>
                                   <TableCell>

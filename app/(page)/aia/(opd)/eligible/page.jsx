@@ -18,25 +18,37 @@ export default function Home() {
           {DataTran.DataTran.value === "มีข้อมูล" ? (
             <>
                    {
-              DataTran.DataTran.Data.ServiceSettingCode === "OPD" ?             
+              DataTran.DataTran.Data.ServiceSettingCode === "OPD" ? 
+              (
                <h1
               className="font-black text-accent text-3xl "
               data-theme="mytheme" >
-              ส่งยอดเคลม - OPD
+              OPD
             </h1> 
-            : DataTran.DataTran.Data.ServiceSettingCode === "IPD" ? 
+              )
+            : (DataTran.DataTran.Data.ServiceSettingCode === "IPD" ? 
+              (
             <h1
             className="font-black text-accent text-3xl "
             data-theme="mytheme" >
-            ส่งยอดเคลม - IPD
+            IPD
           </h1> 
-            : 
-            <h1
-            className="font-black text-accent text-3xl "
-            data-theme="mytheme" >
-            ส่งยอดเคลม - Pre
-          </h1> 
-            
+              )  : (DataTran.DataTran.Data.ServiceSettingAbbr === "PRE-01" ? 
+                  (
+                <h1
+                className="font-black text-accent text-3xl "
+                data-theme="mytheme" >
+                Pre - Authorization
+              </h1> 
+                    )  : (
+                <h1
+                className="font-black text-accent text-3xl "
+                data-theme="mytheme" >
+                Pre - Admission
+              </h1> 
+                    )
+           )
+            )
             }
 
 

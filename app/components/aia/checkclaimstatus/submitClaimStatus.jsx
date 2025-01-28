@@ -62,7 +62,7 @@ export default function checkData() {
   const [selectPRETypeValue, setSelectPRETypeValue] = useState("");
   const [preAuthTransactionList, setPreAuthTransactionList] = useState("");
   const [dataSelect, setDataSelect] = useState("");
-  
+  // const [dataServiceSettingAbbr, setDataServiceSettingAbbr] = useState("");
 
   const [toValue, setToValue] = useState(null);
   const [massError, setMassError] = useState("");
@@ -176,6 +176,7 @@ export default function checkData() {
       )
       .then((response) => {
         setServiceCode(response.data);
+        console.log(response.data)
 
       })
       .catch((error) => {
@@ -549,7 +550,7 @@ const PatientInfo = {
   FurtherClaimId: furtherClaimId,
   AccidentCauseOver45Days: over45,
 }
-// console.log(PatientInfo)
+ console.log(PatientInfo)
 axios
 .post(
   process.env.NEXT_PUBLIC_URL_PD2 +
@@ -859,6 +860,7 @@ axios
                 Visitlocation: dataSelect.Visitlocation,
                 TotalBillAmount : dataSelect.TotalBillAmount,
                 TotalExcessAmount:  dataSelect.TotalExcessAmount,
+                ServiceSettingAbbr : dataSelect.ServiceSettingAbbr,
               },
             })
           );
@@ -1130,12 +1132,13 @@ axios
                 AccidentDate: data.AccidentDate,
                 VisitDateTime: data.VisitDateTime,
                 IsIPDDischarge: data.IsIPDDischarge,
-                // PreauthReferClaimNo: data.PreauthReferClaimNo,
-                // PreauthReferOcc: data.PreauthReferOcc,   
-                PreauthReferClaimNo: "",
-                PreauthReferOcc: "",   
+                PreauthReferClaimNo: data.PreauthReferClaimNo,
+                PreauthReferOcc: data.PreauthReferOcc,   
+                // PreauthReferClaimNo: "",
+                // PreauthReferOcc: "",   
                 Runningdocument: data.randomNumberold,
                 Visitlocation: data.Visitlocation,
+                ServiceSettingAbbr : data.ServiceSettingAbbr,
               },
             })
           );
@@ -1192,10 +1195,9 @@ axios
  
   };
   const Detail3 = (data) => {
-    //  console.log(data)
+      console.log(data)
       setShowFormError();
-    //  const [RefId, TransactionNo, PID, PassportNumber, HN, VN, 
-    //    InvoiceNumber,PolicyTypeCode, IdType, IllnessTypeCode, ServiceSettingCode, SurgeryTypeCode, FurtherClaimNo, FurtherClaimId, AccidentDate, VisitDateTime] = data.split(" | ");
+    //  const [RefId, TransactionNo, PID, PassportNumber, HN, VN, InvoiceNumber,PolicyTypeCode, IdType, IllnessTypeCode, ServiceSettingCode, SurgeryTypeCode, FurtherClaimNo, FurtherClaimId, AccidentDate, VisitDateTime] = data.split(" | ");
       setDetailData(data
       //   {
       //   RefId: RefId,
@@ -1483,15 +1485,24 @@ axios
     setStatusNew({});
     setPostData();
     setShowFormError();
+    let DataServiceSettingAbbr="";
+    let ServiceValueX="";
     let data = {};
     let dateToValue = "";
     let dateFromValue = "";
     let PatientInfo;
     if(serviceValue === "OPD"){
       setDoMoney(true);
+    }else if(serviceValue === "PRE-01"){
+      ServiceValueX ="PRE";
+      DataServiceSettingAbbr = "PRE-01";
+    }else if(serviceValue === "PRE-02"){
+      ServiceValueX ="PRE";
+      DataServiceSettingAbbr = "PRE-02";
     }else{
       setDoMoney(false);
     }
+    
     if (fromValue && toValue) {
       dateFromValue = dayjs(fromValue.$d).format("YYYY-MM-DD");
       dateToValue = dayjs(toValue.$d).format("YYYY-MM-DD");
@@ -1510,7 +1521,8 @@ axios
         VisitDatefrom: dateFromValue,
         VisitDateto: dateToValue,
         StatusClaimCode: statusValue,
-        ServiceSettingCode: serviceValue,
+        ServiceSettingCode: ServiceValueX,
+        ServiceSettingAbbr : DataServiceSettingAbbr,
       };
     } else if (selectedIdType === "PASSPORT_NO" && numberValue) {
       PatientInfo = {
@@ -1525,7 +1537,8 @@ axios
         VisitDatefrom: dateFromValue,
         VisitDateto: dateToValue,
         StatusClaimCode: statusValue,
-        ServiceSettingCode: serviceValue,
+        ServiceSettingCode: ServiceValueX,
+        ServiceSettingAbbr : DataServiceSettingAbbr,
       };
     } else if (selectedIdType === "HOSPITAL_ID" && numberValue) {
       PatientInfo = {
@@ -1540,7 +1553,8 @@ axios
         VisitDatefrom: dateFromValue,
         VisitDateto: dateToValue,
         StatusClaimCode: statusValue,
-        ServiceSettingCode: serviceValue,
+        ServiceSettingCode: ServiceValueX,
+        ServiceSettingAbbr : DataServiceSettingAbbr,
       };
     } else if (selectedIdType === "PID" && numberValue) {
       PatientInfo = {
@@ -1555,7 +1569,8 @@ axios
         VisitDatefrom: dateFromValue,
         VisitDateto: dateToValue,
         StatusClaimCode: statusValue,
-        ServiceSettingCode: serviceValue,
+        ServiceSettingCode: ServiceValueX,
+        ServiceSettingAbbr : DataServiceSettingAbbr,
       };
     } else if (selectedIdType === "Invoice" && numberValue) {
       PatientInfo = {
@@ -1570,7 +1585,8 @@ axios
         VisitDatefrom: dateFromValue,
         VisitDateto: dateToValue,
         StatusClaimCode: statusValue,
-        ServiceSettingCode: serviceValue,
+        ServiceSettingCode: ServiceValueX,
+        ServiceSettingAbbr : DataServiceSettingAbbr,
       };
     } else if (selectedIdType === "ClaimNo" && numberValue) {
       PatientInfo = {
@@ -1585,7 +1601,8 @@ axios
         VisitDatefrom: dateFromValue,
         VisitDateto: dateToValue,
         StatusClaimCode: statusValue,
-        ServiceSettingCode: serviceValue,
+        ServiceSettingCode: ServiceValueX,
+        ServiceSettingAbbr : DataServiceSettingAbbr,
       };
     } else if (fromValue && toValue) {
       PatientInfo = {
@@ -1600,7 +1617,8 @@ axios
         VisitDatefrom: dateFromValue,
         VisitDateto: dateToValue,
         StatusClaimCode: statusValue,
-        ServiceSettingCode: serviceValue,
+        ServiceSettingCode: ServiceValueX,
+        ServiceSettingAbbr : DataServiceSettingAbbr,
       };
     } else if (statusValue) {
 
@@ -1617,7 +1635,8 @@ axios
           VisitDatefrom: dateFromValue,
           VisitDateto: dateToValue,
           StatusClaimCode: statusValue,
-          ServiceSettingCode: serviceValue,
+          ServiceSettingCode: ServiceValueX,
+          ServiceSettingAbbr : DataServiceSettingAbbr,
         };
       }else{
      
@@ -1634,7 +1653,8 @@ axios
         VisitDatefrom: today,
         VisitDateto: today,
         StatusClaimCode: statusValue,
-        ServiceSettingCode: serviceValue,
+        ServiceSettingCode: ServiceValueX,
+        ServiceSettingAbbr : DataServiceSettingAbbr,
       }; 
       }
     } else {
@@ -1654,11 +1674,12 @@ axios
   VisitDatefrom: "",
   VisitDateto: "",
    StatusClaimCode: statusValue,
-   ServiceSettingCode: serviceValue,
+   ServiceSettingCode: ServiceValueX,
+   ServiceSettingAbbr : DataServiceSettingAbbr,
  }; 
     }
 
-    // console.log(PatientInfo);
+     console.log(PatientInfo);
     setPatientUpdate({ PatientInfo });
     if (PatientInfo) {
       setPatientInfoDetail(PatientInfo);
@@ -1718,10 +1739,10 @@ axios
   const RefreshAll = () => {
     // console.log(data)
     setPostData();
-    const extractedRefId = data.map((item) => item.RefId);
-    const extractedTransactionNo = data.map((item) => item.TransactionNo);
+    const extractedRefId = datax.map((item) => item.RefId);
+    const extractedTransactionNo = datax.map((item) => item.TransactionNo);
 
-    const PatientInfo = data.map((item) => ({
+    const PatientInfo = datax.map((item) => ({
       RefId: item.RefId,
       TransactionNo: item.TransactionNo,
     }));
@@ -1901,9 +1922,8 @@ axios
               >
                 {serviceCode
                   ? serviceCode.Result.map((type, index) => (
-                      <MenuItem key={index} value={type.servicesettingcode}>
-                        {type.servicesettingcode} -{" "}
-                        {type.servicesettingdesc}
+                      <MenuItem key={index} value={type.abbreviation}>
+                        {type.servicesettingcode} -{" "}{type.servicesettingdesc}
                       </MenuItem>
                     ))
                   : (
@@ -2012,12 +2032,12 @@ axios
                 <th >Approved<br/>Amount</th>
                 <th >Excess<br/>Amount</th>
                 <th >
-                  <h1 className="text-base-100 text-2xl flex justify-center" onClick={RefreshAll}>
+                  {/* <h1 className="text-base-100 text-2xl flex justify-center" onClick={RefreshAll}>
                     <LuRefreshCw />
-                  </h1>
+                  </h1> */}
                 </th>
                 <th></th>
-              </tr>
+              </tr> 
             </thead>
             <tbody>
               {/* {console.log(postData)} */}
@@ -2034,7 +2054,7 @@ axios
                           </td>
                           <td className="whitespace-nowrap">{bill.HN} <br/> {bill.VN}</td>
                           <td className="">{bill.VisitLocation}</td>
-                          <td className="whitespace-nowrap">{bill.ClaimNo} <br/>  ( {bill.ServiceSettingCode} {bill.IsIPDDischarge === true ? "Final" : ""} )</td>
+                          <td className="whitespace-nowrap">{bill.ClaimNo} <br/>  ( {bill.ServiceSettingCode ==="PRE-01" ? "PRE-Authorization" : (bill.ServiceSettingCode ==="PRE-02" ? "PRE-Admission" : bill.ServiceSettingCode)} {bill.IsIPDDischarge === true ? "Discharge" : ""} )</td>
                           <td className="whitespace-nowrap">{bill.InvoiceNumber}</td>
                           <td className="whitespace-nowrap">
                             {
@@ -2042,7 +2062,7 @@ axios
                             }
                           </td>
                           <td>
-                            <div className="grid gap-1 sm:grid-cols-1 w-40 ">
+                            <div className="grid gap-1 sm:grid-cols-1 w-40 break-all">
                               {
                                statusNew ? (
                                 bill.TransactionNo ===statusNew.TransactionNo ? (statusNew.ClaimStatusDesc ? (statusNew.ClaimStatus !== "Cancelled" && statusNew.ClaimStatus !=="Cancelled to AIA" &&statusNew.ClaimStatus !== "Reversed" && statusNew.ClaimStatus !== "Decline" ? (statusNew.ClaimStatus === "Approved" ||statusNew.ClaimStatus === "Settle" ? (
@@ -2080,8 +2100,8 @@ axios
                                       <a className="bg-info text-base-100 rounded-full px-3 py-2 w-full">
                                         {bill.ClaimStatusDesc_EN}
                                       </a>
-                    ) : ((bill.ClaimStatusDesc_EN === "Approve")||(bill.ClaimStatusDesc_EN === "Received")|| (bill.ClaimStatusDesc_EN === "Pending") || (bill.ClaimStatusDesc_EN === "AddDoc")) ? (
-                                      bill.ClaimStatusDesc_EN === "Pending" ? (
+                    ) : ((bill.ClaimStatusDesc_EN === "Approve")||(bill.ClaimStatusDesc_EN === "Received")|| (bill.ClaimStatusDesc_EN === "Pending") || (bill.ClaimStatusDesc_EN === "AddDoc")|| (bill.ClaimStatusDesc_EN === "Processing") ) ? (
+                                      (bill.ClaimStatusDesc_EN === "Pending") ? (
                                       <a className="bg-accent text-base-100 rounded-full px-3 py-2 w-full">
                                         {bill.ClaimStatusDesc_EN}
                                       </a>
@@ -2169,6 +2189,7 @@ axios
                               bill.ClaimStatusDesc !== "Cancelled to AIA" &&
                               bill.ClaimStatusDesc !== "Cancelled" &&
                               bill.ClaimStatusDesc !== "Reversed" &&
+                              bill.ClaimStatusDesc !== "waitting for discharge" &&
                               bill.ClaimNo ? (
                                 <>
                                   <div className="tooltip ml-4" data-tip="รีเฟรช">
@@ -2192,8 +2213,19 @@ axios
                            
                             {bill.RefId ? (
                               bill.BatchNumber ? (
-                                ""
+                                <div className="tooltip ml-4" data-tip="ข้อมูลส่งเคลม">
+                                <h1
+                                  className="text-error text-2xl"
+                                  onClick={() =>
+                                    Detail3(bill
+                                    )
+                                  }
+                                >
+                                  <IoDocumentText />
+                                </h1>
+                              </div>
                               ) : ((bill.ClaimStatusDesc === "Approve" || bill.ClaimStatusDesc === "waitting for discharge") && bill.ClaimStatusDesc !== "Cancelled to AIA") ||
+                              ((bill.ClaimStatusDesc === "Processing" || bill.ClaimStatusDesc === "waitting for discharge") && bill.ClaimStatusDesc !== "Cancelled to AIA") ||
                                 ((bill.ClaimStatusDesc === "Received" || bill.ClaimStatusDesc === "waitting for discharge") && bill.ClaimStatusDesc !== "Cancelled to AIA") ||
                                 ((bill.ClaimStatusDesc === "waitting discharge" || bill.ClaimStatusDesc === "waitting for discharge") && bill.ClaimStatusDesc !== "Cancelled to AIA") ||
                                 bill.ClaimStatusDesc === "Pending" ? (
@@ -2212,10 +2244,9 @@ axios
                                    : 
                                   <div className="tooltip ml-4" data-tip="ข้อมูลส่งเคลม">
                                                           <h1
-                                                            className="text-primary text-2xl"
+                                                            className="text-error text-2xl"
                                                             onClick={() =>
                                                               Detail3(bill
-                                                             //    `${bill.RefId} | ${bill.TransactionNo} | ${bill.PID} | ${bill.PassportNumber} | ${bill.HN} | ${bill.VN} | ${bill.InvoiceNumber} | ${bill.PolicyTypeCode} | ${bill.IdType} | ${bill.IllnessTypeCode} | ${bill.ServiceSettingCode} | ${bill.SurgeryTypeCode} | ${bill.FurtherClaimNo} | ${bill.FurtherClaimId} | ${bill.AccidentDate} | ${bill.VisitDateTime} | ${bill.VisitDate} | ${bill.Runningdocument} | ${bill.futherclaimVN} | ${bill.Visitlocation}`
                                                               )
                                                             }
                                                           >
@@ -2249,7 +2280,7 @@ axios
                             </div>
                           </td>
                           <td>
-                            {bill.RefId ? (
+                            {bill.RefId && bill.IsIPDDischarge !== true ? (
                               bill.ClaimStatusDesc === "Approve" || bill.ClaimStatusDesc === "Pending" ||
                               bill.ClaimStatusDesc === "Received" ? (
                                 bill.BatchNumber ? (
@@ -2273,7 +2304,7 @@ axios
                               ""
                             )}
                              {/* {console.log(doMoney)}  */}
-                            { bill.RefId ? (
+                            { bill.RefId ? (bill.ServiceSettingCode === "OPD" ? (
                              ((bill.ClaimStatusDesc === "waitting for discharge")||(bill.ClaimStatusDesc === "Approve")||(bill.ClaimStatusDesc === "Received"))&& doMoney === true ? (
                             
                             <>
@@ -2288,7 +2319,7 @@ axios
                                 </button>
 
                             </>
-                            ) : ("")) : ("")}
+                            ) : ("") ): "" ) : ("")}
                           </td>
                         </tr>
                       )
@@ -2417,13 +2448,13 @@ axios
                     <tbody className="bg-white divide-y divide-gray-200">
                       {billList ? (
                         billList.map((list, index) => (
-                          <tr key={index} className=" bg-neutral text-sm">
-                            <td className="px-6 py-4 text-wrap break-words">
+                          <tr key={index} className=" bg-neutral  text-sm">
+                            <td className="px-6 py-4 text-wrap break-all">
                               {list.filename}
                               <br />
                               {list.originalname}
                             </td>
-                            <td className="px-6 py-4 break-words">
+                            <td className="px-6 py-4 break-all">
                               <div
                                 className="btn btn-primary  mr-2 text-base-100 hover:text-primary hover:bg-base-100"
                                 type="submit"
@@ -2519,12 +2550,12 @@ axios
                     {billList ? (
                       billList.map((list, index) => (
                         <tr key={index} className=" bg-neutral text-sm">
-                          <td className="px-6 py-4 break-words">
+                          <td className="px-6 py-4 break-all">
                             {list.filename}
                             <br />
                             {list.originalname}
                           </td>
-                          <td className="px-6 py-4 break-words">
+                          <td className="px-6 py-4 break-all">
                             {
                   
                               docType.Result.map((type,index) => 
@@ -2534,7 +2565,7 @@ axios
                             ) 
                           }
                           </td>
-                          <td className="px-6 py-4 break-words flex items-center">
+                          <td className="px-6 py-4 flex items-center">
                             <div
                               className="btn btn-primary  mr-2 text-base-100 hover:text-primary hover:bg-base-100"
                               type="submit"
@@ -2543,11 +2574,11 @@ axios
                               Document
                             </div>
 
-                            <div className="btn btn-error  mr-2 text-base-100 hover:text-error hover:bg-base-100" type="submit"
+                            {/* <div className="btn btn-error  mr-2 text-base-100 hover:text-error hover:bg-base-100" type="submit"
                                 onClick={() => CancleDoc(list.filename)}
                                 >
                                 Cancel
-                                </div>
+                                </div> */}
                           </td>
                         </tr>
                       ))
@@ -2814,13 +2845,15 @@ onChange={(e) => { const selectedType = JSON.parse(e.target.value);
               )   }
               
                     </TableContainer>
+
                     <div className="modal-action">
                       {total !== 0 ?
                   <div className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100" type="submit" onClick={SubmitBillingCheckBalance}>
                     ส่งประมาณการค่าใช้จ่ายให้ประกัน
                   </div>
                : ""   }
-                </div>     
+                </div>  
+
             </div>
           </dialog>
 
@@ -2834,19 +2867,21 @@ onChange={(e) => { const selectedType = JSON.parse(e.target.value);
             <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
               ✕
             </button>
-                <h1 className="text-accent text-3xl text-center">เคยจองสิทธิ์มาก่อนไหม</h1>
+                <h1 className="text-accent text-3xl text-center">รายการจองสิทธิ์</h1>
 
    
       <div className="flex items-center justify-center">
+      <div className="grid gap-1 sm:grid-cols-3 w-full  whitespace-normal text-center">
+      <div className="rounded-md"></div>
           <div className="rounded-md w-full text-center">
-           <div className="p-4 border-2  rounded-md bg-white w-2/6 shadow-md ml-2 ">
+           <div className="mt-2">
               <div role="tablist" className="tabs-bordered">
                   <input
                   type="radio"
                   name="my_tabs_1"
                   role="tab"
                   className="tab text-xl"
-                  aria-label="ไม่เคยจองสิทธิ์"
+                  aria-label="ไม่เคยจองสิทธิ์มาก่อน"
                   onChange={NotSelectPRE}
                   defaultChecked
                   />
@@ -2856,7 +2891,7 @@ onChange={(e) => { const selectedType = JSON.parse(e.target.value);
                   name="my_tabs_1"
                   role="tab"
                   className="tab text-xl"
-                  aria-label="เคยจองสิทธิ์"
+                  aria-label="รายการที่จองสิทธิ์"
                 />
               <div role="tabpanel" className="tab-content mt-4">
                   <label className="form-control w-full">
@@ -2930,6 +2965,9 @@ onChange={(e) => { const selectedType = JSON.parse(e.target.value);
             </div>
              ) : ("")}
           </div>
+          
+          </div>
+          <div className="rounded-md"></div>
         </div>
       </div>
                   {formPRE && (

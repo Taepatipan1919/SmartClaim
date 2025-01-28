@@ -632,7 +632,7 @@ if(idTypeValue === "NATIONAL_ID"){
         setShowFormCheckEligibleError("Error");
       }
     });
-    }else if(((serviceValue ===  "PRE-01")||(serviceValue ===  "PRE-02"))||(serviceValue === "IPD")){
+    }else if((serviceValue === "PRE")||(serviceValue === "IPD")){
 
     axios
     .post(
@@ -1233,7 +1233,7 @@ if(idTypeValue === "NATIONAL_ID"){
      try {
       if(serviceValue === "OPD"){
         document.getElementById("OPD").showModal();
-      }else if(serviceValue === "PRE-01"){
+      }else if(serviceValue === "PRE"){
         document.getElementById("PRE").showModal();
       }else if(serviceValue === "IPD"){
         document.getElementById("IPD").showModal();
@@ -1260,54 +1260,6 @@ if(idTypeValue === "NATIONAL_ID"){
             const HS = response.data.Result.InsuranceData.CoverageList.some(coverage => coverage.Type === "ผลประโยชน์ค่ารักษาพยาบาล" && coverage.Status === true);
             const HB = response.data.Result.InsuranceData.CoverageList.some(coverage => coverage.Type === "ผลประโยชน์ค่าชดเชยนอนรพ" && coverage.Status === true);
             const AI = response.data.Result.InsuranceData.CoverageList.some(coverage => coverage.Type === "ผลประโยชน์ค่าชดเชย" && coverage.Status === true);
-
-
-
-
-            
-
-
-            axios
-            .post(
-              process.env.NEXT_PUBLIC_URL_SV +
-                process.env.NEXT_PUBLIC_URL_getListVisitClaimAIA,
-                {
-                  "PatientInfo" : {
-                       "InsurerCode": InsurerCode, 
-                      "RefId": PatientInfo.RefId,
-                      "TransactionNo": PatientInfo.TransactionNo,       
-                      "PID": PatientInfo.PID,
-                      "HN": PatientInfo.HN,
-                      "VN": PatientInfo.VN
-                  }
-                }
-                
-            )
-            .then((response) => {
-              console.log(response.data)
-            setListClaimForm(response.data);
-            })
-            .catch((error) => {
-           //   console.log(error);
-              try {
-                const ErrorMass = error.config.url;
-                const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
-                setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
-                setShowFormError("Error");
-              } catch (error) {
-                setMassError(error.response.data.HTTPStatus.message);
-                setShowFormError("Error");
-              }
-            });
-
-
-
-
-
-
-
-
-
             // const HSBypass = response.data.Result.InsuranceData.CoverageList.some(coverage => coverage.Type === "ผลประโยชน์ค่ารักษาพยาบาลที่ต้องตรวจสอบความคุ้มครองโดยเจ้าหน้าที่ AIA" && coverage.Status === true);
             if (hasTrueStatus) {
                 console.log("True")
@@ -1433,7 +1385,7 @@ if(idTypeValue === "NATIONAL_ID"){
               >
                 {serviceCode
                   ? serviceCode.Result.map((type, index) => (
-                      <MenuItem key={index} value={type.abbreviation}>
+                      <MenuItem key={index} value={type.servicesettingcode}>
                         {type.servicesettingcode} -{" "}
                         {type.servicesettingdesc}
                       </MenuItem>
@@ -1446,7 +1398,7 @@ if(idTypeValue === "NATIONAL_ID"){
               </Select>
             </FormControl>
           </div>
-          {/* {((serviceValue === "OPD")||(serviceValue === "IPD")) ? ( */}
+          {((serviceValue === "OPD")||(serviceValue === "IPD")) ? (
           <div>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DatePicker
@@ -1473,7 +1425,7 @@ if(idTypeValue === "NATIONAL_ID"){
                   <FaSearch /> Search
                 </button>
           </div> 
-        {/* )   : ""} */}
+        )   : ""}
           {/*  <div>    */}
  
           {/* </div> */}
@@ -1608,7 +1560,7 @@ if(idTypeValue === "NATIONAL_ID"){
                               
                               )
                                 : 
-                                ((serviceValue ===  "PRE-01")||(serviceValue ===  "PRE-02"))  ? (
+                                  serviceValue ===  "PRE"  ? (
                                     (ill.illnesstypecode === "ILL")||(ill.illnesstypecode === "ACC")||(ill.illnesstypecode === "DAY")
                               ? (
                                  <MenuItem key={index} value={ill.illnesstypecode}>
@@ -1873,7 +1825,7 @@ if(idTypeValue === "NATIONAL_ID"){
                             
                             )
                               : 
-                              ((serviceValue ===  "PRE-01")||(serviceValue ===  "PRE-02"))  ? (
+                                serviceValue ===  "PRE"  ? (
                                   (ill.illnesstypecode === "ILL")||(ill.illnesstypecode === "ACC")||(ill.illnesstypecode === "DAY")
                             ? (
                                <MenuItem key={index} value={ill.illnesstypecode}>
@@ -2078,7 +2030,7 @@ if(idTypeValue === "NATIONAL_ID"){
 
  (succFurtherClaim2 === false ? 
  <div className="rounded-md">
-                    {/* <TextField
+                    <TextField
                   error
               id="outlined-basic"
               label="เคลมต่อเนื่อง (VN First Claim form)"
@@ -2090,8 +2042,8 @@ if(idTypeValue === "NATIONAL_ID"){
               type="text"
               value={vNValue}
               onChange={(e) => setVNValue(e.target.value)}
-            /> */}
-        {console.log(listClaimForm)} 
+            />
+
       <div
     className="btn btn-error text-base-100 hover:text-error hover:bg-base-100 ml-2"
     onClick={() =>handleButtonFurtherBlackVNClick(
@@ -2213,7 +2165,7 @@ if(idTypeValue === "NATIONAL_ID"){
                 <>
                 <div className="flex  w-full">
 
-                                    {/* <TextField
+                                    <TextField
                   error
               id="outlined-basic"
               label="เคลมต่อเนื่อง (VN First Claim form)"
@@ -2225,8 +2177,7 @@ if(idTypeValue === "NATIONAL_ID"){
               type="text"
               value={vNValue}
               onChange={(e) => setVNValue(e.target.value)}
-            /> */}
-        {console.log(listClaimForm)} 
+            />
               </div> 
 
               <div
