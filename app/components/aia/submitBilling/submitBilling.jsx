@@ -90,7 +90,7 @@ export default function checkData() {
       console.log(err);
       //  if (err.response.request.status === 500) {
       setShowFormError("Error");
-      setMassError(err.response.data.HTTPStatus.message);
+      setMassError(err.message);
     });
 
     axios
@@ -1552,7 +1552,7 @@ axios
                           })
                           : ""} */}
                
-               {bill.TotalApprovedAmount
+               {/* {bill.TotalApprovedAmount
                               ?
                               //  parseFloat(
                                 (statusNew
@@ -1567,6 +1567,17 @@ axios
                                 //   minimumFractionDigits: 2,
                                 //   maximumFractionDigits: 2,
                                 // })
+                              : ""} */}
+                                    {bill.TotalApprovedAmount
+                              ?
+                                (statusNew
+                                ? (
+                                  (bill.TransactionNo ===statusNew.TransactionNo)
+                                  ? (statusNew.TotalApproveAmount ? parseFloat(statusNew.TotalApproveAmount).toLocaleString("en-US", {minimumFractionDigits: 2,maximumFractionDigits: 2,}) : parseFloat(bill.TotalApprovedAmount).toLocaleString("en-US", {minimumFractionDigits: 2,maximumFractionDigits: 2,})  )
+                                  :  bill.TotalApprovedAmount === null ? ("") : (parseFloat(bill.TotalApprovedAmount).toLocaleString("en-US", {minimumFractionDigits: 2,maximumFractionDigits: 2,})) 
+                                )
+                                  :  ""
+                                )
                               : ""}
 
                       </th>
@@ -1876,12 +1887,23 @@ post.map((bill, index) =>
         : ""} */}
 
 
-    {bill.TotalApprovedAmount
+    {/* {bill.TotalApprovedAmount
         ? parseFloat(bill.TotalApprovedAmount).toLocaleString('en-US', {
           minimumFractionDigits: 2,
           maximumFractionDigits: 2,
         })
-        : ""}
+        : ""} */}
+              {bill.TotalApprovedAmount
+                              ?
+                                (statusNew
+                                ? (
+                                  (bill.TransactionNo ===statusNew.TransactionNo)
+                                  ? (statusNew.TotalApproveAmount ? parseFloat(statusNew.TotalApproveAmount).toLocaleString("en-US", {minimumFractionDigits: 2,maximumFractionDigits: 2,}) : parseFloat(bill.TotalApprovedAmount).toLocaleString("en-US", {minimumFractionDigits: 2,maximumFractionDigits: 2,})  )
+                                  :  bill.TotalApprovedAmount === null ? ("") : (parseFloat(bill.TotalApprovedAmount).toLocaleString("en-US", {minimumFractionDigits: 2,maximumFractionDigits: 2,})) 
+                                )
+                                  :  ""
+                                )
+                              : ""}
     </th>
     <th>
       {bill.TotalExcessAmount
@@ -2175,14 +2197,25 @@ post.map((bill, index) =>
         
     </th>
     <th>
-        {bill.TotalApprovedAmount
+        {/* {bill.TotalApprovedAmount
         ? parseFloat(
            (statusNew ? bill.TransactionNo === statusNew.TransactionNo ? statusNew.TotalBillAmount : (bill.TotalApprovedAmount ? (bill.TotalApprovedAmount): ("")): "Loading...")
         ).toLocaleString('en-US', {
           minimumFractionDigits: 2,
           maximumFractionDigits: 2,
         })
-        : ""}
+        : ""} */}
+              {bill.TotalApprovedAmount
+                              ?
+                                (statusNew
+                                ? (
+                                  (bill.TransactionNo ===statusNew.TransactionNo)
+                                  ? (statusNew.TotalApproveAmount ? parseFloat(statusNew.TotalApproveAmount).toLocaleString("en-US", {minimumFractionDigits: 2,maximumFractionDigits: 2,}) : parseFloat(bill.TotalApprovedAmount).toLocaleString("en-US", {minimumFractionDigits: 2,maximumFractionDigits: 2,})  )
+                                  :  bill.TotalApprovedAmount === null ? ("") : (parseFloat(bill.TotalApprovedAmount).toLocaleString("en-US", {minimumFractionDigits: 2,maximumFractionDigits: 2,})) 
+                                )
+                                  :  ""
+                                )
+                              : ""}
 
     </th>
     <th>

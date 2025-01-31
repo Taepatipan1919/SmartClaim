@@ -1087,7 +1087,7 @@ export default function Page({ data }) {
       await stepOne();
       await stepTwo();
     } catch (error) {
-    //  console.log(error);
+      console.log(error);
     };
 
     function stepOne() {
@@ -1099,9 +1099,9 @@ export default function Page({ data }) {
     function stepTwo() {
       setTimeout(() => {
              router.push("/aia/eligible");
-}, 1000);
-
+      }, 1000);
     };
+
     }else{
 
             setMassSummitError(response.data.HTTPStatus.message);
@@ -1222,7 +1222,7 @@ export default function Page({ data }) {
         PatientInfoData
       )
       .then((response) => {
-        console.log(response.data)
+        // console.log(response.data)
     // console.log("5555")
     if(numberBilling === false){
       setBilling(response.data);
@@ -2393,14 +2393,14 @@ if(rows){
                   
                 </div>
              
-                <div className="rounded-md mt-2 text-3xl text-error  flex ">
+              <div className="rounded-md mt-2 text-3xl text-error  flex ">
                {/* <IoSettingsSharp className="mt-1 " onClick={Editfurtherclaimvn}/> */}
-               <div
+                <div
                         className="btn btn-secondary text-base-100 text-xl"
                         onClick={Editfurtherclaimvn}
                       >
                         <FaEdit className="text-base-100" />
-                      </div>
+                  </div>
                   <div className="mt-2 ml-2">Claim form จาก VN : {PatientInfoData.PatientInfo.FurtherClaimVN ? (PatientInfoData.PatientInfo.FurtherClaimVN === PatientInfoData.PatientInfo.VN ? PatientInfoData.PatientInfo.VN+" ( ปัจจุบัน )" : PatientInfoData.PatientInfo.FurtherClaimVN+" ( เก่า )") : PatientInfoData.PatientInfo.VN+" ( ปัจจุบัน )" }</div>                    
 
                 </div>

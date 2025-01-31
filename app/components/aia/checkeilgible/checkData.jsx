@@ -198,6 +198,7 @@ setSuccFurtherClaim2(true)
        }
        const type = (event) => {
         setServiceValue(event.target.value);
+        setVisitDateTime(null);
       };
   const gourl = () => {
         //event.preventDefault();
@@ -225,12 +226,12 @@ if(idTypeValue === "NATIONAL_ID"){
     GivenNameTH: patientDB.GivenNameTH,
     SurnameTH: patientDB.SurnameTH,
     DateOfBirth: patientDB.DateOfBirth,
-    // VN: detailVN,
-    VN: "",
+    VN: detailVN,
     VisitDateTime: visitDateTime,
     AccidentDate: accidentDate,
     PolicyTypeCode: policyTypeValue,
     ServiceSettingCode: serviceValue,
+    ServiceSettingAbbr: "",
     IllnessTypeCode: illnessTypeValue,
     SurgeryTypeCode:  surgeryTypeValue,
     Runningdocument: randomNumber,
@@ -261,6 +262,7 @@ if(idTypeValue === "NATIONAL_ID"){
     AccidentDate: accidentDate,
     PolicyTypeCode: policyTypeValue,
     ServiceSettingCode: serviceValue,
+    ServiceSettingAbbr: "",
     IllnessTypeCode: illnessTypeValue,
     SurgeryTypeCode:  surgeryTypeValue,
     Runningdocument: randomNumber,
@@ -291,6 +293,7 @@ if(idTypeValue === "NATIONAL_ID"){
     AccidentDate: accidentDate,
     PolicyTypeCode: policyTypeValue,
     ServiceSettingCode: serviceValue,
+    ServiceSettingAbbr: "",
     IllnessTypeCode: illnessTypeValue,
     SurgeryTypeCode:  surgeryTypeValue,
     Runningdocument: randomNumber,
@@ -321,6 +324,7 @@ if(idTypeValue === "NATIONAL_ID"){
     AccidentDate: accidentDate,
     PolicyTypeCode: policyTypeValue,
     ServiceSettingCode: serviceValue,
+    ServiceSettingAbbr: "",
     IllnessTypeCode: illnessTypeValue,
     SurgeryTypeCode:  surgeryTypeValue,
     Runningdocument: randomNumber,
@@ -351,6 +355,7 @@ if(idTypeValue === "NATIONAL_ID"){
     AccidentDate: accidentDate,
     PolicyTypeCode: policyTypeValue,
     ServiceSettingCode: serviceValue,
+    ServiceSettingAbbr: "",
     IllnessTypeCode: illnessTypeValue,
     SurgeryTypeCode:  surgeryTypeValue,
     Runningdocument: randomNumber,
@@ -384,11 +389,12 @@ if(idTypeValue === "NATIONAL_ID"){
           GivenNameTH: patientDB.GivenNameTH,
           SurnameTH: patientDB.SurnameTH,
           DateOfBirth: patientDB.DateOfBirth,
-          VN: "",
+          VN: detailVN,
           VisitDateTime: visitDateTimePreIPD,
           AccidentDate: accidentDate,
           PolicyTypeCode: policyTypeValue,
-          ServiceSettingCode: serviceValue,
+          ServiceSettingCode: "PRE",
+          ServiceSettingAbbr: serviceValue,
           IllnessTypeCode: illnessTypeValue,
           SurgeryTypeCode:  surgeryTypeValue,
           Runningdocument: randomNumber,
@@ -414,11 +420,12 @@ if(idTypeValue === "NATIONAL_ID"){
           GivenNameTH: patientDB.GivenNameTH,
           SurnameTH: patientDB.SurnameTH,
           DateOfBirth: patientDB.DateOfBirth,
-          VN: "",
+          VN: detailVN,
           VisitDateTime: visitDateTimePreIPD,
           AccidentDate: accidentDate,
           PolicyTypeCode: policyTypeValue,
-          ServiceSettingCode: serviceValue,
+          ServiceSettingCode: "PRE",
+          ServiceSettingAbbr: serviceValue,
           IllnessTypeCode: illnessTypeValue,
           SurgeryTypeCode:  surgeryTypeValue,
           Runningdocument: randomNumber,
@@ -444,11 +451,12 @@ if(idTypeValue === "NATIONAL_ID"){
           GivenNameTH: patientDB.GivenNameTH,
           SurnameTH: patientDB.SurnameTH,
           DateOfBirth: patientDB.DateOfBirth,
-          VN: "",
+          VN: detailVN,
           VisitDateTime: visitDateTimePreIPD,
           AccidentDate: accidentDate,
           PolicyTypeCode: policyTypeValue,
-          ServiceSettingCode: serviceValue,
+          ServiceSettingCode: "PRE",
+          ServiceSettingAbbr: serviceValue,
           IllnessTypeCode: illnessTypeValue,
           SurgeryTypeCode:  surgeryTypeValue,
           Runningdocument: randomNumber,
@@ -474,11 +482,12 @@ if(idTypeValue === "NATIONAL_ID"){
           GivenNameTH: patientDB.GivenNameTH,
           SurnameTH: patientDB.SurnameTH,
           DateOfBirth: patientDB.DateOfBirth,
-          VN: "",
+          VN: detailVN,
           VisitDateTime: visitDateTimePreIPD,
           AccidentDate: accidentDate,
           PolicyTypeCode: policyTypeValue,
-          ServiceSettingCode: serviceValue,
+          ServiceSettingCode: "PRE",
+          ServiceSettingAbbr: serviceValue,
           IllnessTypeCode: illnessTypeValue,
           SurgeryTypeCode:  surgeryTypeValue,
           Runningdocument: randomNumber,
@@ -504,11 +513,12 @@ if(idTypeValue === "NATIONAL_ID"){
           GivenNameTH: patientDB.GivenNameTH,
           SurnameTH: patientDB.SurnameTH,
           DateOfBirth: patientDB.DateOfBirth,
-          VN: "",
+          VN: detailVN,
           VisitDateTime: visitDateTimePreIPD,
           AccidentDate: accidentDate,
           PolicyTypeCode: policyTypeValue,
-          ServiceSettingCode: serviceValue,
+          ServiceSettingCode: "PRE",
+          ServiceSettingAbbr: serviceValue,
           IllnessTypeCode: illnessTypeValue,
           SurgeryTypeCode:  surgeryTypeValue,
           Runningdocument: randomNumber,
@@ -570,15 +580,18 @@ if(idTypeValue === "NATIONAL_ID"){
     window.print();
   };
   const confirmButton = (data) => {
-    
+    // console.log(patientInfo)
     setFurtherClaim();
     setShowFormFurtherError();
     setMassFurtherError();
+    let PatientInfo;
+
 
     const [RefId, TransactionNo] = data.split(" | ");
     setRefIdL(RefId)
     setTransactionNoL(TransactionNo)
-    const PatientInfo = {
+    if(serviceValue === "OPD"||serviceValue === "IPD"){
+    PatientInfo = {
       InsurerCode: InsurerCode,
       RefId: RefId,
       TransactionNo: TransactionNo,
@@ -590,15 +603,44 @@ if(idTypeValue === "NATIONAL_ID"){
       PassportNumber: patientDB.PassportNumber,
       IdType: numberValue,
       VN: detailVN,
-      VisitDateTime: visitDateTime,
+      VisitDateTime: patientInfo.VisitDateTime,
       AccidentDate: accidentDate,
       ServiceSettingCode: serviceValue,
+      ServiceSettingAbbr: "",
       IllnessTypeCode: illnessTypeValue,
       SurgeryTypeCode: surgeryTypeValue,
       PolicyTypeCode: policyTypeValue,
       FurtherClaimNo: furtherClaimNo,
       FurtherClaimId: furtherClaimId,
+      Visitlocation: visitlocation,
+      VisitlocationCode: locationCode,
     };
+  }else{
+    PatientInfo = {
+      InsurerCode: InsurerCode,
+      RefId: RefId,
+      TransactionNo: TransactionNo,
+      PID: patientDB.PID,
+      HN: patientDB.HN,
+      GivenNameTH: patientDB.GivenNameTH,
+      SurnameTH: patientDB.SurnameTH,
+      DateOfBirth: patientDB.DateOfBirth,
+      PassportNumber: patientDB.PassportNumber,
+      IdType: numberValue,
+      VN: detailVN,
+      VisitDateTime: patientInfo.VisitDateTime,
+      AccidentDate: accidentDate,
+      ServiceSettingCode: "PRE",
+      ServiceSettingAbbr: serviceValue,
+      IllnessTypeCode: illnessTypeValue,
+      SurgeryTypeCode: surgeryTypeValue,
+      PolicyTypeCode: policyTypeValue,
+      FurtherClaimNo: furtherClaimNo,
+      FurtherClaimId: furtherClaimId,
+      Visitlocation: visitlocation,
+      VisitlocationCode: locationCode,
+    };
+  }
      console.log(PatientInfo);
 
   setLoad(false)
@@ -632,35 +674,35 @@ if(idTypeValue === "NATIONAL_ID"){
         setShowFormCheckEligibleError("Error");
       }
     });
-    }else if(((serviceValue ===  "PRE-01")||(serviceValue ===  "PRE-02"))||(serviceValue === "IPD")){
+    }else if(((serviceValue === "PRE-01")||(serviceValue === "PRE-01"))||(serviceValue === "IPD")){
 
-    axios
-    .post(
-      '/api/v1/aia-checkeligible/preauthSubmission',{PatientInfo} 
-      // process.env.NEXT_PUBLIC_URL_PD +
-      //   process.env.NEXT_PUBLIC_URL_getRetrieveFurtherclaim,
-      // {
-      //     PatientInfo
-      // }
-    )
-    .then((response) => {
+    // axios
+    // .post(
+    //   '/api/v1/aia-checkeligible/preauthSubmission',{PatientInfo} 
+    //   // process.env.NEXT_PUBLIC_URL_PD +
+    //   //   process.env.NEXT_PUBLIC_URL_getRetrieveFurtherclaim,
+    //   // {
+    //   //     PatientInfo
+    //   // }
+    // )
+    // .then((response) => {
  
-      console.log(response.data)
+    //   console.log(response.data)
       setLoad(true)
-      setPreAuthTransactionList(response.data);
-    })
-    .catch((error) => {
-      console.log(error);
-      try {
-        const ErrorMass = error.config.url;
-        const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
-        setMassFurtherError(error.code + " - " + error.message + " - " + ErrorMass2);
-        setShowFormCheckEligibleError("Error");
-      } catch (error) {
-        setMassFurtherError(error.response.data.HTTPStatus.message);
-        setShowFormCheckEligibleError("Error");
-      }
-    });
+    //   setPreAuthTransactionList(response.data);
+    // })
+    // .catch((error) => {
+    //   console.log(error);
+    //   try {
+    //     const ErrorMass = error.config.url;
+    //     const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+    //     setMassFurtherError(error.code + " - " + error.message + " - " + ErrorMass2);
+    //     setShowFormCheckEligibleError("Error");
+    //   } catch (error) {
+    //     setMassFurtherError(error.response.data.HTTPStatus.message);
+    //     setShowFormCheckEligibleError("Error");
+    //   }
+    // });
 
 
     }
@@ -847,6 +889,7 @@ if(idTypeValue === "NATIONAL_ID"){
           InsurerCode
       )
       .then((response) => {
+        // console.log(response.data)
         setServiceCode(response.data);
 
       })
@@ -900,6 +943,8 @@ if(idTypeValue === "NATIONAL_ID"){
 
   const check = async (event) => {
 
+
+    setShowFormError();
     // console.log(numberValue)
     setSelectPRETypeValue("");
     event.preventDefault();
@@ -930,14 +975,15 @@ if(idTypeValue === "NATIONAL_ID"){
       DateAccValue="";
     }
 
+    const [VNselectVN, VisitDateselectVN , LocationDesc , LocationCode] = event.target.selectVN.value.split(" | ");
+    setDetailVN(VNselectVN);
+    setVisitlocation(LocationDesc)
+    setLocationCode(LocationCode)
     setAccidentDate(DateAccValue);
+
     if(serviceValue === "OPD" || serviceValue === "IPD" ) {
       // console.log("OPD & IPD")
-      const [VNselectVN, VisitDateselectVN , LocationDesc , LocationCode] = event.target.selectVN.value.split(" | ");
-      setVisitDateTime(VisitDateselectVN);
-      setDetailVN(VNselectVN);
-      setVisitlocation(LocationDesc)
-      setLocationCode(LocationCode)
+   setVisitDateTime(VisitDateselectVN);
 
       if(idTypeValue === "NATIONAL_ID"){
         PatientInfo = {
@@ -953,6 +999,7 @@ if(idTypeValue === "NATIONAL_ID"){
           AccidentDate: DateAccValue,
           PolicyTypeCode: policyTypeValue,
           ServiceSettingCode: serviceValue,
+          ServiceSettingAbbr: "",
           IllnessTypeCode: illnessTypeValue,
           SurgeryTypeCode: surgeryTypeValue,
     
@@ -980,6 +1027,7 @@ if(idTypeValue === "NATIONAL_ID"){
           AccidentDate: DateAccValue,
           PolicyTypeCode: policyTypeValue,
           ServiceSettingCode: serviceValue,
+          ServiceSettingAbbr: "",
           IllnessTypeCode: illnessTypeValue,
           SurgeryTypeCode: surgeryTypeValue,
     
@@ -1007,6 +1055,7 @@ if(idTypeValue === "NATIONAL_ID"){
           AccidentDate: DateAccValue,
           PolicyTypeCode: policyTypeValue,
           ServiceSettingCode: serviceValue,
+          ServiceSettingAbbr: "",
           IllnessTypeCode: illnessTypeValue,
           SurgeryTypeCode: surgeryTypeValue,
     
@@ -1034,6 +1083,7 @@ if(idTypeValue === "NATIONAL_ID"){
           AccidentDate: DateAccValue,
           PolicyTypeCode: policyTypeValue,
           ServiceSettingCode: serviceValue,
+          ServiceSettingAbbr: "",
           IllnessTypeCode: illnessTypeValue,
           SurgeryTypeCode: surgeryTypeValue,
     
@@ -1061,6 +1111,7 @@ if(idTypeValue === "NATIONAL_ID"){
           AccidentDate: DateAccValue,
           PolicyTypeCode: policyTypeValue,
           ServiceSettingCode: serviceValue,
+          ServiceSettingAbbr: "",
           IllnessTypeCode: illnessTypeValue,
           SurgeryTypeCode: surgeryTypeValue,
     
@@ -1084,7 +1135,7 @@ if(idTypeValue === "NATIONAL_ID"){
       }else{
         visitDateTimePreIPD=""
       }
-      
+
       if(idTypeValue === "NATIONAL_ID"){
         PatientInfo = {
           InsurerCode: InsurerCode, 
@@ -1094,11 +1145,12 @@ if(idTypeValue === "NATIONAL_ID"){
           GivenNameTH: patientDB.GivenNameTH,
           SurnameTH: patientDB.SurnameTH,
           DateOfBirth: patientDB.DateOfBirth,
-          VN: "",
+          VN: VNselectVN,
           VisitDateTime: visitDateTimePreIPD,
           AccidentDate: DateAccValue,
           PolicyTypeCode: policyTypeValue,
-          ServiceSettingCode: serviceValue,
+          ServiceSettingCode: "PRE",
+          ServiceSettingAbbr: serviceValue,
           IllnessTypeCode: illnessTypeValue,
           SurgeryTypeCode: surgeryTypeValue,
     
@@ -1121,16 +1173,17 @@ if(idTypeValue === "NATIONAL_ID"){
           GivenNameTH: patientDB.GivenNameTH,
           SurnameTH: patientDB.SurnameTH,
           DateOfBirth: patientDB.DateOfBirth,
-          VN: "",
+          VN: VNselectVN,
           VisitDateTime: visitDateTimePreIPD,
           AccidentDate: DateAccValue,
           PolicyTypeCode: policyTypeValue,
-          ServiceSettingCode: serviceValue,
+          ServiceSettingCode: "PRE",
+          ServiceSettingAbbr: serviceValue,
           IllnessTypeCode: illnessTypeValue,
           SurgeryTypeCode: surgeryTypeValue,
     
           IdType: idTypeValue,
-          PID: "",
+          PID: patientDB.PID,
           PassportNumber: numberValue,
           MembershipId:"",  
           CustomerId : "",
@@ -1148,16 +1201,17 @@ if(idTypeValue === "NATIONAL_ID"){
           GivenNameTH: patientDB.GivenNameTH,
           SurnameTH: patientDB.SurnameTH,
           DateOfBirth: patientDB.DateOfBirth,
-          VN: "",
+          VN: VNselectVN,
           VisitDateTime: visitDateTimePreIPD,
           AccidentDate: DateAccValue,
           PolicyTypeCode: policyTypeValue,
-          ServiceSettingCode: serviceValue,
+          ServiceSettingCode: "PRE",
+          ServiceSettingAbbr: serviceValue,
           IllnessTypeCode: illnessTypeValue,
           SurgeryTypeCode: surgeryTypeValue,
     
           IdType: idTypeValue,
-          PID: "",
+          PID: patientDB.PID,
           PassportNumber: "",
           MembershipId: numberValue,  
           CustomerId : "",
@@ -1175,16 +1229,17 @@ if(idTypeValue === "NATIONAL_ID"){
           GivenNameTH: patientDB.GivenNameTH,
           SurnameTH: patientDB.SurnameTH,
           DateOfBirth: patientDB.DateOfBirth,
-          VN: "",
+          VN: VNselectVN,
           VisitDateTime: visitDateTimePreIPD,
           AccidentDate: DateAccValue,
           PolicyTypeCode: policyTypeValue,
-          ServiceSettingCode: serviceValue,
+          ServiceSettingCode: "PRE",
+          ServiceSettingAbbr: serviceValue,
           IllnessTypeCode: illnessTypeValue,
           SurgeryTypeCode: surgeryTypeValue,
     
           IdType: idTypeValue,
-          PID: "",
+          PID: patientDB.PID,
           PassportNumber: "",
           MembershipId: "",  
           CustomerId : "",
@@ -1202,16 +1257,17 @@ if(idTypeValue === "NATIONAL_ID"){
           GivenNameTH: patientDB.GivenNameTH,
           SurnameTH: patientDB.SurnameTH,
           DateOfBirth: patientDB.DateOfBirth,
-          VN: "",
+          VN: VNselectVN,
           VisitDateTime: visitDateTimePreIPD,
           AccidentDate: DateAccValue,
           PolicyTypeCode: policyTypeValue,
-          ServiceSettingCode: serviceValue,
+          ServiceSettingCode: "PRE",
+          ServiceSettingAbbr: serviceValue,
           IllnessTypeCode: illnessTypeValue,
           SurgeryTypeCode: surgeryTypeValue,
     
           IdType: idTypeValue,
-          PID: "",
+          PID: patientDB.PID,
           PassportNumber: "",
           MembershipId: "",  
           CustomerId : numberValue,
@@ -1233,7 +1289,7 @@ if(idTypeValue === "NATIONAL_ID"){
      try {
       if(serviceValue === "OPD"){
         document.getElementById("OPD").showModal();
-      }else if(serviceValue === "PRE-01"){
+      }else if((serviceValue === "PRE-01")||(serviceValue === "PRE-02")){
         document.getElementById("PRE").showModal();
       }else if(serviceValue === "IPD"){
         document.getElementById("IPD").showModal();
@@ -1250,7 +1306,7 @@ if(idTypeValue === "NATIONAL_ID"){
 
       if (response.data.HTTPStatus.statusCode < 400) {
         setResult(response.data);
-         console.log(response.data);
+        //  console.log(response.data);
 
 
          
@@ -1266,7 +1322,7 @@ if(idTypeValue === "NATIONAL_ID"){
 
             
 
-
+            if(serviceValue === "OPD" || serviceValue === "IPD" ) {
             axios
             .post(
               process.env.NEXT_PUBLIC_URL_SV +
@@ -1299,7 +1355,7 @@ if(idTypeValue === "NATIONAL_ID"){
                 setShowFormError("Error");
               }
             });
-
+          }
 
 
 
@@ -1446,11 +1502,10 @@ if(idTypeValue === "NATIONAL_ID"){
               </Select>
             </FormControl>
           </div>
-          {/* {((serviceValue === "OPD")||(serviceValue === "IPD")) ? ( */}
+ 
           <div>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DatePicker
-                  
                     label="วันที่เข้ารับการรักษา"
                     value={fromValue}
                     onChange={(newDate) => setFromValue(newDate)}
@@ -1473,7 +1528,7 @@ if(idTypeValue === "NATIONAL_ID"){
                   <FaSearch /> Search
                 </button>
           </div> 
-        {/* )   : ""} */}
+
           {/*  <div>    */}
  
           {/* </div> */}
@@ -1501,214 +1556,12 @@ if(idTypeValue === "NATIONAL_ID"){
         ) : (
           ""
         )}
-        {((serviceValue !== "OPD")&&(serviceValue !== "IPD")) ? (
-              <>
-                 <form onSubmit={check}> 
-                  <div className="grid grid-cols-8 gap-2 mt-4">
+        {/* {((serviceValue !== "OPD")&&(serviceValue !== "IPD")) ? (
+              <> */}
 
-                    <div>
-                    <FormControl fullWidth>
-                        <InputLabel id="policyTypeValue">
-                          Select Type
-                        </InputLabel>
-                        <Select
-                        error
-                          labelId="policyTypeValue"
-                          id="demo-simple-select"
-                          value={idTypeValue}
-                          label="Select Type"
-                          onChange={idtype}
-                          className=""
-                          required
-                        >
-                          {idType
-                            ? idType.Result.map((id, index) => (
-                                <MenuItem
-                                  key={index}
-                                  value={id.idtypecode}
-                                >
-                                  {id.idtypedesc_th}
-                                </MenuItem>
-                              ))
-                            : ""}
-                        </Select>
-                      </FormControl>
-                    </div>
-                    <div>
-                    <TextField
-                    error
-                id="outlined-basic"
-                label="หมายเลขบัตร"
-                // multiline
-                // maxRows={4}
-                variant="outlined"
-                className="w-full"
-                name="number"
-                type="text"
-                value={numberValue}
-                onChange={(e) => setNumberValue(e.target.value)}
-              />
-  
-                    </div>
-                    <div>
-                      <FormControl fullWidth>
-                        <InputLabel id="policyTypeValue">
-                          ประเภทกรมธรรม์
-                        </InputLabel>
-                        <Select
-                        error
-                          labelId="policyTypeValue"
-                          id="demo-simple-select"
-                          value={policyTypeValue}
-                          label="ประเภทกรมธรรม์"
-                          onChange={policy}
-                          className=""
-                          required
-                        >
-                          {policyType
-                            ? policyType.Result.map((policy, index) => (
-                                <MenuItem
-                                  key={index}
-                                  value={policy.policytypecode}
-                                >
-                                  {policy.policytypedesc}
-                                </MenuItem>
-                              ))
-                            : ""}
-                        </Select>
-                      </FormControl>
-                    </div>
-                    <div>
-                      <FormControl fullWidth>
-                        <InputLabel id="illnessTypeValue">
-                          ประเภทของการรักษา
-                        </InputLabel>
-                        <Select
-                        error
-                          labelId="illnessTypeValue"
-                          id="demo-simple-select"
-                          value={illnessTypeValue}
-                          label="ประเภทของการรักษา"
-                          onChange={Illness}
-                          className=""
-                          required
-                        >
-                          {illnessType
-                            ? illnessType.Result.map((ill, index) => 
-  
-                              
-                                serviceValue ===  "OPD"  ? (
-                                ((ill.illnesstypecode === "ILL")||(ill.illnesstypecode === "ACC")||(ill.illnesstypecode === "ER")||(ill.illnesstypecode === "DEN")
-                              ||(ill.illnesstypecode === "MET")||(ill.illnesstypecode === "HD")||(ill.illnesstypecode === "CMT")||(ill.illnesstypecode === "CHK")||(ill.illnesstypecode === "VAC")||(ill.illnesstypecode === "FU")
-                            )  ? (
-                                 <MenuItem key={index} value={ill.illnesstypecode}>
-                                  {ill.illnesstypedesc}
-                                </MenuItem>
-                                ) : ""
-                              
-                              )
-                                : 
-                                ((serviceValue ===  "PRE-01")||(serviceValue ===  "PRE-02"))  ? (
-                                    (ill.illnesstypecode === "ILL")||(ill.illnesstypecode === "ACC")||(ill.illnesstypecode === "DAY")
-                              ? (
-                                 <MenuItem key={index} value={ill.illnesstypecode}>
-                                  {ill.illnesstypedesc}
-                                </MenuItem>
-                                )
-                                :"" 
-                                ) 
-                                : 
-                                serviceValue ===  "IPD"  ? (
-                                  (ill.illnesstypecode === "ILL")||(ill.illnesstypecode === "ACC")||(ill.illnesstypecode === "DAY")||(ill.illnesstypecode === "MAT")
-                            ? (
-                               <MenuItem key={index} value={ill.illnesstypecode}>
-                                {ill.illnesstypedesc}
-                              </MenuItem>
-                              )
-                              :"" 
-                              ) 
-                              : ""
-                           ): ""}
-                        </Select>
-                      </FormControl>
-                    </div>
-                    
-                    {((serviceValue !== "OPD")&&(serviceValue !== "IPD")) ? (
-                    <>
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DateTimePicker
-                    label="วันที่จองสิทธิ์"
-                    value={visitDateTime}
-                    onChange={(newDate) => setVisitDateTime(newDate)}
-                    // format="YYYY-MM-DD "
-                    required
-                    slotProps={{
-                      openPickerButton: { color: "error" },
-                      textField: { focused: true, color: "error" },
-                    }}
-                  />
-                </LocalizationProvider> 
-                  </>
-                ) : ""}
-                    {textInputVisible &&
-  
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DatePicker
-                      label="วันที่เกิดอุบัติเหตุ"
-                      value={accValue}
-                      onChange={(newDate) => setAccValue(newDate)}
-                      format="YYYY-MM-DD"
-                      slotProps={{
-                        openPickerButton: { color: "error" },
-                        textField: { focused: true, color: "error" },
-                      }}
-          
-                    />
-                  </LocalizationProvider>
-  
-   }
-       
-                    <div>
-                      <FormControl fullWidth>
-                        <InputLabel id="surgeryTypeValue">การผ่าตัด</InputLabel>
-                        <Select
-                          labelId="surgeryTypeValue"
-                          id="demo-simple-select"
-                          value={surgeryTypeValue}
-                          label="การผ่าตัด"
-                          onChange={surgery}
-                          className=""
-                          required
-                        >
-                          {/* {console.log(surgeryTypeValue)} */}
-                          {surgeryType
-                            ? surgeryType.Result.map((surgery, index) => (
-                                <MenuItem key={index} value={surgery.iscode}>
-                                  {surgery.isdesc}
-                                </MenuItem>
-                              ))
-                            : ""}
-                        </Select>
-                      </FormControl>
-                    </div>
-         
-                    <div>
-                      <button
-                        className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 text-xl"
-                        type="submit"
-                        // onClick={() =>
-  
-                        // }
-                        //onClick={axiosFetch}
-                      >
-                        Check Eligible
-                      </button>
-                    </div>
-                  </div>
-                </form>
-              </>
-        ) : 
-        (post ? (
+           
+
+        {post ? (
           post.HTTPStatus.statusCode === 200 ? (
             <>
                <form onSubmit={check}> 
@@ -1873,7 +1726,7 @@ if(idTypeValue === "NATIONAL_ID"){
                             
                             )
                               : 
-                              ((serviceValue ===  "PRE-01")||(serviceValue ===  "PRE-02"))  ? (
+                                ((serviceValue ===  "PRE-01")||(serviceValue ===  "PRE-02"))  ? (
                                   (ill.illnesstypecode === "ILL")||(ill.illnesstypecode === "ACC")||(ill.illnesstypecode === "DAY")
                             ? (
                                <MenuItem key={index} value={ill.illnesstypecode}>
@@ -1898,7 +1751,23 @@ if(idTypeValue === "NATIONAL_ID"){
                     </FormControl>
                   </div>
                   
-
+                  {((serviceValue !== "OPD")&&(serviceValue !== "IPD")) ? (
+                    <>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DateTimePicker
+                    label="วันที่จองสิทธิ์"
+                    value={visitDateTime}
+                    onChange={(newDate) => setVisitDateTime(newDate)}
+                    // format="YYYY-MM-DD "
+                    required
+                    slotProps={{
+                      openPickerButton: { color: "error" },
+                      textField: { focused: true, color: "error" },
+                    }}
+                  />
+                </LocalizationProvider> 
+                  </>
+                ) : ""}
                   {textInputVisible &&
 
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -1980,7 +1849,7 @@ if(idTypeValue === "NATIONAL_ID"){
               </div>
             </>
           )
-        ): ("")) }
+        ): ("") }
       </div>
 
       {/* </>
@@ -2014,8 +1883,28 @@ if(idTypeValue === "NATIONAL_ID"){
           <h2 className="text-xl font-semibold mb-2 text-center">จากการตรวจสอบเบื้องต้น</h2>
           <p className="text-xl text-center">
             <b className=""> 
-           {mass === true ? <p className="underline">** มีสิทธิ์ใช้บริการเรียกร้องสินไหม **</p> : mass === false ? <p className="text-error underline">** ไม่มีสิทธิ์ใช้บริการเรียกร้องสินไหม **</p> : <CircularProgress size="30px" className="text-error" />}
-          
+            {((showFormCheckEligibleError)||(showFormFurtherError)) === "Error" ? (
+              <center>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6 shrink-0 stroke-current text-error"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                <span class="text-error">Error</span>
+              </center>
+              )   : (
+           mass === true ? <p className="underline">** มีสิทธิ์ใช้บริการเรียกร้องสินไหม **</p> : mass === false ? <p className="text-error underline">** ไม่มีสิทธิ์ใช้บริการเรียกร้องสินไหม **</p> 
+             : <CircularProgress size="30px" className="text-error" />
+          )  
+          }
            </b>
           </p>
       
@@ -2226,7 +2115,7 @@ if(idTypeValue === "NATIONAL_ID"){
               value={vNValue}
               onChange={(e) => setVNValue(e.target.value)}
             /> */}
-        {console.log(listClaimForm)} 
+
               </div> 
 
               <div
@@ -2404,23 +2293,44 @@ if(idTypeValue === "NATIONAL_ID"){
             <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
               ✕
             </button>
-                <h1 className="text-accent text-3xl text-center">ผลการตรวจสอบสิทธิ์ - PRE</h1>
+                <h1 className="text-accent text-3xl text-center">ผลการตรวจสอบสิทธิ์ - {serviceValue === "PRE-01" ? "PRE-Authorization" : "Pre-Admission"}</h1>
 
                 <div className="flex  w-full mt-4">
         <div className="p-4 border-2  rounded-md bg-white w-3/6 shadow-md">
           <h2 className="text-xl font-semibold mb-2 text-center">ข้อมูลส่วนตัว</h2>
-          <p className="">รหัสประจำตัวประชาชน: {patientInfo.PID}</p>
+          <p className="">รหัสประจำตัวประชาชน: {patientDB.PID}</p>
           <p className="">HN: {patientInfo.HN}</p>
           <p className="">ชื่อ: {patientInfo.GivenNameTH} {patientInfo.SurnameTH}</p>
           <p className="">วันเกิด: {patientInfo.DateOfBirth}</p>
-          <p className="">ประเภทในการรักษา: {serviceValue}</p>
+          <p className="">ประเภทในการรักษา: {serviceValue ? ((serviceValue=== "PRE-01")||(serviceValue=== "PRE-02") ? (serviceValue === "PRE-01" ? "PRE-Authorization" : "Pre-Admission") : serviceValue) : ""}</p>
         </div>
         
         <div className="p-4 border-2  rounded-md bg-white w-3/6 shadow-md ml-2">
           <h2 className="text-xl font-semibold mb-2 text-center">จากการตรวจสอบเบื้องต้น</h2>
           <p className="text-xl text-center">
             <b className=""> 
-           {mass === true ? <p className="underline">** มีสิทธิ์ใช้บริการเรียกร้องสินไหม **</p> : mass === false ? <p className="text-error underline">** ไม่มีสิทธิ์ใช้บริการเรียกร้องสินไหม **</p> : <CircularProgress size="30px" className="text-error" />}
+            {((showFormCheckEligibleError)||(showFormFurtherError)) === "Error" ? (
+              <center>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6 shrink-0 stroke-current text-error"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                <span class="text-error">Error</span>
+              </center>
+              )   : (
+           mass === true ? <p className="underline">** มีสิทธิ์ใช้บริการเรียกร้องสินไหม **</p> : mass === false ? <p className="text-error underline">** ไม่มีสิทธิ์ใช้บริการเรียกร้องสินไหม **</p> 
+             : <CircularProgress size="30px" className="text-error" />
+          )  
+          }
           
            </b>
           </p>
@@ -2870,8 +2780,28 @@ if(idTypeValue === "NATIONAL_ID"){
           <h2 className="text-xl font-semibold mb-2 text-center">จากการตรวจสอบเบื้องต้น</h2>
           <p className="text-xl text-center">
             <b className=""> 
-           {mass === true ? <p className="underline">** มีสิทธิ์ใช้บริการเรียกร้องสินไหม **</p> : mass === false ? <p className="text-error underline">** ไม่มีสิทธิ์ใช้บริการเรียกร้องสินไหม **</p> : <CircularProgress size="30px" className="text-error" />}
-          
+            {((showFormCheckEligibleError)||(showFormFurtherError)) === "Error" ? (
+              <center>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6 shrink-0 stroke-current text-error"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                <span class="text-error">Error</span>
+              </center>
+              )   : (
+           mass === true ? <p className="underline">** มีสิทธิ์ใช้บริการเรียกร้องสินไหม **</p> : mass === false ? <p className="text-error underline">** ไม่มีสิทธิ์ใช้บริการเรียกร้องสินไหม **</p> 
+             : <CircularProgress size="30px" className="text-error" />
+          )  
+          }
            </b>
           </p>
       

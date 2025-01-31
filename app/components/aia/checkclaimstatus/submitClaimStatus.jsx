@@ -151,7 +151,7 @@ export default function checkData() {
       console.log(err);
       //  if (err.response.request.status === 500) {
       setShowFormError("Error");
-      setMassError(err.response.data.HTTPStatus.message);
+      setMassError(err.message);
     });
 
 
@@ -176,7 +176,7 @@ export default function checkData() {
       )
       .then((response) => {
         setServiceCode(response.data);
-        console.log(response.data)
+        // console.log(response.data)
 
       })
       .catch((error) => {
@@ -208,7 +208,7 @@ export default function checkData() {
       )
       .then((response) => {
         setPostData(response.data);
-        console.log(response.data);
+        // console.log(response.data);
         // setShowFormError();
         setCurrentData(response.data.Result.TransactionClaimInfo);
       })
@@ -861,6 +861,8 @@ axios
                 TotalBillAmount : dataSelect.TotalBillAmount,
                 TotalExcessAmount:  dataSelect.TotalExcessAmount,
                 ServiceSettingAbbr : dataSelect.ServiceSettingAbbr,
+                FurtherClaimVN: dataSelect.FurtherClaimVN,
+                ReferenceVN: dataSelect.ReferenceVN,
               },
             })
           );
@@ -1017,6 +1019,7 @@ axios
           PolicyTypeCode: data.PolicyTypeCode,
           AccidentDate: data.AccidentDate,
           VisitDateTime: data.VisitDateTime,
+          ReferenceVN: data.ReferenceVN,
           FurtherClaimVN: data.FurtherClaimVN,
           FurtherClaimNo: data.FurtherClaimNo,
           FurtherClaimId: data.FurtherClaimId,
@@ -1134,6 +1137,8 @@ axios
                 IsIPDDischarge: data.IsIPDDischarge,
                 PreauthReferClaimNo: data.PreauthReferClaimNo,
                 PreauthReferOcc: data.PreauthReferOcc,   
+                FurtherClaimVN: data.FurtherClaimVN,
+                ReferenceVN: data.ReferenceVN,
                 // PreauthReferClaimNo: "",
                 // PreauthReferOcc: "",   
                 Runningdocument: data.randomNumberold,
@@ -1492,15 +1497,17 @@ axios
     let dateFromValue = "";
     let PatientInfo;
     if(serviceValue === "OPD"){
+      ServiceValueX ="OPD";
       setDoMoney(true);
+    }else if(serviceValue === "IPD"){
+      ServiceValueX ="IPD";
+      setDoMoney(false);
     }else if(serviceValue === "PRE-01"){
       ServiceValueX ="PRE";
       DataServiceSettingAbbr = "PRE-01";
     }else if(serviceValue === "PRE-02"){
       ServiceValueX ="PRE";
       DataServiceSettingAbbr = "PRE-02";
-    }else{
-      setDoMoney(false);
     }
     
     if (fromValue && toValue) {
@@ -2054,7 +2061,7 @@ axios
                           </td>
                           <td className="whitespace-nowrap">{bill.HN} <br/> {bill.VN}</td>
                           <td className="">{bill.VisitLocation}</td>
-                          <td className="whitespace-nowrap">{bill.ClaimNo} <br/>  ( {bill.ServiceSettingCode ==="PRE-01" ? "PRE-Authorization" : (bill.ServiceSettingCode ==="PRE-02" ? "PRE-Admission" : bill.ServiceSettingCode)} {bill.IsIPDDischarge === true ? "Discharge" : ""} )</td>
+                          <td className="whitespace-nowrap">{bill.ClaimNo} <br/>  ( {bill.ServiceSettingCode ==="PRE" ? (bill.ServiceSettingAbbr === "PRE-01" ? ("PRE-Authorization") : ("PRE-Admission")) : bill.ServiceSettingCode} {bill.IsIPDDischarge === true ? "Discharge" : ""} )</td>
                           <td className="whitespace-nowrap">{bill.InvoiceNumber}</td>
                           <td className="whitespace-nowrap">
                             {
@@ -2159,13 +2166,14 @@ axios
                                ) : ""}
                           </th>
                           <th>
+                          {/* parseFloat(bill.TotalApprovedAmount).toLocaleString("en-US", {minimumFractionDigits: 2,maximumFractionDigits: 2,}) */}
                           {bill.TotalApprovedAmount
                               ?
                                 (statusNew
                                 ? (
                                   (bill.TransactionNo ===statusNew.TransactionNo)
                                   ? (statusNew.TotalApproveAmount ? parseFloat(statusNew.TotalApproveAmount).toLocaleString("en-US", {minimumFractionDigits: 2,maximumFractionDigits: 2,}) : parseFloat(bill.TotalApprovedAmount).toLocaleString("en-US", {minimumFractionDigits: 2,maximumFractionDigits: 2,})  )
-                                  :  parseFloat(bill.TotalApprovedAmount).toLocaleString("en-US", {minimumFractionDigits: 2,maximumFractionDigits: 2,})
+                                  :  bill.TotalApprovedAmount == null ? ("") : (parseFloat(bill.TotalApprovedAmount).toLocaleString("en-US", {minimumFractionDigits: 2,maximumFractionDigits: 2,})) 
                                 )
                                   :  ""
                                 )
@@ -2305,7 +2313,7 @@ axios
                             )}
                              {/* {console.log(doMoney)}  */}
                             { bill.RefId ? (bill.ServiceSettingCode === "OPD" ? (
-                             ((bill.ClaimStatusDesc === "waitting for discharge")||(bill.ClaimStatusDesc === "Approve")||(bill.ClaimStatusDesc === "Received"))&& doMoney === true ? (
+                             ((bill.ClaimStatusDesc === "waitting for discharge"))&& doMoney === true ? (
                             
                             <>
 
@@ -2867,9 +2875,9 @@ onChange={(e) => { const selectedType = JSON.parse(e.target.value);
             <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
               ✕
             </button>
-                <h1 className="text-accent text-3xl text-center">รายการจองสิทธิ์</h1>
+                <h1 className="text-accent text-3xl text-center">รายการจองสิทธิ์ {selectData.ServiceSettingCode === "PRE" ? (selectData.ServiceSettingAbbr === "PRE-01" ? "PRE-Authorization" : "PRE-Admission") : selectData.ServiceSettingAbbr}</h1>
 
-   
+
       <div className="flex items-center justify-center">
       <div className="grid gap-1 sm:grid-cols-3 w-full  whitespace-normal text-center">
       <div className="rounded-md"></div>
