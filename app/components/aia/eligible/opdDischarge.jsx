@@ -202,7 +202,6 @@ export default function Page({ data }) {
         FurtherClaimNo: data.DataTran.Data.FurtherClaimNo,
         FurtherClaimId: data.DataTran.Data.FurtherClaimId,
         FurtherClaimVN: data.DataTran.Data.FurtherClaimVN,
-        Runningdocument: randomNumber,
 
     },
   };
@@ -210,7 +209,7 @@ export default function Page({ data }) {
   useEffect(() => {
     PatientInfoData.PatientInfo.FurtherClaimVN ? setNumberValue(PatientInfoData.PatientInfo.FurtherClaimVN) : setNumberValue(PatientInfoData.PatientInfo.VN);  
     setRandomNumber();
-    if(!data.DataTran.Data.Runningdocument){
+
     const generateRandomFiveDigitNumber = () => {
       return String(Math.floor(Math.random() * 100000)).padStart(5, '0');
     };
@@ -218,9 +217,7 @@ export default function Page({ data }) {
     const newRandomNumber = generateRandomFiveDigitNumber();
     setRandomNumber(newRandomNumber);
   //  console.log(newRandomNumber);
-  }else{
-    setRandomNumber(data.DataTran.Data.Runningdocument)
-  }
+
 
   }, [data]);
 
@@ -242,7 +239,6 @@ export default function Page({ data }) {
           HN: PatientInfoData.PatientInfo.HN,
           VN: PatientInfoData.PatientInfo.VN,
           DocumenttypeCode : "001",
-          Runningdocument : PatientInfoData.PatientInfo.Runningdocument,
         }
         }
       )
@@ -330,7 +326,6 @@ export default function Page({ data }) {
             FurtherClaimNo: data.DataTran.Data.FurtherClaimNo,
             FurtherClaimId: data.DataTran.Data.FurtherClaimId,
             FurtherClaimVN: data.DataTran.Data.FurtherClaimVN,
-            Runningdocument: randomNumber,
     //visit doctor diagnosis acc
         },
       }
@@ -363,7 +358,6 @@ export default function Page({ data }) {
             FurtherClaimNo: data.DataTran.Data.FurtherClaimNo,
             FurtherClaimId: data.DataTran.Data.FurtherClaimId,
             FurtherClaimVN: data.DataTran.Data.FurtherClaimVN,
-            Runningdocument: randomNumber,
 
         },
       }
@@ -463,7 +457,6 @@ export default function Page({ data }) {
             FurtherClaimNo: data.DataTran.Data.FurtherClaimNo,
             FurtherClaimId: data.DataTran.Data.FurtherClaimId,
             FurtherClaimVN: data.DataTran.Data.FurtherClaimVN,
-            Runningdocument: randomNumber,
     //visit doctor diagnosis acc
         },
       }
@@ -496,7 +489,6 @@ export default function Page({ data }) {
             FurtherClaimNo: data.DataTran.Data.FurtherClaimNo,
             FurtherClaimId: data.DataTran.Data.FurtherClaimId,
             FurtherClaimVN: data.DataTran.Data.FurtherClaimVN,
-            Runningdocument: randomNumber,
 
         },
       }
@@ -698,7 +690,6 @@ export default function Page({ data }) {
             FurtherClaimNo: data.DataTran.Data.FurtherClaimNo,
             FurtherClaimId: data.DataTran.Data.FurtherClaimId,
             FurtherClaimVN: data.DataTran.Data.FurtherClaimVN,
-            Runningdocument: randomNumber,
     //visit doctor diagnosis acc
         },
       }
@@ -731,7 +722,6 @@ export default function Page({ data }) {
             FurtherClaimNo: data.DataTran.Data.FurtherClaimNo,
             FurtherClaimId: data.DataTran.Data.FurtherClaimId,
             FurtherClaimVN: data.DataTran.Data.FurtherClaimVN,
-            Runningdocument: randomNumber,
 
         },
       }
@@ -793,7 +783,6 @@ export default function Page({ data }) {
             FurtherClaimNo: data.DataTran.Data.FurtherClaimNo,
             FurtherClaimId: data.DataTran.Data.FurtherClaimId,
             FurtherClaimVN: data.DataTran.Data.FurtherClaimVN,
-            Runningdocument: randomNumber,
     //visit doctor diagnosis acc
         },
       }
@@ -826,7 +815,6 @@ export default function Page({ data }) {
             FurtherClaimNo: data.DataTran.Data.FurtherClaimNo,
             FurtherClaimId: data.DataTran.Data.FurtherClaimId,
             FurtherClaimVN: data.DataTran.Data.FurtherClaimVN,
-            Runningdocument: randomNumber,
 
         },
       }
@@ -1078,7 +1066,6 @@ export default function Page({ data }) {
           FurtherClaimVN: e.VN,
           FurtherClaimNo: PatientInfoData.PatientInfo.FurtherClaimNo,
           FurtherClaimId: PatientInfoData.PatientInfo.FurtherClaimId,
-          Runningdocument: PatientInfoData.PatientInfo.randomNumberold,
         },
       })
     );
@@ -1351,7 +1338,6 @@ export default function Page({ data }) {
           HN: PatientInfoData.PatientInfo.HN,
           VN: PatientInfoData.PatientInfo.VN,
           DocumenttypeCode : "001",
-          Runningdocument : PatientInfoData.PatientInfo.Runningdocument,
           }
         }
       )
@@ -1360,7 +1346,7 @@ export default function Page({ data }) {
         //console.log(response.data)
       })
       .catch((error) => {
-       // console.log(error);
+        console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -1369,7 +1355,7 @@ export default function Page({ data }) {
           );
           setShowDocError("Error");
         } catch (error) {
-          setMassDocError(error.response.data.HTTPStatus.message);
+          setMassDocError(error);
           setShowDocError("Error");
         }
       });
@@ -1379,7 +1365,7 @@ export default function Page({ data }) {
 
       })
       .catch((error) => {
-     //   console.log(error);
+        console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -1565,7 +1551,7 @@ if(rows){
             { PatientInfo }
           )
           .then((response) => {
-          //  console.log("2 Succ");
+            console.log("2 Succ");
             resolve("Step 2 completed");
           })
           .catch((error) => {
@@ -1642,7 +1628,7 @@ if(rows){
             { PatientInfo }
           )
           .then((response) => {
-         //   console.log("3 Succ");
+            console.log("3 Succ");
             resolve("Step 3 completed");
           })
           .catch((error) => {
@@ -1685,7 +1671,6 @@ if(rows){
           ServiceSettingCode: PatientInfoData.PatientInfo.ServiceSettingCode,
           IllnessTypeCode: PatientInfoData.PatientInfo.IllnessTypeCode,
           SurgeryTypeCode: PatientInfoData.PatientInfo.SurgeryTypeCode,
-          Runningdocument: PatientInfoData.PatientInfo.Runningdocument,
           FurtherClaimVN: PatientInfoData.PatientInfo.FurtherClaimVN,
         };
        // console.log(PatientInfo)
@@ -1708,7 +1693,7 @@ if(rows){
               //  console.log(response.data);
               })
               .catch((error) => {
-             //   console.log(error);
+                console.log(error);
               });
               document.getElementById("my_modal_3").close();
               console.log("4 Succ");
@@ -1889,7 +1874,7 @@ if(rows){
     formData.append("insurerid", 13);
     formData.append("DocumenttypeCode", "001");
     formData.append("UploadedBy", "");
-    formData.append("Runningdocument", PatientInfoData.PatientInfo.Runningdocument);
+    formData.append("Runningdocument", randomNumber);
     setMsg(
       <CircularProgress size="30px" className="text-error text-lg" />
     );
@@ -1942,7 +1927,6 @@ if(rows){
             HN: PatientInfoData.PatientInfo.HN,
             VN: PatientInfoData.PatientInfo.VN,
             DocumenttypeCode : "001",
-            Runningdocument : PatientInfoData.PatientInfo.Runningdocument,
             }
           }
         )
@@ -2814,7 +2798,7 @@ if(rows){
                                       key={index}
                                       className=" bg-neutral text-sm"
                                     >
-                                      <TableCell>{index + 1}</TableCell>
+                                      <TableCell>{cause.CauseOfInjury ? index + 1 : ""}</TableCell>
                                       <TableCell>
                                         {summitEditAcc === "true" ? (
                                           <>
@@ -2997,7 +2981,7 @@ if(rows){
                                       key={index}
                                       className=" bg-neutral text-sm"
                                     >
-                                      <TableCell>{index + 1}</TableCell>
+                                      <TableCell>{injury.InjuryArea ? index + 1 : ""}</TableCell>
 
                                       <TableCell>
                                         {summitEditAcc === "true" ? (
@@ -3280,10 +3264,10 @@ if(rows){
                   <tbody>
                   {datavitalsign  ? (
                          datavitalsign.map(
-                        (vts, index) =>
+                        (vts, index) => vts.VitalSignEntryDateTime &&(
                             <tr key={index} className=" bg-neutral text-sm">
                               <td>
-                              {startIndexvitalsign+ index + 1}
+                              {vts.VitalSignEntryDateTime ? startIndexvitalsign+ index + 1 : ""}
                               </td>
                               <td>
                                 <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
@@ -3351,6 +3335,7 @@ if(rows){
                                 </div>
                               </td>
                             </tr>
+                        )
                                        // )
                                       )
                                     ) : (
@@ -3561,7 +3546,7 @@ if(rows){
                                     key={index}
                                     className=" bg-neutral text-sm"
                                   >
-                                    <TableCell>{index + 1}</TableCell>
+                                    <TableCell>{proce.Icd9 ? index + 1 : ""}</TableCell>
                                     <TableCell>
                                       <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
                                         {proce.Icd9 === "" ? (
@@ -3713,10 +3698,10 @@ if(rows){
                   {datainvestigation ? (
                       datainvestigation.map(
                         (inv, index) =>
-                          // (inv.InvestigationCode) && (
+                          (inv.InvestigationCode) && (
                             <tr key={index} className=" bg-neutral text-sm">
                               <td>
-                              {startIndexvitalsign+ index + 1}
+                              {inv.InvestigationCode ? startIndexvitalsign+ index + 1 : ""}
                               </td>
                               <td>
                                 <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
@@ -3764,7 +3749,7 @@ if(rows){
                                 </div>
                               </td>
                             </tr>
-                             // )
+                              )
                             )
                           ) : (
                            ""

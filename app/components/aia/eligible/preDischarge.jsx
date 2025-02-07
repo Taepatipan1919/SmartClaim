@@ -28,7 +28,9 @@ import { MobileDatePicker } from "@mui/x-date-pickers/MobileDatePicker";
 import { FaCloudUploadAlt } from "react-icons/fa";
 import { IoSettingsSharp } from "react-icons/io5";
 import { IoIosSave } from "react-icons/io";
+import { BiFirstPage, BiLastPage } from "react-icons/bi";
 import { save } from "../../../store/counterSlice";
+import { AiOutlineArrowRight } from "react-icons/ai";
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import {
   Table,
@@ -58,6 +60,7 @@ export default function Page({ data }) {
   const InsuranceCode = 13;
   const [massError, setMassError] = useState("");
   const [showFormError, setShowFormError] = useState("");
+  const [reload, setReload] = useState(false);
   const [patientInfoByPID, setPatientInfoByPID] = useState();
   const [visit, setVisit] = useState();
   const [combinedString, setCombinedString] = useState();
@@ -71,24 +74,56 @@ export default function Page({ data }) {
   const [woundType, setWoundType] = useState("");
   const [accidentDate, setAccidentDate] = useState(null);
   const [injuryWoundType, setInjuryWoundType] = useState();
+  
+  const [typeBillingList, setTypeBillingList] = useState("");
+  const [selectTypeBillingList, setSelectTypeBillingList] = useState("");
+  const [typeBilling, setTypeBilling] = useState("");
+  const [typeBillingSucc, setTypeBillingSucc] = useState("");
   const [expectedDayOfRecovery, setExpectedDayOfRecovery] = useState("");
   const [injurySideType, setInjurySideType] = useState();
   const [billing, setBilling] = useState();
   const [dataToAIA, setDataToAIA] = useState("");
+  
+
+  const [billingz, setBillingz] = useState("");
+  const [currentDatabillingz, setCurrentDatabillingz] = useState("");
+  const [currentPagebillingz, setCurrentPagebillingz] = useState(1);
+  const [countbillingz, setCountbillingz] = useState(0);
+
+
+
   const [orderItemz, setOrderItemz] = useState("");
   const [currentDataorderItemz, setCurrentDataorderItemz] = useState("");
   const [currentPageorderItemz, setCurrentPageorderItemz] = useState(1);
   const [countorderItemz, setCountorderItemz] = useState(0);
+
+  const [datadscDateTimevalue, setDatadscDateTimevalue] = useState(null);
+  const [dataexpectedAdmitDatevalue, setDataexpectedAdmitDatevalue] = useState(null);
   const [numberBilling, setNumberBilling] = useState(false);
   const [listClaimForm, setListClaimForm] = useState();
   const [textPresentIllness, setTextPresentIllness] = useState(''); 
   const [charCountPresentIllness, setCharCountPresentIllness] = useState(0);
   const handleTextChangePresentIllness = (event) => { 
     const valuePresentIllness = event.target.value; 
-    setTextPresentIllness(valuePresentIllness); 
-    setCharCountPresentIllness(valuePresentIllness.length); 
+    setTextPresentIllness(valuePresentIllness);
+    setCharCountPresentIllness(valuePresentIllness.length);
   };
-  const handleTextChangeVisitInfoPresentIllness = (event) => { const value = event.target.value; setVisitInfoPresentIllness(value); setCharCountPresentIllness(value.length); };
+
+  const [texthandleTextChiefComplaint, setTexthandleTextChiefComplaint] = useState(''); 
+  const handleTextChiefComplaint = (event) => { 
+    setTexthandleTextChiefComplaint(event.target.value);
+  };
+
+  const [texthandleTextPhysicalExam, setTexthandleTextPhysicalExam] = useState(''); 
+  const handleTextPhysicalExam = (event) => { 
+    setTexthandleTextPhysicalExam(event.target.value);
+  };
+
+  const [texthandleTextDxFreeText, setTexthandleTextDxFreeText] = useState(''); 
+  const handleTextDxFreeText = (event) => { 
+    setTexthandleTextDxFreeText(event.target.value);
+  };
+  
   const [summitEditBill, setSummitEditBill] = useState("false");
   const [itemBillingDetails, setItemBillingDetails] = useState("");
   const [listBilling, setListBilling] = useState();
@@ -98,7 +133,7 @@ export default function Page({ data }) {
   const [totalExcessAmount, setTotalExcessAmount ] = useState("");
   const [totalSum, setTotalSum] = useState("");
   // const [fromTotalSum, setFromTotalSum] = useState(false);
-
+  const [selectTypeBillingValue, setSelectTypeBillingValue] = useState("");
 
   const [showModal, setShowModal] = useState(false);
   const [showArrowVN, setShowArrowVN] = useState();
@@ -106,8 +141,8 @@ export default function Page({ data }) {
   const [anesthesiaListValue, setAnesthesiaListValue] = useState("");
   const [anesthesiaListCode, setAnesthesiaListCode] = useState();
 
-  const [isPackageValue, setIsPackageValue] = useState();
-  const [isPackageCode, setIsPackageCode] = useState();
+ 
+  // const [isPackageCode, setIsPackageCode] = useState();
 
   
   const [admissionValue, setAdmissionValue] = useState("");
@@ -131,9 +166,9 @@ export default function Page({ data }) {
   const [expectedAdmitDate, setExpectedAdmitDate] = useState(null);
   const [dscDateTime, setDscDateTime] = useState(null);
   const [otherInsurer, setOtherInsurer] = useState("false");
-  const [rows, setRows] = useState("");
-  const [rowsDia, setRowsDia] = useState("");
-  const [rows2, setRows2] = useState("");
+  const [rows, setRows] = useState([]);
+  const [rowsDia, setRowsDia] = useState([]);
+  const [rows2, setRows2] = useState([]);
   const [procedure, setProcedure] = useState("");
   const [causeOfInjuryDetails, setCauseOfInjuryDetails] = useState("");
   const [injuryDetails, setInjuryDetails] = useState("");
@@ -141,7 +176,7 @@ export default function Page({ data }) {
   const [randomNumber, setRandomNumber] = useState('');
 
   const [newRowDia, setNewRowDia] = useState({
-    Icd10: "",
+    DxCode: "",
     DxName: "",
     DxType: "",
   });
@@ -151,7 +186,7 @@ export default function Page({ data }) {
     ProcedureDate: "",
   });
   const [newRow2, setNewRow2] = useState({
-    PreAuthDateTime: null,
+    PreAuthDateTime: dayjs(),
     PreAuthDetail: "",
   });
   const [newCauseOfInjuryDetail, setNewCauseOfInjuryDetail] = useState({
@@ -170,10 +205,13 @@ export default function Page({ data }) {
   const [summitEditAcc, setSummitEditAcc] = useState("false");
   const [comaScore, setComaScore] = useState("");
   const [signSymptomsDate, setSignSymptomsDate] = useState(null);
+
+  const [isPackage, setIsPackage] = useState(false);
   const [privateCase, setPrivateCase] = useState(false);
   const [pregnant, setPregnant] = useState(false);
   const [alcoholRelated, setAlcoholRelated] = useState(false);
   const [previousTreatment, setPreviousTreatment] = useState(false);
+
   const [previousTreatmentDetail, setPreviousTreatmentDetail] = useState("");
   const [previousTreatmentDate, setPreviousTreatmentDate] = useState(null);
 
@@ -224,25 +262,24 @@ export default function Page({ data }) {
         An : "",
         DscDateTime : "",
         ExpectedLos : "",
-        Runningdocument: randomNumber,
+
+
 
     },
   };
-   console.log(PatientInfoData.PatientInfo)
+  //  console.log(PatientInfoData.PatientInfo)
 
   useEffect(() => {
     setRandomNumber();
-    if(!PatientInfoData.PatientInfo.Runningdocument){
+
     const generateRandomFiveDigitNumber = () => {
       return String(Math.floor(Math.random() * 100000)).padStart(5, '0');
     };
     setFileList()
     const newRandomNumber = generateRandomFiveDigitNumber();
     setRandomNumber(newRandomNumber);
-  //  console.log(newRandomNumber);
-  }else{
-    setRandomNumber(PatientInfoData.PatientInfo.Runningdocument)
-  }
+    console.log(newRandomNumber);
+
 
   }, [data]);
   useEffect(() => {
@@ -250,16 +287,42 @@ export default function Page({ data }) {
     axios
       .post(
         process.env.NEXT_PUBLIC_URL_PD +
-          process.env.NEXT_PUBLIC_URL_getIPDDischargeDoctor,
+          process.env.NEXT_PUBLIC_URL_getPreAuthNote,
       //  Data
       PatientInfoData
       )
       .then((response) => {
-     //   console.log(response.data)
-        setDoctor(response.data);
-      })
+        //  console.log(response.data)
+        if (response.data.HTTPStatus.statusCode === 200) { 
+          const results = response.data.Result.ConcurNoteList.map(result => ({ 
+              PreAuthDateTime: dayjs(result.PreAuthDateTime),
+               PreAuthDetail: result.PreAuthDetail,
+               })); 
+               if(response.data.Result.ConcurNoteList[0].PreAuthDetail !== ""){
+                setRows2(results);
+               }
+               
+          // const results = response.data.Result.ConcurNoteList.map(result => (
+          //   {
+          //      ...result,
+          //       PreAuthDateTime:  dayjs(result.PreAuthDateTime), 
+          //       PreAuthDetail: result.PreAuthDetail,
+          //   })); 
+          //   setRows2(results); 
+          } else {
+             throw new Error('Unexpected response status'); 
+            }
+
+
+
+        // if (response.data.HTTPStatus.statusCode === 200) { 
+        //   const result = response.data.Result.ConcurNoteList; 
+        //   setRows2(results.map(result => ({ ...result, PreAuthDateTime: dayjs(result.PreAuthDateTime),PreAuthDetail: result.PreAuthDetail, })));
+    
+        // }
+    })
       .catch((error) => {
-    //    console.log(error);
+        console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -271,6 +334,117 @@ export default function Page({ data }) {
         }
       });
   }, [data]);
+  useEffect(() => {
+
+    axios
+      .post(
+        process.env.NEXT_PUBLIC_URL_PD +
+          process.env.NEXT_PUBLIC_URL_getPreAuthProcedure,
+      //  Data
+      PatientInfoData
+      )
+      .then((response) => {
+        //  console.log(response.data)
+        if(response.data.Result.ProcedureInfo[0].Icd9){
+          setRows(response.data.Result.ProcedureInfo);
+        }
+     
+      })
+      .catch((error) => {
+        console.log(error);
+        try {
+          const ErrorMass = error.config.url;
+          const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+          setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
+          setShowFormError("Error");
+        } catch (error) {
+          setMassError(error);
+          setShowFormError("Error");
+        }
+      });
+  }, [data]);
+  useEffect(() => {
+
+    axios
+      .post(
+        process.env.NEXT_PUBLIC_URL_PD +
+          process.env.NEXT_PUBLIC_URL_getPreAuthDiagnosis,
+      //  Data
+      PatientInfoData
+      )
+      .then((response) => {
+          console.log(response.data)
+        if(response.data.Result.DiagnosisInfo[0].DxCode){
+          setRowsDia(response.data.Result.DiagnosisInfo);
+        }
+     
+      })
+      .catch((error) => {
+        console.log(error);
+        try {
+          const ErrorMass = error.config.url;
+          const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+          setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
+          setShowFormError("Error");
+        } catch (error) {
+          setMassError(error);
+          setShowFormError("Error");
+        }
+      });
+  }, [data]);
+  useEffect(() => {
+
+    axios
+      .post(
+        process.env.NEXT_PUBLIC_URL_PD +
+          process.env.NEXT_PUBLIC_URL_getPreAuthDoctor,
+      //  Data
+      PatientInfoData
+      )
+      .then((response) => {
+     //   console.log(response.data)
+        setDoctor(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+        try {
+          const ErrorMass = error.config.url;
+          const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+          setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
+          setShowFormError("Error");
+        } catch (error) {
+          setMassError(error);
+          setShowFormError("Error");
+        }
+      });
+  }, [data]);
+  useEffect(() => {
+  axios
+  .get(
+     '/api/v1/utils/typebilling/'+PatientInfoData.PatientInfo.InsurerCode
+    // process.env.NEXT_PUBLIC_URL_PD +
+    //   process.env.NEXT_PUBLIC_URL_getretrievepreauthlist,
+    //   {
+    //     PatientInfo
+    //   }
+  )
+  .then((response) => {
+    //  console.log(response.data)
+    setSelectTypeBillingList(response.data)
+  })
+  .catch((error) => {
+    console.log(error);
+    try {
+      const ErrorMass = error.config.url;
+      const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+      setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
+      setShowFormError("Error");
+    } catch (error) {
+      setMassError(error.response.data.HTTPStatus.message);
+      setShowFormError("Error");
+    }
+  })
+}, [data]);
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.value = "";
@@ -289,7 +463,6 @@ export default function Page({ data }) {
           HN: PatientInfoData.PatientInfo.HN,
           VN: PatientInfoData.PatientInfo.VN,
           DocumenttypeCode : "009",
-          Runningdocument : PatientInfoData.PatientInfo.Runningdocument,
         }
         }
       )
@@ -298,7 +471,7 @@ export default function Page({ data }) {
       //  console.log(response.data)
       })
       .catch((error) => {
-  //      console.log(error);
+        console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -339,20 +512,6 @@ export default function Page({ data }) {
         console.log(error);
       });
       
-
-      axios
-      .get(
-        process.env.NEXT_PUBLIC_URL_SV +
-          process.env.NEXT_PUBLIC_URL_getOpeartionisPackage +
-           InsuranceCode
-      )
-      .then((response) => {
-        setIsPackageCode(response.data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-
 
 
       
@@ -402,7 +561,7 @@ export default function Page({ data }) {
         //console.log(response.data.Result.PatientInfo[0])
       })
       .catch((error) => {
-    //    console.log(error);
+        console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -420,16 +579,35 @@ export default function Page({ data }) {
     axios
       .post(
         process.env.NEXT_PUBLIC_URL_SV +
-          process.env.NEXT_PUBLIC_URL_getIPDDischargeVisit,
+          process.env.NEXT_PUBLIC_URL_getPreAuthVisit,
       //  Data 
       PatientInfoData 
       )
       .then((response) => {
-         console.log(response.data)
+          console.log(response.data.Result.VisitInfo)
         setVisit(response.data);
         setTextPresentIllness(response.data.Result.VisitInfo.PresentIllness); 
         setCharCountPresentIllness(response.data.Result.VisitInfo.PresentIllness.length); 
-        setExpectedDayOfRecovery(response.data.Result.VisitInfo.ExpectedDayOfRecovery)
+        setExpectedDayOfRecovery(response.data.Result.VisitInfo.ExpectedDayOfRecovery);
+        setAdmissionValue(response.data.Result.VisitInfo.IndicationForAdmission);
+        setTexthandleTextChiefComplaint(response.data.Result.VisitInfo.ChiefComplaint);
+        setTexthandleTextPhysicalExam(response.data.Result.VisitInfo.PhysicalExam);
+        setTexthandleTextDxFreeText(response.data.Result.VisitInfo.DxFreeText);
+        if(response.data.Result.VisitInfo.ExpectedAdmitDate) { setExpectedAdmitDate(dayjs(response.data.Result.VisitInfo.ExpectedAdmitDate)); }
+        if(response.data.Result.VisitInfo.DscDateTime) { setDscDateTime(dayjs(response.data.Result.VisitInfo.DscDateTime)); }
+        if(response.data.Result.VisitInfo.SignSymptomsDate) { setSignSymptomsDate(dayjs(response.data.Result.VisitInfo.SignSymptomsDate)); }
+        if(response.data.Result.VisitInfo.AlcoholRelated === true){ setAlcoholRelated(true) }else{ setAlcoholRelated(false)}
+        if(response.data.Result.VisitInfo.IsPackage === true){ setIsPackage(true) }else{ setIsPackage(false)}
+        if(response.data.Result.VisitInfo.Pregnant === true){ setPregnant(true) }else{ setPregnant(false)}
+        if(response.data.Result.VisitInfo.PrivateCase === true){ setPrivateCase(true) }else{ setPrivateCase(false)}
+        if(response.data.Result.VisitInfo.PreviousTreatmentDate !== ""){ 
+          setPreviousTreatment(true)
+          setPreviousTreatmentDate(dayjs(response.data.Result.VisitInfo.PreviousTreatmentDate)) 
+          setPreviousTreatmentDetail(response.data.Result.VisitInfo.PreviousTreatmentDetail)
+        }
+        
+
+
 
         //const dateValue = dayjs(response.data.Result.VisitInfo.SignSymptomsDate);
         //console.log(response.data.Result.VisitInfo.SignSymptomsDate)
@@ -460,7 +638,7 @@ export default function Page({ data }) {
     axios
       .post(
         process.env.NEXT_PUBLIC_URL_PD +
-          process.env.NEXT_PUBLIC_URL_getIPDDischargeAccident,
+          process.env.NEXT_PUBLIC_URL_getPreAuthAccident,
        // Data
        PatientInfoData
       )
@@ -506,7 +684,7 @@ export default function Page({ data }) {
         setDataaccidentPlace(response.data);
       })
       .catch((error) => {
-    //    console.log(error);
+        console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -531,7 +709,7 @@ export default function Page({ data }) {
         setDatainjurySide(response.data);
       })
       .catch((error) => {
-    //    console.log(error);
+        console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -557,7 +735,7 @@ export default function Page({ data }) {
         setDataWoundType(response.data);
       })
       .catch((error) => {
-    //    console.log(error);
+        console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -581,7 +759,7 @@ export default function Page({ data }) {
       if (index === index2) {
         return {
           ...Pre,
-          PreAuthDateTime: even,
+          PreAuthDateTime: dayjs(even),
         };
       }
       return Pre;
@@ -607,12 +785,12 @@ export default function Page({ data }) {
   };
   const handleAddRow2 = () => {
     setRows2([...rows2, newRow2]);
-    setNewRow2({ PreAuthDateTime: null, PreAuthDetail: "" });
+    setNewRow2({ PreAuthDateTime: dayjs(), PreAuthDetail: "" });
   };
 /////////////////////////////////
 const handleAddRowDia = () => {
   setRowsDia([...rowsDia, newRowDia]);
-  setNewRowDia({ Icd10: "", DxName: "", DxType: "" });
+  setNewRowDia({ DxCode: "", DxName: "", DxType: "" });
 };
 const handleDeleteRowDia = (index) => {
   const newRowsDia = rowsDia.filter((_, i) => i !== index);
@@ -729,7 +907,7 @@ const handleDeleteRowDia = (index) => {
         setInjuryWoundType(response.data);
       })
       .catch((error) => {
-     //   console.log(error);
+        console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -795,13 +973,101 @@ const handleDeleteRowDia = (index) => {
       setSummitEditAcc("false");
     }
   };
-  const SummitEditBill = () => {
+  const SummitEditBillz = () => {
     if (summitEditBill === "false") {
       setSummitEditBill("true");
     } else {
       setSummitEditBill("false");
     }
   };
+  const SummitSelectType = () => {
+    setReload(false)
+    setTypeBilling("");
+    setTypeBillingList("");
+    setBillingz("");
+    setCurrentDatabillingz("");
+console.log(selectTypeBillingValue)
+    if(selectTypeBillingValue === "1"){
+
+
+
+document.getElementById("TypeBilling").showModal();
+    }else if(selectTypeBillingValue === "2"){
+
+
+
+      document.getElementById("TypeBilling").showModal();
+    }else{
+     alert("กรุณาเลือก Type Billing");
+    }
+
+  };
+
+  const SummitSelectTypeSucc1 = () => {
+    setTypeBillingSucc(typeBilling)
+    setReload(true)
+    setShowFormError("");
+    setTypeBillingList("");
+    setBillingz("");
+    setCurrentDatabillingz("");
+          axios
+          .post(
+             '/api/v1/aia-submitbilling/selecttypebilling/',{ typeBilling }
+            // process.env.NEXT_PUBLIC_URL_PD +
+            //   process.env.NEXT_PUBLIC_URL_getretrievepreauthlist,
+            //   {
+            //     PatientInfo
+            //   }
+          )
+          .then((response) => {
+              console.log(response.data)
+            setTypeBillingList(response.data)
+            setBillingz(response.data.Result.BillingInfo)
+            setCurrentDatabillingz(response.data.Result.BillingInfo);
+          })
+          .catch((error) => {
+            console.log(error);
+            try {
+              const ErrorMass = error.config.url;
+              const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+              setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
+              setShowFormError("Error");
+            } catch (error) {
+              setMassError(error.response.data.HTTPStatus.message);
+              setShowFormError("Error");
+            }
+          })
+    
+    
+      };
+      const SummitSelectTypeSucc2 = () => {
+// console.log(typeBillingList.Result.BillingInfo)
+// console.log(itemBillingDetails)
+
+const isConfirmed = confirm("เลือก Billing List ทั้งหมดนี่ใช่หรือไม่");
+if(isConfirmed){
+const combinedArray = [...typeBillingList.Result.BillingInfo, ...itemBillingDetails];
+setItemBillingDetails(combinedArray);
+let sum = 0; 
+combinedArray.forEach((bill) => { 
+    sum += parseFloat(bill.BillingInitial); // ใช้ parseFloat แทน parseInt เพื่อรองรับค่าทศนิยม
+  });
+  const formattedSum = sum.toFixed(2); // กำหนดให้มีจุดทศนิยม 2 ตำแหน่ง
+  setTotal(formattedSum);
+  document.getElementById("TypeBilling").close();
+  }
+}
+
+
+
+  const handleChangeTypeBilling = (index2, event) => {
+console.log(event)
+
+
+    setTypeBilling(event.target.value);
+  }
+
+
 
 
   useEffect(() => {
@@ -844,7 +1110,7 @@ const handleDeleteRowDia = (index) => {
         setCurrentDataorderItemz(response.data.Result.OrderItemInfo);
       })
       .catch((error) => {
-     //   console.log(error);
+        console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -868,7 +1134,7 @@ const handleDeleteRowDia = (index) => {
       setListClaimForm(response.data);
       })
       .catch((error) => {
-     //   console.log(error);
+        console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -932,6 +1198,23 @@ const handleDeleteRowDia = (index) => {
       setCountorderItemz(dataorderItemz.length);
     }, [dataorderItemz]);
 
+    ////////////////////////// ตัวเลื่อน ตารางซ้าย - ขวา ///////////////////////////////////////////
+    const handleNextPagebillingz = () => {
+      setCurrentPagebillingz(currentPagebillingz + 1);
+    };
+  
+    const handlePreviousPagebillingz = () => {
+      setCurrentPagebillingz(currentPagebillingz - 1);
+    };
+  
+    const startIndexbillingz = (currentPagebillingz - 1) * ITEMS_PER_PAGE;
+  
+    const endIndexbillingz = startIndexbillingz + ITEMS_PER_PAGE;
+
+    const databillingz = currentDatabillingz.slice(startIndexbillingz, endIndexbillingz);
+    useEffect(() => {
+      setCountbillingz(databillingz.length);
+    }, [databillingz]);
     /////////////////////////////////////////////////////////////////////
   const DocumentBase64 = (data) => {
     setMsg();
@@ -973,7 +1256,7 @@ const handleDeleteRowDia = (index) => {
         //        );
       })
       .catch((error) => {
-    //    console.log(error);
+      console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -1041,7 +1324,6 @@ const handleDeleteRowDia = (index) => {
           HN: PatientInfoData.PatientInfo.HN,
           VN: PatientInfoData.PatientInfo.VN,
           DocumenttypeCode : "009",
-          Runningdocument : PatientInfoData.PatientInfo.Runningdocument,
           }
         }
       )
@@ -1050,7 +1332,7 @@ const handleDeleteRowDia = (index) => {
         //console.log(response.data)
       })
       .catch((error) => {
-       // console.log(error);
+        console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -1069,7 +1351,7 @@ const handleDeleteRowDia = (index) => {
 
       })
       .catch((error) => {
-     //   console.log(error);
+        console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -1105,6 +1387,9 @@ const handleDeleteRowDia = (index) => {
   setItemBillingDetails(newcauses);
 };
 // console.log(itemBillingDetails)
+
+
+
 const handleChangeBillA2 = (index2, event) => {
   // console.log(itemBillingDetails)
   const newcauses = itemBillingDetails.map((cause, index) => {
@@ -1296,11 +1581,17 @@ if (itemBillingDetails){
       alert("กรุณากรอก ExpectedAdmitDate");
     }else if(totalEstimatedCost === null){
       alert("กรุณากรอก TotalEstimatedCost");
+    }else if(!fileList){
+      alert("กรุณา Upload file");
+    }else if((!itemBillingDetails)&&(!total)){
+      alert("กรุณากรอก Billing");
     }else {
         console.log("Succ");
    const dscDateTimevalue = dayjs(dscDateTime.$d).format("YYYY-MM-DD HH:MM");
+
     const expectedAdmitDatevalue = dayjs(expectedAdmitDate.$d).format("YYYY-MM-DD");
- //
+    setDatadscDateTimevalue(dscDateTimevalue)
+    setDataexpectedAdmitDatevalue(expectedAdmitDatevalue)
     // console.log(dscDateTimevalue);
     // console.log(expectedAdmitDatevalue);
     setShowSummitError();
@@ -1315,15 +1606,14 @@ if (itemBillingDetails){
     let PreviousDetail;
     let Suc;
     let signDate ="";
-
     if (
       previousTreatment === true &&
       previousTreatmentDate &&
-      previousTreatmentDetail.target.value
+      previousTreatmentDetail
     ){
-      //console.log(previousTreatmentDetail)
+
       PreviousDate = dayjs(previousTreatmentDate.$d).format("YYYY-MM-DD");
-      PreviousDetail = previousTreatmentDetail.target.value;
+      PreviousDetail = previousTreatmentDetail;
       Suc = "S";
     } else if (previousTreatment === false) {
       Suc = "S";
@@ -1424,16 +1714,18 @@ if(rows2){
     //console.log(Suc)
     if (Suc === "S") {
       try {
-        await stepOne();
-         await stepTwo();
-         await stepThree();
-          await stepFour();
-          await stepFive();
-          await stepSix();
-           await stepSeven();
+        await stepOne(); //Accident
+         await stepTwo(); //Procedure
+         await stepThree(); //PreAuthVisit
+          await stepFour(); //Diagnosis
+          await stepFive(); //Billing
+          await stepSix(); //PreAuthNote
+           await stepSeven(); //SaveData
 
       } catch (error) {
         console.log(error);
+        setMassSummitError(error);
+        setShowSummitError("Error");
       }
     }
 
@@ -1471,7 +1763,7 @@ console.log("Start Step 1 Accident")
             resolve("Step 1 completed");
           })
           .catch((error) => {
-          //  console.log(error);
+            console.log(error);
             try {
               const ErrorMass = error.config.url;
               const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -1514,7 +1806,7 @@ console.log("Start Step 1 Accident")
             resolve("Step 2 completed");
           })
           .catch((error) => {
-          //  console.log(error);
+            console.log(error);
             try {
               const ErrorMass = error.config.url;
               const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -1538,7 +1830,7 @@ console.log("Start Step 1 Accident")
         let comaScoreP;
 
         if (comaScore) {
-          comaScoreP = comaScore.target.value;
+          comaScoreP = comaScore;
         } else {
           comaScoreP = "";
         }
@@ -1551,7 +1843,12 @@ console.log("Start Step 1 Accident")
           VN: PatientInfoData.PatientInfo.VN,
           VisitDateTime: PatientInfoData.PatientInfo.VisitDateTime,
 
-          DxFreeText: event.target.DxFreeTextText.value,
+          ChiefComplaint: texthandleTextChiefComplaint,
+          PhysicalExam: texthandleTextPhysicalExam,
+          DxFreeText: texthandleTextDxFreeText,
+          ExpectedDayOfRecovery: expectedDayOfRecovery,
+          PresentIllness: textPresentIllness,
+          ComaScore: comaScoreP,
           SignSymptomsDate: signDate,
           HaveProcedure: HaveProcedureCount,
           HaveAccidentCauseOfInjuryDetail: HavecauseOfInjuryDetailsCount,
@@ -1562,7 +1859,7 @@ console.log("Start Step 1 Accident")
           PreauthReferClaimNo: PatientInfoData.PatientInfo.PreauthReferClaimNo,
           PreauthReferOcc: PatientInfoData.PatientInfo.PreauthReferOcc,
           ExpectedAdmitDate:  expectedAdmitDatevalue,
-          IsPackage: isPackageValue,
+          IsPackage: isPackage,
           PreviousTreatment: previousTreatment,
           PreviousTreatmentDate: PreviousDate,
           PreviousTreatmentDetail: PreviousDetail,
@@ -1786,17 +2083,17 @@ console.log("Start Step 1 Accident")
           VN: PatientInfoData.PatientInfo.VN,
           VisitDate : VisitDatex,
           VisitDateTime: PatientInfoData.PatientInfo.VisitDateTime,
-          DxFreeText: event.target.DxFreeTextText.value,
-          PresentIllness: "",
-          ChiefComplaint: "",
+          DxFreeText: texthandleTextDxFreeText,
+          PresentIllness: textPresentIllness,
+          ChiefComplaint: texthandleTextChiefComplaint,
           AccidentCauseOver45Days: "",
           UnderlyingCondition: "",
-          PhysicalExam: "",
+          PhysicalExam: texthandleTextPhysicalExam,
           PlanOfTreatment: "",
           ProcedureFreeText: "",
           AdditionalNote: "",
           SignSymptomsDate: signDate,
-          ExpectedDayOfRecovery: "",
+          ExpectedDayOfRecovery: expectedDayOfRecovery,
           ComaScore: "",
           HaveProcedure: HaveProcedureCount,
           HaveAccidentCauseOfInjuryDetail: HavecauseOfInjuryDetailsCount,
@@ -1861,7 +2158,7 @@ const SubmitPreSubmissionToAIA = () => {
               //  console.log(response.data);
               })
               .catch((error) => {
-             //   console.log(error);
+                console.log(error);
               });
               
               document.getElementById("my_modal_5").close();
@@ -1880,7 +2177,7 @@ const SubmitPreSubmissionToAIA = () => {
             }
           })
           .catch((error) => {
-          //  console.log(error);
+            console.log(error);
             try {
               const ErrorMass = error.config.url;
               const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -1896,6 +2193,9 @@ const SubmitPreSubmissionToAIA = () => {
 
       // //       // ถ้ามีข้อผิดพลาดให้ใช้ reject(new Error('Error in Step 3'));
 }
+const SubmitSelectTypeBilling = (event) => {
+  setSelectTypeBillingValue(event.target.value);
+};
 
   const IndicationForAdmission = (event) => {
     setAdmissionValue(event.target.value);
@@ -1903,9 +2203,7 @@ const SubmitPreSubmissionToAIA = () => {
   const AnesthesiaList = (event) => {
     setAnesthesiaListValue(event.target.value);
   };
-  const IsPackage = (event) => {
-    setIsPackageValue(event.target.value);
-  };
+
   const Cancel = () => {
     setShowFormError();
     // console.log("-Cancel-")
@@ -1946,7 +2244,7 @@ const SubmitPreSubmissionToAIA = () => {
         })
         .catch((error) => {
           // console.error("Error", err)
-         // console.log(error);
+          console.log(error);
           try {
             const ErrorMass = error.config.url;
             const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -1993,7 +2291,7 @@ const SubmitPreSubmissionToAIA = () => {
     formData.append("insurerid", 13);
     formData.append("DocumenttypeCode", "009");
     formData.append("UploadedBy", "");
-    formData.append("Runningdocument", PatientInfoData.PatientInfo.Runningdocument);
+    formData.append("Runningdocument", randomNumber);
     setMsg(
       <CircularProgress size="30px" className="text-error text-lg" />
     );
@@ -2046,7 +2344,6 @@ const SubmitPreSubmissionToAIA = () => {
             HN: PatientInfoData.PatientInfo.HN,
             VN: PatientInfoData.PatientInfo.VN,
             DocumenttypeCode : "009",
-            Runningdocument : PatientInfoData.PatientInfo.Runningdocument,
             }
           }
         )
@@ -2055,7 +2352,7 @@ const SubmitPreSubmissionToAIA = () => {
           //console.log(response.data)
         })
         .catch((error) => {
-         // console.log(error);
+          console.log(error);
           try {
             const ErrorMass = error.config.url;
             const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -2138,7 +2435,6 @@ const SubmitPreSubmissionToAIA = () => {
             VisitDateTime: PatientInfoData.PatientInfo.VisitDateTime,
             ReferenceVN: e.VN,
             FurtherClaimNo: PatientInfoData.PatientInfo.FurtherClaimNo,
-            Runningdocument: PatientInfoData.PatientInfo.randomNumberold,
           },
         })
       );
@@ -2147,7 +2443,7 @@ const SubmitPreSubmissionToAIA = () => {
         await stepOne();
         await stepTwo();
       } catch (error) {
-      //  console.log(error);
+        console.log(error);
       };
   
       function stepOne() {
@@ -2190,18 +2486,44 @@ const SubmitPreSubmissionToAIA = () => {
     setOtherInsurer(e.target.value);
   };
   const handleAlcoholRelated = () => {
-    setAlcoholRelated(!alcoholRelated);
+    if(alcoholRelated === true){
+      setAlcoholRelated(false);
+    }else{
+      setAlcoholRelated(true);
+    }
   };
+
+
+  const handleIsPackage = () => {
+    if(isPackage === true){
+      setIsPackage(false);
+    }else{
+      setIsPackage(true);
+    }
+  };
+
   const handlePregnant = () => {
-    setPregnant(!pregnant);
+    if(pregnant === true){
+      setPregnant(false);
+    }else{
+      setPregnant(true);
+    }
   };
   const handlePrivateCase = () => {
-    setPrivateCase(!privateCase);
+    if(privateCase === true){
+      setPrivateCase(false);
+    }else{
+    setPrivateCase(true);
+    }
   };
   const handlePreviousTreatment = () => {
+    if(previousTreatment === true){
+      setPreviousTreatment(false);
+    }else{
     setPreviousTreatmentDetail("");
     setPreviousTreatmentDate(null);
-    setPreviousTreatment(!previousTreatment);
+    setPreviousTreatment(true);
+  }
   };
 
   const CustomTextField = styled(TextField)({
@@ -2724,7 +3046,7 @@ const SubmitPreSubmissionToAIA = () => {
                   <div className="rounded-md mt-2">
                     <TextField
                       type="number"
-                      label="จำนวนวันพักฟื้นหลังการผ่าตัด"
+                      label="ExpectedDayOfRecovery"
                        id="outlined-start-adornment"
                       defaultValue={expectedDayOfRecovery}
                       onChange={(newExpectedDayOfRecovery) =>
@@ -2756,7 +3078,6 @@ const SubmitPreSubmissionToAIA = () => {
                   </div>
                 </div>
                 <div className="rounded-md mt-2 text-3xl text-error  flex ">
-               {/* <IoSettingsSharp className="mt-1 " onClick={Editfurtherclaimvn}/> */}
                 <div
                         className="btn btn-secondary text-base-100 text-xl"
                         onClick={Editfurtherclaimvn}
@@ -2779,7 +3100,8 @@ const SubmitPreSubmissionToAIA = () => {
                       name="ChiefComplaint"
                       multiline
                       rows={4}
-                      defaultValue={visit.Result.VisitInfo.ChiefComplaint}
+                      defaultValue={texthandleTextChiefComplaint}
+                      onChange={handleTextChiefComplaint}
                       inputProps={{ maxLength: 200 }}
                       //   required
                     />
@@ -2793,7 +3115,8 @@ const SubmitPreSubmissionToAIA = () => {
                       label="Physical exam"
                       multiline
                       rows={4}
-                      defaultValue={visit.Result.VisitInfo.PhysicalExam}
+                      defaultValue={texthandleTextPhysicalExam}
+                      onChange={handleTextPhysicalExam}
                       //   required
                     />
                   </div>
@@ -2806,7 +3129,8 @@ const SubmitPreSubmissionToAIA = () => {
                       name="DxFreeTextText"
                       multiline
                       rows={10}
-                      defaultValue={visit.Result.VisitInfo.DxFreeText}
+                      defaultValue={texthandleTextDxFreeText}
+                      onChange={handleTextDxFreeText}
                       inputProps={{ maxLength: 200 }}
                       required
                     />
@@ -2852,7 +3176,7 @@ const SubmitPreSubmissionToAIA = () => {
                           type="checkbox"
                           id="alcoholRelated"
                           name="alcoholRelated"
-                          value={alcoholRelated}
+                          checked={alcoholRelated}
                           className="checkbox"
                           onChange={handleAlcoholRelated}
                         />
@@ -2870,9 +3194,9 @@ const SubmitPreSubmissionToAIA = () => {
                         type="checkbox"
                         id="IsPackage"
                         name="IsPackage"
-                        value={isPackageValue}
+                        checked={isPackage}
                         className="checkbox"
-                        onChange={IsPackage}
+                        onChange={handleIsPackage}
                       />
                       <p className="text-left">
                         &nbsp;IsPackage
@@ -2883,7 +3207,7 @@ const SubmitPreSubmissionToAIA = () => {
                       type="checkbox"
                       id="pregnant"
                       name="pregnant"
-                      value={pregnant}
+                      checked={pregnant}
                       className="checkbox "
                       onChange={handlePregnant}
                     />
@@ -2894,7 +3218,7 @@ const SubmitPreSubmissionToAIA = () => {
                       type="checkbox"
                       id="privateCase"
                       name="privateCase"
-                      value={privateCase}
+                      checked={privateCase}
                       className="checkbox "
                       onChange={handlePrivateCase}
                     />
@@ -2905,7 +3229,7 @@ const SubmitPreSubmissionToAIA = () => {
                       type="checkbox"
                       id="previousTreatment"
                       name="previousTreatment"
-                      //value={previousTreatment}
+                      checked={previousTreatment}
                       className="checkbox "
                       onChange={handlePreviousTreatment}
                     />
@@ -3055,7 +3379,7 @@ const SubmitPreSubmissionToAIA = () => {
                         {rowsDia
                           ? rowsDia.map(
                               (dia, index) =>
-                                dia.Icd10  && (
+                                dia.DxCode  && (
                                   <TableRow
                                     key={index}
                                     className=" bg-neutral text-sm"
@@ -3063,10 +3387,10 @@ const SubmitPreSubmissionToAIA = () => {
                                     <TableCell>{index + 1}</TableCell>
                                     <TableCell>
                                       <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                                        {dia.Icd10 === "" ? (
+                                        {dia.DxCode === "" ? (
                                           <>&nbsp;</>
                                         ) : (
-                                          dia.Icd10
+                                          dia.DxCode
                                         )}
                                       </div>
                                     </TableCell>
@@ -3105,14 +3429,14 @@ const SubmitPreSubmissionToAIA = () => {
                               <TableCell>
                                 <TextField
                                   className="bg-base-100 w-full"
-                                  value={newRowDia.Icd10}
+                                  value={newRowDia.DxCode}
                                   onChange={(e) =>
                                     setNewRowDia({
                                       ...newRowDia,
-                                      Icd10: e.target.value,
+                                      DxCode: e.target.value,
                                     })
                                   }
-                                  placeholder="Icd10"
+                                  placeholder="DxCode"
                                   //  required
                                 />
                               </TableCell>
@@ -3130,7 +3454,7 @@ const SubmitPreSubmissionToAIA = () => {
                                   //   required
                                 />
                               </TableCell>
-                              {newRowDia.Icd10 &&
+                              {newRowDia.DxCode &&
                               newRowDia.DxName  ? (
                                 <>
                                   <TableCell>
@@ -3394,35 +3718,6 @@ const SubmitPreSubmissionToAIA = () => {
                           </DemoItem>
                         </LocalizationProvider>
                       </div>
-                      {/* <div className="w-2/5">
-                        <FormControl fullWidth>
-                          <InputLabel id="demo-error-select-label">
-                            สถานที่เกิดอุบัติเหตุ
-                          </InputLabel>
-                          <Select
-                            error
-                            className="mx-2"
-                            labelId="demo-error-select-label"
-                            id="demo-error-select"
-                            //name="accidentPlaceText"
-                            value={accidentPlaceValue}
-                            label="สถานที่เกิดอุบัติเหตุ"
-                            onChange={AccidentPlace}
-                            required
-                          >
-                            {dataaccidentPlace
-                              ? dataaccidentPlace.Result.map((acc, index) => (
-                                  <MenuItem
-                                    key={index}
-                                    value={acc.accidentplacecode}
-                                  >
-                                    {acc.accidentplacename}
-                                  </MenuItem>
-                                ))
-                              : ""}
-                          </Select>
-                        </FormControl>
-                      </div> */}
                     </div>
 
                     <TableContainer component={Paper} className="mt-2">
@@ -3610,8 +3905,7 @@ const SubmitPreSubmissionToAIA = () => {
                             <TableCell className="w-2"></TableCell>
                             <TableCell>
                               <h1 className="text-base-100  text-sm w-1/7 text-center">
-                                อวัยวะที่ได้บาดเจ็บจากการเกิดอุบัติเหตุ (ICD10
-                                code)
+                                อวัยวะที่ได้บาดเจ็บจากการเกิดอุบัติเหตุ (ICD10code)
                               </h1>
                             </TableCell>
                             <TableCell>
@@ -4039,12 +4333,47 @@ const SubmitPreSubmissionToAIA = () => {
                 Billing
               
               <div className="btn btn-secondary text-base-100 text-xl ml-2"
-                        onClick={SummitEditBill}
+                        onClick={SummitEditBillz}
                       >
                         <FaEdit />
-                      </div>
-                      </h1>
+              </div>
+              </h1>
+              
+                  <FormControl className="mt-2">
+              <InputLabel id="demo-simple-select-label">
+                TypeBilling
+                </InputLabel>
+                                    <Select
+                                      className="break-all w-64"
+                                      labelId="demo-simple-select-label"
+                                      id="demo-simple-select"
+                                      label="Anesthesia"
+                                      value={selectTypeBillingValue}
+                                      onChange={SubmitSelectTypeBilling}
+                                    >
+                                      <MenuItem key="" value=""></MenuItem>
+                                      {selectTypeBillingList
+                                        ? selectTypeBillingList.Result.map(
+                                            (type, index) => (
+                                              <MenuItem
+                                                key={index}
+                                                value={type.Code}
+                                              >
+                                                {type.Selecttype}
+                                              </MenuItem>
+                                            )
+                                          )
+                                        : ""}
+                                    </Select>
+                                  </FormControl> 
 
+                    <div className="btn btn-secondary text-base-100 text-xl ml-2 mt-2"
+                        onClick={SummitSelectType}
+                      >
+                        <AiOutlineArrowRight />
+                </div>
+             
+                      
               <div className="overflow-x-auto">
             <TableContainer component={Paper} className="mt-2">
                       <Table className="table">
@@ -4076,8 +4405,8 @@ const SubmitPreSubmissionToAIA = () => {
                                     >
                                       <TableCell>{index + 1}</TableCell>
                                       <TableCell>
+                                      {summitEditBill === "true" ? 
                                       <select  className="select select-bordered mt-2 x-3 py-2 border-2 bg-base-100 break-all w-full"    
-                                    // value={`${cause.LocalBillingCode}`}  
                                        onChange={(e) =>
                                         handleChangeBill(index, e)
                                       }          
@@ -4094,9 +4423,27 @@ const SubmitPreSubmissionToAIA = () => {
                           )
                         : ""}
                     </select>
-                
+                :         <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                                        {cause.LocalBillingCode === "" ? (
+                                          <>&nbsp;</>
+                                        ) : (
+                                          listBilling
+                                            ? listBilling.ItemBillingCheckBalance.map((type, index) => 
+                                              type.LocalBillingCode  ===   cause.LocalBillingCode ?(
+                                                        <p
+                                                          key={index}
+                                                          >
+                                                                {type.LocalBillingCode} - {type.LocalBillingName}
+                                                        </p>
+                                                      ) : ""
+                                                    )
+                                                  : ""
+                                          
+                                        )}
+                                      </div> }
                                       </TableCell>
                                       <TableCell>
+                                      {summitEditBill === "true" ? 
                                             <TextField
                                               type="number"
                                               className="bg-base-100 w-full m-2"
@@ -4105,8 +4452,17 @@ const SubmitPreSubmissionToAIA = () => {
                                                 handleChangeBillA2(index, e)
                                               }
                                             />
+                                            :  <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                                        {cause.BillingInitial === "" ? (
+                                          <>&nbsp;</>
+                                        ) : (
+                                          cause.BillingInitial
+                                        )}
+                                      </div>
+                          }
                                       </TableCell>
                                         <TableCell>
+                                        {summitEditBill === "true" ?
                                           <div
                                             onClick={() =>
                                               handleDeleteBillingDetail(
@@ -4116,7 +4472,7 @@ const SubmitPreSubmissionToAIA = () => {
                                             className="btn btn-error text-base-100 text-xl"
                                           >
                                             <FaCircleMinus />
-                                          </div>
+                                          </div> : ""}
                                         </TableCell>
                                     </TableRow>
                                   
@@ -4201,22 +4557,7 @@ onChange={(e) => { const selectedType = JSON.parse(e.target.value);
                 <div className="rounded-md px-3 py-2 border-2 bg-base-100 break-all m-1">{parseFloat(total).toLocaleString("en-US", {minimumFractionDigits: 2,maximumFractionDigits: 2})}</div>
                 <div className="rounded-md"></div>
               </div>
-                {/* {fromTotalSum && (
-             <div className="grid gap-2 sm:grid-cols-6  bg-primary w-full whitespace-normal text-center text-lg">
-                <div className="rounded-md"></div>
-                <div className="rounded-md"></div>
-                <div className="rounded-md"></div>
-                <div className="rounded-md text-base-100 mt-4">จำนวนเงินที่คุ้มครอง</div>
-                <div className="rounded-md px-3 py-2 border-2 bg-base-100 break-all m-1">{totalApprovedAmount ? totalApprovedAmount : <CircularProgress size="30px" className="text-error text-lg" />}</div>
-                <div className="rounded-md"></div>
-                <div className="rounded-md"></div>
-                <div className="rounded-md"></div>
-                <div className="rounded-md"></div>
-                <div className="rounded-md text-base-100 mt-4">ส่วนเกินความคุ้มครอง</div>
-                <div className="rounded-md px-3 py-2 border-2 bg-base-100 break-all m-1">{totalExcessAmount ? totalExcessAmount : <CircularProgress size="30px" className="text-error text-lg" />}</div>
-              </div>
-              )   } */}
-              
+
                     </TableContainer>
                     </div>
          </div>           
@@ -4225,7 +4566,7 @@ onChange={(e) => { const selectedType = JSON.parse(e.target.value);
                         {/* //////////////////////////////////////////////////////////////////////////// */}
                         <div className="container mx-auto justify-center border-solid w-full m-auto border-4 border-warning rounded-lg p-4 mt-2">
                   <h1 className="font-black text-accent text-3xl ">
-                  PreAuthNote
+                  Note
                     <div
                       className="btn btn-secondary text-base-100 text-xl ml-2"
                       onClick={SummitEditPre}
@@ -4255,15 +4596,16 @@ onChange={(e) => { const selectedType = JSON.parse(e.target.value);
                       <TableBody>
                         {rows2
                           ? rows2.map(
-                              (Pre, index) =>
+                              (Pre, index) => Pre.PreAuthDateTime ?
                                   <TableRow
                                     key={index}
                                     className=" bg-neutral text-sm"
                                   >
                                     <TableCell>{index + 1}</TableCell>
-                                    <TableCell>
-                                        {/* {console.log(dayjs(Pre.PreAuthDateTime.$d).format("YYYY-MM-DD"))} */}
-                       <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                <TableCell>
+                                {summitEditPreAuthNote === "true" ? 
+                          <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        
                             <DemoItem>
                               <DesktopDatePicker
                                   className="bg-base-100 w-full" 
@@ -4272,17 +4614,21 @@ onChange={(e) => { const selectedType = JSON.parse(e.target.value);
                                   onChange={(e) => 
                                  handleChangeEditDateRow2(index, e)
                                  }    
-
-                                //  onChange={(newSignSymptomsDate) =>
-                                //   setSignSymptomsDate(newSignSymptomsDate)
-                                // }
-
                                    placeholder="ProcedureDate"
                                  />
                                  </DemoItem>
-                                   </LocalizationProvider>
+                                   </LocalizationProvider> 
+                                   :
+                                      <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                                        {Pre.PreAuthDateTime === "" ? (
+                                          <>&nbsp;</>
+                                        ) : (
+                                          dayjs(Pre.PreAuthDateTime.$d).format("YYYY-MM-DD")
+                                        )}
+                                      </div> }
                                     </TableCell>
                                     <TableCell>
+                                    {summitEditPreAuthNote === "true" ? 
                                        <TextField
                                   className="bg-base-100 w-full"
                                   value={Pre.PreAuthDetail}
@@ -4294,7 +4640,15 @@ onChange={(e) => { const selectedType = JSON.parse(e.target.value);
                                   multiline
                                   rows={4}
                                   placeholder="PreAuthDetail"
-                                />
+                                /> : 
+                                <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                                        {Pre.PreAuthDetail === "" ? (
+                                          <>&nbsp;</>
+                                        ) : (
+                                          Pre.PreAuthDetail
+                                        )}
+                                      </div>
+                                }
                                     </TableCell>
                                     <TableCell>
                                       {summitEditPreAuthNote === "true" ? (
@@ -4309,7 +4663,7 @@ onChange={(e) => { const selectedType = JSON.parse(e.target.value);
                                       )}
                                     </TableCell>
                                   </TableRow>
-                               
+                               : ""
                             )
                           : ""}
                  
@@ -4501,10 +4855,10 @@ onChange={(e) => { const selectedType = JSON.parse(e.target.value);
                     <div className="py-2">
                     <div className="text-right">
                       <button
-                        className="btn btn-primary text-base-100 hover:bg-base-100 hover:text-primary ml-2"
+                        className="btn btn-error text-base-100 hover:bg-base-100 hover:text-error ml-2"
                         type="submit"
                       >
-                        บันทึก
+                        SUBMIT
                       </button>
                     </div>
                   </div>
@@ -4814,12 +5168,201 @@ onChange={(e) => { const selectedType = JSON.parse(e.target.value);
           </form>
         </div>
       </dialog>
+      <dialog id="TypeBilling" className="modal text-xl	">
+            <div className="modal-box max-w-7xl">
+              <form method="dialog">
+      <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+    </form>
+    
+                <h3 className="font-bold text-lg text-accent">Type Billing : {selectTypeBillingList ?selectTypeBillingList.Result.filter(type => type.Code === selectTypeBillingValue).map(type => type.Selecttype).join('') : ""}</h3>
+                <hr />
+
+                {((showFormError === "Error")||(totalApprovedAmount === 0)) ? (
+            <div role="alert" className="alert alert-error mt-2 text-base-100">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6 shrink-0 stroke-current"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <span>{massError}</span>
+            </div>
+          ) : ("")}
+
+                                  <div className="grid grid-cols-2 gap-2 mt-4">
+                                    <div className="border-2 border-error w-full">
+                                            <TextField
+                                              type="text"
+                                              className="bg-base-100 m-2 w-10/12"
+                                              value={typeBilling}
+                                              // onChange={(e) =>
+                                              //   handleChangeTypeBilling(index, e)
+                                              // }
+                                              onChange={(e) =>
+                                                setTypeBilling(e.target.value)
+                                              }
+                                            />
+                                            {typeBilling ?<div className="btn btn-error hover:text-error hover:bg-base-100 text-base-100 text-xl ml-2 mt-2 w-1/12" onClick={SummitSelectTypeSucc1}><AiOutlineArrowRight /></div> : "" }
+                                    </div>
+                                    <div> {(databillingz&&typeBilling) ? <div className="btn btn-info hover:text-info hover:bg-base-100 text-base-100 text-xl ml-2 mt-2"  onClick={SummitSelectTypeSucc2}>Submit</div> : "" }</div>
+                                  </div>
+                                  <div className="grid gap-2 sm:grid-cols-4 w-full mt-2">
+                                        <div className="rounded-md">
+                                          <Box
+                                            sx={{
+                                              backgroundColor: "#e5e7eb",
+                                              padding: 0,
+                                              borderRadius: 0,
+                                            }}
+                                          >
+                                            <CustomTextField
+                                              id="disabledInput"
+                                              label="Fullname"
+                                              defaultValue={typeBillingList ? typeBillingList.Result.VisitInfo.FullName : ""}
+                                              className="w-full text-black rounded disabled:text-black disabled:bg-gray-300 cursor-not-allowed"
+                                              InputProps={{ readOnly: true }}
+                                            />
+                                          </Box>
+                                        </div>
+                                        <div className="rounded-md">
+                                          <Box
+                                            sx={{
+                                              backgroundColor: "#e5e7eb",
+                                              padding: 0,
+                                              borderRadius: 0,
+                                            }}
+                                          >
+                                            <CustomTextField
+                                              id="disabledInput"
+                                              label="HN"
+                                              defaultValue={typeBillingList ? typeBillingList.Result.VisitInfo.HN : ""}
+                                              className="w-full text-black rounded disabled:text-black disabled:bg-gray-300 cursor-not-allowed"
+                                              InputProps={{ readOnly: true }}
+                                            />
+                                          </Box>
+                                        </div>
+                                        <div className="rounded-md">
+                                          <Box
+                                            sx={{
+                                              backgroundColor: "#e5e7eb",
+                                              padding: 0,
+                                              borderRadius: 0,
+                                            }}
+                                          >
+                                            <CustomTextField
+                                              id="disabledInput"
+                                              label="VisitDateTime"
+                                              defaultValue={typeBillingList ? typeBillingList.Result.VisitInfo.VisitDateTime : ""}
+                                              className="w-full text-black rounded disabled:text-black disabled:bg-gray-300 cursor-not-allowed"
+                                              InputProps={{ readOnly: true }}
+                                            />
+                                          </Box>
+                                        </div>
+                                  </div> 
+           <h1 className="font-black text-accent text-3xl ">Billing List</h1>
+              <div className="overflow-x-auto">
+                <table className="table  mt-2">
+                  <thead>
+                    <tr className="text-base-100 bg-primary py-8 text-sm w-full text-center">
+                      <th></th>
+                      <th>Billing Code</th>
+                      <th>Billing Sub-Group</th>
+                      <th>Price</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {databillingz ? (
+                      databillingz.map(
+                        (bill, index) => 
+                        <tr key={index} className=" bg-neutral text-sm">
+                          <td className="px-6 py-4 whitespace-nowrap">
+                          {startIndexbillingz+ index + 1}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                              {bill.LocalBillingCode ? bill.LocalBillingCode : <>&nbsp;</>}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                              {bill.LocalBillingName ? bill.LocalBillingName : <>&nbsp;</>}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                              {bill.BillingInitial ? bill.BillingInitial : <>&nbsp;</>}
+                            </div>
+                          </td>
+                        </tr>
+                                    ) 
+                                  ) : (
+                                    <tr className=" bg-neutral text-sm">
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                    
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                    { reload === true ? <CircularProgress size="30px" className="text-error text-lg" /> : ""}
+                                    </td>
+                                  </tr>
+                                  
+                                  )}
+                  </tbody>
+                </table>
+                {billingz ? (
+            <div className="grid gap-1 sm:grid-cols-2 w-full mt-4">
+              <div className="flex justify-between text-right">
+                <div className="text-right">
+                  <h1 className="text-lg">
+                    Showing {startIndexbillingz + 1} to {endIndexbillingz} of{" "}
+                    {billingz ? billingz.length : ""} entries.
+                  </h1>
+                </div>
+              </div>
+              <div className="text-right text-base-100 ">
+                {/* <div className="text-left text-base-100"> */}
+
+                {currentPagebillingz > 1 && (
+                  <div
+                    onClick={handlePreviousPagebillingz}
+                    className="btn btn-primary "
+                  >
+                    <BiFirstPage className="text-base-100 text-xl text-right" />
+                  </div>
+                )}
+                {endIndexbillingz < currentDatabillingz.length && (
+                  <div
+                    onClick={handleNextPagebillingz}
+                    className="btn btn-primary ml-2"
+                  >
+                    <BiLastPage className="text-base-100 text-xl" />
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : (
+            ""
+          )}
+              </div>
+                  
+                                  
+            </div>
+          </dialog>
+
       {showModal ? (
         <>
           <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
             <div className="bg-white p-8 rounded shadow-lg">
               <h2 className="text-4xl font-bold mb-4 text-primary">
-                ส่งเคลมเรียบร้อยแล้ว
+                ลงทะเบียนใช้สิทธิ์สำเร็จ
               </h2>
 
             </div>

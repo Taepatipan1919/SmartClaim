@@ -33,21 +33,14 @@ export default function Home() {
             data-theme="mytheme" >
             IPD
           </h1> 
-              )  : (DataTran.DataTran.Data.ServiceSettingAbbr === "PRE-01" ? 
+              )  : 
                   (
                 <h1
                 className="font-black text-accent text-3xl "
                 data-theme="mytheme" >
                 Pre - Authorization
               </h1> 
-                    )  : (
-                <h1
-                className="font-black text-accent text-3xl "
-                data-theme="mytheme" >
-                Pre - Admission
-              </h1> 
                     )
-           )
             )
             }
 

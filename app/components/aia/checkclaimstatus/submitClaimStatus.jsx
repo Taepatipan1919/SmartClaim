@@ -63,7 +63,7 @@ export default function checkData() {
   const [preAuthTransactionList, setPreAuthTransactionList] = useState("");
   const [dataSelect, setDataSelect] = useState("");
   // const [dataServiceSettingAbbr, setDataServiceSettingAbbr] = useState("");
-
+  const [illnessType, setIllnessType] = useState();
   const [toValue, setToValue] = useState(null);
   const [massError, setMassError] = useState("");
   const [iCD10Value, setICD10Value] = useState();
@@ -220,7 +220,29 @@ export default function checkData() {
       });
     }, []);
     /////////////////////////////////////////////////////////////////////////////////////
-
+    useEffect(() => {
+      axios
+        .get(
+          process.env.NEXT_PUBLIC_URL_PD +
+            process.env.NEXT_PUBLIC_URL_IllnessType +
+            InsuranceCode
+        )
+        .then((response) => {
+          setIllnessType(response.data);
+        })
+        .catch((error) => {
+          console.log(error);
+          try {
+            const ErrorMass = error.config.url;
+            const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+            setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
+            setShowFormError("Error");
+          } catch (error) {
+            setMassError(error.response.data.HTTPStatus.message);
+            setShowFormError("Error");
+          }
+        });
+    }, []);
   const status = (event) => {
     setStatusValue(event.target.value);
   };
@@ -856,7 +878,6 @@ axios
                 IsIPDDischarge: dataSelect.IsIPDDischarge,
                 PreauthReferClaimNo: PreauthReferClaimNo,
                 PreauthReferOcc: PreauthReferOcc,     
-                Runningdocument: dataSelect.Runningdocument,
                 Visitlocation: dataSelect.Visitlocation,
                 TotalBillAmount : dataSelect.TotalBillAmount,
                 TotalExcessAmount:  dataSelect.TotalExcessAmount,
@@ -905,8 +926,7 @@ axios
             BatchNumber: response.data.Result.InsuranceData.BatchNumber,
             ClaimStatus: response.data.Result.InsuranceData.ClaimStatus,
             ClaimStatusDesc: response.data.Result.InsuranceData.ClaimStatusDesc,
-            TotalApproveAmount:
-              response.data.Result.InsuranceData.TotalApproveAmount,
+            TotalApproveAmount: response.data.Result.InsuranceData.TotalApproveAmount,
             PaymentDate: response.data.Result.InsuranceData.PaymentDate,
             InvoiceNumber: response.data.Result.InsuranceData.InvoiceNumber,
             RefId: response.data.Result.InsuranceData.RefId,
@@ -1023,7 +1043,6 @@ axios
           FurtherClaimVN: data.FurtherClaimVN,
           FurtherClaimNo: data.FurtherClaimNo,
           FurtherClaimId: data.FurtherClaimId,
-          Runningdocument: data.randomNumberold,
           Visitlocation: data.Visitlocation,
         },
       })
@@ -1045,7 +1064,6 @@ axios
       //     // PreauthReferOcc: data.PreauthReferOcc,   
       //     PreauthReferClaimNo: "",
       //     PreauthReferOcc: "",   
-      //     Runningdocument: data.randomNumberold,
       //     Visitlocation: data.Visitlocation,
       //   },
       // })
@@ -1057,6 +1075,7 @@ axios
   };
 
   const Detail2 = (data) => {
+
             console.log(data)
            setSelectData(data)
     //console.log("-Detail-")
@@ -1141,7 +1160,6 @@ axios
                 ReferenceVN: data.ReferenceVN,
                 // PreauthReferClaimNo: "",
                 // PreauthReferOcc: "",   
-                Runningdocument: data.randomNumberold,
                 Visitlocation: data.Visitlocation,
                 ServiceSettingAbbr : data.ServiceSettingAbbr,
               },
@@ -1491,23 +1509,14 @@ axios
     setPostData();
     setShowFormError();
     let DataServiceSettingAbbr="";
-    let ServiceValueX="";
     let data = {};
     let dateToValue = "";
     let dateFromValue = "";
     let PatientInfo;
     if(serviceValue === "OPD"){
-      ServiceValueX ="OPD";
       setDoMoney(true);
-    }else if(serviceValue === "IPD"){
-      ServiceValueX ="IPD";
+    }else{
       setDoMoney(false);
-    }else if(serviceValue === "PRE-01"){
-      ServiceValueX ="PRE";
-      DataServiceSettingAbbr = "PRE-01";
-    }else if(serviceValue === "PRE-02"){
-      ServiceValueX ="PRE";
-      DataServiceSettingAbbr = "PRE-02";
     }
     
     if (fromValue && toValue) {
@@ -1528,8 +1537,7 @@ axios
         VisitDatefrom: dateFromValue,
         VisitDateto: dateToValue,
         StatusClaimCode: statusValue,
-        ServiceSettingCode: ServiceValueX,
-        ServiceSettingAbbr : DataServiceSettingAbbr,
+        ServiceSettingCode: serviceValue,
       };
     } else if (selectedIdType === "PASSPORT_NO" && numberValue) {
       PatientInfo = {
@@ -1544,8 +1552,7 @@ axios
         VisitDatefrom: dateFromValue,
         VisitDateto: dateToValue,
         StatusClaimCode: statusValue,
-        ServiceSettingCode: ServiceValueX,
-        ServiceSettingAbbr : DataServiceSettingAbbr,
+        ServiceSettingCode: serviceValue,
       };
     } else if (selectedIdType === "HOSPITAL_ID" && numberValue) {
       PatientInfo = {
@@ -1560,8 +1567,7 @@ axios
         VisitDatefrom: dateFromValue,
         VisitDateto: dateToValue,
         StatusClaimCode: statusValue,
-        ServiceSettingCode: ServiceValueX,
-        ServiceSettingAbbr : DataServiceSettingAbbr,
+        ServiceSettingCode: serviceValue,
       };
     } else if (selectedIdType === "PID" && numberValue) {
       PatientInfo = {
@@ -1576,8 +1582,7 @@ axios
         VisitDatefrom: dateFromValue,
         VisitDateto: dateToValue,
         StatusClaimCode: statusValue,
-        ServiceSettingCode: ServiceValueX,
-        ServiceSettingAbbr : DataServiceSettingAbbr,
+        ServiceSettingCode: serviceValue,
       };
     } else if (selectedIdType === "Invoice" && numberValue) {
       PatientInfo = {
@@ -1592,8 +1597,7 @@ axios
         VisitDatefrom: dateFromValue,
         VisitDateto: dateToValue,
         StatusClaimCode: statusValue,
-        ServiceSettingCode: ServiceValueX,
-        ServiceSettingAbbr : DataServiceSettingAbbr,
+        ServiceSettingCode: serviceValue,
       };
     } else if (selectedIdType === "ClaimNo" && numberValue) {
       PatientInfo = {
@@ -1608,8 +1612,7 @@ axios
         VisitDatefrom: dateFromValue,
         VisitDateto: dateToValue,
         StatusClaimCode: statusValue,
-        ServiceSettingCode: ServiceValueX,
-        ServiceSettingAbbr : DataServiceSettingAbbr,
+        ServiceSettingCode: serviceValue,
       };
     } else if (fromValue && toValue) {
       PatientInfo = {
@@ -1624,8 +1627,7 @@ axios
         VisitDatefrom: dateFromValue,
         VisitDateto: dateToValue,
         StatusClaimCode: statusValue,
-        ServiceSettingCode: ServiceValueX,
-        ServiceSettingAbbr : DataServiceSettingAbbr,
+        ServiceSettingCode: serviceValue,
       };
     } else if (statusValue) {
 
@@ -1642,8 +1644,7 @@ axios
           VisitDatefrom: dateFromValue,
           VisitDateto: dateToValue,
           StatusClaimCode: statusValue,
-          ServiceSettingCode: ServiceValueX,
-          ServiceSettingAbbr : DataServiceSettingAbbr,
+          ServiceSettingCode: serviceValue,
         };
       }else{
      
@@ -1660,8 +1661,7 @@ axios
         VisitDatefrom: today,
         VisitDateto: today,
         StatusClaimCode: statusValue,
-        ServiceSettingCode: ServiceValueX,
-        ServiceSettingAbbr : DataServiceSettingAbbr,
+        ServiceSettingCode: serviceValue,
       }; 
       }
     } else {
@@ -1681,8 +1681,7 @@ axios
   VisitDatefrom: "",
   VisitDateto: "",
    StatusClaimCode: statusValue,
-   ServiceSettingCode: ServiceValueX,
-   ServiceSettingAbbr : DataServiceSettingAbbr,
+   ServiceSettingCode: serviceValue,
  }; 
     }
 
@@ -1929,7 +1928,7 @@ axios
               >
                 {serviceCode
                   ? serviceCode.Result.map((type, index) => (
-                      <MenuItem key={index} value={type.abbreviation}>
+                      <MenuItem key={index} value={type.servicesettingcode}>
                         {type.servicesettingcode} -{" "}{type.servicesettingdesc}
                       </MenuItem>
                     ))
@@ -2032,8 +2031,7 @@ axios
                 <th>HN <br/> VN</th>
                 <th>Location</th>
                 <th>ClaimNo</th>
-                <th>Invoicenumber</th>
-                <td>BatchNumber</td>
+                <th>Invoicenumber <br/>BatchNumber</th>
                 <th className="w-40 ">Status</th>
                 <th >Total<br/>Billamount</th>
                 <th >Approved<br/>Amount</th>
@@ -2047,7 +2045,7 @@ axios
               </tr> 
             </thead>
             <tbody>
-              {/* {console.log(postData)} */}
+              {/* {console.log(statusNew)} */}
               {postData ? (
                 // postData.HTTPStatus.statusCode === 200 ? (
                   datax.map(
@@ -2057,15 +2055,14 @@ axios
                           <th>{startIndex + index + 1}</th>
                           <td className="whitespace-nowrap">{bill.VisitDate}</td>
                           <td className="whitespace-nowrap">
-                            {bill.TitleTH} {bill.GivenNameTH}  {bill.SurnameTH}
+                            {bill.TitleTH} {bill.GivenNameTH}  {bill.SurnameTH}<br/>  ( {bill.ServiceSettingCode} - {illnessType ? illnessType.Result.map((ill) => ill.illnesstypecode  ===  bill.IllnessTypeCode ? (<> {ill.illnesstypedesc} </>) : "") : ""} )
                           </td>
-                          <td className="whitespace-nowrap">{bill.HN} <br/> {bill.VN}</td>
+                          <td className="whitespace-nowrap">{bill.HN ? bill.HN : "-"} <br/> {bill.VN ? bill.VN : "-"}</td>
                           <td className="">{bill.VisitLocation}</td>
-                          <td className="whitespace-nowrap">{bill.ClaimNo} <br/>  ( {bill.ServiceSettingCode ==="PRE" ? (bill.ServiceSettingAbbr === "PRE-01" ? ("PRE-Authorization") : ("PRE-Admission")) : bill.ServiceSettingCode} {bill.IsIPDDischarge === true ? "Discharge" : ""} )</td>
-                          <td className="whitespace-nowrap">{bill.InvoiceNumber}</td>
-                          <td className="whitespace-nowrap">
-                            {
-                                statusNew ? ((bill.TransactionNo === statusNew.TransactionNo) ? statusNew.BatchNumber : bill.BatchNumber) : "Loading..."
+                          <td className="whitespace-nowrap">{bill.ClaimNo ? bill.ClaimNo : "-"}</td>
+                          <td className="whitespace-nowrap">{bill.InvoiceNumber ? bill.InvoiceNumber : "-"} <br/>
+                          {
+                                statusNew ? ((bill.TransactionNo === statusNew.TransactionNo) ? (statusNew.BatchNumber ? statusNew.BatchNumber : "-") : (bill.BatchNumber ? bill.BatchNumber : "-")) : "Loading..."
                             }
                           </td>
                           <td>
@@ -2074,25 +2071,25 @@ axios
                                statusNew ? (
                                 bill.TransactionNo ===statusNew.TransactionNo ? (statusNew.ClaimStatusDesc ? (statusNew.ClaimStatus !== "Cancelled" && statusNew.ClaimStatus !=="Cancelled to AIA" &&statusNew.ClaimStatus !== "Reversed" && statusNew.ClaimStatus !== "Decline" ? (statusNew.ClaimStatus === "Approved" ||statusNew.ClaimStatus === "Settle" ? (
                                         <a className="bg-info text-base-100 rounded-full px-3 py-2 w-full border-2">
-                                          {statusNew.ClaimStatus}
+                                          {statusNew.ClaimStatusDesc}
                                         </a>
                                                                     ) : ((bill.ClaimStatusDesc_EN === "Approve")||(bill.ClaimStatusDesc_EN === "Received")|| (bill.ClaimStatusDesc_EN === "Pending")) ? (
                                                                       bill.ClaimStatusDesc_EN === "Pending" ? (
                                                                       <a className="bg-accent text-base-100 rounded-full px-3 py-2 w-full">
-                                                                        {bill.ClaimStatusDesc_EN}
+                                                                        {bill.ClaimStatusDesc_TH}
                                                                       </a>
                                                                     )
                                                                      : ( 
                                                                      <a className="bg-success text-base-100 rounded-full px-3 py-2 w-full">
-                                                                      {bill.ClaimStatusDesc_EN}
+                                                                      {bill.ClaimStatusDesc_TH}
                                                                     </a>
                                                                     )
                                                                      ) : (<a className="bg-warning rounded-full px-3 py-2 w-full">
-                                        {bill.ClaimStatusDesc_EN}
+                                        {bill.ClaimStatusDesc_TH}
                                       </a>)
                                     ) : (
                                       <a className="bg-error text-base-100 rounded-full px-3 py-2 w-full">
-                                        {statusNew.ClaimStatus}
+                                        {statusNew.ClaimStatusDesc}
                                       </a>
                                     )
                                   ) : (
@@ -2105,25 +2102,25 @@ axios
                                   bill.ClaimStatusDesc_EN !== "Reversed" && bill.ClaimStatusDesc_EN !== "Decline" ? (
                                     ((bill.ClaimStatusDesc_EN === "Approved") || (bill.ClaimStatusDesc_EN === "Settle")) ? (
                                       <a className="bg-info text-base-100 rounded-full px-3 py-2 w-full">
-                                        {bill.ClaimStatusDesc_EN}
+                                        {bill.ClaimStatusDesc_TH}
                                       </a>
                     ) : ((bill.ClaimStatusDesc_EN === "Approve")||(bill.ClaimStatusDesc_EN === "Received")|| (bill.ClaimStatusDesc_EN === "Pending") || (bill.ClaimStatusDesc_EN === "AddDoc")|| (bill.ClaimStatusDesc_EN === "Processing") ) ? (
                                       (bill.ClaimStatusDesc_EN === "Pending") ? (
                                       <a className="bg-accent text-base-100 rounded-full px-3 py-2 w-full">
-                                        {bill.ClaimStatusDesc_EN}
+                                        {bill.ClaimStatusDesc_TH}
                                       </a>
                                     )
                                      : ( 
                                      <a className="bg-success text-base-100 rounded-full px-3 py-2 w-full">
-                                      {bill.ClaimStatusDesc_EN}
+                                      {bill.ClaimStatusDesc_TH}
                                     </a>
                                     )
                                      ) : (<a className="bg-warning  rounded-full px-3 py-2 w-full">
-                                      {bill.ClaimStatusDesc_EN}
+                                      {bill.ClaimStatusDesc_TH}
                                     </a>)
                                   ) : (
                                     <a className="bg-error text-base-100 rounded-full px-3 py-2 w-full">
-                                      {bill.ClaimStatusDesc_EN}
+                                      {bill.ClaimStatusDesc_TH}
                                     </a>
                                   )
                                 ) : (
@@ -2244,13 +2241,25 @@ axios
                                     className="tooltip ml-4"
                                     data-tip="ข้อมูลส่งเคลม"
                                   >
-                                   {bill.ServiceSettingCode === "OPD" ? (<h1 className="text-primary text-2xl" onClick={() => Detail(bill)}><IoDocumentText /></h1>) : (
+                                   {bill.ServiceSettingCode === "OPD" ? (<h1 className="text-primary text-2xl" onClick={() => Detail(bill)}><IoDocumentText /></h1>) : ((bill.ClaimStatusDesc !== "Approve") ? (
                                                                           <h1 className="text-primary text-2xl" onClick={() => Detail2(bill)}><IoDocumentText /></h1>
-                                    )} 
+                                    ): (
+                                      <div className="tooltip" data-tip="ข้อมูลส่งเคลม">
+                                                          <h1
+                                                            className="text-error text-2xl"
+                                                            onClick={() =>
+                                                              Detail3(bill
+                                                              )
+                                                            }
+                                                          >
+                                                            <IoDocumentText />
+                                                           </h1>
+                                                        </div>
+                                    ))} 
                                   {/* <h1 className="text-primary text-2xl" onClick={() => Detail(bill)}><IoDocumentText /></h1> */}
                                   </div>
                                    : 
-                                  <div className="tooltip ml-4" data-tip="ข้อมูลส่งเคลม">
+                                  <div className="tooltip" data-tip="ข้อมูลส่งเคลม">
                                                           <h1
                                                             className="text-error text-2xl"
                                                             onClick={() =>
@@ -2293,7 +2302,7 @@ axios
                               bill.ClaimStatusDesc === "Received" ? (
                                 bill.BatchNumber ? (
                                   ""
-                                ) : (
+                                ) : (bill.ServiceSettingCode === "OPD" ? (
                                   <>
                                     <button
                                       className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100 whitespace-nowrap"
@@ -2304,7 +2313,18 @@ axios
                                       ส่งเอกสารเพิ่มเติม
                                     </button>
                                   </>
-                                )
+                                ) : bill.ClaimStatusDesc !== "Approve" ?(
+                                  <button
+                                      className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100 whitespace-nowrap"
+                                      onClick={() =>
+                                        handleButtonClick(bill)
+                                      }
+                                    >
+                                      ส่งเอกสารเพิ่มเติม
+                                    </button>
+
+                                ) : ("")
+                              )
                               ) : (
                                 ""
                               )
@@ -2659,30 +2679,7 @@ value={over45}
                           )
                         : ""}
                     </select>
-{/*                           
-                          <Select
-                            error
-                            className="w-full mt-4"
-                            labelId="demo-error-select-label"
-                            id="demo-error-select"
-                            //name="woundTypeText"
-                            value={over45}
-                            label="สาเหตุของการมารับการรักษาเกิน 45 วัน จากการเกิดอุบัติเหตุ"
-                            onChange={Over45}
-                            required
-                          >
-                            {over45Days
-                              ? over45Days.Result.map((over, index) => (
-                                  <MenuItem
-                                    key={index}
-                                    value={over.causeovercode}
-                                  >
-                                    {over.causeoverdesc}
-                                  </MenuItem>
-                                ))
-                              : ""}
-                          </Select> */}
-         
+
 
             <TableContainer component={Paper} className="mt-2">
                       <Table className="table">
@@ -2736,7 +2733,7 @@ value={over45}
                                       </TableCell>
                                       <TableCell>
                                             <TextField
-                                              type="text"
+                                              type="number"
                                               className="bg-base-100 w-full m-2"
                                               value={cause.BillingInitial}
                                               onChange={(e) =>

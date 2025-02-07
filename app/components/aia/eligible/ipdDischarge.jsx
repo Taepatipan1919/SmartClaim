@@ -210,25 +210,18 @@ export default function Page({ data }) {
         An : "",
         DscDateTime : "",
         ExpectedLos : "",
-        Runningdocument: randomNumber,
     },
   };
   // console.log(PatientInfoData.PatientInfo)
   useEffect(() => {
     setRandomNumber();
-    if(!data.DataTran.Data.Runningdocument){
+
     const generateRandomFiveDigitNumber = () => {
       return String(Math.floor(Math.random() * 100000)).padStart(5, '0');
     };
     setFileList("")
     const newRandomNumber = generateRandomFiveDigitNumber();
     setRandomNumber(newRandomNumber);
-    console.log("Runnig อันใหม่ "+ newRandomNumber);
-  }else{
-    setRandomNumber(data.DataTran.Data.Runningdocument)
-    console.log("")
-    console.log("Runnig อันเก่า "+ data.DataTran.Data.Runningdocument);
-  }
 
   }, [data]);
 
@@ -250,7 +243,6 @@ export default function Page({ data }) {
           HN: PatientInfoData.PatientInfo.HN,
           VN: PatientInfoData.PatientInfo.VN,
           DocumenttypeCode : "002",
-          Runningdocument : PatientInfoData.PatientInfo.Runningdocument,
         }
         }
       )
@@ -1164,7 +1156,6 @@ export default function Page({ data }) {
           HN: PatientInfoData.PatientInfo.HN,
           VN: PatientInfoData.PatientInfo.VN,
           DocumenttypeCode : "002",
-          Runningdocument : PatientInfoData.PatientInfo.Runningdocument,
           }
         }
       )
@@ -1784,7 +1775,7 @@ if(rows2){
     formData.append("insurerid", 13);
     formData.append("DocumenttypeCode", "002");
     formData.append("UploadedBy", "");
-    formData.append("Runningdocument", PatientInfoData.PatientInfo.Runningdocument);
+    formData.append("Runningdocument", randomNumber);
     setMsg(
       <CircularProgress size="30px" className="text-error text-lg" />
     );
@@ -1837,7 +1828,6 @@ if(rows2){
             HN: PatientInfoData.PatientInfo.HN,
             VN: PatientInfoData.PatientInfo.VN,
             DocumenttypeCode : "002",
-            Runningdocument : PatientInfoData.PatientInfo.Runningdocument,
             }
           }
         )
