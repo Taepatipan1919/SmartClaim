@@ -37,7 +37,7 @@ module.exports = {
 
           // ปุ่ม
           "btn-search": "#69C2EE", // ฟ้าอ่อนพาสเทล
-          "btn-create": "#A9DFBF", // เขียวพาสเทล
+          "btn-create": "#FFFFFF", // เขียวพาสเทล
           "btn-update": "#1F9CD6", // ฟ้าเข้ม
           "btn-save": "#B3E5C2", // เขียวพาสเทล
 

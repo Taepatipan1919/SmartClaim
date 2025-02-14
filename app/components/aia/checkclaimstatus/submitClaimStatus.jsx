@@ -54,6 +54,7 @@ export default function checkData() {
   const [selectedIdType, setSelectedIdType] = useState("");
   const [patientInfoDetail, setPatientInfoDetail] = useState();
   const [numberValue, setNumberValue] = useState("");
+  const [notShowLoc, setNotShowLoc] = useState(false);
   
   const [showFormCheckEligibleError, setShowFormCheckEligibleError]=useState("");
   const [massFurtherError, setMassFurtherError] = useState("");
@@ -816,7 +817,7 @@ axios
       VisitDatefrom: dataSelect.VisitDate,
       VisitDateto: "",
     };
-        //  console.log(PatientInfo)
+          console.log(PatientInfo)
 
     axios
       .post(
@@ -828,7 +829,7 @@ axios
       )
       .then((response) => {
          const PatientSearch = response.data.Result.PatientInfo[0];
-          // console.log(PatientSearch)
+          //  console.log(response.data.Result.PatientInfo)
         dispatch(
           save2({
             value: "มีรายชื่อ",
@@ -1173,14 +1174,11 @@ axios
               InsurerCode: InsuranceCode, 
               RefId: data.RefId,
               TransactionNo: data.TransactionNo,
-              // RefId: "ZnjsqdlIujcXdPQelfw0co6JKVudw7myrq2lp60UrhMjaJ2vad4+6pDrbeaHmBfn",
-              // TransactionNo: "447567cd-8d8c-421c-89e6-d09d9d23c0c3",
               HN: "",
               VN:""
             }
     axios
     .post(
-      // '/api/v1/aia-checkeligible/preauthSubmission',{PatientInfo} 
       process.env.NEXT_PUBLIC_URL_PD +
         process.env.NEXT_PUBLIC_URL_getretrievepreauthlist,
         {
@@ -1212,7 +1210,7 @@ axios
     })
           
           }else{
-            // console.log("Dis")  
+
       router.push("/aia/eligible");
           }
  
@@ -1518,7 +1516,13 @@ axios
     }else{
       setDoMoney(false);
     }
-    
+
+    if(serviceValue === "IPD"){
+      setNotShowLoc(true);
+    }else{
+      setNotShowLoc(false);
+    }
+
     if (fromValue && toValue) {
       dateFromValue = dayjs(fromValue.$d).format("YYYY-MM-DD");
       dateToValue = dayjs(toValue.$d).format("YYYY-MM-DD");
@@ -1685,7 +1689,7 @@ axios
  }; 
     }
 
-     console.log(PatientInfo);
+    //  console.log(PatientInfo);
     setPatientUpdate({ PatientInfo });
     if (PatientInfo) {
       setPatientInfoDetail(PatientInfo);
@@ -2029,7 +2033,7 @@ axios
                 <th >Visit Date</th>
                 <th>Full Name</th>
                 <th>HN <br/> VN</th>
-                <th>Location</th>
+               {notShowLoc === true ? "" :  <th>Location</th>}
                 <th>ClaimNo</th>
                 <th>Invoicenumber <br/>BatchNumber</th>
                 <th className="w-40 ">Status</th>
@@ -2058,7 +2062,7 @@ axios
                             {bill.TitleTH} {bill.GivenNameTH}  {bill.SurnameTH}<br/>  ( {bill.ServiceSettingCode} - {illnessType ? illnessType.Result.map((ill) => ill.illnesstypecode  ===  bill.IllnessTypeCode ? (<> {ill.illnesstypedesc} </>) : "") : ""} )
                           </td>
                           <td className="whitespace-nowrap">{bill.HN ? bill.HN : "-"} <br/> {bill.VN ? bill.VN : "-"}</td>
-                          <td className="">{bill.VisitLocation}</td>
+                          {notShowLoc === true ? "" :   <td className="">{bill.VisitLocation}</td> }
                           <td className="whitespace-nowrap">{bill.ClaimNo ? bill.ClaimNo : "-"}</td>
                           <td className="whitespace-nowrap">{bill.InvoiceNumber ? bill.InvoiceNumber : "-"} <br/>
                           {
@@ -2073,7 +2077,7 @@ axios
                                         <a className="bg-info text-base-100 rounded-full px-3 py-2 w-full border-2">
                                           {statusNew.ClaimStatusDesc}
                                         </a>
-                                                                    ) : ((bill.ClaimStatusDesc_EN === "Approve")||(bill.ClaimStatusDesc_EN === "Received")|| (bill.ClaimStatusDesc_EN === "Pending")) ? (
+                                                                    ) : ((bill.ClaimStatusDesc_EN === "Approve")||(bill.ClaimStatusDesc_EN === "Received")|| (bill.ClaimStatusDesc_EN === "Pending")|| (bill.ClaimStatusDesc_EN === "Processing") ) ? (
                                                                       bill.ClaimStatusDesc_EN === "Pending" ? (
                                                                       <a className="bg-accent text-base-100 rounded-full px-3 py-2 w-full">
                                                                         {bill.ClaimStatusDesc_TH}
@@ -2879,8 +2883,8 @@ onChange={(e) => { const selectedType = JSON.parse(e.target.value);
       <div className="grid gap-1 sm:grid-cols-3 w-full  whitespace-normal text-center">
       <div className="rounded-md"></div>
           <div className="rounded-md w-full text-center">
-           <div className="mt-2">
-              <div role="tablist" className="tabs-bordered">
+          <div className="mt-2">
+             <div role="tablist" className="tabs-bordered">
                   <input
                   type="radio"
                   name="my_tabs_1"
@@ -2923,7 +2927,7 @@ onChange={(e) => { const selectedType = JSON.parse(e.target.value);
                     </select>
                   </label>
                 </div> 
-            </div> 
+            </div>  
             <div className="flex justify-end p-4">
               {listClaimForm ?
                 <div

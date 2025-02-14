@@ -1322,13 +1322,6 @@ if(idTypeValue === "NATIONAL_ID"){
             });
           }
 
-
-
-
-
-
-
-
             // const HSBypass = response.data.Result.InsuranceData.CoverageList.some(coverage => coverage.Type === "ผลประโยชน์ค่ารักษาพยาบาลที่ต้องตรวจสอบความคุ้มครองโดยเจ้าหน้าที่ AIA" && coverage.Status === true);
             if (hasTrueStatus) {
                 console.log("True")

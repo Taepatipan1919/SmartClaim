@@ -70,7 +70,7 @@ export default function checkData() {
   const [showDocError, setShowDocError] = useState("");
   const [massDocError, setMassDocError] = useState("");
   const [base64, setBase64] = useState("");
-
+  const [notShowLoc, setNotShowLoc] = useState(false);
 
 
 
@@ -576,7 +576,11 @@ axios
       dateFromValue = dayjs(fromValue.$d).format("YYYY-MM-DD");
       dateToValue = dayjs(toValue.$d).format("YYYY-MM-DD");
     }
-
+    if(serviceValue === "IPD"){
+      setNotShowLoc(true);
+    }else{
+      setNotShowLoc(false);
+    }
     if (selectedIdType === "NATIONAL_ID" && numberValue) {
       PatientInfo = {
         InsurerCode: InsuranceCode,
@@ -1448,7 +1452,7 @@ axios
                 <th>Full Name</th>
                 <th>HN</th>
                 <th>VN</th>
-                <th>Location</th>
+                {notShowLoc === true ? "" : <th>Location</th>}
                 <th>ClaimNo</th>
                 <th>Invoicenumber</th>
                 <td>BatchNumber</td>
@@ -1477,7 +1481,7 @@ axios
                       </td>
                       <td>{bill.HN}</td>
                       <td>{bill.VN}</td>
-                      <td className="whitespace-nowrap">{bill.VisitLocation}</td>
+                      {notShowLoc === true ? "" :  <td>{bill.VisitLocation}</td>}
                       <td>{bill.ClaimNo}</td>
                       <td>{bill.InvoiceNumber}</td>
                       <td>
@@ -1769,7 +1773,7 @@ axios
                 <th>Full Name</th>
                 <th>HN</th>
                 <th>VN</th>
-                <th>Location</th>
+                {notShowLoc === true ? "" :  <th>Location</th>}
                 <th>ClaimNo</th>
                 <th>Invoicenumber</th>
                 <td>BatchNumber</td>
@@ -1801,7 +1805,7 @@ post.map((bill, index) =>
     </td>
     <td>{bill.HN}</td>
     <td>{bill.VN}</td>
-    <td className="whitespace-nowrap">{bill.VisitLocation}</td>
+    {notShowLoc === true ? "" :  <td>{bill.VisitLocation}</td> }
     <td>{bill.ClaimNo}</td>
     <td>{bill.InvoiceNumber}</td>
     <td>
@@ -1854,7 +1858,7 @@ post.map((bill, index) =>
     <th>
     {bill.TotalBillAmount
         ? parseFloat(
-           (statusNew ? bill.TransactionNo === statusNew.TransactionNo ? statusNew.TotalBillAmount : (bill.TotalBillAmount ? (bill.TotalBillAmount): ("")): "Loading...")
+           (statusNew ? (bill.TransactionNo === statusNew.TransactionNo ? (statusNew.TotalBillAmount) : (bill.TotalBillAmount ? (bill.TotalBillAmount): (""))): "Loading...")
         ).toLocaleString('en-US', {
           minimumFractionDigits: 2,
           maximumFractionDigits: 2,
@@ -1871,7 +1875,7 @@ post.map((bill, index) =>
                                   ? (statusNew.TotalApproveAmount ? parseFloat(statusNew.TotalApproveAmount).toLocaleString("en-US", {minimumFractionDigits: 2,maximumFractionDigits: 2,}) : parseFloat(bill.TotalApprovedAmount).toLocaleString("en-US", {minimumFractionDigits: 2,maximumFractionDigits: 2,})  )
                                   :  bill.TotalApprovedAmount === null ? ("") : (parseFloat(bill.TotalApprovedAmount).toLocaleString("en-US", {minimumFractionDigits: 2,maximumFractionDigits: 2,})) 
                                 )
-                                  :  ""
+                                  :  "Loading..."
                                 )
                               : ""}
     </th>
@@ -2055,7 +2059,7 @@ post.map((bill, index) =>
                 <th>Full Name</th>
                 <th>HN</th>
                 <th>VN</th>
-                <th>Location</th>
+                {notShowLoc === true ? "" : <th>Location</th>}
                 <th>ClaimNo</th>
                 <th>Invoicenumber</th>
                 <td>BatchNumber</td>
@@ -2086,7 +2090,7 @@ post.map((bill, index) =>
     </td>
     <td>{bill.HN}</td>
     <td>{bill.VN}</td>
-    <td className="whitespace-nowrap">{bill.VisitLocation}</td>
+    {notShowLoc === true ? "" :  <td>{bill.VisitLocation}</td>}
     <td>{bill.ClaimNo}</td>
     <td>{bill.InvoiceNumber}</td>
     <td>
@@ -2163,7 +2167,7 @@ post.map((bill, index) =>
                                   ? (statusNew.TotalApproveAmount ? parseFloat(statusNew.TotalApproveAmount).toLocaleString("en-US", {minimumFractionDigits: 2,maximumFractionDigits: 2,}) : parseFloat(bill.TotalApprovedAmount).toLocaleString("en-US", {minimumFractionDigits: 2,maximumFractionDigits: 2,})  )
                                   :  bill.TotalApprovedAmount === null ? ("") : (parseFloat(bill.TotalApprovedAmount).toLocaleString("en-US", {minimumFractionDigits: 2,maximumFractionDigits: 2,})) 
                                 )
-                                  :  ""
+                                  :  "Loading..."
                                 )
                               : ""}
 

@@ -18,6 +18,7 @@ export async function POST(request) {
                     "HN": "61-022789",
                     "FullName": "กฤษณ์   จันทรวงศ์"
                 },
+           TotalBillAmount: "38548.05",
             BillingInfo: [
                 {
                     "LocalBillingCode": "0101001",

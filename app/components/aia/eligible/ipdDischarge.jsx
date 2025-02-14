@@ -197,7 +197,7 @@ export default function Page({ data }) {
         AccidentDate: data.DataTran.Data.AccidentDate,
       AccidentPlaceCode: "",
       WoundDetails: "",
-      IsIPDDischarge: data.DataTran.Data.IsIPDDischarge,
+      IsIPDDischarge: isIPDDischargeValue,
       AccidentInjurySideCode: "",
       AccidentInjuryWoundtypeCode: "",
         PolicyTypeCode: data.DataTran.Data.PolicyTypeCode,
@@ -398,7 +398,7 @@ export default function Page({ data }) {
         //   setShowFormError("Error");
         // }
       });
-
+    
   }, [data]);
 
   useEffect(() => {
@@ -662,7 +662,7 @@ export default function Page({ data }) {
         PatientInfoData
       )
       .then((response) => {
-    //    console.log(response.data)
+        console.log(response.data)
         setDiagnosis(response.data);
       })
       .catch((error) => {
@@ -1278,11 +1278,19 @@ export default function Page({ data }) {
 //console.log(causeOfInjuryDetails)
 // console.log(rows2)
 
-if(injuryDetails){
-  injuryDetailsCount = injuryDetails.length;
+if(injuryDetails.length > 0){
+  const obj = injuryDetails[0];
+  if (obj.InjuryArea !== "" || obj.InjurySide !== "" || obj.WoundType !== "") {
+    injuryDetailsCount = injuryDetails.length;
+    console.log('Array has values:', injuryDetails);
+  }
 }
-if(causeOfInjuryDetails){
-  causeOfInjuryDetailsCount = causeOfInjuryDetails.length;
+if(causeOfInjuryDetails.length > 0){
+  const obj = causeOfInjuryDetails[0];
+  if (obj.CauseOfInjury !== "" || obj.CommentOfInjury !== "") {
+    causeOfInjuryDetailsCount = causeOfInjuryDetails.length;
+    console.log('Array has values:', causeOfInjuryDetailsCount);
+  }
 } 
 if(rows){
   ProcedureInfoCount = rows.length;
@@ -1930,12 +1938,27 @@ if(rows2){
 
     /////////////////////////////////////////////////////////////////////
 
-
-    const IsIPDDischarge = () =>{
+console.log(isIPDDischargeValue)
+    async function IsIPDDischargeBox() {
     if(isIPDDischargeValue === false){
       setIsIPDDischargeValue(true)
     }else{
       setIsIPDDischargeValue(false)
+    }
+    await stepOne();
+    await stepTwo();
+
+
+    function stepOne() {
+      setTimeout(() => {
+            router.push("/aia/checkClaimStatus");
+      }, 1000);
+ 
+    };
+    function stepTwo() {
+      setTimeout(() => {
+             router.push("/aia/eligible");
+}, 1000);
     }
   }
   const  handleOtherInsurer = (e) => {
@@ -2255,7 +2278,8 @@ if(rows2){
                         name="OtherInsurer"
                         value={isIPDDischargeValue}
                         className="checkbox checkbox-error"
-                        onChange={IsIPDDischarge}
+                        // onChange={IsIPDDischarge}
+                        onClick={() => IsIPDDischargeBox()}
                       />
                       <p className="text-left">
                         &nbsp;FinalDischarge
@@ -4051,11 +4075,7 @@ if(rows2){
                             </tr>
                           )
                       )
-                    ) : (
-                      <tr>
-                        <td></td>
-                      </tr>
-                    )}
+                    ) : ""}
                   </tbody>
                 </table>
               </div>
@@ -4105,14 +4125,7 @@ if(rows2){
                             </tr>
                           )
                       )
-                    ) : (
-                      <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                      </tr>
-                    )}
+                    ) : ""}
                   </tbody>
                 </table>
               </div>
@@ -4125,8 +4138,8 @@ if(rows2){
             </div>
              {/* //////////////////////////////////////////////////////////////////////////// */}
             {/* //////////////////////////////////////////////////////////////////////////// */}
-            {procedure ? (
-              PatientInfoData.PatientInfo.SurgeryTypeCode === "Y" ? (
+            {/* {procedure ? ( 
+              PatientInfoData.PatientInfo.SurgeryTypeCode === "Y" ? (*/}
                 <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
                   <h1 className="font-black text-accent text-3xl ">
                     Procedure
@@ -4322,12 +4335,12 @@ if(rows2){
                     </div>
                   </TableContainer>
                 </div>
-              ) : (
+            {/*     ) : (
                 ""
               )
-            ) : (
+          ) : (
               ""
-            )}
+            )} */}
             {/* //////////////////////////////////////////////////////////////////////////// */}
             <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
               <h1 className="font-black text-accent text-3xl ">
@@ -4473,6 +4486,7 @@ if(rows2){
                     {dataorderItemz ? (
                       dataorderItemz.map(
                         (order, index) => 
+                          order.ItemId && (
                         <tr key={index} className=" bg-neutral text-sm">
                           <td className="px-6 py-4 whitespace-nowrap">
                           {startIndexorderItemz+ index + 1}
@@ -4533,7 +4547,7 @@ if(rows2){
                                                        
                                     // )
                                     )
-                                  ) : (
+                                  )) : (
                                    ""
                                   )}
                   </tbody>
@@ -4653,11 +4667,7 @@ if(rows2){
                           </td>
                         </tr>
                       )))
-                    ) : (
-                      <tr>
-                        <td></td>
-                      </tr>
-                    )}
+                    ) : "" }
                   </tbody>
                 </table>
               </div>

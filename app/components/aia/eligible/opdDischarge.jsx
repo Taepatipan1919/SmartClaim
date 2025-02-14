@@ -1145,6 +1145,7 @@ export default function Page({ data }) {
   }, [data]);
 
   useEffect(() => {
+    console.log(PatientInfoData)
     axios
       .post(
         process.env.NEXT_PUBLIC_URL_SV +
@@ -1209,7 +1210,7 @@ export default function Page({ data }) {
         PatientInfoData
       )
       .then((response) => {
-        // console.log(response.data)
+      //   console.log(response.data)
     // console.log("5555")
     if(numberBilling === false){
       setBilling(response.data);
@@ -3821,6 +3822,7 @@ if(rows){
                   {dataorderItemz ? (
                       dataorderItemz.map(
                         (order, index) => 
+                          (order.ItemId) && (
                         <tr key={index} className=" bg-neutral text-sm">
                           <td className="px-6 py-4 whitespace-nowrap">
                           {startIndexorderItemz+ index + 1}
@@ -3880,7 +3882,7 @@ if(rows){
                         </tr>
                                            
                                     // )
-                                  )
+                                  ))
                                 ) : (
                                  ""
                                 )}
@@ -3933,7 +3935,7 @@ if(rows){
             {/* //////////////////////////////////////////////////////////////////////////// */}
             <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
               <h1 className="font-black text-accent text-3xl ">
-                รายละเอียดค่ารักษาพยาบาล
+                Billing
               </h1>
               <div className="overflow-x-auto">
                 <table className="table  mt-2">
@@ -4003,9 +4005,7 @@ if(rows){
                         </tr>
                       )))
                     ) : (
-                      <tr>
-                        <td></td>
-                      </tr>
+                     ""
                     )}
                   </tbody>
                 </table>
