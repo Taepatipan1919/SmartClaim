@@ -626,7 +626,9 @@ export default function SelectPatient() {
               <tbody>
                 {post ? (
                   post.HTTPStatus.statusCode < 400 ? (
-                    post.Result.PatientInfo.map((patient, index) => (
+                    post.Result.PatientInfo.map((patient, index) => 
+                      patient.HN && (
+                      (
                       <tr className="hover" key={index}>
                         <td className="text-center">{index + 1}</td>
                         <td>{patient.PID}</td>
@@ -656,7 +658,9 @@ export default function SelectPatient() {
                           </div>
                         </td>
                       </tr>
-                    ))
+                    )
+                      )
+                  )
                   ) : (
                     <>
                       <tr>

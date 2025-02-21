@@ -19,7 +19,7 @@ module.exports = {
           // secondary: "#FF0000", //แดง
           // "base-100": "#ffffff",
           // info: "#BDE0FE", //ฟ้าเข็ม
-          // "info-content": "#FFAFCC",
+          // "info-content": "#BEBEBE",
           // success: "#3dccc7", /** BDE0FE*/
           // warning: "#ffc8dd",
           // error: "#ff003f",
@@ -27,14 +27,16 @@ module.exports = {
           secondary: "#5AB2FF", // น้ำเเงิน
           info: "#76D7EA", // ฟ้าสดใส
           accent: "#ff8900", // สีส้ม        //หัวข้อ ตัวหนังสือhoverเมนู
-          neutral: "#F3F9FC", // ฟ้าขาวอมเทา
+          neutral: "#F3F9FC", // ฟ้าขาว
           "base-100": "#FFFFFF", // พื้นหลังขาว
+
           success: "#72d572", // เขียวพาสเทล      //ปุ่ม create save
           warning: "#FCDE70", // เหลืองพาสเทล
           error: "#fe5858", // แดงพาสเทล
           "text-primary": "#333333", // ตัวหนังสือหลัก
           "text-accent": "#FFFFFF", // ตัวหนังสือบนปุ่มหรือพื้นหลังสีเข้ม
-
+          // "base-200": "#778899", // เทาอ่อน
+          // "base-300": "#D1D5DB", // เทากลาง
           // ปุ่ม
           "btn-search": "#69C2EE", // ฟ้าอ่อนพาสเทล
           "btn-create": "#FFFFFF", // เขียวพาสเทล

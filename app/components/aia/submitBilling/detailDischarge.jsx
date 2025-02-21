@@ -456,7 +456,7 @@ useEffect(() => {
                   </div>
                   <div className="rounded-md mt-2">
                   <div className="flex flex-col">
-                              <label className="text-gray-700 mb-2">Diagnosis</label>
+                              <label className="text-gray-700 mb-2">Provisnal Diagnosis</label>
                                 <textarea
                                     type="text"
                                     defaultValue={transactionClaimInfo ? transactionClaimInfo.Visit.DxFreeText : ""}

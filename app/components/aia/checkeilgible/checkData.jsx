@@ -44,6 +44,8 @@ export default function checkData() {
   const [load, setLoad] = useState(false);
   const [numberValue, setNumberValue] = useState("");
   const [vNValue, setVNValue] = useState("");
+  const [accidentDateValue, setAccidentDateValue] = useState("");
+  
   const [mass, setMass] = useState();
   const [formPRE, setFormPRE] = useState(false);
   const [succPRE, setSuccPRE] = useState(false);
@@ -154,14 +156,15 @@ export default function checkData() {
 
       setSelectedValue(event.target.value);
 
-      //console.log(event.target.value)
-        const [ClaimNo, FurtherClaimId , VisitDateTime , VN] = event.target.value.split(" | ");
+      console.log(event.target.value)
+        const [ClaimNo, FurtherClaimId , VisitDateTime , VN , AccidentDate] = event.target.value.split(" | ");
     
         setFurtherClaimId(FurtherClaimId)
         setFurtherClaimNo(ClaimNo)
         setVisitDateTimeL(VisitDateTime) 
         setFurtherVN(VN) 
         setVNValue(VN)
+        setAccidentDateValue(AccidentDate)
   
 
   };
@@ -1886,9 +1889,11 @@ if(idTypeValue === "NATIONAL_ID"){
                     {selectedValue ?
                     <div className="rounded-md">
                     รักษาแบบต่อเนื่อง : 
-                    <br/>- เลขกรมธรรม์: {furtherClaimNo} 
+                    <br/>- ClaimNo: {furtherClaimNo} 
                     <br/>- วันที่เข้ารักษา: {visitDateTimeL} 
-                    <br/>- VN: {furtherVN}
+                    <br/>- วันที่เกิดอุบัติเหตุ: {accidentDateValue}
+                  {furtherVN ? <><br/>- VN: {furtherVN}</> : <><br /></>}
+                    
                                     
                                     </div> : ""}
 
@@ -2004,6 +2009,7 @@ if(idTypeValue === "NATIONAL_ID"){
                       className="select select-bordered"
                       onChange={handleSelectChange}
                     >
+               
                       <option></option>
                       {/* {console.log(furtherClaim)} */}
                {furtherClaim
@@ -2011,10 +2017,9 @@ if(idTypeValue === "NATIONAL_ID"){
                             (ftc, index) => (
                               <option
                                 key={index}
-                                value={`${ftc.ClaimNo} | ${ftc.FurtherClaimId} | ${ftc.VisitDateTime} | ${ftc.FurtherClaimVN}`}
+                                value={`${ftc.ClaimNo} | ${ftc.FurtherClaimId} | ${ftc.VisitDateTime} | ${ftc.FurtherClaimVN} | ${ftc.AccidentDate}`}
                               >
-                                เลขกรมธรรม์: {ftc.ClaimNo}, วันที่เข้ารักษา:{" "}
-                                {ftc.VisitDateTime.split("T")[0]} VN: {ftc.FurtherClaimVN}
+                                วันที่เกิดอุบัติเหตุ: {ftc.AccidentDate.split("T")[0]}, วันที่เข้ารักษา: {ftc.VisitDateTime.split("T")[0]}, ClaimNo: {ftc.ClaimNo}
                               </option>
                             )
                           )

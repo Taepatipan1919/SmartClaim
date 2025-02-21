@@ -43,7 +43,7 @@ import {
 import { styled } from "@mui/material/styles";
 
 export default function Page({ data }) {
- // console.log(data)
+  // console.log(data)
   const error = {
     response: {
       data: {
@@ -64,8 +64,8 @@ export default function Page({ data }) {
   const [currentDataorderItemz, setCurrentDataorderItemz] = useState("");
   const [currentPageorderItemz, setCurrentPageorderItemz] = useState(1);
   const [countorderItemz, setCountorderItemz] = useState(0);
-
-
+  
+  const [checkedFinalDischarge, setCheckedFinalDischarge] = useState("");
   const [summitEditConcurrentNote, setSummitEditConcurrentNote] = useState("false");
   const dispatch = useDispatch("");
   const InsuranceCode = 13;
@@ -128,8 +128,8 @@ export default function Page({ data }) {
   const [injuryDetails, setInjuryDetails] = useState("");
 
   const [randomNumber, setRandomNumber] = useState('');
-  const [isIPDDischargeValue, setIsIPDDischargeValue] = useState(false);
-
+  const [isIPDDischargeValue, setIsIPDDischargeValue] = useState();
+console.log(isIPDDischargeValue)
   const [newRow, setNewRow] = useState({
     Icd9: "",
     ProcedureName: "",
@@ -197,7 +197,7 @@ export default function Page({ data }) {
         AccidentDate: data.DataTran.Data.AccidentDate,
       AccidentPlaceCode: "",
       WoundDetails: "",
-      IsIPDDischarge: isIPDDischargeValue,
+      IsIPDDischarge: data.DataTran.Data.IsIPDDischarge,
       AccidentInjurySideCode: "",
       AccidentInjuryWoundtypeCode: "",
         PolicyTypeCode: data.DataTran.Data.PolicyTypeCode,
@@ -330,7 +330,7 @@ export default function Page({ data }) {
   }, [data]);
 
   useEffect(() => {
-
+    console.log(PatientInfoData)
     axios
       .post(
         process.env.NEXT_PUBLIC_URL_SV +
@@ -343,7 +343,12 @@ export default function Page({ data }) {
        setCombinedString(response ? `${response.data.Result.VisitInfo.Weight} / ${response.data.Result.VisitInfo.Height}` : "");
 
         setVisit(response.data);
-
+        if(PatientInfoData.PatientInfo.IsIPDDischarge === null || PatientInfoData.PatientInfo.IsIPDDischarge === false){
+         setIsIPDDischargeValue(false)
+        }else{
+          setIsIPDDischargeValue(true)
+        }
+        // console.log(response.data.Result.VisitInfo.IsIPDDischarge)
         
         if(response.data.Result.VisitInfo.OtherInsurer === true){
           setOtherInsurer(true);
@@ -399,7 +404,7 @@ export default function Page({ data }) {
         // }
       });
     
-  }, [data]);
+   }, [data]);
 
   useEffect(() => {
 // console.log(PatientInfoData.PatientInfo.AccidentDate)
@@ -414,7 +419,7 @@ export default function Page({ data }) {
        PatientInfoData
       )
       .then((response) => {
-        // console.log(response.data)
+         console.log(response.data)
          setAccidentDetail(response.data);
 
          if(response.data.Result.AccidentDetailInfo.AccidentDate){
@@ -662,7 +667,7 @@ export default function Page({ data }) {
         PatientInfoData
       )
       .then((response) => {
-        console.log(response.data)
+        // console.log(response.data)
         setDiagnosis(response.data);
       })
       .catch((error) => {
@@ -1205,7 +1210,10 @@ export default function Page({ data }) {
     event.preventDefault();
     let Datevalue="";
 
-    const dscDateTimevalue = dayjs(dscDateTime.$d).format("YYYY-MM-DD");
+    if(dscDateTime){
+      const dscDateTimevalue = dayjs(dscDateTime.$d).format("YYYY-MM-DD");
+
+   
     // console.log(dscDateTimevalue);
     setShowSummitError("");
     setMassSummitError();
@@ -1687,7 +1695,10 @@ if(rows2){
               //     // ถ้ามีข้อผิดพลาดให้ใช้ reject(new Error('Error in Step 3'));
             });
           }
-    
+    }else{
+      setMassSummitError("กรุณากรอก วันที่ออก โรงพยาบาล");
+      setShowSummitError("Error");
+    }
   }
   const IndicationForAdmission = (event) => {
     setAdmissionValue(event.target.value);
@@ -1938,29 +1949,118 @@ if(rows2){
 
     /////////////////////////////////////////////////////////////////////
 
-console.log(isIPDDischargeValue)
-    async function IsIPDDischargeBox() {
-    if(isIPDDischargeValue === false){
-      setIsIPDDischargeValue(true)
-    }else{
+
+     const IsIPDDischargeBox = (even) => {
+      console.log(even.target.checked)
+      setCheckedFinalDischarge(even.target.checked)
+      document.getElementById("ConfrimFinal").showModal();
+    }
+
+
+
+      const CancleFinalDischarge = async () => {
+
+      setCheckedFinalDischarge(false)
       setIsIPDDischargeValue(false)
+
+    
+      dispatch(
+        save({
+          value: "มีข้อมูล",
+          Data: {
+            RefId: data.DataTran.Data.RefId,
+            TransactionNo: data.DataTran.Data.TransactionNo,
+            VN: data.DataTran.Data.VN,
+            InsurerCode: InsuranceCode,
+            ServiceSettingCode: data.DataTran.Data.ServiceSettingCode,
+            IllnessTypeCode: data.DataTran.Data.IllnessTypeCode,
+            SurgeryTypeCode: data.DataTran.Data.SurgeryTypeCode,
+            PolicyTypeCode: data.DataTran.Data.PolicyTypeCode,
+            AccidentDate: data.DataTran.Data.AccidentDate,
+            VisitDateTime: data.DataTran.Data.VisitDateTime,
+            IsIPDDischarge: false,
+            PreauthReferClaimNo: data.DataTran.Data.PreauthReferClaimNo,
+            PreauthReferOcc: data.DataTran.Data.PreauthReferOcc,   
+            FurtherClaimVN: data.DataTran.Data.FurtherClaimVN,
+            ReferenceVN: data.DataTran.Data.ReferenceVN,
+            Visitlocation: data.DataTran.Data.Visitlocation,
+          },
+        })
+      );
+
+      await stepOne();
+      await stepTwo();
+  
+      function stepOne() {
+        setTimeout(() => {
+              router.push("/aia/checkClaimStatus");
+        }, 1000);
+   
+      };
+      function stepTwo() {
+        setTimeout(() => {
+               router.push("/aia/eligible");
+  }, 1000);
+      }
+
+      // document.getElementById("ConfrimFinal").close();
     }
-    await stepOne();
-    await stepTwo();
 
 
-    function stepOne() {
-      setTimeout(() => {
-            router.push("/aia/checkClaimStatus");
-      }, 1000);
- 
-    };
-    function stepTwo() {
-      setTimeout(() => {
-             router.push("/aia/eligible");
-}, 1000);
-    }
+      const ConfrimFinalDischarge = async () => {
+
+    if(checkedFinalDischarge === true){
+      // const isConfirmed = window.confirm("แน่ใจแล้วที่จะ FinalDischarge");
+      // if (isConfirmed) {
+      setIsIPDDischargeValue(true)
+      
+
+      dispatch(
+        save({
+          value: "มีข้อมูล",
+          Data: {
+            RefId: data.DataTran.Data.RefId,
+            TransactionNo: data.DataTran.Data.TransactionNo,
+            VN: data.DataTran.Data.VN,
+            InsurerCode: InsuranceCode,
+            ServiceSettingCode: data.DataTran.Data.ServiceSettingCode,
+            IllnessTypeCode: data.DataTran.Data.IllnessTypeCode,
+            SurgeryTypeCode: data.DataTran.Data.SurgeryTypeCode,
+            PolicyTypeCode: data.DataTran.Data.PolicyTypeCode,
+            AccidentDate: data.DataTran.Data.AccidentDate,
+            VisitDateTime: data.DataTran.Data.VisitDateTime,
+            IsIPDDischarge: true,
+            PreauthReferClaimNo: data.DataTran.Data.PreauthReferClaimNo,
+            PreauthReferOcc: data.DataTran.Data.PreauthReferOcc,   
+            FurtherClaimVN: data.DataTran.Data.FurtherClaimVN,
+            ReferenceVN: data.DataTran.Data.ReferenceVN,
+            Visitlocation: data.DataTran.Data.Visitlocation,
+          },
+        })
+      );
+    
+      await stepOne();
+      await stepTwo();
+  
+      function stepOne() {
+        setTimeout(() => {
+              router.push("/aia/checkClaimStatus");
+        }, 1000);
+   
+      };
+      function stepTwo() {
+        setTimeout(() => {
+               router.push("/aia/eligible");
+  }, 1000);
+      }
+    
+    
+    
+    //   }
+     }
+   
   }
+
   const  handleOtherInsurer = (e) => {
     setOtherInsurer(e.target.value);
   };
@@ -2264,27 +2364,42 @@ console.log(isIPDDischargeValue)
                         onChange={handleOtherInsurer}
                       />
                       <p className="text-left">
-                        &nbsp;ค่าส่วนเกินจากประกันอื่นๆ
+                        &nbsp;ค่าส่วนเกินจากประกันอื่นๆ 
                       </p>
                     </div> 
                   </div>
                   <div className="rounded-md">
-                    {PatientInfoData.PatientInfo.IsIPDDischarge === true ?
-                    "" :
+
                     <div className="flex items-center ">
+                     
+                      {(PatientInfoData.PatientInfo.IsIPDDischarge === false || PatientInfoData.PatientInfo.IsIPDDischarge === null) ?
+                                         <>
                       <input
                         type="checkbox"
                         id="OtherInsurer"
                         name="OtherInsurer"
                         value={isIPDDischargeValue}
                         className="checkbox checkbox-error"
-                        // onChange={IsIPDDischarge}
-                        onClick={() => IsIPDDischargeBox()}
-                      />
+                        onChange={(e) => IsIPDDischargeBox(e)}
+                      /> 
+                      </>
+                      :
+                      <>
+                      <input
+                      type="checkbox"
+                      id="OtherInsurer"
+                      name="OtherInsurer"
+                      value={isIPDDischargeValue}
+                      className="checkbox checkbox-error"
+                      defaultChecked
+                      onChange={(e) => IsIPDDischargeBox(e)}
+                    /> 
+                    </>
+                    }
                       <p className="text-left">
                         &nbsp;FinalDischarge
                       </p>
-                    </div>  }
+                    </div>  
                   </div>
       
                   <div className="rounded-md"> </div>
@@ -2333,7 +2448,7 @@ console.log(isIPDDischargeValue)
                       <CustomTextField
                         id="disabledInput"
                         className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"
-                        label="น้ำหนัก / ส่วนสูง"
+                        label="Weight / Height"
                         defaultValue={combinedString}
                         InputProps={{ readOnly: true }}
                       />
@@ -2390,7 +2505,7 @@ console.log(isIPDDischargeValue)
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                           <DemoItem>
                             <DateTimePicker
-                            label="วันเวลาทีเข้ารับการรักษาเป็นผู้ป่วยใน"
+                            label="ExpectedAdmitDate"
                             slotProps={{
                               openPickerButton: { color: "error" },
                               textField: { focused: true, color: "error" },
@@ -2409,7 +2524,7 @@ console.log(isIPDDischargeValue)
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                           <DemoItem>
                             <DateTimePicker
-                            label="วันเวลาที่ออกจากโรงพยาบาล"
+                            label="DscDateTime"
                             slotProps={{
                               openPickerButton: { color: "error" },
                               textField: { focused: true, color: "error" },
@@ -2521,7 +2636,7 @@ console.log(isIPDDischargeValue)
                       error
                       className="w-full"
                       id="outlined-multiline-static"
-                      label="Diagnosis"
+                      label="Provisnal Diagnosis"
                       name="DxFreeTextText"
                       multiline
                       rows={4}
@@ -2866,6 +2981,11 @@ console.log(isIPDDischargeValue)
                             onChange={AccidentPlace}
                             required
                           >
+                            <MenuItem
+                                    key=""
+                                    value=""
+                                  >
+                                  </MenuItem>
                             {dataaccidentPlace
                               ? dataaccidentPlace.Result.map((acc, index) => (
                                   <MenuItem
@@ -3912,6 +4032,7 @@ console.log(isIPDDischargeValue)
                     //  vitalsign.Result.VitalSignInfo.map(
                          datavitalsign.map(
                         (vts, index) =>
+                          vts.VitalSignEntryDateTime && (
                             <tr key={index} className=" bg-neutral text-sm">
                               <td>
                                 {startIndexvitalsign+ index + 1}
@@ -3983,7 +4104,7 @@ console.log(isIPDDischargeValue)
                               </td>
                             </tr>
                             // )
-                      )
+                      ))
                     ) : (
                      ""
                     )}
@@ -4362,7 +4483,7 @@ console.log(isIPDDischargeValue)
                     {datainvestigation ? (
                       datainvestigation.map(
                         (inv, index) =>
-                          // (inv.InvestigationCode) && (
+                          (inv.InvestigationCode) && (
                             <tr key={index} className=" bg-neutral text-sm">
                               <td>
                               {startIndexvitalsign+ index + 1}
@@ -4413,7 +4534,7 @@ console.log(isIPDDischargeValue)
                                 </div>
                               </td>
                             </tr>
-                                      // )
+                                       )
                                     )
                                   ) : (
                                    ""
@@ -4598,7 +4719,7 @@ console.log(isIPDDischargeValue)
             {/* //////////////////////////////////////////////////////////////////////////// */}
             <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
               <h1 className="font-black text-accent text-3xl ">
-                รายละเอียดค่ารักษาพยาบาล
+                Billing
               </h1>
               <div className="overflow-x-auto">
                 <table className="table  mt-2">
@@ -4686,7 +4807,7 @@ console.log(isIPDDischargeValue)
                                     {/* //////////////////////////////////////////////////////////////////////////// */}
                                     <div className="container mx-auto justify-center border-solid w-full m-auto border-2 border-warning rounded-lg p-4 mt-2">
                   <h1 className="font-black text-accent text-3xl ">
-                  ConcurrentNote
+                  Note
                     <div
                       className="btn btn-secondary text-base-100 text-xl ml-2"
                       onClick={SummitEditCon}
@@ -4741,7 +4862,7 @@ console.log(isIPDDischargeValue)
                                     : 
                         <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
                                       {con.ConcurrentDatetime ? (
-                                        con.ConcurrentDatetime
+                                          dayjs(con.ConcurrentDatetime.$d).format("YYYY-MM-DD")
                                       ) : (
                                         <>&nbsp;</>
                                       )}
@@ -4971,7 +5092,7 @@ console.log(isIPDDischargeValue)
                   <div className="rounded-md "></div>
                   <div className="rounded-md ">&nbsp;</div>
                 </div>
-                {fileList ? (fileList.length >= 1 && dscDateTime && admitDateTime) ? (
+                {/* {fileList ? (fileList.length >= 1 && dscDateTime && admitDateTime) ? ( */}
                     <div className="py-2">
                     <div className="text-right">
                       <button
@@ -4982,7 +5103,7 @@ console.log(isIPDDischargeValue)
                       </button>
                     </div>
                   </div>
-                ) : "" : ""}
+                {/* ) : "" : ""} */}
               </div>
             </div>
           </form>
@@ -4998,6 +5119,52 @@ console.log(isIPDDischargeValue)
         </div>
       )}
 
+
+<dialog id="ConfrimFinal" className="modal text-xl	">
+        <div className="modal-box w-11/12 max-w-5xl">
+          <form method="dialog">
+            {showSummitError === "Error" ? (
+              <div
+                role="alert"
+                className="alert alert-error mt-2 text-base-100"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6 shrink-0 stroke-current"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                <span>{massSummitError}</span>
+              </div>
+            ) : (
+              <>
+                {massSummit ? (
+                  massSummit
+                ) : (
+                  <center>
+                    <h1 className="text-4xl text-error">
+                      ยืนยันที่จะกด FinalDischarge ใช่หรือไม่...
+                    </h1>
+                    <div className="btn btn-success text-base-100 text-xl ml-2 w-64 mt-2"onClick={ConfrimFinalDischarge}>
+                        ยืนยันการกด
+                      </div>
+                      <div className="btn btn-error text-base-100 text-xl ml-2 w-64 mt-2" onClick={CancleFinalDischarge}>
+                        ยกเลิกการกด
+                      </div>
+                  </center>
+                )}
+              </>
+            )}
+          </form>
+        </div>
+      </dialog>
 
 
       <dialog id="my_modal_3" className="modal text-xl	">

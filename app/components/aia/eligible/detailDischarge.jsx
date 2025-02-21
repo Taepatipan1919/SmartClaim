@@ -52,7 +52,6 @@ export default function DetailDischarge({ data }) {
   const [patientInfo, setPatientInfo] = useState({});
   const [patien, setPatien] = useState();
   const [transactionClaimInfo, setTransactionClaimInfo] = useState();
-  const [visit, setVisit] = useState();
   const [fileList, setFileList] = useState("")
   const [massDocError, setMassDocError] = useState("");
   const [showDocError, setShowDocError] = useState("");
@@ -66,6 +65,7 @@ export default function DetailDischarge({ data }) {
   const [rows2, setRows2] = useState("");
   const [indicationForAdmissionCode, setIndicationForAdmissionCode] = useState("");
   useEffect(() => {
+    
     axios
     .post(
       process.env.NEXT_PUBLIC_URL_SV +
@@ -650,7 +650,7 @@ useEffect(() => {
                   </div>
                   <div className="rounded-md mt-2">
                   <div className="flex flex-col">
-                              <label className="text-gray-700 mb-2">Diagnosis</label>
+                              <label className="text-gray-700 mb-2">Provisnal Diagnosis</label>
                                 <textarea
                                     type="text"
                                     defaultValue={visitInfo ? visitInfo.DxFreeText : ""}
@@ -755,7 +755,7 @@ useEffect(() => {
                               <label className="text-gray-700 mb-2">จำนวนวันพักฟื้นหลังการผ่าตัด</label>
                                 <input
                                     type="text"
-                                    defaultValue={visitInfo ? visitInfo.ExpectedDayOfRecovery+" Days" : ""}
+                                    defaultValue={visitInfo ? visitInfo.ExpectedDayOfRecovery ? visitInfo.ExpectedDayOfRecovery+" Days" : "" : ""}
                                     readOnly
                                     className="border-2 border-gray-300 rounded-md px-4 py-2 bg-gray-100"
                                   />
@@ -1764,7 +1764,7 @@ useEffect(() => {
           </div>
            {/* //////////////////////////////////////////////////////////////////////////// */}
  <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
-              <h1 className="font-black text-accent text-3xl ">ConcurNote</h1>
+              <h1 className="font-black text-accent text-3xl ">Note</h1>
               <div className="overflow-x-auto">
  <TableContainer component={Paper} className="mt-2">
                       <Table className="table">
