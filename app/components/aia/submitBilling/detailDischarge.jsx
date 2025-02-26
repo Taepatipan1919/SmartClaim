@@ -1471,7 +1471,7 @@ useEffect(() => {
           </div>
  {/* //////////////////////////////////////////////////////////////////////////// */}
  <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
-              <h1 className="font-black text-accent text-3xl ">รายละเอียดค่ารักษาพยาบาล</h1>
+              <h1 className="font-black text-accent text-3xl ">Billing</h1>
               <div className="overflow-x-auto">
  <TableContainer component={Paper} className="mt-2">
                       <Table className="table">

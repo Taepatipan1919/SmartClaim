@@ -137,22 +137,15 @@ export default function Page({ data }) {
   const [totalApprovedAmount, setTotalApprovedAmount  ] = useState("");
   const [totalExcessAmount, setTotalExcessAmount ] = useState("");
   const [totalSum, setTotalSum] = useState("");
-  // const [fromTotalSum, setFromTotalSum] = useState(false);
+
   const [selectTypeBillingValue, setSelectTypeBillingValue] = useState("");
 
+  const [showModalPro, setShowModalPro] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [showArrowVN, setShowArrowVN] = useState();
   
   const [anesthesiaListValue, setAnesthesiaListValue] = useState("");
   const [anesthesiaListCode, setAnesthesiaListCode] = useState();
-
-
-;
-  const [options, setOptions] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [selectedOption, setSelectedOption] = useState(null);
-
-  // const [isPackageCode, setIsPackageCode] = useState();
 
   
   const [admissionValue, setAdmissionValue] = useState("");
@@ -176,35 +169,38 @@ export default function Page({ data }) {
   const [expectedAdmitDate, setExpectedAdmitDate] = useState(null);
   const [dscDateTime, setDscDateTime] = useState(null);
   const [otherInsurer, setOtherInsurer] = useState("false");
-  const [rows, setRows] = useState([]);
-  const [rowsDia, setRowsDia] = useState([]);
-  const [rows2, setRows2] = useState([]);
+  const [claimStatusCodeProcessing, setClaimStatusCodeProcessing] = useState(false);
+  const [claimStatusCodeProcessingValue, setClaimStatusCodeProcessingValue] = useState("");
+
   const [procedure, setProcedure] = useState("");
   const [causeOfInjuryDetails, setCauseOfInjuryDetails] = useState("");
   const [injuryDetails, setInjuryDetails] = useState("");
 
   const [randomNumber, setRandomNumber] = useState('');
 
+  const [options, setOptions] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [selectedOption, setSelectedOption] = useState(null);
+  const [rowsDia, setRowsDia] = useState([]);
   const [newRowDia, setNewRowDia] = useState({
-    // DxCode: "",
-    // DxName: "",
-    // DxType: "",
-
     ICDD10: "",
     ICDDxCode: "",
     ICDDxId: "",
     label: "",
-    value: "",
   });
-  const [newRow, setNewRow] = useState({
-    Icd9: "",
-    ProcedureName: "",
-    ProcedureDate: "",
-  });
+
+  const [optionsPro, setOptionsPro] = useState([]);
+  const [isLoadingPro, setIsLoadingPro] = useState(false);
+  const [selectedOptionPro, setSelectedOptionPro] = useState(null);
+  const [rowsPro, setRowsPro] = useState([]);
+  const [procedureDate, setProcedureDate] = useState("");
+
+  const [rows2, setRows2] = useState([]);
   const [newRow2, setNewRow2] = useState({
     PreAuthDateTime: dayjs(),
     PreAuthDetail: "",
   });
+
   const [newCauseOfInjuryDetail, setNewCauseOfInjuryDetail] = useState({
     CauseOfInjury: "",
     CommentOfInjury: "",
@@ -361,10 +357,19 @@ export default function Page({ data }) {
       PatientInfoData
       )
       .then((response) => {
-        //  console.log(response.data)
-        if(response.data.Result.ProcedureInfo[0].Icd9){
-          setRows(response.data.Result.ProcedureInfo);
-        }
+      //    console.log(response.data.Result.ProcedureInfo)
+
+
+         if (response.data.Result.ProcedureInfo[0].Icd9) {
+          const formattedOptions = response.data.Result.ProcedureInfo.map((item) => item.Icd9 && ({
+            Icd9: item.Icd9,
+            ProcedureDate: item.ProcedureDate,
+            ProcedureName: item.ProcedureName,
+            label: item.Icd9 + ' - ' + item.ProcedureName, // กำหนดค่า label ที่ต้องการ
+          }));
+          setRowsPro(formattedOptions);
+        } 
+        
      
       })
       .catch((error) => {
@@ -390,11 +395,16 @@ export default function Page({ data }) {
       PatientInfoData
       )
       .then((response) => {
-          console.log(response.data)
-        if(response.data.Result.DiagnosisInfo[0].DxCode){
-          setRowsDia(response.data.Result.DiagnosisInfo);
+          // console.log(response.data)
+          if (response.data.Result.DiagnosisInfo[0].DxCode) {
+        const formattedOptions = response.data.Result.DiagnosisInfo.map((item) => item.DxCode && ({
+          DxCode: item.DxCode,
+          DxName: item.DxName,
+           label: item.DxCode + ' - ' + item.DxName, // กำหนดค่า label ที่ต้องการ
+        }));
+        setRowsDia(formattedOptions);
         }
-     
+
       })
       .catch((error) => {
         console.log(error);
@@ -419,7 +429,7 @@ export default function Page({ data }) {
       PatientInfoData
       )
       .then((response) => {
-        console.log(response.data)
+        // console.log(response.data)
         setDoctor(response.data);
       })
       .catch((error) => {
@@ -611,7 +621,7 @@ export default function Page({ data }) {
       HN: PatientInfoData.PatientInfo.HN,
       }
     }
-    console.log(PatientInfox)
+   // console.log(PatientInfox)
     axios
       .post(
         process.env.NEXT_PUBLIC_URL_PD2 +
@@ -654,7 +664,7 @@ export default function Page({ data }) {
 }, [data]);
 
   useEffect(() => {
-  console.log(PatientInfoData)
+//  console.log(PatientInfoData)
     axios
       .post(
         process.env.NEXT_PUBLIC_URL_SV +
@@ -664,7 +674,7 @@ export default function Page({ data }) {
       )
       .then((response) => {
 
-          console.log(response.data.Result.VisitInfo)
+       //   console.log(response.data.Result.VisitInfo)
         setVisit(response.data);
         setAnesthesiaListValue(response.data.Result.VisitInfo.AnesthesiaList)
         setTotalEstimatedCostx(response.data.Result.VisitInfo.TotalEstimatedCost)
@@ -727,7 +737,7 @@ export default function Page({ data }) {
       )
       .then((response) => {
          setAccidentDetail(response.data);
-         console.log(response.data)
+        //  console.log(response.data)
          const dateValue = dayjs(response.data.Result.AccidentDetailInfo.AccidentDate);
          setAccidentDate(dateValue);
          if(response.data.Result.AccidentDetailInfo.CauseOfInjuryDetail[0].CauseOfInjury  !== ""){
@@ -869,9 +879,18 @@ export default function Page({ data }) {
     setRows2(neweditrow2);
   };
 
-  const handleAddRow = () => {
-    setRows([...rows, newRow]);
-    setNewRow({ Icd9: "", ProcedureName: "", ProcedureDate: "" });
+  const handleAddRowPro = () => {
+    // console.log(selectedOptionPro)
+    // console.log(procedureDate)
+    // console.log(rowsPro)
+    const Data = {
+      ...selectedOptionPro,
+      ProcedureDate: procedureDate,
+    };
+    // console.log(Data)
+    // setRowsPro([...rows, newRow]);
+    setRowsPro([...rowsPro, Data]);
+    setProcedureDate("");
   };
   const handleAddRow2 = () => {
     setRows2([...rows2, newRow2]);
@@ -879,14 +898,14 @@ export default function Page({ data }) {
   };
 /////////////////////////////////
 const handleAddRowDia = () => {
-  // console.log(selectedOption)
-   setRowsDia([selectedOption]);
+//  console.log(selectedOption);
+ // console.log(rowsDia)
+  setRowsDia([...rowsDia, selectedOption]);
   setNewRowDia({ 
     ICDD10: "",
     ICDDxCode: "",
     ICDDxId: "",
     label: "",
-    value: "", 
   });
 };
 const handleDeleteRowDia = (index) => {
@@ -894,9 +913,9 @@ const handleDeleteRowDia = (index) => {
   setRowsDia(newRowsDia);
 };
   ////////////////////////////////
-  const handleDeleteRow = (index) => {
-    const newRows = rows.filter((_, i) => i !== index);
-    setRows(newRows);
+  const handleDeleteRowPro = (index) => {
+    const newRows = rowsPro.filter((_, i) => i !== index);
+    setRowsPro(newRows);
   };
 
   const handleDeleteRow2 = (index) => {
@@ -1091,7 +1110,7 @@ const handleDeleteRowDia = (index) => {
       )
       
       .then((response) => {
-         console.log(response.data)
+      //   console.log(response.data)
          
       })
       .catch((error) => {
@@ -1366,28 +1385,24 @@ const handleChangeListPackage = (event) => {
          //   console.log(`Value: ${value} ถูกต้อง`);
         } else if (value.length <= 8) {
           setTypeBilling(value); // ตั้งค่าค่าที่ป้อนที่มีความยาวไม่เกิน 7 ตัวอักษร
-        //  console.log(`Value: ${value} ถูกต้อง (ยังไม่มีข้อมูลที่ 8 และ 9)`);
         } else {
           setTypeBilling(''); // เคลียร์ค่าในกรณีที่ตัวอักษรที่ 7 ไม่ใช่เครื่องหมายขีดกลาง
           setShowFormError("Error")
         setMassError("Value ไม่ถูกต้อง (ตัวอักษรที่ 7 ต้องเป็นเครื่องหมาย - )");
-          // console.log(`Value: ${value} ไม่ถูกต้อง (ตัวอักษรที่ 7 ต้องเป็นเครื่องหมายขีดกลาง)`);
         }
       } else {
         setTypeBilling(''); // เคลียร์ค่าในกรณีที่ตัวอักษรตั้งแต่ตัวที่ 2 ถึงตัวที่ 6 ไม่ใช่ตัวเลข
         setShowFormError("Error")
         setMassError("Value ไม่ถูกต้อง (ตัวอักษรตั้งแต่ตัวที่ 2 ถึงตัวที่ 6 ต้องเป็นตัวเลข)");
-        // console.log(`Value: ${value} ไม่ถูกต้อง (ตัวอักษรตั้งแต่ตัวที่ 2 ถึงตัวที่ 6 ต้องเป็นตัวเลข)`);
       }
     } else {
       setTypeBilling(''); // เคลียร์ค่าในกรณีที่ตัวอักษรแรกไม่ใช่ I, O, หรือ E
       setShowFormError("Error")
       setMassError("Value ไม่ถูกต้อง (ตัวอักษรแรกต้องเป็น I, O, หรือ E)");
-      // console.log(`Value: ${value} ไม่ถูกต้อง (ตัวอักษรแรกต้องเป็น I, O, หรือ E)`);
     }
 
 
-    console.log(value)
+  //  console.log(value)
       if(value.length === 10){
         const PatientInfox = {
           "PatientInfo" : {
@@ -1402,7 +1417,7 @@ const handleChangeListPackage = (event) => {
           axios
           .post(process.env.NEXT_PUBLIC_URL_PD + process.env.NEXT_PUBLIC_URL_getPreBilling,PatientInfox)
           .then((response) => {
-              console.log(response.data)
+           //   console.log(response.data)
               if(response.data.Result.BillingInfo[0].LocalBillingCode  !== ""){
             setTypeBillingList(response.data)
             setBillingz(response.data.Result.BillingInfo)
@@ -1940,7 +1955,7 @@ axios
 ////////////////////////////////////////////////////////
 const SubmitSumBilling = () => {
   //console.log(itemBillingDetails)
-  // setFromTotalSum(false);
+
 if (itemBillingDetails){
   let sum = 0; 
   itemBillingDetails.forEach((bill) => { 
@@ -2069,8 +2084,8 @@ if(causeOfInjuryDetails.length > 0){
     // console.log('Array has values:', causeOfInjuryDetailsCount);
   }
 } 
-if(rows){
-  ProcedureInfoCount = rows.length;
+if(rowsPro){
+  ProcedureInfoCount = rowsPro.length;
 }   
 if(rowsDia){
   DiagnosisCount = rowsDia.length;
@@ -2198,6 +2213,8 @@ console.log("Start Step 1 Accident")
 
     function stepTwo() {
       console.log("Start Step 2 Procedure")
+      console.log(rowsPro)
+      if(rowsPro[0]){
       return new Promise((resolve, reject) => {
         const PatientInfo = {
           RefId: PatientInfoData.PatientInfo.RefId,
@@ -2206,7 +2223,7 @@ console.log("Start Step 1 Accident")
           HN: PatientInfoData.PatientInfo.HN,
           VN: PatientInfoData.PatientInfo.VN,
           HaveProcedure: HaveProcedureCount,
-          ProcedureInfo: rows,
+          ProcedureInfo: rowsPro,
         };
         console.log(PatientInfo)
         axios
@@ -2236,6 +2253,9 @@ console.log("Start Step 1 Accident")
 
         // ถ้ามีข้อผิดพลาดให้ใช้ reject(new Error('Error in Step 2'));
       });
+    }else{
+      console.log("ไม่ใช่ Pro")
+    }
     }
 
     function stepThree() {
@@ -2537,129 +2557,189 @@ console.log("Start Step 1 Accident")
         };
         setDataToAIA(PatientInfo)
 
-  //        axios
-  // .post(
-  //   process.env.NEXT_PUBLIC_URL_SV +
-  //     process.env.NEXT_PUBLIC_URL_SubmitPreSubmissionToAIA,
-  //     {
-  //       "PatientInfo" : 
-  //         dataToAIA
-  //     }
-  // )
-  // .then((response) => {
-  //   console.log(response.data)
-  //   if (response.data.HTTPStatus.statusCode === 200) {
-  //     console.log("SubmitPreSubmissionToAIA Succ")
-  //     axios
-  //     .post(
-  //       process.env.NEXT_PUBLIC_URL_PD +
-  //         process.env.NEXT_PUBLIC_URL_getcheckclaimstatus,
-  //        PatientInfoData 
-  //     )
-  //     .then((response) => {
-  //       console.log(response.data);
-  //       if (response.data.HTTPStatus.statusCode === 200) {
-  //           console.log("Step 7 getcheckclaimstatus Succ");
+         axios
+  .post(
+    process.env.NEXT_PUBLIC_URL_SV +
+      process.env.NEXT_PUBLIC_URL_SubmitPreSubmissionToAIA,
+      {
+        PatientInfo
+      }
+  )
+  .then((response) => {
+    console.log(response.data)
 
+      
+    
+    if (response.data.HTTPStatus.statusCode === 200) {
+      setClaimStatusCodeProcessingValue(response.data.Result.InsuranceData.MessageTh)
+      console.log("SubmitPreSubmissionToAIA Succ")
+      axios
+      .post(
+        process.env.NEXT_PUBLIC_URL_PD +
+          process.env.NEXT_PUBLIC_URL_getcheckclaimstatus,
+         PatientInfoData 
+      )
+      .then((response) => {
+         console.log(response.data);
+        if (response.data.HTTPStatus.statusCode === 200) {
+  //           console.log("Step 7 getcheckclaimstatus Succ");
+  if(response.data.Result.InsuranceData.ClaimStatusCode === "03"){
+    setClaimStatusCodeProcessing(true)
+  }
 
 
           document.getElementById("my_modal_3").close();
           document.getElementById("my_modal_4").showModal();
            resolve("Step 7 completed");
 
-        // }else{
-        //         setMassSummitError("Error");
-        //         setShowSummitError("Error");
-        // }
-      // })
-      // .catch((error) => {
-      //   console.log(error);
-      //   setMassSummitError("Error");
-      //   setShowSummitError("Error");
-      // });
+        }else{
+                setMassSummitError("Error");
+                setShowSummitError("Error");
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        setMassSummitError("Error getcheckclaimstatus");
+        setShowSummitError("Error");
+      });
       
-    })
-  }  
+      
+    }else{
+      setMassSummitError(response.data.HTTPStatus.message);
+      setShowSummitError("Error");
+    }
+  })
+    .catch((error) => {
+        console.log(error);
+        setMassSummitError("Error SubmitPreSubmissionToAIA");
+        setShowSummitError("Error");
+      });
+  }) 
+  }
   }
 }
-const SubmitPreSubmissionToAIAByUR = () => {
+
+  async function SubmitPreSubmissionToAIAByUR() {
+
+  const dataToAIAx = {
+    ...dataToAIA,
+    IsAdmission: false,
+  };
+  axios
+  .post(
+    process.env.NEXT_PUBLIC_URL_SV +
+      process.env.NEXT_PUBLIC_URL_UpdateIsAdmission,
+      {
+        "PatientInfo" : 
+          dataToAIAx
+      }
+  )
+  .then((response) => {
+    console.log(response.data)
+  })
+  .catch((error) => {
+    console.log(error);
+    setMassSummitError("Error");
+    setShowSummitError("Error");
+  });
+
+
   document.getElementById("my_modal_4").close();
-  console.log("Start SubmitPreSubmissionToAIAByUR")
-  document.getElementById("my_modal_5").showModal();
-  console.log(dataToAIA)
+  try {
+    await stepOne();
+    await stepTwo();
+  } catch (error) {
+    console.log(error);
+  };
 
-
-  //        axios
-  // .post(
-  //   process.env.NEXT_PUBLIC_URL_SV +
-  //     process.env.NEXT_PUBLIC_URL_SubmitPreSubmissionToAIA,
-  //     {
-  //       "PatientInfo" : 
-  //         dataToAIA
-  //     }
-  // )
-  // .then((response) => {
-  //   console.log(response.data)
-    //       if (response.data.HTTPStatus.statusCode === 200) {
-            // document.getElementById("my_modal_5").close();
-
-            // setShowModal(true);
-            // setTimeout(() => {
-      
-            //   setShowModal(false);
-            //   router.push("/aia/checkClaimStatus");
-            // }, 5000);
-          // }else{
-        //         setMassSummitError("Error");
-        //         setShowSummitError("Error");
-          // }
-        // })
-      // .catch((error) => {
-      //   console.log(error);
-      //   setMassSummitError("Error");
-      //   setShowSummitError("Error");
-      // });
+  function stepOne() {
+    setShowModalPro(true)
+  };
+  function stepTwo() {
+    setTimeout(() => {
+      router.push("/aia/checkClaimStatus");
+    }   , 10000);
+  }   
 }
 
 
-const SubmitPreSubmissionToAIAByAdmission = () => {
+
+  async function SubmitPreSubmissionToAIAByAdmission() {
+    const dataToAIAx = {
+      ...dataToAIA,
+      IsAdmission: true,
+    };
+    console.log(dataToAIAx)
+    axios
+    .post(
+      process.env.NEXT_PUBLIC_URL_SV +
+        process.env.NEXT_PUBLIC_URL_UpdateIsAdmission,
+        {
+          "PatientInfo" : 
+            dataToAIAx
+        }
+    )
+    .then((response) => {
+      console.log(response.data)
+    })
+    .catch((error) => {
+      console.log(error);
+      setMassSummitError("Error");
+      setShowSummitError("Error");
+    });
   document.getElementById("my_modal_4").close();
- console.log("Start SubmitPreSubmissionToAIAByAdmission")
+ if(claimStatusCodeProcessing === true){
+  try {
+    await stepOne();
+    await stepTwo();
+  } catch (error) {
+    console.log(error);
+  };
+
+  function stepOne() {
+    setShowModalPro(true)
+  };
+  function stepTwo() {
+    setTimeout(() => {
+      router.push("/aia/checkClaimStatus");
+    }   , 10000);
+  }    
+ }else{
  document.getElementById("my_modal_5").showModal();
      console.log(dataToAIA)
 
 
-    //        axios
-  // .post(
-  //   process.env.NEXT_PUBLIC_URL_SV +
-  //     process.env.NEXT_PUBLIC_URL_SubmitPreSubmissionToAIA,
-  //     {
-  //       "PatientInfo" : 
-  //         dataToAIA
-  //     }
-  // )
-  // .then((response) => {
-  //   console.log(response.data)
-    //       if (response.data.HTTPStatus.statusCode === 200) {
-            // document.getElementById("my_modal_5").close();
+  axios
+  .post(
+    process.env.NEXT_PUBLIC_URL_SV +
+      process.env.NEXT_PUBLIC_URL_SubmitPreSubmissionToAIA,
+      {
+        "PatientInfo" : 
+          dataToAIA
+      }
+  )
+  .then((response) => {
+    console.log(response.data)
+          if (response.data.HTTPStatus.statusCode === 200) {
+            document.getElementById("my_modal_5").close();
 
-            // setShowModal(true);
-            // setTimeout(() => {
+            setShowModal(true);
+            setTimeout(() => {
       
-            //   setShowModal(false);
-            //   router.push("/aia/checkClaimStatus");
-            // }, 5000);
-          // }else{
-        //         setMassSummitError("Error");
-        //         setShowSummitError("Error");
-          // }
-        // })
-      // .catch((error) => {
-      //   console.log(error);
-      //   setMassSummitError("Error");
-      //   setShowSummitError("Error");
-      // });
-
+              setShowModal(false);
+              router.push("/aia/checkClaimStatus");
+            }, 5000);
+          }else{
+                setMassSummitError("Error");
+                setShowSummitError("Error");
+          }
+        })
+      .catch((error) => {
+        console.log(error);
+        setMassSummitError("Error");
+        setShowSummitError("Error");
+      });
+  }
 }
 
 
@@ -2677,24 +2757,21 @@ const SubmitSelectTypeBilling = (event) => {
   const ICD10CodeValue = async  (event, value) => {
     
 
-    if (value.length >= 3) {
+    if (value.length >= 10) {
       setIsLoading(true);
       try {
          axios
          .get(process.env.NEXT_PUBLIC_URL_SV +process.env.NEXT_PUBLIC_URL_getICDDx+value)
   .then((response) => {
-    // console.log(response.data)
+  // console.log(response.data)
 
 
         // แปลงผลลัพธ์เป็นรูปแบบที่สามารถใช้กับ react-select
         const formattedOptions = response.data.Result.ICDDxInfo.map((item) => item.ICDDxCode && ({
-          ICDDxId: item.ICDDxId,
-          ICDDxCode: item.ICDDxCode,
-          ICDD10: item.ICDDx,
-          label: item.ICDDxCode + ' - ' + item.ICDDx, // กำหนดค่า label ที่ต้องการ
-          value: item.ICDDxId,
+          DxCode: item.ICDDxCode,
+          DxName: item.ICDDx,
+           label: item.ICDDxCode + ' - ' + item.ICDDx,
         }));
-        // console.log(formattedOptions)
         setOptions(formattedOptions);
 
         })
@@ -2712,9 +2789,53 @@ const SubmitSelectTypeBilling = (event) => {
       setOptions([]);
     }
   };
+
+  const ICD9CodeValuePro = async  (event, value) => {
+    
+
+    if (value.length >= 4) {
+   
+      setIsLoadingPro(true);
+      try {
+         axios
+         .get(process.env.NEXT_PUBLIC_URL_SV +process.env.NEXT_PUBLIC_URL_getICD9+value)
+  .then((response) => {
+    // console.log(response.data.Result.ICD9Info)
+
+
+       // แปลงผลลัพธ์เป็นรูปแบบที่สามารถใช้กับ react-select
+        const formattedOptions = response.data.Result.ICD9Info.map((item) => item.ICD9Code && ({
+           Icd9: item.ICD9Code,
+           ProcedureDate: "",
+           ProcedureName: item.ICD9Desc,
+           label: item.ICD9Code + ' - ' + item.ICD9Desc, // กำหนดค่า label ที่ต้องการ
+        }));
+        setOptionsPro(formattedOptions);
+
+        })
+      .catch((error) => {
+        console.log(error);
+        setMassSummitError("Error");
+        setShowSummitError("Error");
+      });
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setIsLoadingPro(false);
+      }
+    } else {
+      setOptionsPro([]);
+    }
+  };
+
+
+
   const handleChangeICD10 = (event, newValue) => {
     setSelectedOption(newValue);
-    console.log('Selected option:', newValue);
+   // console.log('Selected option:', newValue);
+  };
+  const handleChangeICD9 = (event, newValue) => {
+    setSelectedOptionPro(newValue);
   };
   const Cancel = () => {
     setShowFormError();
@@ -3877,26 +3998,27 @@ const SubmitSelectTypeBilling = (event) => {
                            ICD10 - ชื่อของการวินิจฉัยโรค
                             </h1>
                           </TableCell>
-                          <TableCell></TableCell>
+                          <TableCell>
+                          </TableCell>
                         </TableRow>
                       </TableHead>
                       <TableBody>
-                        {console.log(rowsDia)}
+                        {/* {console.log(rowsDia)} */}
                         {rowsDia
                           ? rowsDia.map(
                               (dia, index) =>
-                                dia.ICDDxCode && (
+                                dia  && (
                                   <TableRow
                                     key={index}
                                     className=" bg-neutral text-sm"
                                   >
-                                    <TableCell>{dia.ICDDxCode ? index + 1 : ""}</TableCell>
+                                    <TableCell>{dia.DxCode ? index + 1 : ""}</TableCell>
                                     <TableCell>
                                       <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                                        {dia.ICDDxCode === "" ? (
+                                        {dia.DxCode === "" ? (
                                           <>&nbsp;</>
                                         ) : <>
-                                          {dia.ICDDxCode} - {dia.ICDD10}
+                                          {dia.DxCode} - {dia.DxName}
                                         </>}
                                       </div>
                                     </TableCell>
@@ -3922,7 +4044,6 @@ const SubmitSelectTypeBilling = (event) => {
                               <TableCell>
                                 <FaCirclePlus className="text-xl" />
                               </TableCell>
-
                               <TableCell>
                 <Autocomplete
                 options={options}
@@ -3976,9 +4097,7 @@ const SubmitSelectTypeBilling = (event) => {
                   </TableContainer>
                 </div>
            {/* //////////////////////////////////////////////////////////////////////////// */}
-                       {/* //////////////////////////////////////////////////////////////////////////// */}
-            {/* {procedure ? (
-              PatientInfoData.PatientInfo.SurgeryTypeCode === "Y" ? ( */}
+           {/* //////////////////////////////////////////////////////////////////////////// */}
                 <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-4 border-warning rounded-lg p-4 mt-2">
                   <h1 className="font-black text-accent text-3xl ">
                     Procedure
@@ -4022,12 +4141,7 @@ const SubmitSelectTypeBilling = (event) => {
                           <TableCell className="w-2"></TableCell>
                           <TableCell>
                             <h1 className="text-base-100  text-sm w-1/5 text-center">
-                              Icd9
-                            </h1>
-                          </TableCell>
-                          <TableCell>
-                            <h1 className="text-base-100  text-sm w-3/5 text-center">
-                              ชื่อของหัตถการหรือการผ่าตัด
+                              Icd9 - ชื่อของหัตถการหรือการผ่าตัด
                             </h1>
                           </TableCell>
                           <TableCell>
@@ -4039,46 +4153,43 @@ const SubmitSelectTypeBilling = (event) => {
                         </TableRow>
                       </TableHead>
                       <TableBody>
-                        {rows
-                          ? rows.map(
+                        {/* {console.log(rowsPro)} */}
+                        {rowsPro
+                          ? rowsPro.map(
                               (proce, index) =>
-                                proce.Icd9  && (
+                                proce  && (
                                   <TableRow
                                     key={index}
                                     className=" bg-neutral text-sm"
                                   >
                                     <TableCell>{proce.Icd9 ? index + 1 : ""}</TableCell>
                                     <TableCell>
+  
                                       <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
                                         {proce.Icd9 === "" ? (
                                           <>&nbsp;</>
-                                        ) : (
-                                          proce.Icd9
-                                        )}
-                                      </div>
+                                        ) : 
+                                        <>
+                                          {proce.Icd9} - {proce.ProcedureName}
+                                        </>
+                                        }
+                                      </div> 
                                     </TableCell>
                                     <TableCell>
                                       <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                                        {proce.ProcedureName === "" ? (
-                                          <>&nbsp;</>
-                                        ) : (
-                                          proce.ProcedureName
-                                        )}
-                                      </div>
-                                    </TableCell>
-                                    <TableCell>
-                                      <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                                        {proce.ProcedureDate === "" ? (
+                                        {
+                                        proce.ProcedureDate === "" ? (
                                           <>&nbsp;</>
                                         ) : (
                                           proce.ProcedureDate
-                                        )}
+                                        )
+                                        }
                                       </div>
                                     </TableCell>
                                     <TableCell>
                                       {summitEditProcedure === "true" ? (
                                         <div
-                                          onClick={() => handleDeleteRow(index)}
+                                          onClick={() => handleDeleteRowPro(index)}
                                           className="btn btn-error text-base-100 text-xl"
                                         >
                                           <FaCircleMinus />
@@ -4099,55 +4210,40 @@ const SubmitSelectTypeBilling = (event) => {
                               </TableCell>
 
                               <TableCell>
-                                <TextField
-                                  className="bg-base-100 w-full"
-                                  value={newRow.Icd9}
-                                  onChange={(e) =>
-                                    setNewRow({
-                                      ...newRow,
-                                      Icd9: e.target.value,
-                                    })
-                                  }
-                                  placeholder="Icd9"
-                                  //  required
-                                />
-                              </TableCell>
-                              <TableCell>
-                                <TextField
-                                  className="bg-base-100 w-full"
-                                  value={newRow.ProcedureName}
-                                  onChange={(e) =>
-                                    setNewRow({
-                                      ...newRow,
-                                      ProcedureName: e.target.value,
-                                    })
-                                  }
-                                  placeholder="ProcedureName"
-                                  //   required
-                                />
+             <Autocomplete
+                options={optionsPro}
+                loading={isLoadingPro}
+                onInputChange={ICD9CodeValuePro}
+                onChange={handleChangeICD9}
+                getOptionLabel={(option) => option.label || ""}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="พิมพ์เพื่อค้นหา..."
+                    variant="outlined"
+                  />
+                )}
+                noOptionsText="ไม่มีผลลัพธ์ที่ค้นหา"
+               />
                               </TableCell>
                               <TableCell>
                                 <TextField
                                   className="bg-base-100 w-full"
                                   type="date"
-                                  value={newRow.ProcedureDate}
+                                  value={procedureDate}
                                   onChange={(e) =>
-                                    setNewRow({
-                                      ...newRow,
-                                      ProcedureDate: e.target.value,
-                                    })
+                                    setProcedureDate(e.target.value)
                                   }
                                   placeholder="ProcedureDate"
                                   //  required
                                 />
                               </TableCell>
-                              {newRow.Icd9 &&
-                              newRow.ProcedureName &&
-                              newRow.ProcedureDate ? (
+                              {selectedOptionPro &&
+                              procedureDate ? (
                                 <>
                                   <TableCell>
                                     <div
-                                      onClick={handleAddRow}
+                                      onClick={handleAddRowPro}
                                       className="btn btn-success text-base-100 text-xl"
                                     >
                                       <FaCirclePlus />
@@ -4172,13 +4268,6 @@ const SubmitSelectTypeBilling = (event) => {
                     </div>
                   </TableContainer>
                 </div>
-               {/* ) : (
-                 ""
-               )
-            ) : (
-              ""
-            )
-            }   */}
             {/* //////////////////////////////////////////////////////////////////////////// */}
             {/* //////////////////////////////////////////////////////////////////////////// */}
             {/* {accidentDetail ? (
@@ -4920,7 +5009,6 @@ const SubmitSelectTypeBilling = (event) => {
                           </TableRow>
                         </TableHead>
                         <TableBody>
-                          {/* {console.log(itemBillingDetails)} */}
                           {itemBillingDetails
                             ? itemBillingDetails.map(
                                 (cause, index) =>
@@ -5021,7 +5109,6 @@ const SubmitSelectTypeBilling = (event) => {
                                 <TableCell>   
                     <select  className="select select-bordered w-full mt-2"                
 onChange={(e) => { const selectedType = JSON.parse(e.target.value); 
-  // console.log(selectedType);
   setNewItemBillingCheckBalance({ ...newItemBillingCheckBalance, 
     LocalBillingCode: selectedType.LocalBillingCode, 
     LocalBillingName: selectedType.LocalBillingName, 
@@ -5292,7 +5379,7 @@ onChange={(e) => { const selectedType = JSON.parse(e.target.value);
                     className="btn btn-success text-base-100 hover:text-success hover:bg-base-100 w-1/6 ml-2"
                     onClick={handleUpload}
                   >
-                    <FaCloudUploadAlt className="size-6" />
+                    {/* <FaCloudUploadAlt className="size-6" /> */} Upload File
                   </div>
                 </div>
                 <div className="label">
@@ -5383,10 +5470,10 @@ onChange={(e) => { const selectedType = JSON.parse(e.target.value);
                   <div className="rounded-md ">&nbsp;</div>
                 </div>
 
-                    <div className="py-2">
-                    <div className="text-right">
+                  <div className="py-2">
+                    <div className="text-center">
                       <button
-                        className="btn btn-error text-base-100 hover:bg-base-100 hover:text-error ml-2"
+                        className="btn btn-error text-base-100 hover:bg-base-100 hover:text-error w-64 text-4xl"
                         type="submit"
                       >
                         SUBMIT
@@ -5468,7 +5555,6 @@ onChange={(e) => { const selectedType = JSON.parse(e.target.value);
                       <th></th>
                     </tr>
                   </thead>
-                  {/* {console.log(listClaimForm)}  */}
                   <tbody className="bg-white divide-y divide-gray-200">
                     {listClaimForm ? (
                       listClaimForm.Result.ClaimFormListInfo.map((FormList, index) => (
@@ -5608,9 +5694,6 @@ onChange={(e) => { const selectedType = JSON.parse(e.target.value);
       <dialog id="my_modal_4" className="modal text-xl	">
         <div className="modal-box w-11/12 max-w-5xl">
           <form method="dialog">
-          <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
-                  ✕
-                </button>
             {showSummitError === "Error" ? (
               <div
                 role="alert"
@@ -5638,7 +5721,7 @@ onChange={(e) => { const selectedType = JSON.parse(e.target.value);
                 ) : (
                   <center>
                     <h1 className="text-4xl text-primary">
-                      แผนกผู้ส่งเคลมประกัน
+                    เข้ารับการรักษาเป็นผู้ป่วยในเลยไหม
                     </h1>
                     <div className="btn btn-error text-base-100 hover:bg-base-100 hover:text-error text-xl ml-2 mt-2 break-all"onClick={SubmitPreSubmissionToAIAByAdmission}>
                     เข้ารับการรักษาเป็นผู้ป่วยใน
@@ -5762,57 +5845,6 @@ onChange={(e) => { const selectedType = JSON.parse(e.target.value);
                                 <div className="grid gap-2 sm:grid-cols-4 w-full mt-2">
                                 {selectTypeBillingValue === "1" ? 
                                 <>
-                                       {/* <div className="rounded-md">
-                                          <Box
-                                            sx={{
-                                              backgroundColor: "#e5e7eb",
-                                              padding: 0,
-                                              borderRadius: 0,
-                                            }}
-                                          >
-                                            <CustomTextField
-                                              id="disabledInput"
-                                              label="Fullname"
-                                              defaultValue={typeBillingList ? typeBillingList.Result.VisitInfo.FullName : ""}
-                                              className="w-full text-black rounded disabled:text-black disabled:bg-gray-300 cursor-not-allowed"
-                                              InputProps={{ readOnly: true }}
-                                            />
-                                          </Box>
-                                        </div>
-                                        <div className="rounded-md">
-                                          <Box
-                                            sx={{
-                                              backgroundColor: "#e5e7eb",
-                                              padding: 0,
-                                              borderRadius: 0,
-                                            }}
-                                          >
-                                            <CustomTextField
-                                              id="disabledInput"
-                                              label="HN"
-                                              defaultValue={typeBillingList ? typeBillingList.Result.VisitInfo.HN : ""}
-                                              className="w-full text-black rounded disabled:text-black disabled:bg-gray-300 cursor-not-allowed"
-                                              InputProps={{ readOnly: true }}
-                                            />
-                                          </Box>
-                                        </div>
-                                        <div className="rounded-md">
-                                          <Box
-                                            sx={{
-                                              backgroundColor: "#e5e7eb",
-                                              padding: 0,
-                                              borderRadius: 0,
-                                            }}
-                                          >
-                                            <CustomTextField
-                                              id="disabledInput"
-                                              label="VisitDateTime"
-                                              defaultValue={typeBillingList ? typeBillingList.Result.VisitInfo.VisitDateTime : ""}
-                                              className="w-full text-black rounded disabled:text-black disabled:bg-gray-300 cursor-not-allowed"
-                                              InputProps={{ readOnly: true }}
-                                            />
-                                          </Box>
-                                        </div>  */}
                                             <div className="rounded-md">
                                           <Box
                                             sx={{
@@ -5948,7 +5980,23 @@ onChange={(e) => { const selectedType = JSON.parse(e.target.value);
           <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
             <div className="bg-white p-8 rounded shadow-lg">
               <h2 className="text-4xl font-bold mb-4 text-primary">
-                ลงทะเบียนใช้สิทธิ์สำเร็จ
+                ลงทะเบียนช้สิทธิ์สำเร็จ
+              </h2>
+
+            </div>
+          </div>
+        </>
+      ) : (
+        ""
+      )}
+
+
+      {showModalPro ? (
+        <>
+          <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
+            <div className="bg-white p-8 rounded shadow-lg">
+              <h2 className="text-3xl font-bold mb-4 text-error">
+                {claimStatusCodeProcessingValue}
               </h2>
 
             </div>

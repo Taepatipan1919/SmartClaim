@@ -4039,7 +4039,7 @@ if(rows){
                     className="btn btn-success text-base-100 hover:text-success hover:bg-base-100 w-1/6 ml-2"
                     onClick={handleUpload}
                   >
-                    <FaCloudUploadAlt className="size-6" />
+                    {/* <FaCloudUploadAlt className="size-6" /> */} Upload File
                   </div>
                 </div>
                 <div className="label">
@@ -4131,13 +4131,13 @@ if(rows){
                 </div>
                 {fileList ? fileList.length === 0 ? null : (
                   <div className="py-2">
-                    <div className="text-right">
-                      <button
-                        className="btn btn-primary text-base-100 hover:bg-base-100 hover:text-primary"
-                        type="submit"
-                      >
-                        ส่งการเรียกร้องค่าสินไหม
-                      </button>
+                    <div className="text-center">
+                             <button
+                               className="btn btn-error text-base-100 hover:bg-base-100 hover:text-error w-64 text-4xl"
+                               type="submit"
+                             >
+                               SUBMIT
+                             </button>
                     </div>
                   </div>
                 ) : ""}
@@ -4358,7 +4358,7 @@ if(rows){
           <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
             <div className="bg-white p-8 rounded shadow-lg">
               <h2 className="text-4xl font-bold mb-4 text-primary">
-                ส่งเคลมเรียบร้อยแล้ว
+                ลงทะเบียนช้สิทธิ์สำเร็จ
               </h2>
 
             </div>

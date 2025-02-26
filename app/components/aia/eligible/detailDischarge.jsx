@@ -25,8 +25,8 @@ export default function DetailDischarge({ data }) {
     },
   };
     //  console.log(data)
-    const InsuranceCode = 13;
- const  PatientInfo= {
+  const InsuranceCode = 13;
+  const  PatientInfo= {
     InsurerCode: InsuranceCode, 
    RefId: data.RefId,
     TransactionNo: data.TransactionNo,
@@ -47,8 +47,8 @@ export default function DetailDischarge({ data }) {
     SurgeryTypeCode:  data.SurgeryTypeCode
     }
    
-     const [massError, setMassError] = useState("");
-     const [showFormError, setShowFormError] = useState("");
+  const [massError, setMassError] = useState("");
+  const [showFormError, setShowFormError] = useState("");
   const [patientInfo, setPatientInfo] = useState({});
   const [patien, setPatien] = useState();
   const [transactionClaimInfo, setTransactionClaimInfo] = useState();
@@ -186,7 +186,6 @@ export default function DetailDischarge({ data }) {
       .post(
         process.env.NEXT_PUBLIC_URL_PD +
           process.env.NEXT_PUBLIC_URL_getIPDDischargeConcurNote,
-          
           {
             "PatientInfo" : PatientInfo
           }
@@ -271,7 +270,7 @@ const   PatientInfo = {
   }
   // console.log(PatientInfo)
     axios
-  .post(process.env.NEXT_PUBLIC_URL_SV + process.env.NEXT_PUBLIC_URL_ReviewOPDDischarge,
+  .post(process.env.NEXT_PUBLIC_URL_SV + process.env.NEXT_PUBLIC_URL_ReviewIPDDischarge,
     {
       PatientInfo
     }
@@ -279,7 +278,7 @@ const   PatientInfo = {
   )
   .then((response) => {
     setTransactionClaimInfo(response.data.Result.InsuranceData);
-    // console.log(response.data.Result.InsuranceData)
+   //  console.log(response.data.Result)
   })
   .catch((error) => {
    // console.error("Error", err)
@@ -1654,7 +1653,7 @@ useEffect(() => {
           </div>
  {/* //////////////////////////////////////////////////////////////////////////// */}
  <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
-              <h1 className="font-black text-accent text-3xl ">รายละเอียดค่ารักษาพยาบาล</h1>
+              <h1 className="font-black text-accent text-3xl ">Billing</h1>
               <div className="overflow-x-auto">
  <TableContainer component={Paper} className="mt-2">
                       <Table className="table">

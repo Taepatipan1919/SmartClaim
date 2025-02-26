@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
-import { Box, TextField } from "@mui/material";
+import { Box, TextField , Autocomplete  } from "@mui/material";
 import { ImBin } from "react-icons/im";
 import { IoIosDocument } from "react-icons/io";
 import { useRouter } from "next/navigation";
@@ -122,19 +122,26 @@ export default function Page({ data }) {
   const [an, setAn] = useState("");
   const [expectedLos, setExpectedLos] = useState("");
   const [otherInsurer, setOtherInsurer] = useState(false);
-  const [rows, setRows] = useState("");
+
   const [procedure, setProcedure] = useState("");
   const [causeOfInjuryDetails, setCauseOfInjuryDetails] = useState("");
   const [injuryDetails, setInjuryDetails] = useState("");
 
   const [randomNumber, setRandomNumber] = useState('');
   const [isIPDDischargeValue, setIsIPDDischargeValue] = useState();
-console.log(isIPDDischargeValue)
-  const [newRow, setNewRow] = useState({
-    Icd9: "",
-    ProcedureName: "",
-    ProcedureDate: "",
-  });
+
+
+
+  const [optionsPro, setOptionsPro] = useState([]);
+  const [isLoadingPro, setIsLoadingPro] = useState(false);
+  const [selectedOptionPro, setSelectedOptionPro] = useState(null);
+  const [rowsPro, setRowsPro] = useState([]);
+  const [procedureDate, setProcedureDate] = useState("");
+
+
+
+
+
 
   const [newCauseOfInjuryDetail, setNewCauseOfInjuryDetail] = useState({
     CauseOfInjury: "",
@@ -691,12 +698,18 @@ console.log(isIPDDischargeValue)
         PatientInfoData
       )
       .then((response) => {
-        //    console.log(response.data)
-        setProcedure(response.data);
-        if (response.data.Result.ProcedureInfo[0].Icd9) {
-          setRows(response.data.Result.ProcedureInfo);
-        }
-        //console.log(rows);
+          console.log(response.data.Result)
+
+
+      if (response.data.Result.ProcedureInfo[0].Icd9) {
+        const formattedOptions = response.data.Result.ProcedureInfo.map((item) => item.Icd9 && ({
+          Icd9: item.Icd9,
+          ProcedureDate: item.ProcedureDate,
+          ProcedureName: item.ProcedureName,
+          label: item.Icd9 + ' - ' + item.ProcedureName, // กำหนดค่า label ที่ต้องการ
+        }));
+        setRowsPro(formattedOptions);
+      } 
       })
       .catch((error) => {
       //  console.log(error);
@@ -714,18 +727,63 @@ console.log(isIPDDischargeValue)
 
 
 
-  const handleAddRow = () => {
-    setRows([...rows, newRow]);
-    setNewRow({ Icd9: "", ProcedureName: "", ProcedureDate: "" });
+  const handleAddRowPro = () => {
+    // console.log(selectedOptionPro)
+    // console.log(procedureDate)
+    // console.log(rowsPro)
+    const Data = {
+      ...selectedOptionPro,
+      ProcedureDate: procedureDate,
+    };
+    // console.log(Data)
+    // setRowsPro([...rows, newRow]);
+    setRowsPro([...rowsPro, Data]);
+    setProcedureDate("");
   };
-
-
   ////////////////////////////////
-  const handleDeleteRow = (index) => {
-    const newRows = rows.filter((_, i) => i !== index);
-    setRows(newRows);
+  const handleDeleteRowPro = (index) => {
+    const newRows = rowsPro.filter((_, i) => i !== index);
+    setRowsPro(newRows);
   };
+  const ICD9CodeValuePro = async  (event, value) => {
+    
 
+    if (value.length >= 3) {
+      setIsLoadingPro(true);
+      try {
+         axios
+         .get(process.env.NEXT_PUBLIC_URL_SV +process.env.NEXT_PUBLIC_URL_getICD9+value)
+  .then((response) => {
+    // console.log(response.data.Result.ICD9Info)
+
+
+       // แปลงผลลัพธ์เป็นรูปแบบที่สามารถใช้กับ react-select
+        const formattedOptions = response.data.Result.ICD9Info.map((item) => item.ICD9Code && ({
+           Icd9: item.ICD9Code,
+           ProcedureDate: "",
+           ProcedureName: item.ICD9Desc,
+           label: item.ICD9Code + ' - ' + item.ICD9Desc, // กำหนดค่า label ที่ต้องการ
+        }));
+        setOptionsPro(formattedOptions);
+
+        })
+      .catch((error) => {
+        console.log(error);
+        setMassSummitError("Error");
+        setShowSummitError("Error");
+      });
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setIsLoadingPro(false);
+      }
+    } else {
+      setOptionsPro([]);
+    }
+  };
+  const handleChangeICD9 = (event, newValue) => {
+    setSelectedOptionPro(newValue);
+  };
 
   ////////////////////////////////
   const handleAddCauseOfInjuryDetail = () => {
@@ -1000,7 +1058,44 @@ console.log(isIPDDischargeValue)
         }
       });
   }, [data]);
+  useEffect(() => {
 
+    axios
+      .post(
+        process.env.NEXT_PUBLIC_URL_PD +
+          process.env.NEXT_PUBLIC_URL_getPreAuthProcedure,
+      //  Data
+      PatientInfoData
+      )
+      .then((response) => {
+      //    console.log(response.data.Result.ProcedureInfo)
+
+
+         if (response.data.Result.ProcedureInfo[0].Icd9) {
+          const formattedOptions = response.data.Result.ProcedureInfo.map((item) => item.Icd9 && ({
+            Icd9: item.Icd9,
+            ProcedureDate: item.ProcedureDate,
+            ProcedureName: item.ProcedureName,
+            label: item.Icd9 + ' - ' + item.ProcedureName, // กำหนดค่า label ที่ต้องการ
+          }));
+          setRowsPro(formattedOptions);
+        } 
+        
+     
+      })
+      .catch((error) => {
+        console.log(error);
+        try {
+          const ErrorMass = error.config.url;
+          const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+          setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
+          setShowFormError("Error");
+        } catch (error) {
+          setMassError(error);
+          setShowFormError("Error");
+        }
+      });
+  }, [data]);
   useEffect(() => {
     axios
       .post(
@@ -1208,9 +1303,17 @@ console.log(isIPDDischargeValue)
   async function Claim(event) {
     
     event.preventDefault();
+    
     let Datevalue="";
 
-    if(dscDateTime){
+
+
+
+    if (admitDateTime === null){
+      alert("กรุณากรอก ExpectedAdmitDate");
+    }else if(dscDateTime === null){
+      alert("กรุณากรอก DscDateTime");
+    }else if(dscDateTime){
       const dscDateTimevalue = dayjs(dscDateTime.$d).format("YYYY-MM-DD");
 
    
@@ -1300,8 +1403,8 @@ if(causeOfInjuryDetails.length > 0){
     console.log('Array has values:', causeOfInjuryDetailsCount);
   }
 } 
-if(rows){
-  ProcedureInfoCount = rows.length;
+if(rowsPro){
+  ProcedureInfoCount = rowsPro.length;
 }   
 if(rows2){
   HaveConcurNoteCount = rows2.length;
@@ -1414,7 +1517,7 @@ if(rows2){
                 HN: PatientInfoData.PatientInfo.HN,
                 VN: PatientInfoData.PatientInfo.VN,
                 HaveProcedure: HaveProcedureCount,
-                ProcedureInfo: rows,
+                ProcedureInfo: rowsPro,
               };
               console.log(PatientInfo)
               axios
@@ -1695,9 +1798,6 @@ if(rows2){
               //     // ถ้ามีข้อผิดพลาดให้ใช้ reject(new Error('Error in Step 3'));
             });
           }
-    }else{
-      setMassSummitError("กรุณากรอก วันที่ออก โรงพยาบาล");
-      setShowSummitError("Error");
     }
   }
   const IndicationForAdmission = (event) => {
@@ -2575,6 +2675,7 @@ if(rows2){
                 label="IndicationForAdmission"
                 onChange={IndicationForAdmission}
               >
+                <MenuItem key="" value=""></MenuItem>
                 {indicationForAdmissionCode
                   ? indicationForAdmissionCode.Result.map((code, index) => (
                       <MenuItem key={index} value={code.ifacode}>
@@ -4259,9 +4360,7 @@ if(rows2){
             </div>
              {/* //////////////////////////////////////////////////////////////////////////// */}
             {/* //////////////////////////////////////////////////////////////////////////// */}
-            {/* {procedure ? ( 
-              PatientInfoData.PatientInfo.SurgeryTypeCode === "Y" ? (*/}
-                <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
+            <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-4 border-warning rounded-lg p-4 mt-2">
                   <h1 className="font-black text-accent text-3xl ">
                     Procedure
                     <div
@@ -4272,18 +4371,18 @@ if(rows2){
                     </div>
                   </h1>
                   <div className="grid gap-4 sm:grid-cols-4 w-full mt-4">
-                  <div className="rounded-md mt-2">
-              <FormControl className="w-full">
+                  <FormControl className="w-full">
                 <InputLabel id="demo-simple-select-label">
-                ชนิดของการดมยาสลบ
+                Anesthesia
                 </InputLabel>
                 <Select
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
                 value={anesthesiaListValue}
-                label="ชนิดของการดมยาสลบ"
+                label="Anesthesia"
                 onChange={AnesthesiaList}
                 >
+                  <MenuItem key="" value=""></MenuItem>
                 {anesthesiaListCode
                 ? anesthesiaListCode.Result.map((code, index) => (
                     <MenuItem key={index} value={code.aneslistcode}>
@@ -4291,13 +4390,11 @@ if(rows2){
                     </MenuItem>
                   ))
                 :    <MenuItem>
+                Loading...
                 </MenuItem>
                 }
                 </Select>
                 </FormControl>
-
-
-                </div>
                   </div>
                   <TableContainer component={Paper} className="mt-2">
                     <Table className="table">
@@ -4306,12 +4403,7 @@ if(rows2){
                           <TableCell className="w-2"></TableCell>
                           <TableCell>
                             <h1 className="text-base-100  text-sm w-1/5 text-center">
-                              Icd 9 Code ของหัตถการหรือการผ่าตัด
-                            </h1>
-                          </TableCell>
-                          <TableCell>
-                            <h1 className="text-base-100  text-sm w-3/5 text-center">
-                              ชื่อของหัตถการหรือการผ่าตัด
+                              Icd9 - ชื่อของหัตถการหรือการผ่าตัด
                             </h1>
                           </TableCell>
                           <TableCell>
@@ -4323,46 +4415,43 @@ if(rows2){
                         </TableRow>
                       </TableHead>
                       <TableBody>
-                        {rows
-                          ? rows.map(
+                        {/* {console.log(rowsPro)} */}
+                        {rowsPro
+                          ? rowsPro.map(
                               (proce, index) =>
-                                proce.Icd9  && (
+                                proce  && (
                                   <TableRow
                                     key={index}
                                     className=" bg-neutral text-sm"
                                   >
-                                    <TableCell>{index + 1}</TableCell>
+                                    <TableCell>{proce.Icd9 ? index + 1 : ""}</TableCell>
                                     <TableCell>
+  
                                       <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
                                         {proce.Icd9 === "" ? (
                                           <>&nbsp;</>
-                                        ) : (
-                                          proce.Icd9
-                                        )}
-                                      </div>
+                                        ) : 
+                                        <>
+                                          {proce.Icd9} - {proce.ProcedureName}
+                                        </>
+                                        }
+                                      </div> 
                                     </TableCell>
                                     <TableCell>
                                       <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                                        {proce.ProcedureName === "" ? (
-                                          <>&nbsp;</>
-                                        ) : (
-                                          proce.ProcedureName
-                                        )}
-                                      </div>
-                                    </TableCell>
-                                    <TableCell>
-                                      <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                                        {proce.ProcedureDate === "" ? (
+                                        {
+                                        proce.ProcedureDate === "" ? (
                                           <>&nbsp;</>
                                         ) : (
                                           proce.ProcedureDate
-                                        )}
+                                        )
+                                        }
                                       </div>
                                     </TableCell>
                                     <TableCell>
                                       {summitEditProcedure === "true" ? (
                                         <div
-                                          onClick={() => handleDeleteRow(index)}
+                                          onClick={() => handleDeleteRowPro(index)}
                                           className="btn btn-error text-base-100 text-xl"
                                         >
                                           <FaCircleMinus />
@@ -4383,55 +4472,40 @@ if(rows2){
                               </TableCell>
 
                               <TableCell>
-                                <TextField
-                                  className="bg-base-100 w-full"
-                                  value={newRow.Icd9}
-                                  onChange={(e) =>
-                                    setNewRow({
-                                      ...newRow,
-                                      Icd9: e.target.value,
-                                    })
-                                  }
-                                  placeholder="Icd9"
-                                  //  required
-                                />
-                              </TableCell>
-                              <TableCell>
-                                <TextField
-                                  className="bg-base-100 w-full"
-                                  value={newRow.ProcedureName}
-                                  onChange={(e) =>
-                                    setNewRow({
-                                      ...newRow,
-                                      ProcedureName: e.target.value,
-                                    })
-                                  }
-                                  placeholder="ProcedureName"
-                                  //   required
-                                />
+             <Autocomplete
+                options={optionsPro}
+                loading={isLoadingPro}
+                onInputChange={ICD9CodeValuePro}
+                onChange={handleChangeICD9}
+                getOptionLabel={(option) => option.label || ""}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="พิมพ์เพื่อค้นหา..."
+                    variant="outlined"
+                  />
+                )}
+                noOptionsText="ไม่มีผลลัพธ์ที่ค้นหา"
+               />
                               </TableCell>
                               <TableCell>
                                 <TextField
                                   className="bg-base-100 w-full"
                                   type="date"
-                                  value={newRow.ProcedureDate}
+                                  value={procedureDate}
                                   onChange={(e) =>
-                                    setNewRow({
-                                      ...newRow,
-                                      ProcedureDate: e.target.value,
-                                    })
+                                    setProcedureDate(e.target.value)
                                   }
                                   placeholder="ProcedureDate"
                                   //  required
                                 />
                               </TableCell>
-                              {newRow.Icd9 &&
-                              newRow.ProcedureName &&
-                              newRow.ProcedureDate ? (
+                              {selectedOptionPro &&
+                              procedureDate ? (
                                 <>
                                   <TableCell>
                                     <div
-                                      onClick={handleAddRow}
+                                      onClick={handleAddRowPro}
                                       className="btn btn-success text-base-100 text-xl"
                                     >
                                       <FaCirclePlus />
@@ -4456,12 +4530,6 @@ if(rows2){
                     </div>
                   </TableContainer>
                 </div>
-            {/*     ) : (
-                ""
-              )
-          ) : (
-              ""
-            )} */}
             {/* //////////////////////////////////////////////////////////////////////////// */}
             <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
               <h1 className="font-black text-accent text-3xl ">
@@ -5002,7 +5070,7 @@ if(rows2){
                     className="btn btn-success text-base-100 hover:text-success hover:bg-base-100 w-1/6 ml-2"
                     onClick={handleUpload}
                   >
-                    <FaCloudUploadAlt className="size-6" />
+                    {/* <FaCloudUploadAlt className="size-6" /> */} Upload File
                   </div>
                 </div>
                 <div className="label">
@@ -5092,18 +5160,16 @@ if(rows2){
                   <div className="rounded-md "></div>
                   <div className="rounded-md ">&nbsp;</div>
                 </div>
-                {/* {fileList ? (fileList.length >= 1 && dscDateTime && admitDateTime) ? ( */}
-                    <div className="py-2">
-                    <div className="text-right">
+                  <div className="py-2">
+                    <div className="text-center">
                       <button
-                        className="btn btn-primary text-base-100 hover:bg-base-100 hover:text-primary"
+                        className="btn btn-error text-base-100 hover:bg-base-100 hover:text-error w-64 text-4xl"
                         type="submit"
                       >
-                        ส่งการเรียกร้องค่าสินไหม
+                        SUBMIT
                       </button>
                     </div>
                   </div>
-                {/* ) : "" : ""} */}
               </div>
             </div>
           </form>
@@ -5216,7 +5282,7 @@ if(rows2){
           <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
             <div className="bg-white p-8 rounded shadow-lg">
               <h2 className="text-4xl font-bold mb-4 text-primary">
-                ส่งเคลมเรียบร้อยแล้ว
+              ลงทะเบียนช้สิทธิ์สำเร็จ
               </h2>
 
             </div>

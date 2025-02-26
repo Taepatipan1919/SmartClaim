@@ -46,8 +46,10 @@ export default function checkData() {
   const [base64, setBase64] = useState("");
   const [itemBillingDetails, setItemBillingDetails] = useState("");
   const [detailData, setDetailData] = useState("");
+  const [showDetailData, setShowDetailData] = useState(false);
   const [listBilling, setListBilling] = useState();
   const dispatch = useDispatch();
+  const [billValue, setBillValue] = useState("ทั้งหมด")
   const [selectData, setSelectData] = useState("");
   const [postData, setPostData] = useState("");
   const [listClaimForm, setListClaimForm] = useState();
@@ -247,7 +249,9 @@ export default function checkData() {
   const type = (event) => {
     setServiceValue(event.target.value);
   };
-
+  const bill = (event) => {
+    setBillValue(event.target.value);
+  };
   const DelectSearch = () => {
     setNumberValue();
     setFromValue(null);
@@ -891,94 +895,6 @@ export default function checkData() {
       .then((response) => {
         console.log(response.data);
 
-        if (response.data.HTTPStatus.statusCode === 200) {
-          //Processing  กำลังพิจารณา Processing
-          console.log(data.ClaimStatusDesc);
-          console.log(response.data.Result.InsuranceData.ClaimStatus);
-          if (data.ServiceSettingCode === "PRE") {
-            if (
-              data.ClaimStatusDesc === "Processing" &&
-              (response.data.Result.InsuranceData.ClaimStatus === "Approve" ||
-                response.data.Result.InsuranceData.ClaimStatus === "Approved")
-            ) {
-              const PatientInfox = {
-                PatientInfo: {
-                  RefId: data.RefId,
-                  TransactionNo: data.TransactionNo,
-                  InsurerCode: response.data.Result.InsuranceData.InsurerCode,
-                  HN: data.HN,
-                  VN: data.VN,
-                  PID: data.PID,
-                  PassportNumber: data.PassportNumber,
-                  GivenNameTH: data.GivenNameTH,
-                  SurnameTH: data.SurnameTH,
-                  DateOfBirth: "",
-                },
-              };
-              console.log(PatientInfox);
-              axios
-                .post(
-                  process.env.NEXT_PUBLIC_URL_PD +
-                    process.env.NEXT_PUBLIC_URL_checkeligiblePreAdmission,
-
-                  PatientInfox
-                )
-                .then((response) => {
-                  //  console.log(response.data);
-
-                  if (response.data) {
-                    console.log(response.data);
-                    if (response.data.HTTPStatus.statusCode === 200) {
-                      console.log("checkeligiblePreAdmission Succ");
-
-                      setStatusNew((prevData) => ({
-                        ...prevData,
-                        InsurerCode:
-                          response.data.Result.InsuranceData.InsurerCode,
-                        BatchNumber:
-                          response.data.Result.InsuranceData.BatchNumber,
-                        ClaimStatus:
-                          response.data.Result.InsuranceData.ClaimStatus,
-                        ClaimStatusDesc:
-                          response.data.Result.InsuranceData.ClaimStatusDesc,
-                        TotalApproveAmount:
-                          response.data.Result.InsuranceData.TotalApproveAmount,
-                        PaymentDate:
-                          response.data.Result.InsuranceData.PaymentDate,
-                        InvoiceNumber:
-                          response.data.Result.InsuranceData.InvoiceNumber,
-                        RefId: response.data.Result.InsuranceData.RefId,
-                        TransactionNo:
-                          response.data.Result.InsuranceData.TransactionNo,
-                      }));
-                    } else {
-                      setShowFormError("Error");
-                      setMassError(response.data.HTTPStatus.error);
-                    }
-                  }
-                })
-                .catch((error) => {
-                  console.log(error);
-                  setMassError("Error");
-                  setShowFormError("Error");
-                });
-            } else {
-              setStatusNew((prevData) => ({
-                ...prevData,
-                InsurerCode: response.data.Result.InsuranceData.InsurerCode,
-                BatchNumber: response.data.Result.InsuranceData.BatchNumber,
-                ClaimStatus: response.data.Result.InsuranceData.ClaimStatus,
-                ClaimStatusDesc:
-                  response.data.Result.InsuranceData.ClaimStatusDesc,
-                TotalApproveAmount:
-                  response.data.Result.InsuranceData.TotalApproveAmount,
-                PaymentDate: response.data.Result.InsuranceData.PaymentDate,
-                InvoiceNumber: response.data.Result.InsuranceData.InvoiceNumber,
-                RefId: response.data.Result.InsuranceData.RefId,
-                TransactionNo: response.data.Result.InsuranceData.TransactionNo,
-              }));
-            }
-          } else {
             setStatusNew((prevData) => ({
               ...prevData,
               InsurerCode: response.data.Result.InsuranceData.InsurerCode,
@@ -993,11 +909,7 @@ export default function checkData() {
               RefId: response.data.Result.InsuranceData.RefId,
               TransactionNo: response.data.Result.InsuranceData.TransactionNo,
             }));
-          }
-        } else {
-          setShowFormError("Error");
-          setMassError(response.data.HTTPStatus.error);
-        }
+       
       })
       .catch((error) => {
         console.log(error);
@@ -1189,70 +1101,49 @@ export default function checkData() {
         HN: "",
         VN: "",
       };
-      // axios
-      //   .post(
-      //     process.env.NEXT_PUBLIC_URL_PD +
-      //       process.env.NEXT_PUBLIC_URL_getretrievepreauthlist,
-      //     {
-      //       PatientInfo,
-      //     }
-      //   )
-      //   .then((response) => {
-      //     console.log(response.data);
-      //     if (response.data.HTTPStatus.statusCode === 200) {
-      //       setPreAuthTransactionList(response.data);
+       axios
+         .post(
+           process.env.NEXT_PUBLIC_URL_PD +
+             process.env.NEXT_PUBLIC_URL_getretrievepreauthlist,
+           {
+             PatientInfo,
+           }
+         )
+         .then((response) => {
+           console.log(response.data);
+           if (response.data.HTTPStatus.statusCode === 200) {
+             setPreAuthTransactionList(response.data);
             document.getElementById("waitting").showModal();
-        //   } else {
-        //     setShowFormError("Error");
-        //     setMassError(response.data.HTTPStatus.message);
-        //   }
-        // })
-        // .catch((error) => {
-        //   console.log(error);
-        //   try {
-        //     const ErrorMass = error.config.url;
-        //     const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
-        //     setMassError(
-        //       error.code + " - " + error.message + " - " + ErrorMass2
-        //     );
-        //     setShowFormError("Error");
-        //   } catch (error) {
-        //     setMassError(error.response.data.HTTPStatus.message);
-        //     setShowFormError("Error");
-        //   }
-        // });
+           } else {
+            setShowFormError("Error");
+            setMassError(response.data.HTTPStatus.message);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+          try {
+            const ErrorMass = error.config.url;
+            const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+            setMassError(
+              error.code + " - " + error.message + " - " + ErrorMass2
+            );
+            setShowFormError("Error");
+          } catch (error) {
+            setMassError(error.response.data.HTTPStatus.message);
+            setShowFormError("Error");
+          }
+        });
     } else {
       router.push("/aia/eligible");
     }
   };
   const Detail3 = (data) => {
-    console.log(data);
+    setShowDetailData(false)
+    setDetailData("")
+    // console.log(data);
     setShowFormError();
-    //  const [RefId, TransactionNo, PID, PassportNumber, HN, VN, InvoiceNumber,PolicyTypeCode, IdType, IllnessTypeCode, ServiceSettingCode, SurgeryTypeCode, FurtherClaimNo, FurtherClaimId, AccidentDate, VisitDateTime] = data.split(" | ");
-    setDetailData(
-      data
-      //   {
-      //   RefId: RefId,
-      //   TransactionNo: TransactionNo,
-      //   HN: HN,
-      //   VN: VN,
-      //   GivenNameEN: "",
-      //   GivenNameTH: "",
-      //   IllnessType: "",
-      //   SurnameEN: "",
-      //   SurnameTH: "",
-      //   TitleEN: "",
-      //   TitleTH: "",
-      //   VisitDateTime: VisitDateTime,
-      //   IdType : IdType,
-      //   PID: PID,
-      //   PassportNumber: PassportNumber,
-      //   SurgeryTypeCode: "",
-      //   FurtherClaimNo: "",
-      //   FurtherClaimId: "",
-      //   DateOfBirth: "",
-      // }
-    );
+    setDetailData(data);
+    setShowDetailData(true)
   };
 
   const DocumentBase64 = (data) => {
@@ -2004,29 +1895,11 @@ export default function checkData() {
           ) : (
             ""
           )}
-          {/* {showFormCancel === "Cancel" ? (
-            <div
-              role="alert"
-              className="alert alert-success mt-2 text-base-100"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6 shrink-0 stroke-current"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              <span>{massCancel}</span>
-            </div>
-          ) : (
-            ""
-          )} */}
+ {patientUpdate ? (patientUpdate.PatientInfo.ServiceSettingCode === "PRE" ?
+( 
+<div role="tablist" className="tabs tabs-lifted ">
+    <input type="radio" name="my_tabs_2" role="tab"  className="tab w-[500px] text-sm inline-flex space-x-2 whitespace-nowrap" aria-label="รอการส่งเคลม"     defaultChecked />
+      <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6">
 
           <table className="table mt-2">
             <thead className="bg-info text-base-100 text-center text-sm">
@@ -2060,20 +1933,16 @@ export default function checkData() {
                   Amount
                 </th>
                 <th>
-                  {/* <h1 className="text-base-100 text-2xl flex justify-center" onClick={RefreshAll}>
-                    <LuRefreshCw />
-                  </h1> */}
                 </th>
                 <th></th>
               </tr>
             </thead>
             <tbody>
-              {/* {console.log(statusNew)} */}
               {postData ? (
-                // postData.HTTPStatus.statusCode === 200 ? (
                 datax.map(
                   (bill, index) =>
-                    (bill.VisitDate || bill.HN) !== "" && (
+                    // (bill.VisitDate || bill.HN) !== "" && (
+                      ((bill.VisitDate || bill.HN) !== "" && bill.IsAdmission === null) && (
                       <tr className="hover text-center" key={index}>
                         <th>{startIndex + index + 1}</th>
                         <td className="whitespace-nowrap">{bill.VisitDate}</td>
@@ -2218,9 +2087,6 @@ export default function checkData() {
                           </div>
                         </td>
                         <th className="whitespace-nowrap">
-                          {/* {console.log(bill)} 
-                          {console.log(statusNew)} */}
-
                           {bill.TotalBillAmount
                             ? parseFloat(bill.TotalBillAmount).toLocaleString(
                                 "en-US",
@@ -2232,7 +2098,6 @@ export default function checkData() {
                             : ""}
                         </th>
                         <th>
-                          {/* parseFloat(bill.TotalApprovedAmount).toLocaleString("en-US", {minimumFractionDigits: 2,maximumFractionDigits: 2,}) */}
                           {bill.TotalApprovedAmount
                             ? statusNew
                               ? bill.TransactionNo === statusNew.TransactionNo
@@ -2277,8 +2142,7 @@ export default function checkData() {
                             bill.ClaimStatusDesc !== "Cancelled to AIA" &&
                             bill.ClaimStatusDesc !== "Cancelled" &&
                             bill.ClaimStatusDesc !== "Reversed" &&
-                            bill.ClaimStatusDesc !== "waitting for discharge" &&
-                            bill.ClaimNo ? (
+                            bill.ClaimStatusDesc !== "waitting for discharge" ? (
                               <>
                                 <div className="tooltip " data-tip="รีเฟรช">
                                   <h1
@@ -2441,9 +2305,1246 @@ export default function checkData() {
                     )
                 )
               ) : (
-                // ) : (
-                //   ""
-                // )
+                <tr>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                </tr>
+              )}
+            </tbody>
+          </table>
+  </div>
+  <input type="radio" name="my_tabs_2" role="tab"  className="tab w-[500px] text-sm inline-flex space-x-2 whitespace-nowrap" aria-label="Admission"      />
+      <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6">
+
+          <table className="table mt-2">
+            <thead className="bg-info text-base-100 text-center text-sm">
+              <tr>
+                <th></th>
+                <th>Visit Date</th>
+                <th>Full Name</th>
+                <th>
+                  HN <br /> VN
+                </th>
+                {notShowLoc === true ? "" : <th>Location</th>}
+                <th>ClaimNo</th>
+                <th>
+                  Invoicenumber <br />
+                  BatchNumber
+                </th>
+                <th className="w-40 ">Status</th>
+                <th>
+                  Total
+                  <br />
+                  Billamount
+                </th>
+                <th>
+                  Approved
+                  <br />
+                  Amount
+                </th>
+                <th>
+                  Excess
+                  <br />
+                  Amount
+                </th>
+                <th>
+                </th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {postData ? (
+                datax.map(
+                  (bill, index) =>
+                    ((bill.VisitDate || bill.HN) !== "" && bill.IsAdmission === true) && (
+                      <tr className="hover text-center" key={index}>
+                        <th>{startIndex + index + 1}</th>
+                        <td className="whitespace-nowrap">{bill.VisitDate}</td>
+                        <td className="whitespace-nowrap">
+                          {bill.TitleTH} {bill.GivenNameTH} {bill.SurnameTH}
+                          <br /> ( {bill.ServiceSettingCode} -{" "}
+                          {illnessType
+                            ? illnessType.Result.map((ill) =>
+                                ill.illnesstypecode === bill.IllnessTypeCode ? (
+                                  <> {ill.illnesstypedesc} </>
+                                ) : (
+                                  ""
+                                )
+                              )
+                            : ""}{" "}
+                          )
+                        </td>
+                        <td className="whitespace-nowrap">
+                          {bill.HN ? bill.HN : "-"} <br />{" "}
+                          {bill.VN ? bill.VN : "-"}
+                        </td>
+                        {notShowLoc === true ? (
+                          ""
+                        ) : (
+                          <td className="">{bill.VisitLocation}</td>
+                        )}
+                        <td className="whitespace-nowrap">
+                          {bill.ClaimNo ? bill.ClaimNo : "-"}
+                        </td>
+                        <td className="whitespace-nowrap">
+                          {bill.InvoiceNumber ? bill.InvoiceNumber : "-"} <br />
+                          {statusNew
+                            ? bill.TransactionNo === statusNew.TransactionNo
+                              ? statusNew.BatchNumber
+                                ? statusNew.BatchNumber
+                                : "-"
+                              : bill.BatchNumber
+                              ? bill.BatchNumber
+                              : "-"
+                            : "Loading..."}
+                        </td>
+                        <td>
+                          <div className="grid gap-1 sm:grid-cols-1 w-40 break-all">
+                            {statusNew ? (
+                              bill.TransactionNo === statusNew.TransactionNo ? (
+                                statusNew.ClaimStatusDesc ? (
+                                  statusNew.ClaimStatus !== "Cancelled" &&
+                                  statusNew.ClaimStatus !==
+                                    "Cancelled to AIA" &&
+                                  statusNew.ClaimStatus !== "Reversed" &&
+                                  statusNew.ClaimStatus !== "Decline" ? (
+                                    statusNew.ClaimStatus === "Approved" ||
+                                    statusNew.ClaimStatus === "Settle" ? (
+                                      <a className="bg-info text-base-100 rounded-full px-3 py-2 w-full border-2">
+                                        {statusNew.ClaimStatusDesc}
+                                      </a>
+                                    ) : bill.ClaimStatusDesc_EN === "Approve" ||
+                                      bill.ClaimStatusDesc_EN === "Received" ||
+                                      bill.ClaimStatusDesc_EN === "Pending" ||
+                                      bill.ClaimStatusDesc_EN ===
+                                        "Processing" ? (
+                                      bill.ClaimStatusDesc_EN === "Pending" ? (
+                                        <a className="bg-accent text-base-100 rounded-full px-3 py-2 w-full">
+                                          {bill.ClaimStatusDesc_TH}
+                                        </a>
+                                      ) : (
+                                        <a className="bg-success text-base-100 rounded-full px-3 py-2 w-full">
+                                          {bill.ClaimStatusDesc_TH}
+                                        </a>
+                                      )
+                                    ) : (
+                                      <a className="bg-warning rounded-full px-3 py-2 w-full">
+                                        {bill.ClaimStatusDesc_TH}
+                                      </a>
+                                    )
+                                  ) : (
+                                    <a className="bg-error text-base-100 rounded-full px-3 py-2 w-full">
+                                      {statusNew.ClaimStatusDesc}
+                                    </a>
+                                  )
+                                ) : (
+                                  ""
+                                )
+                              ) : bill.ClaimStatusDesc ? (
+                                bill.ClaimStatusDesc_EN !== "Cancelled" &&
+                                bill.ClaimStatusDesc_EN !==
+                                  "Cancelled to AIA" &&
+                                bill.ClaimStatusDesc_EN !== "Reversed" &&
+                                bill.ClaimStatusDesc_EN !== "Decline" ? (
+                                  bill.ClaimStatusDesc_EN === "Approved" ||
+                                  bill.ClaimStatusDesc_EN === "Settle" ? (
+                                    <a className="bg-info text-base-100 rounded-full px-3 py-2 w-full">
+                                      {bill.ClaimStatusDesc_TH}
+                                    </a>
+                                  ) : bill.ClaimStatusDesc_EN === "Approve" ||
+                                    bill.ClaimStatusDesc_EN === "Received" ||
+                                    bill.ClaimStatusDesc_EN === "Pending" ||
+                                    bill.ClaimStatusDesc_EN === "AddDoc" ||
+                                    bill.ClaimStatusDesc_EN === "Processing" ? (
+                                    bill.ClaimStatusDesc_EN === "Pending" ? (
+                                      <a className="bg-accent text-base-100 rounded-full px-3 py-2 w-full">
+                                        {bill.ClaimStatusDesc_TH}
+                                      </a>
+                                    ) : (
+                                      <a className="bg-success text-base-100 rounded-full px-3 py-2 w-full">
+                                        {bill.ClaimStatusDesc_TH}
+                                      </a>
+                                    )
+                                  ) : (
+                                    <a className="bg-warning  rounded-full px-3 py-2 w-full">
+                                      {bill.ClaimStatusDesc_TH}
+                                    </a>
+                                  )
+                                ) : (
+                                  <a className="bg-error text-base-100 rounded-full px-3 py-2 w-full">
+                                    {bill.ClaimStatusDesc_TH}
+                                  </a>
+                                )
+                              ) : (
+                                ""
+                              )
+                            ) : (
+                              "Loading..."
+                            )}
+
+                            {bill.FurtherClaimNo || bill.FurtherClaimId ? (
+                              <a className="rounded-full px-3 py-2 w-full">
+                                ( แบบต่อเนื่อง )
+                              </a>
+                            ) : (
+                              ""
+                            )}
+                            {bill.AccidentDate ||
+                            bill.IllnessTypeCode === "ACC" ||
+                            bill.IllnessTypeCode === "ER" ? (
+                              <a className="rounded-full px-3 py-2 w-full">
+                                ( อุบัติเหตุ )
+                              </a>
+                            ) : (
+                              ""
+                            )}
+                          </div>
+                        </td>
+                        <th className="whitespace-nowrap">
+                          {bill.TotalBillAmount
+                            ? parseFloat(bill.TotalBillAmount).toLocaleString(
+                                "en-US",
+                                {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                                }
+                              )
+                            : ""}
+                        </th>
+                        <th>
+                          {bill.TotalApprovedAmount
+                            ? statusNew
+                              ? bill.TransactionNo === statusNew.TransactionNo
+                                ? statusNew.TotalApproveAmount
+                                  ? parseFloat(
+                                      statusNew.TotalApproveAmount
+                                    ).toLocaleString("en-US", {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 2,
+                                    })
+                                  : parseFloat(
+                                      bill.TotalApprovedAmount
+                                    ).toLocaleString("en-US", {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 2,
+                                    })
+                                : bill.TotalApprovedAmount == null
+                                ? ""
+                                : parseFloat(
+                                    bill.TotalApprovedAmount
+                                  ).toLocaleString("en-US", {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2,
+                                  })
+                              : ""
+                            : ""}
+                        </th>
+
+                        <th>
+                          {bill.TotalExcessAmount
+                            ? parseFloat(bill.TotalExcessAmount).toLocaleString(
+                                "en-US",
+                                {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                                }
+                              )
+                            : ""}
+                        </th>
+                        <td>
+                          {bill.RefId ? (
+                            bill.ClaimStatusDesc !== "Cancelled to AIA" &&
+                            bill.ClaimStatusDesc !== "Cancelled" &&
+                            bill.ClaimStatusDesc !== "Reversed" &&
+                            bill.ClaimStatusDesc !== "waitting for discharge" ? (
+                              <>
+                                <div className="tooltip " data-tip="รีเฟรช">
+                                  <h1
+                                    className="text-success text-2xl"
+                                    onClick={() => Refresh(bill)}
+                                  >
+                                    <LuRefreshCw />
+                                  </h1>
+                                </div>
+                                {/* <br/> */}
+                              </>
+                            ) : (
+                              ""
+                            )
+                          ) : (
+                            ""
+                          )}
+
+                          {bill.RefId ? (
+                            bill.BatchNumber && bill.IsIPDDischarge ? (
+                              <div className="tooltip" data-tip="ข้อมูลส่งเคลม">
+                                <h1
+                                  className="text-error text-2xl"
+                                  onClick={() => Detail3(bill)}
+                                >
+                                  <IoDocumentText />
+                                </h1>
+                              </div>
+                            ) : bill.ClaimStatusDesc === "Approve" ||
+                              (bill.ClaimStatusDesc === "Processing" &&
+                                bill.ServiceSettingCode !== "PRE") ||
+                              bill.ClaimStatusDesc === "Received" ||
+                              bill.ClaimStatusDesc ===
+                                "waitting for discharge" ||
+                              bill.ClaimStatusDesc === "Pending" ? (
+                              bill.IsIPDDischarge === false ||
+                              bill.IsIPDDischarge === null ? (
+                                <>
+                                  <div
+                                    className="tooltip"
+                                    data-tip="ข้อมูลส่งเคลม"
+                                  >
+                                    {bill.ServiceSettingCode === "OPD" ? (
+                                      <h1
+                                        className="text-primary text-2xl"
+                                        onClick={() => Detail(bill)}
+                                      >
+                                        <IoDocumentText />
+                                      </h1>
+                                    ) : bill.ClaimStatusDesc !== "Approve" ? (
+                                      <h1
+                                        className="text-primary text-2xl"
+                                        onClick={() => Detail2(bill)}
+                                      >
+                                        <IoDocumentText />
+                                      </h1>
+                                    ) : (
+                                      <div
+                                        className="tooltip"
+                                        data-tip="ข้อมูลส่งเคลม"
+                                      >
+                                        <h1
+                                          className="text-error text-2xl"
+                                          onClick={() => Detail3(bill)}
+                                        >
+                                          <IoDocumentText />
+                                        </h1>
+                                      </div>
+                                    )}
+                                  </div>
+                                </>
+                              ) : (
+                                <>
+                                  <div
+                                    className="tooltip"
+                                    data-tip="ข้อมูลส่งเคลม"
+                                  >
+                                    <h1
+                                      className="text-error text-2xl"
+                                      onClick={() => Detail3(bill)}
+                                    >
+                                      <IoDocumentText />
+                                    </h1>
+                                  </div>
+                                </>
+                              )
+                            ) : (
+                              ""
+                            )
+                          ) : (
+                            ""
+                          )}
+
+                          <div className="tooltip" data-tip="ดู เอกสารทั้งหมด">
+                            <h1
+                              className="text-primary text-2xl"
+                              onClick={() => DocumentList(bill)}
+                            >
+                              <HiDocumentSearch />
+                            </h1>
+                          </div>
+                        </td>
+                        <td>
+                          {bill.RefId && bill.IsIPDDischarge !== true ? (
+                            bill.ClaimStatusDesc === "Approve" ||
+                            bill.ClaimStatusDesc === "Pending" ||
+                            bill.ClaimStatusDesc === "Received" ? (
+                              bill.BatchNumber ? (
+                                ""
+                              ) : bill.ServiceSettingCode === "OPD" ? (
+                                <>
+                                  <button
+                                    className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100 whitespace-nowrap"
+                                    onClick={() => handleButtonClick(bill)}
+                                  >
+                                    ส่งเอกสารเพิ่มเติม
+                                  </button>
+                                </>
+                              ) : bill.ClaimStatusDesc !== "Approve" ? (
+                                <button
+                                  className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100 whitespace-nowrap"
+                                  onClick={() => handleButtonClick(bill)}
+                                >
+                                  ส่งเอกสารเพิ่มเติม
+                                </button>
+                              ) : (
+                                ""
+                              )
+                            ) : (
+                              ""
+                            )
+                          ) : (
+                            ""
+                          )}
+                          {bill.RefId ? (
+                            bill.ServiceSettingCode === "OPD" ? (
+                              bill.ClaimStatusDesc ===
+                                "waitting for discharge" && doMoney === true ? (
+                                <>
+                                  <button
+                                    className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100"
+                                    onClick={() => Checkcreditlimit(bill)}
+                                  >
+                                    ประมาณการค่าใช้จ่าย
+                                  </button>
+                                </>
+                              ) : (
+                                ""
+                              )
+                            ) : (
+                              ""
+                            )
+                          ) : (
+                            ""
+                          )}
+                        </td>
+                      </tr>
+                    )
+                )
+              ) : (
+                <tr>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                </tr>
+              )}
+            </tbody>
+          </table>
+  </div>
+  <input type="radio" name="my_tabs_2" role="tab"  className="tab w-[500px] text-sm inline-flex space-x-2 whitespace-nowrap" aria-label="UR"      />
+      <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6">
+
+          <table className="table mt-2">
+            <thead className="bg-info text-base-100 text-center text-sm">
+              <tr>
+                <th></th>
+                <th>Visit Date</th>
+                <th>Full Name</th>
+                <th>
+                  HN <br /> VN
+                </th>
+                {notShowLoc === true ? "" : <th>Location</th>}
+                <th>ClaimNo</th>
+                <th>
+                  Invoicenumber <br />
+                  BatchNumber
+                </th>
+                <th className="w-40 ">Status</th>
+                <th>
+                  Total
+                  <br />
+                  Billamount
+                </th>
+                <th>
+                  Approved
+                  <br />
+                  Amount
+                </th>
+                <th>
+                  Excess
+                  <br />
+                  Amount
+                </th>
+                <th>
+                </th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {postData ? (
+                datax.map(
+                  (bill, index) =>
+                    ((bill.VisitDate || bill.HN) !== "" && bill.IsAdmission === false) && (
+                      <tr className="hover text-center" key={index}>
+                        <th>{startIndex + index + 1}</th>
+                        <td className="whitespace-nowrap">{bill.VisitDate}</td>
+                        <td className="whitespace-nowrap">
+                          {bill.TitleTH} {bill.GivenNameTH} {bill.SurnameTH}
+                          <br /> ( {bill.ServiceSettingCode} -{" "}
+                          {illnessType
+                            ? illnessType.Result.map((ill) =>
+                                ill.illnesstypecode === bill.IllnessTypeCode ? (
+                                  <> {ill.illnesstypedesc} </>
+                                ) : (
+                                  ""
+                                )
+                              )
+                            : ""}{" "}
+                          )
+                        </td>
+                        <td className="whitespace-nowrap">
+                          {bill.HN ? bill.HN : "-"} <br />{" "}
+                          {bill.VN ? bill.VN : "-"}
+                        </td>
+                        {notShowLoc === true ? (
+                          ""
+                        ) : (
+                          <td className="">{bill.VisitLocation}</td>
+                        )}
+                        <td className="whitespace-nowrap">
+                          {bill.ClaimNo ? bill.ClaimNo : "-"}
+                        </td>
+                        <td className="whitespace-nowrap">
+                          {bill.InvoiceNumber ? bill.InvoiceNumber : "-"} <br />
+                          {statusNew
+                            ? bill.TransactionNo === statusNew.TransactionNo
+                              ? statusNew.BatchNumber
+                                ? statusNew.BatchNumber
+                                : "-"
+                              : bill.BatchNumber
+                              ? bill.BatchNumber
+                              : "-"
+                            : "Loading..."}
+                        </td>
+                        <td>
+                          <div className="grid gap-1 sm:grid-cols-1 w-40 break-all">
+                            {statusNew ? (
+                              bill.TransactionNo === statusNew.TransactionNo ? (
+                                statusNew.ClaimStatusDesc ? (
+                                  statusNew.ClaimStatus !== "Cancelled" &&
+                                  statusNew.ClaimStatus !==
+                                    "Cancelled to AIA" &&
+                                  statusNew.ClaimStatus !== "Reversed" &&
+                                  statusNew.ClaimStatus !== "Decline" ? (
+                                    statusNew.ClaimStatus === "Approved" ||
+                                    statusNew.ClaimStatus === "Settle" ? (
+                                      <a className="bg-info text-base-100 rounded-full px-3 py-2 w-full border-2">
+                                        {statusNew.ClaimStatusDesc}
+                                      </a>
+                                    ) : bill.ClaimStatusDesc_EN === "Approve" ||
+                                      bill.ClaimStatusDesc_EN === "Received" ||
+                                      bill.ClaimStatusDesc_EN === "Pending" ||
+                                      bill.ClaimStatusDesc_EN ===
+                                        "Processing" ? (
+                                      bill.ClaimStatusDesc_EN === "Pending" ? (
+                                        <a className="bg-accent text-base-100 rounded-full px-3 py-2 w-full">
+                                          {bill.ClaimStatusDesc_TH}
+                                        </a>
+                                      ) : (
+                                        <a className="bg-success text-base-100 rounded-full px-3 py-2 w-full">
+                                          {bill.ClaimStatusDesc_TH}
+                                        </a>
+                                      )
+                                    ) : (
+                                      <a className="bg-warning rounded-full px-3 py-2 w-full">
+                                        {bill.ClaimStatusDesc_TH}
+                                      </a>
+                                    )
+                                  ) : (
+                                    <a className="bg-error text-base-100 rounded-full px-3 py-2 w-full">
+                                      {statusNew.ClaimStatusDesc}
+                                    </a>
+                                  )
+                                ) : (
+                                  ""
+                                )
+                              ) : bill.ClaimStatusDesc ? (
+                                bill.ClaimStatusDesc_EN !== "Cancelled" &&
+                                bill.ClaimStatusDesc_EN !==
+                                  "Cancelled to AIA" &&
+                                bill.ClaimStatusDesc_EN !== "Reversed" &&
+                                bill.ClaimStatusDesc_EN !== "Decline" ? (
+                                  bill.ClaimStatusDesc_EN === "Approved" ||
+                                  bill.ClaimStatusDesc_EN === "Settle" ? (
+                                    <a className="bg-info text-base-100 rounded-full px-3 py-2 w-full">
+                                      {bill.ClaimStatusDesc_TH}
+                                    </a>
+                                  ) : bill.ClaimStatusDesc_EN === "Approve" ||
+                                    bill.ClaimStatusDesc_EN === "Received" ||
+                                    bill.ClaimStatusDesc_EN === "Pending" ||
+                                    bill.ClaimStatusDesc_EN === "AddDoc" ||
+                                    bill.ClaimStatusDesc_EN === "Processing" ? (
+                                    bill.ClaimStatusDesc_EN === "Pending" ? (
+                                      <a className="bg-accent text-base-100 rounded-full px-3 py-2 w-full">
+                                        {bill.ClaimStatusDesc_TH}
+                                      </a>
+                                    ) : (
+                                      <a className="bg-success text-base-100 rounded-full px-3 py-2 w-full">
+                                        {bill.ClaimStatusDesc_TH}
+                                      </a>
+                                    )
+                                  ) : (
+                                    <a className="bg-warning  rounded-full px-3 py-2 w-full">
+                                      {bill.ClaimStatusDesc_TH}
+                                    </a>
+                                  )
+                                ) : (
+                                  <a className="bg-error text-base-100 rounded-full px-3 py-2 w-full">
+                                    {bill.ClaimStatusDesc_TH}
+                                  </a>
+                                )
+                              ) : (
+                                ""
+                              )
+                            ) : (
+                              "Loading..."
+                            )}
+
+                            {bill.FurtherClaimNo || bill.FurtherClaimId ? (
+                              <a className="rounded-full px-3 py-2 w-full">
+                                ( แบบต่อเนื่อง )
+                              </a>
+                            ) : (
+                              ""
+                            )}
+                            {bill.AccidentDate ||
+                            bill.IllnessTypeCode === "ACC" ||
+                            bill.IllnessTypeCode === "ER" ? (
+                              <a className="rounded-full px-3 py-2 w-full">
+                                ( อุบัติเหตุ )
+                              </a>
+                            ) : (
+                              ""
+                            )}
+                          </div>
+                        </td>
+                        <th className="whitespace-nowrap">
+                          {bill.TotalBillAmount
+                            ? parseFloat(bill.TotalBillAmount).toLocaleString(
+                                "en-US",
+                                {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                                }
+                              )
+                            : ""}
+                        </th>
+                        <th>
+                          {bill.TotalApprovedAmount
+                            ? statusNew
+                              ? bill.TransactionNo === statusNew.TransactionNo
+                                ? statusNew.TotalApproveAmount
+                                  ? parseFloat(
+                                      statusNew.TotalApproveAmount
+                                    ).toLocaleString("en-US", {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 2,
+                                    })
+                                  : parseFloat(
+                                      bill.TotalApprovedAmount
+                                    ).toLocaleString("en-US", {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 2,
+                                    })
+                                : bill.TotalApprovedAmount == null
+                                ? ""
+                                : parseFloat(
+                                    bill.TotalApprovedAmount
+                                  ).toLocaleString("en-US", {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2,
+                                  })
+                              : ""
+                            : ""}
+                        </th>
+
+                        <th>
+                          {bill.TotalExcessAmount
+                            ? parseFloat(bill.TotalExcessAmount).toLocaleString(
+                                "en-US",
+                                {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                                }
+                              )
+                            : ""}
+                        </th>
+                        <td>
+                          {bill.RefId ? (
+                            bill.ClaimStatusDesc !== "Cancelled to AIA" &&
+                            bill.ClaimStatusDesc !== "Cancelled" &&
+                            bill.ClaimStatusDesc !== "Reversed" &&
+                            bill.ClaimStatusDesc !== "waitting for discharge" ? (
+                              <>
+                                <div className="tooltip " data-tip="รีเฟรช">
+                                  <h1
+                                    className="text-success text-2xl"
+                                    onClick={() => Refresh(bill)}
+                                  >
+                                    <LuRefreshCw />
+                                  </h1>
+                                </div>
+                              </>
+                            ) : (
+                              ""
+                            )
+                          ) : (
+                            ""
+                          )}
+
+                          {bill.RefId ? (
+                            bill.BatchNumber && bill.IsIPDDischarge ? (
+                              <div className="tooltip" data-tip="ข้อมูลส่งเคลม">
+                                <h1
+                                  className="text-error text-2xl"
+                                  onClick={() => Detail3(bill)}
+                                >
+                                  <IoDocumentText />
+                                </h1>
+                              </div>
+                            ) : bill.ClaimStatusDesc === "Approve" ||
+                              (bill.ClaimStatusDesc === "Processing" &&
+                                bill.ServiceSettingCode !== "PRE") ||
+                              bill.ClaimStatusDesc === "Received" ||
+                              bill.ClaimStatusDesc ===
+                                "waitting for discharge" ||
+                              bill.ClaimStatusDesc === "Pending" ? (
+                              bill.IsIPDDischarge === false ||
+                              bill.IsIPDDischarge === null ? (
+                                <>
+                                  <div
+                                    className="tooltip"
+                                    data-tip="ข้อมูลส่งเคลม"
+                                  >
+                                    {bill.ServiceSettingCode === "OPD" ? (
+                                      <h1
+                                        className="text-primary text-2xl"
+                                        onClick={() => Detail(bill)}
+                                      >
+                                        <IoDocumentText />
+                                      </h1>
+                                    ) : bill.ClaimStatusDesc !== "Approve" ? (
+                                      <h1
+                                        className="text-primary text-2xl"
+                                        onClick={() => Detail2(bill)}
+                                      >
+                                        <IoDocumentText />
+                                      </h1>
+                                    ) : (
+                                      <div
+                                        className="tooltip"
+                                        data-tip="ข้อมูลส่งเคลม"
+                                      >
+                                        <h1
+                                          className="text-error text-2xl"
+                                          onClick={() => Detail3(bill)}
+                                        >
+                                          <IoDocumentText />
+                                        </h1>
+                                      </div>
+                                    )}
+
+                                  </div>
+                                </>
+                              ) : (
+                                <>
+                                  <div
+                                    className="tooltip"
+                                    data-tip="ข้อมูลส่งเคลม"
+                                  >
+                                    <h1
+                                      className="text-error text-2xl"
+                                      onClick={() => Detail3(bill)}
+                                    >
+                                      <IoDocumentText />
+                                    </h1>
+                                  </div>
+                                </>
+                              )
+                            ) : (
+                              ""
+                            )
+                          ) : (
+                            ""
+                          )}
+
+                          <div className="tooltip" data-tip="ดู เอกสารทั้งหมด">
+                            <h1
+                              className="text-primary text-2xl"
+                              onClick={() => DocumentList(bill)}
+                            >
+                              <HiDocumentSearch />
+                            </h1>
+                          </div>
+                        </td>
+                        <td>
+                          {bill.RefId && bill.IsIPDDischarge !== true ? (
+                            bill.ClaimStatusDesc === "Approve" ||
+                            bill.ClaimStatusDesc === "Pending" ||
+                            bill.ClaimStatusDesc === "Received" ? (
+                              bill.BatchNumber ? (
+                                ""
+                              ) : bill.ServiceSettingCode === "OPD" ? (
+                                <>
+                                  <button
+                                    className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100 whitespace-nowrap"
+                                    onClick={() => handleButtonClick(bill)}
+                                  >
+                                    ส่งเอกสารเพิ่มเติม
+                                  </button>
+                                </>
+                              ) : bill.ClaimStatusDesc !== "Approve" ? (
+                                <button
+                                  className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100 whitespace-nowrap"
+                                  onClick={() => handleButtonClick(bill)}
+                                >
+                                  ส่งเอกสารเพิ่มเติม
+                                </button>
+                              ) : (
+                                ""
+                              )
+                            ) : (
+                              ""
+                            )
+                          ) : (
+                            ""
+                          )}
+                          {bill.RefId ? (
+                            bill.ServiceSettingCode === "OPD" ? (
+                              bill.ClaimStatusDesc ===
+                                "waitting for discharge" && doMoney === true ? (
+                                <>
+                                  <button
+                                    className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100"
+                                    onClick={() => Checkcreditlimit(bill)}
+                                  >
+                                    ประมาณการค่าใช้จ่าย
+                                  </button>
+                                </>
+                              ) : (
+                                ""
+                              )
+                            ) : (
+                              ""
+                            )
+                          ) : (
+                            ""
+                          )}
+                        </td>
+                      </tr>
+                    )
+                )
+              ) : (
+                <tr>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                </tr>
+              )}
+            </tbody>
+          </table>
+  </div>
+
+</div>
+
+)
+: (
+        <table className="table mt-2">
+            <thead className="bg-info text-base-100 text-center text-sm">
+              <tr>
+                <th></th>
+                <th>Visit Date</th>
+                <th>Full Name</th>
+                <th>
+                  HN <br /> VN
+                </th>
+                {notShowLoc === true ? "" : <th>Location</th>}
+                <th>ClaimNo</th>
+                <th>
+                  Invoicenumber <br />
+                  BatchNumber
+                </th>
+                <th className="w-40 ">Status</th>
+                <th>
+                  Total
+                  <br />
+                  Billamount
+                </th>
+                <th>
+                  Approved
+                  <br />
+                  Amount
+                </th>
+                <th>
+                  Excess
+                  <br />
+                  Amount
+                </th>
+                <th>
+                </th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {postData ? (
+                datax.map(
+                  (bill, index) =>
+                    (bill.VisitDate || bill.HN) !== "" && (
+                      <tr className="hover text-center" key={index}>
+                        <th>{startIndex + index + 1}</th>
+                        <td className="whitespace-nowrap">{bill.VisitDate}</td>
+                        <td className="whitespace-nowrap">
+                          {bill.TitleTH} {bill.GivenNameTH} {bill.SurnameTH}
+                          <br /> ( {bill.ServiceSettingCode} -{" "}
+                          {illnessType 
+                            ? illnessType.Result.map((ill) =>
+                                ill.illnesstypecode === bill.IllnessTypeCode ? (
+                                  <> {ill.illnesstypedesc} </>
+                                ) : (
+                                  ""
+                                )
+                              )
+                            : ""}{" "}
+                          )
+                        </td>
+                        <td className="whitespace-nowrap">
+                          {bill.HN ? bill.HN : "-"} <br />{" "}
+                          {bill.VN ? bill.VN : "-"}
+                        </td>
+                        {notShowLoc === true ? (
+                          ""
+                        ) : (
+                          <td className="">{bill.VisitLocation}</td>
+                        )}
+                        <td className="whitespace-nowrap">
+                          {bill.ClaimNo ? bill.ClaimNo : "-"}
+                        </td>
+                        <td className="whitespace-nowrap">
+                          {bill.InvoiceNumber ? bill.InvoiceNumber : "-"} <br />
+                          {statusNew
+                            ? bill.TransactionNo === statusNew.TransactionNo
+                              ? statusNew.BatchNumber
+                                ? statusNew.BatchNumber
+                                : "-"
+                              : bill.BatchNumber
+                              ? bill.BatchNumber
+                              : "-"
+                            : "Loading..."}
+                        </td>
+                        <td>
+                          <div className="grid gap-1 sm:grid-cols-1 w-40 break-all">
+                            {statusNew ? (
+                              bill.TransactionNo === statusNew.TransactionNo ? (
+                                statusNew.ClaimStatusDesc ? (
+                                  statusNew.ClaimStatus !== "Cancelled" &&
+                                  statusNew.ClaimStatus !==
+                                    "Cancelled to AIA" &&
+                                  statusNew.ClaimStatus !== "Reversed" &&
+                                  statusNew.ClaimStatus !== "Decline" ? (
+                                    statusNew.ClaimStatus === "Approved" ||
+                                    statusNew.ClaimStatus === "Settle" ? (
+                                      <a className="bg-info text-base-100 rounded-full px-3 py-2 w-full border-2">
+                                        {statusNew.ClaimStatusDesc}
+                                      </a>
+                                    ) : bill.ClaimStatusDesc_EN === "Approve" ||
+                                      bill.ClaimStatusDesc_EN === "Received" ||
+                                      bill.ClaimStatusDesc_EN === "Pending" ||
+                                      bill.ClaimStatusDesc_EN ===
+                                        "Processing" ? (
+                                      bill.ClaimStatusDesc_EN === "Pending" ? (
+                                        <a className="bg-accent text-base-100 rounded-full px-3 py-2 w-full">
+                                          {bill.ClaimStatusDesc_TH}
+                                        </a>
+                                      ) : (
+                                        <a className="bg-success text-base-100 rounded-full px-3 py-2 w-full">
+                                          {bill.ClaimStatusDesc_TH}
+                                        </a>
+                                      )
+                                    ) : (
+                                      <a className="bg-warning rounded-full px-3 py-2 w-full">
+                                        {bill.ClaimStatusDesc_TH}
+                                      </a>
+                                    )
+                                  ) : (
+                                    <a className="bg-error text-base-100 rounded-full px-3 py-2 w-full">
+                                      {statusNew.ClaimStatusDesc}
+                                    </a>
+                                  )
+                                ) : (
+                                  ""
+                                )
+                              ) : bill.ClaimStatusDesc ? (
+                                bill.ClaimStatusDesc_EN !== "Cancelled" &&
+                                bill.ClaimStatusDesc_EN !==
+                                  "Cancelled to AIA" &&
+                                bill.ClaimStatusDesc_EN !== "Reversed" &&
+                                bill.ClaimStatusDesc_EN !== "Decline" ? (
+                                  bill.ClaimStatusDesc_EN === "Approved" ||
+                                  bill.ClaimStatusDesc_EN === "Settle" ? (
+                                    <a className="bg-info text-base-100 rounded-full px-3 py-2 w-full">
+                                      {bill.ClaimStatusDesc_TH}
+                                    </a>
+                                  ) : bill.ClaimStatusDesc_EN === "Approve" ||
+                                    bill.ClaimStatusDesc_EN === "Received" ||
+                                    bill.ClaimStatusDesc_EN === "Pending" ||
+                                    bill.ClaimStatusDesc_EN === "AddDoc" ||
+                                    bill.ClaimStatusDesc_EN === "Processing" ? (
+                                    bill.ClaimStatusDesc_EN === "Pending" ? (
+                                      <a className="bg-accent text-base-100 rounded-full px-3 py-2 w-full">
+                                        {bill.ClaimStatusDesc_TH}
+                                      </a>
+                                    ) : (
+                                      <a className="bg-success text-base-100 rounded-full px-3 py-2 w-full">
+                                        {bill.ClaimStatusDesc_TH}
+                                      </a>
+                                    )
+                                  ) : (
+                                    <a className="bg-warning  rounded-full px-3 py-2 w-full">
+                                      {bill.ClaimStatusDesc_TH}
+                                    </a>
+                                  )
+                                ) : (
+                                  <a className="bg-error text-base-100 rounded-full px-3 py-2 w-full">
+                                    {bill.ClaimStatusDesc_TH}
+                                  </a>
+                                )
+                              ) : (
+                                ""
+                              )
+                            ) : (
+                              "Loading..."
+                            )}
+
+                            {bill.FurtherClaimNo || bill.FurtherClaimId ? (
+                              <a className="rounded-full px-3 py-2 w-full">
+                                ( แบบต่อเนื่อง )
+                              </a>
+                            ) : (
+                              ""
+                            )}
+                            {bill.AccidentDate ||
+                            bill.IllnessTypeCode === "ACC" ||
+                            bill.IllnessTypeCode === "ER" ? (
+                              <a className="rounded-full px-3 py-2 w-full">
+                                ( อุบัติเหตุ )
+                              </a>
+                            ) : (
+                              ""
+                            )}
+                          </div>
+                        </td>
+                        <th className="whitespace-nowrap">
+                          {bill.TotalBillAmount
+                            ? parseFloat(bill.TotalBillAmount).toLocaleString(
+                                "en-US",
+                                {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                                }
+                              )
+                            : ""}
+                        </th>
+                        <th>
+                          {bill.TotalApprovedAmount
+                            ? statusNew
+                              ? bill.TransactionNo === statusNew.TransactionNo
+                                ? statusNew.TotalApproveAmount
+                                  ? parseFloat(
+                                      statusNew.TotalApproveAmount
+                                    ).toLocaleString("en-US", {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 2,
+                                    })
+                                  : parseFloat(
+                                      bill.TotalApprovedAmount
+                                    ).toLocaleString("en-US", {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 2,
+                                    })
+                                : bill.TotalApprovedAmount == null
+                                ? ""
+                                : parseFloat(
+                                    bill.TotalApprovedAmount
+                                  ).toLocaleString("en-US", {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2,
+                                  })
+                              : ""
+                            : ""}
+                        </th>
+
+                        <th>
+                          {bill.TotalExcessAmount
+                            ? parseFloat(bill.TotalExcessAmount).toLocaleString(
+                                "en-US",
+                                {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                                }
+                              )
+                            : ""}
+                        </th>
+                        <td>
+                          {bill.RefId ? (
+                            bill.ClaimStatusDesc !== "Cancelled to AIA" &&
+                            bill.ClaimStatusDesc !== "Cancelled" &&
+                            bill.ClaimStatusDesc !== "Reversed" &&
+                            bill.ClaimStatusDesc !== "waitting for discharge" ? (
+                              <>
+                                <div className="tooltip " data-tip="รีเฟรช">
+                                  <h1
+                                    className="text-success text-2xl"
+                                    onClick={() => Refresh(bill)}
+                                  >
+                                    <LuRefreshCw />
+                                  </h1>
+                                </div>
+                              </>
+                            ) : (
+                              ""
+                            )
+                          ) : (
+                            ""
+                          )}
+
+                          {bill.RefId ? (
+                            bill.BatchNumber && bill.IsIPDDischarge ? (
+                              <div className="tooltip" data-tip="ข้อมูลส่งเคลม">
+                                <h1
+                                  className="text-error text-2xl"
+                                  onClick={() => Detail3(bill)}
+                                >
+                                  <IoDocumentText />
+                                </h1>
+                              </div>
+                            ) : bill.ClaimStatusDesc === "Approve" ||
+                              (bill.ClaimStatusDesc === "Processing" &&
+                                bill.ServiceSettingCode !== "PRE") ||
+                              bill.ClaimStatusDesc === "Received" ||
+                              bill.ClaimStatusDesc ===
+                                "waitting for discharge" ||
+                              bill.ClaimStatusDesc === "Pending" ? (
+                              bill.IsIPDDischarge === false ||
+                              bill.IsIPDDischarge === null ? (
+                                <>
+                                  <div
+                                    className="tooltip"
+                                    data-tip="ข้อมูลส่งเคลม"
+                                  >
+                                    {bill.ServiceSettingCode === "OPD" ? (
+                                      <h1
+                                        className="text-primary text-2xl"
+                                        onClick={() => Detail(bill)}
+                                      >
+                                        <IoDocumentText />
+                                      </h1>
+                                    ) : bill.ClaimStatusDesc !== "Approve" ? (
+                                      <h1
+                                        className="text-primary text-2xl"
+                                        onClick={() => Detail2(bill)}
+                                      >
+                                        <IoDocumentText />
+                                      </h1>
+                                    ) : (
+                                      <div
+                                        className="tooltip"
+                                        data-tip="ข้อมูลส่งเคลม"
+                                      >
+                                        <h1
+                                          className="text-error text-2xl"
+                                          onClick={() => Detail3(bill)}
+                                        >
+                                          <IoDocumentText />
+                                        </h1>
+                                      </div>
+                                    )}
+                                  </div>
+                                </>
+                              ) : (
+                                <>
+                                  <div
+                                    className="tooltip"
+                                    data-tip="ข้อมูลส่งเคลม"
+                                  >
+                                    <h1
+                                      className="text-error text-2xl"
+                                      onClick={() => Detail3(bill)}
+                                    >
+                                      <IoDocumentText />
+                                    </h1>
+                                  </div>
+                                </>
+                              )
+                            ) : (
+                              ""
+                            )
+                          ) : (
+                            ""
+                          )}
+
+                          <div className="tooltip" data-tip="ดู เอกสารทั้งหมด">
+                            <h1
+                              className="text-primary text-2xl"
+                              onClick={() => DocumentList(bill)}
+                            >
+                              <HiDocumentSearch />
+                            </h1>
+                          </div>
+                        </td>
+                        <td>
+                          {bill.RefId && bill.IsIPDDischarge !== true ? (
+                            bill.ClaimStatusDesc === "Approve" ||
+                            bill.ClaimStatusDesc === "Pending" ||
+                            bill.ClaimStatusDesc === "Received" ? (
+                              bill.BatchNumber ? (
+                                ""
+                              ) : bill.ServiceSettingCode === "OPD" ? (
+                                <>
+                                  <button
+                                    className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100 whitespace-nowrap"
+                                    onClick={() => handleButtonClick(bill)}
+                                  >
+                                    ส่งเอกสารเพิ่มเติม
+                                  </button>
+                                </>
+                              ) : bill.ClaimStatusDesc !== "Approve" ? (
+                                <button
+                                  className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100 whitespace-nowrap"
+                                  onClick={() => handleButtonClick(bill)}
+                                >
+                                  ส่งเอกสารเพิ่มเติม
+                                </button>
+                              ) : (
+                                ""
+                              )
+                            ) : (
+                              ""
+                            )
+                          ) : (
+                            ""
+                          )}
+                          {bill.RefId ? (
+                            bill.ServiceSettingCode === "OPD" ? (
+                              bill.ClaimStatusDesc ===
+                                "waitting for discharge" && doMoney === true ? (
+                                <>
+                                  <button
+                                    className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100"
+                                    onClick={() => Checkcreditlimit(bill)}
+                                  >
+                                    ประมาณการค่าใช้จ่าย
+                                  </button>
+                                </>
+                              ) : (
+                                ""
+                              )
+                            ) : (
+                              ""
+                            )
+                          ) : (
+                            ""
+                          )}
+                        </td>
+                      </tr>
+                    )
+                )
+              ) : (
                 <tr>
                   <th></th>
                   <th></th>
@@ -2453,6 +3554,416 @@ export default function checkData() {
             </tbody>
           </table>
 
+)) : (
+  <table className="table mt-2">
+  <thead className="bg-info text-base-100 text-center text-sm">
+    <tr>
+      <th></th>
+      <th>Visit Date</th>
+      <th>Full Name</th>
+      <th>
+        HN <br /> VN
+      </th>
+      {notShowLoc === true ? "" : <th>Location</th>}
+      <th>ClaimNo</th>
+      <th>
+        Invoicenumber <br />
+        BatchNumber
+      </th>
+      <th className="w-40 ">Status</th>
+      <th>
+        Total
+        <br />
+        Billamount
+      </th>
+      <th>
+        Approved
+        <br />
+        Amount
+      </th>
+      <th>
+        Excess
+        <br />
+        Amount
+      </th>
+      <th>
+      </th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {postData ? (
+      datax.map(
+        (bill, index) =>
+          (bill.VisitDate || bill.HN) !== "" && (
+            <tr className="hover text-center" key={index}>
+              <th>{startIndex + index + 1}</th>
+              <td className="whitespace-nowrap">{bill.VisitDate}</td>
+              <td className="whitespace-nowrap">
+                {bill.TitleTH} {bill.GivenNameTH} {bill.SurnameTH}
+                <br /> ( {bill.ServiceSettingCode} -{" "}
+                {illnessType 
+                  ? illnessType.Result.map((ill) =>
+                      ill.illnesstypecode === bill.IllnessTypeCode ? (
+                        <> {ill.illnesstypedesc} </>
+                      ) : (
+                        ""
+                      )
+                    )
+                  : ""}{" "}
+                )
+              </td>
+              <td className="whitespace-nowrap">
+                {bill.HN ? bill.HN : "-"} <br />{" "}
+                {bill.VN ? bill.VN : "-"}
+              </td>
+              {notShowLoc === true ? (
+                ""
+              ) : (
+                <td className="">{bill.VisitLocation}</td>
+              )}
+              <td className="whitespace-nowrap">
+                {bill.ClaimNo ? bill.ClaimNo : "-"}
+              </td>
+              <td className="whitespace-nowrap">
+                {bill.InvoiceNumber ? bill.InvoiceNumber : "-"} <br />
+                {statusNew
+                  ? bill.TransactionNo === statusNew.TransactionNo
+                    ? statusNew.BatchNumber
+                      ? statusNew.BatchNumber
+                      : "-"
+                    : bill.BatchNumber
+                    ? bill.BatchNumber
+                    : "-"
+                  : "Loading..."}
+              </td>
+              <td>
+                <div className="grid gap-1 sm:grid-cols-1 w-40 break-all">
+                  {statusNew ? (
+                    bill.TransactionNo === statusNew.TransactionNo ? (
+                      statusNew.ClaimStatusDesc ? (
+                        statusNew.ClaimStatus !== "Cancelled" &&
+                        statusNew.ClaimStatus !==
+                          "Cancelled to AIA" &&
+                        statusNew.ClaimStatus !== "Reversed" &&
+                        statusNew.ClaimStatus !== "Decline" ? (
+                          statusNew.ClaimStatus === "Approved" ||
+                          statusNew.ClaimStatus === "Settle" ? (
+                            <a className="bg-info text-base-100 rounded-full px-3 py-2 w-full border-2">
+                              {statusNew.ClaimStatusDesc}
+                            </a>
+                          ) : bill.ClaimStatusDesc_EN === "Approve" ||
+                            bill.ClaimStatusDesc_EN === "Received" ||
+                            bill.ClaimStatusDesc_EN === "Pending" ||
+                            bill.ClaimStatusDesc_EN ===
+                              "Processing" ? (
+                            bill.ClaimStatusDesc_EN === "Pending" ? (
+                              <a className="bg-accent text-base-100 rounded-full px-3 py-2 w-full">
+                                {bill.ClaimStatusDesc_TH}
+                              </a>
+                            ) : (
+                              <a className="bg-success text-base-100 rounded-full px-3 py-2 w-full">
+                                {bill.ClaimStatusDesc_TH}
+                              </a>
+                            )
+                          ) : (
+                            <a className="bg-warning rounded-full px-3 py-2 w-full">
+                              {bill.ClaimStatusDesc_TH}
+                            </a>
+                          )
+                        ) : (
+                          <a className="bg-error text-base-100 rounded-full px-3 py-2 w-full">
+                            {statusNew.ClaimStatusDesc}
+                          </a>
+                        )
+                      ) : (
+                        ""
+                      )
+                    ) : bill.ClaimStatusDesc ? (
+                      bill.ClaimStatusDesc_EN !== "Cancelled" &&
+                      bill.ClaimStatusDesc_EN !==
+                        "Cancelled to AIA" &&
+                      bill.ClaimStatusDesc_EN !== "Reversed" &&
+                      bill.ClaimStatusDesc_EN !== "Decline" ? (
+                        bill.ClaimStatusDesc_EN === "Approved" ||
+                        bill.ClaimStatusDesc_EN === "Settle" ? (
+                          <a className="bg-info text-base-100 rounded-full px-3 py-2 w-full">
+                            {bill.ClaimStatusDesc_TH}
+                          </a>
+                        ) : bill.ClaimStatusDesc_EN === "Approve" ||
+                          bill.ClaimStatusDesc_EN === "Received" ||
+                          bill.ClaimStatusDesc_EN === "Pending" ||
+                          bill.ClaimStatusDesc_EN === "AddDoc" ||
+                          bill.ClaimStatusDesc_EN === "Processing" ? (
+                          bill.ClaimStatusDesc_EN === "Pending" ? (
+                            <a className="bg-accent text-base-100 rounded-full px-3 py-2 w-full">
+                              {bill.ClaimStatusDesc_TH}
+                            </a>
+                          ) : (
+                            <a className="bg-success text-base-100 rounded-full px-3 py-2 w-full">
+                              {bill.ClaimStatusDesc_TH}
+                            </a>
+                          )
+                        ) : (
+                          <a className="bg-warning  rounded-full px-3 py-2 w-full">
+                            {bill.ClaimStatusDesc_TH}
+                          </a>
+                        )
+                      ) : (
+                        <a className="bg-error text-base-100 rounded-full px-3 py-2 w-full">
+                          {bill.ClaimStatusDesc_TH}
+                        </a>
+                      )
+                    ) : (
+                      ""
+                    )
+                  ) : (
+                    "Loading..."
+                  )}
+
+                  {bill.FurtherClaimNo || bill.FurtherClaimId ? (
+                    <a className="rounded-full px-3 py-2 w-full">
+                      ( แบบต่อเนื่อง )
+                    </a>
+                  ) : (
+                    ""
+                  )}
+                  {bill.AccidentDate ||
+                  bill.IllnessTypeCode === "ACC" ||
+                  bill.IllnessTypeCode === "ER" ? (
+                    <a className="rounded-full px-3 py-2 w-full">
+                      ( อุบัติเหตุ )
+                    </a>
+                  ) : (
+                    ""
+                  )}
+                </div>
+              </td>
+              <th className="whitespace-nowrap">
+                {bill.TotalBillAmount
+                  ? parseFloat(bill.TotalBillAmount).toLocaleString(
+                      "en-US",
+                      {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      }
+                    )
+                  : ""}
+              </th>
+              <th>
+                {bill.TotalApprovedAmount
+                  ? statusNew
+                    ? bill.TransactionNo === statusNew.TransactionNo
+                      ? statusNew.TotalApproveAmount
+                        ? parseFloat(
+                            statusNew.TotalApproveAmount
+                          ).toLocaleString("en-US", {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })
+                        : parseFloat(
+                            bill.TotalApprovedAmount
+                          ).toLocaleString("en-US", {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })
+                      : bill.TotalApprovedAmount == null
+                      ? ""
+                      : parseFloat(
+                          bill.TotalApprovedAmount
+                        ).toLocaleString("en-US", {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })
+                    : ""
+                  : ""}
+              </th>
+
+              <th>
+                {bill.TotalExcessAmount
+                  ? parseFloat(bill.TotalExcessAmount).toLocaleString(
+                      "en-US",
+                      {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      }
+                    )
+                  : ""}
+              </th>
+              <td>
+                {bill.RefId ? (
+                  bill.ClaimStatusDesc !== "Cancelled to AIA" &&
+                  bill.ClaimStatusDesc !== "Cancelled" &&
+                  bill.ClaimStatusDesc !== "Reversed" &&
+                  bill.ClaimStatusDesc !== "waitting for discharge" ? (
+                    <>
+                      <div className="tooltip " data-tip="รีเฟรช">
+                        <h1
+                          className="text-success text-2xl"
+                          onClick={() => Refresh(bill)}
+                        >
+                          <LuRefreshCw />
+                        </h1>
+                      </div>
+                    </>
+                  ) : (
+                    ""
+                  )
+                ) : (
+                  ""
+                )}
+
+                {bill.RefId ? (
+                  bill.BatchNumber && bill.IsIPDDischarge ? (
+                    <div className="tooltip" data-tip="ข้อมูลส่งเคลม">
+                      <h1
+                        className="text-error text-2xl"
+                        onClick={() => Detail3(bill)}
+                      >
+                        <IoDocumentText />
+                      </h1>
+                    </div>
+                  ) : bill.ClaimStatusDesc === "Approve" ||
+                    (bill.ClaimStatusDesc === "Processing" &&
+                      bill.ServiceSettingCode !== "PRE") ||
+                    bill.ClaimStatusDesc === "Received" ||
+                    bill.ClaimStatusDesc ===
+                      "waitting for discharge" ||
+                    bill.ClaimStatusDesc === "Pending" ? (
+                    bill.IsIPDDischarge === false ||
+                    bill.IsIPDDischarge === null ? (
+                      <>
+                        <div
+                          className="tooltip"
+                          data-tip="ข้อมูลส่งเคลม"
+                        >
+                          {bill.ServiceSettingCode === "OPD" ? (
+                            <h1
+                              className="text-primary text-2xl"
+                              onClick={() => Detail(bill)}
+                            >
+                              <IoDocumentText />
+                            </h1>
+                          ) : bill.ClaimStatusDesc !== "Approve" ? (
+                            <h1
+                              className="text-primary text-2xl"
+                              onClick={() => Detail2(bill)}
+                            >
+                              <IoDocumentText />
+                            </h1>
+                          ) : (
+                            <div
+                              className="tooltip"
+                              data-tip="ข้อมูลส่งเคลม"
+                            >
+                              <h1
+                                className="text-error text-2xl"
+                                onClick={() => Detail3(bill)}
+                              >
+                                <IoDocumentText />
+                              </h1>
+                            </div>
+                          )}
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div
+                          className="tooltip"
+                          data-tip="ข้อมูลส่งเคลม"
+                        >
+                          <h1
+                            className="text-error text-2xl"
+                            onClick={() => Detail3(bill)}
+                          >
+                            <IoDocumentText />
+                          </h1>
+                        </div>
+                      </>
+                    )
+                  ) : (
+                    ""
+                  )
+                ) : (
+                  ""
+                )}
+
+                <div className="tooltip" data-tip="ดู เอกสารทั้งหมด">
+                  <h1
+                    className="text-primary text-2xl"
+                    onClick={() => DocumentList(bill)}
+                  >
+                    <HiDocumentSearch />
+                  </h1>
+                </div>
+              </td>
+              <td>
+                {bill.RefId && bill.IsIPDDischarge !== true ? (
+                  bill.ClaimStatusDesc === "Approve" ||
+                  bill.ClaimStatusDesc === "Pending" ||
+                  bill.ClaimStatusDesc === "Received" ? (
+                    bill.BatchNumber ? (
+                      ""
+                    ) : bill.ServiceSettingCode === "OPD" ? (
+                      <>
+                        <button
+                          className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100 whitespace-nowrap"
+                          onClick={() => handleButtonClick(bill)}
+                        >
+                          ส่งเอกสารเพิ่มเติม
+                        </button>
+                      </>
+                    ) : bill.ClaimStatusDesc !== "Approve" ? (
+                      <button
+                        className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100 whitespace-nowrap"
+                        onClick={() => handleButtonClick(bill)}
+                      >
+                        ส่งเอกสารเพิ่มเติม
+                      </button>
+                    ) : (
+                      ""
+                    )
+                  ) : (
+                    ""
+                  )
+                ) : (
+                  ""
+                )}
+                {bill.RefId ? (
+                  bill.ServiceSettingCode === "OPD" ? (
+                    bill.ClaimStatusDesc ===
+                      "waitting for discharge" && doMoney === true ? (
+                      <>
+                        <button
+                          className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100"
+                          onClick={() => Checkcreditlimit(bill)}
+                        >
+                          ประมาณการค่าใช้จ่าย
+                        </button>
+                      </>
+                    ) : (
+                      ""
+                    )
+                  ) : (
+                    ""
+                  )
+                ) : (
+                  ""
+                )}
+              </td>
+            </tr>
+          )
+      )
+    ) : (
+      <tr>
+        <th></th>
+        <th></th>
+        <th></th>
+      </tr>
+    )}
+  </tbody>
+</table>
+  )}
           {postData ? (
             <div className="grid gap-1 sm:grid-cols-2 w-full mt-4">
               <div className="flex justify-between text-right">
@@ -2467,8 +3978,6 @@ export default function checkData() {
                 </div>
               </div>
               <div className="text-right text-base-100 ">
-                {/* <div className="text-left text-base-100"> */}
-
                 {currentPage > 1 && (
                   <button
                     onClick={handlePreviousPage}
@@ -2711,7 +4220,7 @@ export default function checkData() {
             </div>
           </dialog>
 
-          {detailData ? <DetailDischarge data={detailData} /> : ""}
+          {showDetailData === true ? <DetailDischarge data={detailData} /> : ""}
 
           <dialog id="DoMoney" className="modal text-xl	">
             <div className="modal-box max-w-7xl">
