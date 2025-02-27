@@ -192,10 +192,10 @@ export default function checkData() {
       PID: "",
       PassportNumber: "",
       HN: "",
-      // VisitDatefrom: today,
-      // VisitDateto: today,
-      VisitDatefrom: "",
-      VisitDateto: "",
+      VisitDatefrom: today,
+      VisitDateto: today,
+      // VisitDatefrom: "",
+      // VisitDateto: "",
       StatusClaimCode: "",
       ServiceSettingCode: serviceValue,
     };
@@ -1574,10 +1574,10 @@ export default function checkData() {
         PID: "",
         PassportNumber: "",
         HN: "",
-        //  VisitDatefrom: today,
-        //  VisitDateto: today,
-        VisitDatefrom: "",
-        VisitDateto: "",
+         VisitDatefrom: today,
+         VisitDateto: today,
+        // VisitDatefrom: "",
+        // VisitDateto: "",
         StatusClaimCode: statusValue,
         ServiceSettingCode: serviceValue,
       };
@@ -1941,7 +1941,6 @@ export default function checkData() {
               {postData ? (
                 datax.map(
                   (bill, index) =>
-                    // (bill.VisitDate || bill.HN) !== "" && (
                       ((bill.VisitDate || bill.HN) !== "" && bill.IsAdmission === null) && (
                       <tr className="hover text-center" key={index}>
                         <th>{startIndex + index + 1}</th>
@@ -2152,7 +2151,6 @@ export default function checkData() {
                                     <LuRefreshCw />
                                   </h1>
                                 </div>
-                                {/* <br/> */}
                               </>
                             ) : (
                               ""
@@ -2212,7 +2210,6 @@ export default function checkData() {
                                         </h1>
                                       </div>
                                     )}
-                                    {/* <h1 className="text-primary text-2xl" onClick={() => Detail(bill)}><IoDocumentText /></h1> */}
                                   </div>
                                 </>
                               ) : (
@@ -2250,6 +2247,7 @@ export default function checkData() {
                           {bill.RefId && bill.IsIPDDischarge !== true ? (
                             bill.ClaimStatusDesc === "Approve" ||
                             bill.ClaimStatusDesc === "Pending" ||
+                            
                             bill.ClaimStatusDesc === "Received" ? (
                               bill.BatchNumber ? (
                                 ""
@@ -2278,14 +2276,13 @@ export default function checkData() {
                           ) : (
                             ""
                           )}
-                          {/* {console.log(doMoney)}  */}
                           {bill.RefId ? (
                             bill.ServiceSettingCode === "OPD" ? (
                               bill.ClaimStatusDesc ===
                                 "waitting for discharge" && doMoney === true ? (
                                 <>
                                   <button
-                                    className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100"
+                                    className="btn btn-warning bg-warning text-base-100 hover:text-warning hover:bg-base-100"
                                     onClick={() => Checkcreditlimit(bill)}
                                   >
                                     ประมาณการค่าใช้จ่าย
@@ -2664,6 +2661,7 @@ export default function checkData() {
                           {bill.RefId && bill.IsIPDDischarge !== true ? (
                             bill.ClaimStatusDesc === "Approve" ||
                             bill.ClaimStatusDesc === "Pending" ||
+                            
                             bill.ClaimStatusDesc === "Received" ? (
                               bill.BatchNumber ? (
                                 ""
@@ -2698,7 +2696,7 @@ export default function checkData() {
                                 "waitting for discharge" && doMoney === true ? (
                                 <>
                                   <button
-                                    className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100"
+                                    className="btn btn-warning bg-warning text-base-100 hover:text-warning hover:bg-base-100"
                                     onClick={() => Checkcreditlimit(bill)}
                                   >
                                     ประมาณการค่าใช้จ่าย
@@ -3077,6 +3075,7 @@ export default function checkData() {
                           {bill.RefId && bill.IsIPDDischarge !== true ? (
                             bill.ClaimStatusDesc === "Approve" ||
                             bill.ClaimStatusDesc === "Pending" ||
+                            
                             bill.ClaimStatusDesc === "Received" ? (
                               bill.BatchNumber ? (
                                 ""
@@ -3111,7 +3110,7 @@ export default function checkData() {
                                 "waitting for discharge" && doMoney === true ? (
                                 <>
                                   <button
-                                    className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100"
+                                    className="btn btn-warning bg-warning text-base-100 hover:text-warning hover:bg-base-100"
                                     onClick={() => Checkcreditlimit(bill)}
                                   >
                                     ประมาณการค่าใช้จ่าย
@@ -3491,6 +3490,7 @@ export default function checkData() {
                           {bill.RefId && bill.IsIPDDischarge !== true ? (
                             bill.ClaimStatusDesc === "Approve" ||
                             bill.ClaimStatusDesc === "Pending" ||
+                            
                             bill.ClaimStatusDesc === "Received" ? (
                               bill.BatchNumber ? (
                                 ""
@@ -3525,7 +3525,7 @@ export default function checkData() {
                                 "waitting for discharge" && doMoney === true ? (
                                 <>
                                   <button
-                                    className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100"
+                                    className="btn btn-warning bg-warning text-base-100 hover:text-warning hover:bg-base-100"
                                     onClick={() => Checkcreditlimit(bill)}
                                   >
                                     ประมาณการค่าใช้จ่าย
@@ -3901,6 +3901,7 @@ export default function checkData() {
                 {bill.RefId && bill.IsIPDDischarge !== true ? (
                   bill.ClaimStatusDesc === "Approve" ||
                   bill.ClaimStatusDesc === "Pending" ||
+                  
                   bill.ClaimStatusDesc === "Received" ? (
                     bill.BatchNumber ? (
                       ""
@@ -3935,7 +3936,7 @@ export default function checkData() {
                       "waitting for discharge" && doMoney === true ? (
                       <>
                         <button
-                          className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100"
+                          className="btn btn-warning bg-warning text-base-100 hover:text-warning hover:bg-base-100"
                           onClick={() => Checkcreditlimit(bill)}
                         >
                           ประมาณการค่าใช้จ่าย

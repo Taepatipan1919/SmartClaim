@@ -89,8 +89,9 @@ export default function Page({ data }) {
   const [injuryWoundType, setInjuryWoundType] = useState("");
   const [injurySideType, setInjurySideType] = useState("");
   const [investigation, setInvestigation] = useState("");
+  
+  const [billingTotalBillAmount, setBillingTotalBillAmount] = useState("");
   const [billing, setBilling] = useState("");
-  const [numberBilling, setNumberBilling] = useState(false);
   const [orderItemz, setOrderItemz] = useState("");
   const [showModal, setShowModal] = useState(false);
 
@@ -337,12 +338,11 @@ export default function Page({ data }) {
   }, [data]);
 
   useEffect(() => {
-    console.log(PatientInfoData)
+
     axios
       .post(
         process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_getIPDDischargeVisit,
-      //  Data 
       PatientInfoData 
       )
       .then((response) => {
@@ -400,24 +400,16 @@ export default function Page({ data }) {
       })
       .catch((error) => {
         console.log(error);
-        // try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
           setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
           setShowFormError("Error");
-        // } catch (error) {
-        //   setMassError(error.response.data.HTTPStatus.message);
-        //   setShowFormError("Error");
-        // }
+
       });
     
    }, [data]);
 
   useEffect(() => {
-// console.log(PatientInfoData.PatientInfo.AccidentDate)
-
-
-        console.log(PatientInfoData)
     axios
       .post(
         process.env.NEXT_PUBLIC_URL_PD +
@@ -648,9 +640,15 @@ export default function Page({ data }) {
       PatientInfoData
       )
       .then((response) => {
-     //   console.log(response.data)
-        setDoctor(response.data);
+
+       console.log(response.data)
+       if(response.data.Result.DoctorInfo[0].DoctorLicense === ""){
+         response.data.Result.DoctorInfo.map((Doc) => Doc.DoctorLicense && 
+      setDoctor(response.data)
+      )
+       }
       })
+
       .catch((error) => {
     //    console.log(error);
         try {
@@ -659,7 +657,7 @@ export default function Page({ data }) {
           setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
           setShowFormError("Error");
         } catch (error) {
-          setMassError(error.response.data.HTTPStatus.message);
+          setMassError("error");
           setShowFormError("Error");
         }
       });
@@ -698,7 +696,7 @@ export default function Page({ data }) {
         PatientInfoData
       )
       .then((response) => {
-          console.log(response.data.Result)
+       //   console.log(response.data.Result)
 
 
       if (response.data.Result.ProcedureInfo[0].Icd9) {
@@ -1127,7 +1125,7 @@ export default function Page({ data }) {
 
   useEffect(() => {
    
-    setBilling();
+
     axios
       .post(
         process.env.NEXT_PUBLIC_URL_SV +
@@ -1135,11 +1133,10 @@ export default function Page({ data }) {
         PatientInfoData
       )
       .then((response) => {
-        // console.log(response.data)
-    if(numberBilling === false){
+       //  console.log(response.data)
       setBilling(response.data);
-      setNumberBilling(true);
-    }
+      setBillingTotalBillAmount(response.data.Result.TotalBillAmount);
+
        
       })
       .catch((error) => {
@@ -4867,7 +4864,7 @@ if(rows2){
                 <div className="rounded-md"></div>
                 <div className="rounded-md px-3 py-2 border-2 bg-base-100 break-all m-1">สรุปค่ารักษาพยาบาล</div>
                 <div className="rounded-md px-3 py-2 border-2 bg-base-100 break-all m-1">
-                  { billing ? billing.Result.TotalBillAmount : "" } 
+                  { billingTotalBillAmount ? billingTotalBillAmount : "" } 
                 </div>
               </div>
             </div>

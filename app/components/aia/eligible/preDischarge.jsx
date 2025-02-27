@@ -171,6 +171,8 @@ export default function Page({ data }) {
   const [otherInsurer, setOtherInsurer] = useState("false");
   const [claimStatusCodeProcessing, setClaimStatusCodeProcessing] = useState(false);
   const [claimStatusCodeProcessingValue, setClaimStatusCodeProcessingValue] = useState("");
+  const [claimStatusCodeProcessingValueClaimNo, setClaimStatusCodeProcessingValueClaimNo] = useState("");
+  const [claimStatusCodeProcessingValueOccurrenceNo, setClaimStatusCodeProcessingValueOccurrenceNo] = useState("");
 
   const [procedure, setProcedure] = useState("");
   const [causeOfInjuryDetails, setCauseOfInjuryDetails] = useState("");
@@ -429,8 +431,11 @@ export default function Page({ data }) {
       PatientInfoData
       )
       .then((response) => {
-        // console.log(response.data)
+         console.log(response.data)
+        if (response.data.Result.DoctorInfo[0].DoctorLicense) {
         setDoctor(response.data);
+        }
+
       })
       .catch((error) => {
         console.log(error);
@@ -579,7 +584,7 @@ export default function Page({ data }) {
       HN: PatientInfoData.PatientInfo.HN,
       PassportNumber: "",
     }
-    //console.log(PatientInfo)
+    console.log(PatientInfo)
     axios
       .post(
         process.env.NEXT_PUBLIC_URL_PD2 +
@@ -589,8 +594,9 @@ export default function Page({ data }) {
       }
     )
       .then((response) => {
+        console.log(response.data.Result.PatientInfo[0])
         setPatientInfoByPID(response.data.Result.PatientInfo[0]);
-        //console.log(response.data.Result.PatientInfo[0])
+      
       })
       .catch((error) => {
         console.log(error);
@@ -631,6 +637,7 @@ export default function Page({ data }) {
   
     )
       .then((response) => {
+        console.log(response.data)
         // setPreviewPreBilling(response.data.Result);
         let combinedArray;
           combinedArray = [...response.data.Result.BillingInfo, ...itemBillingDetails];
@@ -644,8 +651,12 @@ export default function Page({ data }) {
         });
        
         const formattedSum = sum.toFixed(2); // กำหนดให้มีจุดทศนิยม 2 ตำแหน่ง
- 
-        setTotal(formattedSum);
+       
+        if(formattedSum !== "NaN"){
+          // console.log(formattedSum)
+          setTotal(formattedSum);
+        }
+        
 
       })
       .catch((error) => {
@@ -674,7 +685,7 @@ export default function Page({ data }) {
       )
       .then((response) => {
 
-       //   console.log(response.data.Result.VisitInfo)
+          console.log(response.data.Result.VisitInfo)
         setVisit(response.data);
         setAnesthesiaListValue(response.data.Result.VisitInfo.AnesthesiaList)
         setTotalEstimatedCostx(response.data.Result.VisitInfo.TotalEstimatedCost)
@@ -687,7 +698,7 @@ export default function Page({ data }) {
         setTexthandleTextPhysicalExam(response.data.Result.VisitInfo.PhysicalExam);
         setTexthandleTextDxFreeText(response.data.Result.VisitInfo.DxFreeText);
         if(response.data.Result.VisitInfo.ExpectedAdmitDate) { setExpectedAdmitDate(dayjs(response.data.Result.VisitInfo.ExpectedAdmitDate)); }
-        if(PatientInfoData.PatientInfo.VisitDateTime) { setDscDateTime(dayjs(PatientInfoData.PatientInfo.VisitDateTime)); }
+        if(response.data.Result.VisitInfo.ExpectedAdmitDate) { setDscDateTime(dayjs(response.data.Result.VisitInfo.ExpectedAdmitDate)); }
         if(response.data.Result.VisitInfo.SignSymptomsDate) { setSignSymptomsDate(dayjs(response.data.Result.VisitInfo.SignSymptomsDate)); }
         if(response.data.Result.VisitInfo.AlcoholRelated === true){ setAlcoholRelated(true) }else{ setAlcoholRelated(false)}
         if(response.data.Result.VisitInfo.IsPackage === true){ setIsPackage(true) }else{ setIsPackage(false)}
@@ -2572,6 +2583,9 @@ console.log("Start Step 1 Accident")
     
     if (response.data.HTTPStatus.statusCode === 200) {
       setClaimStatusCodeProcessingValue(response.data.Result.InsuranceData.MessageTh)
+      setClaimStatusCodeProcessingValueClaimNo(response.data.Result.InsuranceData.ClaimNo)
+      setClaimStatusCodeProcessingValueOccurrenceNo(response.data.Result.InsuranceData.OccurrenceNo)
+      
       console.log("SubmitPreSubmissionToAIA Succ")
       axios
       .post(
@@ -2653,12 +2667,12 @@ console.log("Start Step 1 Accident")
   };
 
   function stepOne() {
-    setShowModalPro(true)
+    setShowModal(true)
   };
   function stepTwo() {
     setTimeout(() => {
       router.push("/aia/checkClaimStatus");
-    }   , 10000);
+    }   , 1000);
   }   
 }
 
@@ -2697,12 +2711,12 @@ console.log("Start Step 1 Accident")
   };
 
   function stepOne() {
-    setShowModalPro(true)
+    setShowModal(true)
   };
   function stepTwo() {
     setTimeout(() => {
       router.push("/aia/checkClaimStatus");
-    }   , 10000);
+    }   , 1000);
   }    
  }else{
  document.getElementById("my_modal_5").showModal();
@@ -2757,7 +2771,7 @@ const SubmitSelectTypeBilling = (event) => {
   const ICD10CodeValue = async  (event, value) => {
     
 
-    if (value.length >= 10) {
+    if (value.length >= 3) {
       setIsLoading(true);
       try {
          axios
@@ -2793,7 +2807,7 @@ const SubmitSelectTypeBilling = (event) => {
   const ICD9CodeValuePro = async  (event, value) => {
     
 
-    if (value.length >= 4) {
+    if (value.length >= 3) {
    
       setIsLoadingPro(true);
       try {
@@ -3222,7 +3236,7 @@ const SubmitSelectTypeBilling = (event) => {
                       <CustomTextField
                         id="disabledInput"
                         label="Title"
-                        defaultValue={patientInfoByPID.TitleTHc}
+                        defaultValue={patientInfoByPID ? patientInfoByPID.TitleTHc : ""}
                         className="w-full text-black rounded disabled:text-black disabled:bg-gray-300 cursor-not-allowed"
                         InputProps={{ readOnly: true }}
                       />
@@ -3239,7 +3253,7 @@ const SubmitSelectTypeBilling = (event) => {
                       <CustomTextField
                         id="disabledInput"
                         label="FirstName (TH)"
-                        defaultValue={patientInfoByPID.GivenNameTH}
+                        defaultValue={patientInfoByPID ? patientInfoByPID.GivenNameTH : ""}
                         className="w-full text-black rounded disabled:text-black disabled:bg-gray-300 cursor-not-allowed"
                         InputProps={{ readOnly: true }}
                       />
@@ -3256,7 +3270,7 @@ const SubmitSelectTypeBilling = (event) => {
                       <CustomTextField
                         id="disabledInput"
                         label="LastName (TH)"
-                        defaultValue={patientInfoByPID.SurnameTH}
+                        defaultValue={patientInfoByPID ? patientInfoByPID.SurnameTH : ""}
                         className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"
                         InputProps={{ readOnly: true }}
                       />
@@ -3273,7 +3287,7 @@ const SubmitSelectTypeBilling = (event) => {
                       <CustomTextField
                         id="disabledInput"
                         label="PID"
-                        defaultValue={patientInfoByPID.PID}
+                        defaultValue={patientInfoByPID ? patientInfoByPID.PID : ""}
                         className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"
                         InputProps={{ readOnly: true }}
                       />
@@ -3313,7 +3327,7 @@ const SubmitSelectTypeBilling = (event) => {
                       <CustomTextField
                         id="disabledInput"
                         label="Date of Birth (YYYY-MM-DD)"
-                        defaultValue={patientInfoByPID.DateOfBirth}
+                        defaultValue={patientInfoByPID ? patientInfoByPID.DateOfBirth : ""}
                         className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"
                         InputProps={{ readOnly: true }}
                       />
@@ -3347,7 +3361,7 @@ const SubmitSelectTypeBilling = (event) => {
                       <CustomTextField
                         id="disabledInput"
                         label="Gender"
-                        defaultValue={patientInfoByPID.Gender}
+                        defaultValue={patientInfoByPID ? patientInfoByPID.Gender : ""}
                         className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"
                         InputProps={{ readOnly: true }}
                       />
@@ -4060,12 +4074,6 @@ const SubmitSelectTypeBilling = (event) => {
                 )}
                 noOptionsText="ไม่มีผลลัพธ์ที่ค้นหา"
                />
-                 {/* {selectedOption && (
-        <div className="mt-4">
-          <p>เลือก: {selectedOption.label}</p>
-        </div>
-      )} */}
-            
                               </TableCell>
                               {selectedOption  ? (
                                 <>
@@ -4153,7 +4161,6 @@ const SubmitSelectTypeBilling = (event) => {
                         </TableRow>
                       </TableHead>
                       <TableBody>
-                        {/* {console.log(rowsPro)} */}
                         {rowsPro
                           ? rowsPro.map(
                               (proce, index) =>
@@ -5069,10 +5076,10 @@ const SubmitSelectTypeBilling = (event) => {
                                             :  <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
                                         {cause.BillingInitial === "" ? (
                                           <>&nbsp;</>
-                                        ) : (
+                                        ) : cause.BillingInitial !== "" ?
                                           
                                           parseFloat(cause.BillingInitial).toLocaleString("en-US", {minimumFractionDigits: 2,maximumFractionDigits: 2})
-                                        )}
+                                      : "0.00"}
                                       </div>
                           }
                                       </TableCell>
@@ -5107,6 +5114,7 @@ const SubmitSelectTypeBilling = (event) => {
                                 </TableCell>
 
                                 <TableCell>   
+                                  
                     <select  className="select select-bordered w-full mt-2"                
 onChange={(e) => { const selectedType = JSON.parse(e.target.value); 
   setNewItemBillingCheckBalance({ ...newItemBillingCheckBalance, 
@@ -5149,7 +5157,7 @@ onChange={(e) => { const selectedType = JSON.parse(e.target.value);
                                   />
                                 </div>
                                 </TableCell>
-                                {newItemBillingCheckBalance.LocalBillingCode ? (
+                                {newItemBillingCheckBalance.LocalBillingCode  && newItemBillingCheckBalance.BillingInitial ? (
                                   <>
                                     <TableCell>
                                       <div
@@ -5172,7 +5180,7 @@ onChange={(e) => { const selectedType = JSON.parse(e.target.value);
                 <div className="rounded-md"></div>
                 <div className="rounded-md"></div>
                 <div className="px-3 py-2 m-1 w-full btn btn-success text-base-100 hover:text-success hover:bg-base-100" type="submit" onClick={SubmitSumBilling}>รวมยอดเงิน</div> 
-                <div className="rounded-md px-3 py-2 border-2 bg-base-100 break-all m-1">{parseFloat(total).toLocaleString("en-US", {minimumFractionDigits: 2,maximumFractionDigits: 2})}</div>
+                <div className="rounded-md px-3 py-2 border-2 bg-base-100 break-all m-1">{total !== "NaN" ? parseFloat(total).toLocaleString("en-US", {minimumFractionDigits: 2,maximumFractionDigits: 2}) : "0.00"}</div>
                 <div className="rounded-md"></div>
               </div>
 
@@ -5720,9 +5728,15 @@ onChange={(e) => { const selectedType = JSON.parse(e.target.value);
                   massSummit
                 ) : (
                   <center>
-                    <h1 className="text-4xl text-primary">
-                    เข้ารับการรักษาเป็นผู้ป่วยในเลยไหม
+                    <h1 className="text-primary text-xl">
+                    {claimStatusCodeProcessingValue}
                     </h1>
+                    <br/>
+                    <h1 className="text-error">
+                    {patientInfoByPID ? patientInfoByPID.GivenNameTH : ""} {patientInfoByPID ? patientInfoByPID.SurnameTH : ""}
+                    <br/>   รหัสอ้างอิง : {claimStatusCodeProcessingValueClaimNo}/{claimStatusCodeProcessingValueOccurrenceNo}
+                    </h1>
+                   
                     <div className="btn btn-error text-base-100 hover:bg-base-100 hover:text-error text-xl ml-2 mt-2 break-all"onClick={SubmitPreSubmissionToAIAByAdmission}>
                     เข้ารับการรักษาเป็นผู้ป่วยใน
                       </div>
@@ -5980,7 +5994,7 @@ onChange={(e) => { const selectedType = JSON.parse(e.target.value);
           <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
             <div className="bg-white p-8 rounded shadow-lg">
               <h2 className="text-4xl font-bold mb-4 text-primary">
-                ลงทะเบียนช้สิทธิ์สำเร็จ
+                ลงทะเบียนใช้สิทธิ์สำเร็จ
               </h2>
 
             </div>
@@ -5991,12 +6005,12 @@ onChange={(e) => { const selectedType = JSON.parse(e.target.value);
       )}
 
 
-      {showModalPro ? (
+      {/* {showModalPro ? (
         <>
           <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
             <div className="bg-white p-8 rounded shadow-lg">
               <h2 className="text-3xl font-bold mb-4 text-error">
-                {claimStatusCodeProcessingValue}
+              ลงทะเบียนช้สิทธิ์สำเร็จ
               </h2>
 
             </div>
@@ -6004,7 +6018,7 @@ onChange={(e) => { const selectedType = JSON.parse(e.target.value);
         </>
       ) : (
         ""
-      )}
+      )} */}
     </>
   );
 }
