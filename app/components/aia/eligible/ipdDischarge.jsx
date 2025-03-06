@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
+import useEffectOnce from "/hooks/use-effect-once";
 import axios from "axios";
 import { Box, TextField , Autocomplete  } from "@mui/material";
 import { ImBin } from "react-icons/im";
@@ -221,7 +222,7 @@ export default function Page({ data }) {
     },
   };
   // console.log(PatientInfoData.PatientInfo)
-  useEffect(() => {
+  useEffectOnce(() => {
     setRandomNumber();
 
     const generateRandomFiveDigitNumber = () => {
@@ -231,9 +232,9 @@ export default function Page({ data }) {
     const newRandomNumber = generateRandomFiveDigitNumber();
     setRandomNumber(newRandomNumber);
 
-  }, [data]);
+  });
 
-  useEffect(() => {
+  useEffectOnce(() => {
     if (inputRef.current) {
       inputRef.current.value = "";
     }
@@ -300,9 +301,9 @@ export default function Page({ data }) {
         console.log(error);
       });
       
-  }, [data]);
+  });
 
-  useEffect(() => {
+  useEffectOnce(() => {
     const PatientInfo = {
       InsurerCode: InsuranceCode,
       IdType: "HOSPITAL_ID",
@@ -335,9 +336,9 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
-  }, [data]);
+  });
 
-  useEffect(() => {
+  useEffectOnce(() => {
 
     axios
       .post(
@@ -346,7 +347,7 @@ export default function Page({ data }) {
       PatientInfoData 
       )
       .then((response) => {
-          console.log(response.data)
+      //    console.log(response.data)
        setCombinedString(response ? `${response.data.Result.VisitInfo.Weight} / ${response.data.Result.VisitInfo.Height}` : "");
 
         setVisit(response.data);
@@ -407,9 +408,9 @@ export default function Page({ data }) {
 
       });
     
-   }, [data]);
+   });
 
-  useEffect(() => {
+  useEffectOnce(() => {
     axios
       .post(
         process.env.NEXT_PUBLIC_URL_PD +
@@ -418,7 +419,7 @@ export default function Page({ data }) {
        PatientInfoData
       )
       .then((response) => {
-         console.log(response.data)
+       //  console.log(response.data)
          setAccidentDetail(response.data);
 
          if(response.data.Result.AccidentDetailInfo.AccidentDate){
@@ -449,9 +450,9 @@ export default function Page({ data }) {
         }
       
       });
-  }, [data]);
+  });
 
-  useEffect(() => {
+  useEffectOnce(() => {
     axios
       .get(
         process.env.NEXT_PUBLIC_URL_PD +
@@ -475,8 +476,8 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
-  }, [data]);
-  useEffect(() => {
+  });
+  useEffectOnce(() => {
     axios
       .get(
         process.env.NEXT_PUBLIC_URL_PD +
@@ -500,9 +501,9 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
-  }, [data]);
+  });
 
-  useEffect(() => {
+  useEffectOnce(() => {
     axios
       .get(
         process.env.NEXT_PUBLIC_URL_PD +
@@ -526,9 +527,9 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
-  }, [data]);
+  });
  
-  useEffect(() => {
+  useEffectOnce(() => {
     
     axios
       .post(
@@ -553,9 +554,9 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
-  }, [data]);
+  });
 
-  useEffect(() => {
+  useEffectOnce(() => {
     
     axios
       .post(
@@ -583,7 +584,7 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
-  }, [data]);
+  });
 
   const handleDateChange = (newDate) => {
      const formattedDate = dayjs(newDate).format("YYYY-MM-DD HH:mm");
@@ -630,7 +631,7 @@ export default function Page({ data }) {
   };
 
 
-  useEffect(() => {
+  useEffectOnce(() => {
 
     axios
       .post(
@@ -641,12 +642,14 @@ export default function Page({ data }) {
       )
       .then((response) => {
 
-       console.log(response.data)
+     //  console.log(response.data)
        if(response.data.Result.DoctorInfo[0].DoctorLicense === ""){
          response.data.Result.DoctorInfo.map((Doc) => Doc.DoctorLicense && 
       setDoctor(response.data)
       )
-       }
+       }else{
+        setDoctor(response.data)
+      }
       })
 
       .catch((error) => {
@@ -661,9 +664,9 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
-  }, [data]);
+  });
 
-  useEffect(() => {
+  useEffectOnce(() => {
 
     axios
       .post(
@@ -672,7 +675,7 @@ export default function Page({ data }) {
         PatientInfoData
       )
       .then((response) => {
-        // console.log(response.data)
+      //   console.log(response.data)
         setDiagnosis(response.data);
       })
       .catch((error) => {
@@ -687,8 +690,8 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
-  }, [data]);
-  useEffect(() => {
+  });
+  useEffectOnce(() => {
     axios
       .post(
         process.env.NEXT_PUBLIC_URL_SV +
@@ -721,7 +724,7 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
-  }, [data]);
+  });
 
 
 
@@ -851,7 +854,7 @@ export default function Page({ data }) {
     setInjuryDetails(newinjury);
   };
 
-  useEffect(() => {
+  useEffectOnce(() => {
     axios
       .get(
         process.env.NEXT_PUBLIC_URL_PD +
@@ -895,7 +898,7 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
-  }, [data]);
+  });
   ////////////////////////////////
 
   const handleDeleteCauseOfInjuryDetail = (index) => {
@@ -1030,7 +1033,7 @@ export default function Page({ data }) {
     }
   };
 
-  useEffect(() => {
+  useEffectOnce(() => {
     axios
       .post(
         process.env.NEXT_PUBLIC_URL_PD +
@@ -1055,8 +1058,8 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
-  }, [data]);
-  useEffect(() => {
+  });
+  useEffectOnce(() => {
 
     axios
       .post(
@@ -1093,8 +1096,8 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
-  }, [data]);
-  useEffect(() => {
+  });
+  useEffectOnce(() => {
     axios
       .post(
         process.env.NEXT_PUBLIC_URL_SV +
@@ -1118,14 +1121,16 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
-  }, [data]);
+  });
 
 
 
 
-  useEffect(() => {
-   
+  useEffectOnce(() => {
+    setBilling("");
+    setBillingTotalBillAmount("");
 
+    console.log(PatientInfoData)
     axios
       .post(
         process.env.NEXT_PUBLIC_URL_SV +
@@ -1133,7 +1138,11 @@ export default function Page({ data }) {
         PatientInfoData
       )
       .then((response) => {
-       //  console.log(response.data)
+        setBilling("");
+        setBillingTotalBillAmount("");
+
+         console.log(response.data)
+
       setBilling(response.data);
       setBillingTotalBillAmount(response.data.Result.TotalBillAmount);
 
@@ -1151,7 +1160,7 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
-  }, []);
+  });
 
   const DocumentBase64 = (data) => {
     setMsg();
@@ -1297,7 +1306,7 @@ export default function Page({ data }) {
   };
 
   //    //    //  //กดปุ่มส่งเคลม
-  async function Claim(event) {
+  async function DataClaim(event) {
     
     event.preventDefault();
     
@@ -2004,7 +2013,7 @@ if(rows2){
     const endIndexvitalsign = startIndexvitalsign + ITEMS_PER_PAGE;
 
     const datavitalsign = currentDatavitalsign.slice(startIndexvitalsign, endIndexvitalsign);
-    useEffect(() => {
+    useEffectOnce(() => {
       setCountvitalsign(datavitalsign.length);
     }, [datavitalsign]);
     /////////////////////////////////////////////////////////////////////
@@ -2022,7 +2031,7 @@ if(rows2){
     const endIndexinvestigation = startIndexinvestigation + ITEMS_PER_PAGE;
 
     const datainvestigation = currentDatainvestigation.slice(startIndexinvestigation, endIndexinvestigation);
-    useEffect(() => {
+    useEffectOnce(() => {
       setCountinvestigation(datainvestigation.length);
     }, [datainvestigation]);
     /////////////////////////////////////////////////////////////////////
@@ -2040,7 +2049,7 @@ if(rows2){
     const endIndexorderItemz = startIndexorderItemz + ITEMS_PER_PAGE;
 
     const dataorderItemz = currentDataorderItemz.slice(startIndexorderItemz, endIndexorderItemz);
-    useEffect(() => {
+    useEffectOnce(() => {
       setCountorderItemz(dataorderItemz.length);
     }, [dataorderItemz]);
 
@@ -2048,7 +2057,7 @@ if(rows2){
 
 
      const IsIPDDischargeBox = (even) => {
-      console.log(even.target.checked)
+    //  console.log(even.target.checked)
       setCheckedFinalDischarge(even.target.checked)
       document.getElementById("ConfrimFinal").showModal();
     }
@@ -2207,7 +2216,6 @@ if(rows2){
 
   return (
     <>
-
       {showFormError === "Error" ? (
         <div role="alert" className="alert alert-error mt-2 text-base-100">
           <svg
@@ -2230,10 +2238,11 @@ if(rows2){
       )}
       {patientInfoByPID ? (
         <>
-          <form onSubmit={Claim}>
+          <form onSubmit={DataClaim}>
             {patientInfoByPID ? (
               <div className="justify-center border-solid w-4/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
                      <div className="grid gap-2 sm:grid-cols-2 w-full mt-2">
+                      
               <div className="rounded-md">
                 <h1 className="font-black text-accent text-3xl ">
                   Patient Info

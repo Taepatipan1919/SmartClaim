@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
+import useEffectOnce from "/hooks/use-effect-once";
 import axios from "axios";
 import { Box, TextField } from "@mui/material";
 import { ImBin } from "react-icons/im";
@@ -206,7 +207,7 @@ export default function Page({ data }) {
     },
   };
   //console.log(PatientInfoData.PatientInfo)
-  useEffect(() => {
+  useEffectOnce(() => {
     PatientInfoData.PatientInfo.FurtherClaimVN ? setNumberValue(PatientInfoData.PatientInfo.FurtherClaimVN) : setNumberValue(PatientInfoData.PatientInfo.VN);  
     setRandomNumber();
 
@@ -219,9 +220,9 @@ export default function Page({ data }) {
   //  console.log(newRandomNumber);
 
 
-  }, [data]);
+  });
 
-  useEffect(() => {
+  useEffectOnce(() => {
     if (inputRef.current) {
       inputRef.current.value = "";
     }
@@ -258,9 +259,9 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
-  }, [data]);
+  });
 
-  useEffect(() => {
+  useEffectOnce(() => {
     const PatientInfo = {
       InsurerCode: InsuranceCode,
       IdType: "HOSPITAL_ID",
@@ -293,9 +294,9 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
-  }, [data]);
+  });
 
-  useEffect(() => {
+  useEffectOnce(() => {
     let Data;
     if(data.DataTran.Data.FurtherClaimVN){
       Data = {
@@ -326,7 +327,7 @@ export default function Page({ data }) {
             FurtherClaimNo: data.DataTran.Data.FurtherClaimNo,
             FurtherClaimId: data.DataTran.Data.FurtherClaimId,
             FurtherClaimVN: data.DataTran.Data.FurtherClaimVN,
-    //visit doctor diagnosis acc
+ 
         },
       }
     }else{
@@ -363,50 +364,24 @@ export default function Page({ data }) {
       }
     }
     
-    //console.log(Data)
+    console.log(Data)
     axios
       .post(
         process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_getOPDDischargeVisit,
-      //  Data 
-      PatientInfoData 
+        Data 
+     // PatientInfoData 
       )
       .then((response) => {
-    //     console.log(response.data)
+         console.log(response.data)
         setVisit(response.data);
         setOver45(response.data.Result.VisitInfo.AccidentCauseOver45Days);
         setTextPresentIllness(response.data.Result.VisitInfo.PresentIllness);
         setCharCountPresentIllness(response.data.Result.VisitInfo.PresentIllness.length);
-        //const dateValue = dayjs(response.data.Result.VisitInfo.SignSymptomsDate);
-        //console.log(response.data.Result.VisitInfo.SignSymptomsDate)
-        // setSignSymptomsDate(dateValue);
+
         setComaScore(response.data.Result.VisitInfo.ComaScore);
 
-      })
-      .catch((error) => {
-    //    console.log(error);
-        try {
-          const ErrorMass = error.config.url;
-          const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
-          setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
-          setShowFormError("Error");
-        } catch (error) {
-          setMassError(error.response.data.HTTPStatus.message);
-          setShowFormError("Error");
-        }
-      });
-
-
-      
-      axios
-      .post(
-        process.env.NEXT_PUBLIC_URL_SV +
-          process.env.NEXT_PUBLIC_URL_getOPDDischargeVisit,
-          PatientInfoData  
-      )
-      .then((response) => {
-        // console.log(response.data)
-         setCombinedString(
+        setCombinedString(
           response
             ? `${response.data.Result.VisitInfo.Weight} / ${response.data.Result.VisitInfo.Height}`
             : ""
@@ -423,10 +398,13 @@ export default function Page({ data }) {
           setMassError(error.response.data.HTTPStatus.message);
           setShowFormError("Error");
         }
-      });
-  }, [data]);
+      }); 
 
-  useEffect(() => {
+
+      
+  });
+
+  useEffectOnce(() => {
     let Data;
     if(data.DataTran.Data.FurtherClaimVN){
       Data = {
@@ -530,8 +508,8 @@ export default function Page({ data }) {
         // }
       
       });
-  }, [data]);
-  useEffect(() => {
+  });
+  useEffectOnce(() => {
     axios
       .get(
         process.env.NEXT_PUBLIC_URL_PD2 +
@@ -554,8 +532,8 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
-  }, [data]);
-  useEffect(() => {
+  });
+  useEffectOnce(() => {
     axios
       .get(
         process.env.NEXT_PUBLIC_URL_PD +
@@ -579,8 +557,8 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
-  }, [data]);
-  useEffect(() => {
+  });
+  useEffectOnce(() => {
     axios
       .get(
         process.env.NEXT_PUBLIC_URL_PD +
@@ -604,9 +582,9 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
-  }, [data]);
+  });
 
-  useEffect(() => {
+  useEffectOnce(() => {
     axios
       .get(
         process.env.NEXT_PUBLIC_URL_PD +
@@ -630,9 +608,9 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
-  }, [data]);
+  });
  
-  useEffect(() => {
+  useEffectOnce(() => {
     
     axios
       .post(
@@ -657,9 +635,9 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
-  }, [data]);
+  });
 
-  useEffect(() => {
+  useEffectOnce(() => {
     let Data;
     if(data.DataTran.Data.FurtherClaimVN){
       Data = {
@@ -750,9 +728,9 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
-  }, [data]);
+  });
 
-  useEffect(() => {
+  useEffectOnce(() => {
     let Data;
     if(data.DataTran.Data.FurtherClaimVN){
       Data = {
@@ -842,8 +820,8 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
-  }, [data]);
-  useEffect(() => {
+  });
+  useEffectOnce(() => {
     axios
       .post(
         process.env.NEXT_PUBLIC_URL_SV +
@@ -870,7 +848,7 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
-  }, [data]);
+  });
 
   const handleAddRow = () => {
     setRows([...rows, newRow]);
@@ -949,7 +927,7 @@ export default function Page({ data }) {
     setInjuryDetails(newinjury);
   };
 
-  useEffect(() => {
+  useEffectOnce(() => {
     axios
       .get(
         process.env.NEXT_PUBLIC_URL_PD +
@@ -993,7 +971,7 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
-  }, [data]);
+  });
   ////////////////////////////////
 
   const handleDeleteCauseOfInjuryDetail = (index) => {
@@ -1118,7 +1096,7 @@ export default function Page({ data }) {
     }
   };
 
-  useEffect(() => {
+  useEffectOnce(() => {
     axios
       .post(
         process.env.NEXT_PUBLIC_URL_PD +
@@ -1142,10 +1120,10 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
-  }, [data]);
+  });
 
-  useEffect(() => {
-    console.log(PatientInfoData)
+  useEffectOnce(() => {
+    //console.log(PatientInfoData)
     axios
       .post(
         process.env.NEXT_PUBLIC_URL_SV +
@@ -1169,9 +1147,9 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
-  }, [data]);
+  });
 
-  useEffect(() => {
+  useEffectOnce(() => {
     
     axios
       .post(
@@ -1197,10 +1175,10 @@ export default function Page({ data }) {
         }
       });
 
-  }, [data]);
+  });
 
 
-  useEffect(() => {
+  useEffectOnce(() => {
    
     setBilling();
     axios
@@ -1747,7 +1725,7 @@ if(rows){
       const endIndexvitalsign = startIndexvitalsign + ITEMS_PER_PAGE;
       //console.log(endIndex +"="+startIndex+"+"+ITEMS_PER_PAGE)
       const datavitalsign = currentDatavitalsign.slice(startIndexvitalsign, endIndexvitalsign);
-      useEffect(() => {
+      useEffectOnce(() => {
         setCountvitalsign(datavitalsign.length);
       }, [datavitalsign]);
       /////////////////////////////////////////////////////////////////////
@@ -1765,7 +1743,7 @@ if(rows){
       const endIndexinvestigation = startIndexinvestigation + ITEMS_PER_PAGE;
       //console.log(endIndex +"="+startIndex+"+"+ITEMS_PER_PAGE)
       const datainvestigation = currentDatainvestigation.slice(startIndexinvestigation, endIndexinvestigation);
-      useEffect(() => {
+      useEffectOnce(() => {
         setCountinvestigation(datainvestigation.length);
       }, [datainvestigation]);
       /////////////////////////////////////////////////////////////////////
@@ -1783,7 +1761,7 @@ if(rows){
       const endIndexorderItemz = startIndexorderItemz + ITEMS_PER_PAGE;
       //console.log(endIndex +"="+startIndex+"+"+ITEMS_PER_PAGE)
       const dataorderItemz = currentDataorderItemz.slice(startIndexorderItemz, endIndexorderItemz);
-      useEffect(() => {
+      useEffectOnce(() => {
         setCountorderItemz(dataorderItemz.length);
       }, [dataorderItemz]);
       // console.log(dataorderItemz)
@@ -4358,7 +4336,7 @@ if(rows){
           <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
             <div className="bg-white p-8 rounded shadow-lg">
               <h2 className="text-4xl font-bold mb-4 text-primary">
-                ลงทะเบียนช้สิทธิ์สำเร็จ
+                ลงทะเบียนใช้สิทธิ์สำเร็จ
               </h2>
 
             </div>

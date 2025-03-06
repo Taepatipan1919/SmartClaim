@@ -1,6 +1,7 @@
 "use client";
 import axios from "axios";
 import { React, useState, useEffect, createContext } from "react";
+import useEffectOnce from "/hooks/use-effect-once";
 import Link from "next/link";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
@@ -100,7 +101,7 @@ export default function checkData() {
   const [patientDB, setPatientDB] = useState("");
   
 
-  useEffect(() => {
+  useEffectOnce(() => {
     setLoad(false)
 
   const PatientInfo = {
@@ -150,7 +151,7 @@ export default function checkData() {
 
 
   
-  }, []);
+  });
   const handleSelectChange = (event) => {
 
 
@@ -768,7 +769,7 @@ if(idTypeValue === "NATIONAL_ID"){
     }
 
   };
-  useEffect(() => {
+  useEffectOnce(() => {
     axios
       .get(
         process.env.NEXT_PUBLIC_URL_PD +
@@ -791,8 +792,8 @@ if(idTypeValue === "NATIONAL_ID"){
           setShowFormError("Error");
         }
       });
-  }, []);
-  useEffect(() => {
+  });
+  useEffectOnce(() => {
     axios
       .get(
         process.env.NEXT_PUBLIC_URL_PD +
@@ -814,8 +815,8 @@ if(idTypeValue === "NATIONAL_ID"){
           setShowFormError("Error");
         }
       });
-  }, []);
-  useEffect(() => {
+  });
+  useEffectOnce(() => {
     axios
       .get(
         process.env.NEXT_PUBLIC_URL_PD +
@@ -837,8 +838,8 @@ if(idTypeValue === "NATIONAL_ID"){
           setShowFormError("Error");
         }
       });
-  }, []);
-  useEffect(() => {
+  });
+  useEffectOnce(() => {
     axios
       .get(
         process.env.NEXT_PUBLIC_URL_PD +
@@ -860,8 +861,8 @@ if(idTypeValue === "NATIONAL_ID"){
           setShowFormError("Error");
         }
       });
-  }, []);
-  useEffect(() => {
+  });
+  useEffectOnce(() => {
     axios
       .get(
         process.env.NEXT_PUBLIC_URL_SV +
@@ -876,7 +877,7 @@ if(idTypeValue === "NATIONAL_ID"){
       .catch((error) => {
         console.log(error);
       });
-  }, []);
+  });
 
   const handleSubmit = (event) => {
     event.preventDefault();

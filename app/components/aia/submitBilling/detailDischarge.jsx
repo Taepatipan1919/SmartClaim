@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import useEffectOnce from "/hooks/use-effect-once";
 import { Box, TextField } from "@mui/material";
 import axios from "axios";
 import {
@@ -42,7 +43,7 @@ export default function DetailDischarge({ data }) {
   const [accidentPlaceName, setAccidentPlaceName] = useState("");
 
 
-  useEffect(() => {
+  useEffectOnce(() => {
 
     axios
     .post(
@@ -73,8 +74,8 @@ export default function DetailDischarge({ data }) {
     });
 
 
-  }, [data]);
-  useEffect(() => {
+  });
+  useEffectOnce(() => {
     axios
     .get(
       process.env.NEXT_PUBLIC_URL_PD2 +
@@ -98,7 +99,7 @@ export default function DetailDischarge({ data }) {
         }
       });
   }, []);
-  useEffect(() => {
+  useEffectOnce(() => {
     axios
       .get(
         process.env.NEXT_PUBLIC_URL_PD +
@@ -123,7 +124,7 @@ export default function DetailDischarge({ data }) {
         }
       });
   }, []);
-  useEffect(() => {
+  useEffectOnce(() => {
     setMassDocError();
     setShowDocError();
     axios
@@ -151,15 +152,15 @@ export default function DetailDischarge({ data }) {
     });
 
 
-  }, [data]);
+  });
 
-  useEffect(() => {
+  useEffectOnce(() => {
     setPatien();
     // setPatientInfo();
     document.getElementById("my_modal_5").showModal();
-  }, [data]);
+  });
 
-  useEffect(() => {
+  useEffectOnce(() => {
 const   PatientInfo = {
   "InsurerCode": 13, 
   "RefId": data.RefId,
@@ -197,7 +198,7 @@ const   PatientInfo = {
     console.log(error)
   });
 
-  }, [data]);
+  });
 
   const DocumentBase64 = (docname) => {
     //console.log(data.VN)
@@ -257,7 +258,7 @@ const   PatientInfo = {
   };
 
 
-  useEffect(() => {
+  useEffectOnce(() => {
     if (transactionClaimInfo && dataaccidentPlace) {
       const place = dataaccidentPlace.Result.find(
         (acc) => acc.accidentplacecode === transactionClaimInfo.AccidentDetail.AccidentPlace
@@ -268,7 +269,7 @@ const   PatientInfo = {
     }
   }, [transactionClaimInfo, dataaccidentPlace]);
 // console.log(accidentPlaceName)
-useEffect(() => {
+useEffectOnce(() => {
   if (transactionClaimInfo && over45Days) {
     //console.log(over45Days)
     const place = over45Days.Result.find(

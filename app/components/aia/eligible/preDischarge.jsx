@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
+import useEffectOnce from "/hooks/use-effect-once";
 import axios from "axios";
 import { Box, TextField , Autocomplete  } from "@mui/material";
 import { ImBin } from "react-icons/im";
@@ -284,7 +285,7 @@ export default function Page({ data }) {
   };
     // console.log(PatientInfoData.PatientInfo)
 
-  useEffect(() => {
+  useEffectOnce(() => {
     setRandomNumber();
 
     const generateRandomFiveDigitNumber = () => {
@@ -296,8 +297,8 @@ export default function Page({ data }) {
     // console.log(newRandomNumber);
 
 
-  }, [data]);
-  useEffect(() => {
+  });
+  useEffectOnce(() => {
 
     axios
       .post(
@@ -348,8 +349,8 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
-  }, [data]);
-  useEffect(() => {
+  });
+  useEffectOnce(() => {
 
     axios
       .post(
@@ -386,8 +387,8 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
-  }, [data]);
-  useEffect(() => {
+  });
+  useEffectOnce(() => {
 
     axios
       .post(
@@ -420,8 +421,8 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
-  }, [data]);
-  useEffect(() => {
+  });
+  useEffectOnce(() => {
 
     axios
       .post(
@@ -449,8 +450,8 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
-  }, [data]);
-  useEffect(() => {
+  });
+  useEffectOnce(() => {
   axios
   .get(
      '/api/v1/utils/typebilling/'+PatientInfoData.PatientInfo.InsurerCode
@@ -476,8 +477,8 @@ export default function Page({ data }) {
       setShowFormError("Error");
     }
   })
-}, [data]);
-  useEffect(() => {
+});
+  useEffectOnce(() => {
     if (inputRef.current) {
       inputRef.current.value = "";
     }
@@ -494,7 +495,7 @@ export default function Page({ data }) {
         Runnindocument : "00",
       }
     }
-    // console.log(PatientInfox)
+     console.log(PatientInfox)
     axios
       .post(
         process.env.NEXT_PUBLIC_URL_PD2 +
@@ -505,7 +506,7 @@ export default function Page({ data }) {
       )
       .then((response) => {
         setFileList(response.data);
-      //  console.log(response.data)
+        console.log(response.data)
       })
       .catch((error) => {
         console.log(error);
@@ -552,8 +553,8 @@ export default function Page({ data }) {
 
 
       
-  }, [data]);
-  useEffect(() => {
+  });
+  useEffectOnce(() => {
     axios
       .get(
         process.env.NEXT_PUBLIC_URL_PD +
@@ -576,7 +577,7 @@ export default function Page({ data }) {
         }
       });
   }, []);
-  useEffect(() => {
+  useEffectOnce(() => {
     const PatientInfo = {
       InsurerCode: InsuranceCode,
       IdType: "HOSPITAL_ID",
@@ -610,8 +611,8 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
-  }, [data]);
-  useEffect(() => {
+  });
+  useEffectOnce(() => {
 
  
 
@@ -672,9 +673,9 @@ export default function Page({ data }) {
         }
       });
     }
-}, [data]);
+});
 
-  useEffect(() => {
+  useEffectOnce(() => {
 //  console.log(PatientInfoData)
     axios
       .post(
@@ -730,9 +731,9 @@ export default function Page({ data }) {
         }
       });
 
-  }, [data]);
+  });
 
-  useEffect(() => {
+  useEffectOnce(() => {
 
       if(PatientInfoData.PatientInfo.AccidentDate){
         const dateValue = dayjs(PatientInfoData.PatientInfo.AccidentDate);
@@ -780,9 +781,9 @@ export default function Page({ data }) {
       
       });
     }
-  }, [data]);
+  });
 
-  useEffect(() => {
+  useEffectOnce(() => {
     axios
       .get(
         process.env.NEXT_PUBLIC_URL_PD +
@@ -806,8 +807,8 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
-  }, [data]);
-  useEffect(() => {
+  });
+  useEffectOnce(() => {
     axios
       .get(
         process.env.NEXT_PUBLIC_URL_PD +
@@ -831,9 +832,9 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
-  }, [data]);
+  });
 
-  useEffect(() => {
+  useEffectOnce(() => {
     axios
       .get(
         process.env.NEXT_PUBLIC_URL_PD +
@@ -857,7 +858,7 @@ export default function Page({ data }) {
           setShowFormError("Error");
         }
       });
-  }, [data]);
+  });
  
   const Editfurtherclaimvn = () => {
     setShowSummitError();
@@ -1001,7 +1002,7 @@ const handleDeleteRowDia = (index) => {
     setInjuryDetails(newinjury);
   };
 
-  useEffect(() => {
+  useEffectOnce(() => {
     axios
       .get(
         process.env.NEXT_PUBLIC_URL_PD +
@@ -1045,7 +1046,7 @@ const handleDeleteRowDia = (index) => {
           setShowFormError("Error");
         }
       });
-  }, [data]);
+  });
   ////////////////////////////////
 
   const handleDeleteCauseOfInjuryDetail = (index) => {
@@ -1223,7 +1224,7 @@ combinedArray.forEach((bill) => {
    "VN": PatientInfoData.PatientInfo.VN,
     "PreBillingInfo": combinedArray,
   }
-
+  console.log(PatientInfo)
   axios
   .post(
     process.env.NEXT_PUBLIC_URL_PD +
@@ -1233,7 +1234,7 @@ combinedArray.forEach((bill) => {
       }
   )
   .then((response) => {
-      //  console.log(response.data);
+        console.log(response.data);
      setItemBillingDetails("");
 
      const PatientInfox = {
@@ -1245,6 +1246,7 @@ combinedArray.forEach((bill) => {
       HN: PatientInfoData.PatientInfo.HN,
       }
     }
+    console.log(PatientInfox)
     axios
       .post(
         process.env.NEXT_PUBLIC_URL_PD2 +
@@ -1254,6 +1256,7 @@ combinedArray.forEach((bill) => {
   
     )
       .then((response) => {
+        console.log(response.data.Result)
         // setPreviewPreBilling(response.data.Result);
         let combinedArray;
 
@@ -1455,7 +1458,7 @@ const handleChangeListPackage = (event) => {
 
 
 
-  useEffect(() => {
+  useEffectOnce(() => {
 
 
     axios
@@ -1481,8 +1484,8 @@ const handleChangeListPackage = (event) => {
   }
 });
 
-  }, [data]);
-  useEffect(() => {
+  });
+  useEffectOnce(() => {
     axios
       .post(
         process.env.NEXT_PUBLIC_URL_SV +
@@ -1506,8 +1509,8 @@ const handleChangeListPackage = (event) => {
           setShowFormError("Error");
         }
       });
-  }, [data]);
-  useEffect(() => {
+  });
+  useEffectOnce(() => {
     axios
       .post(
         process.env.NEXT_PUBLIC_URL_SV +
@@ -1530,7 +1533,7 @@ const handleChangeListPackage = (event) => {
           setShowFormError("Error");
         }
       });
-  }, [data]);
+  });
 
 
   const ITEMS_PER_PAGE = 10;
@@ -1548,7 +1551,7 @@ const handleChangeListPackage = (event) => {
     const endIndexorderItemz = startIndexorderItemz + ITEMS_PER_PAGE;
 
     const dataorderItemz = currentDataorderItemz.slice(startIndexorderItemz, endIndexorderItemz);
-    useEffect(() => {
+    useEffectOnce(() => {
       setCountorderItemz(dataorderItemz.length);
     }, [dataorderItemz]);
 
@@ -1566,7 +1569,7 @@ const handleChangeListPackage = (event) => {
     const endIndexbillingz = startIndexbillingz + ITEMS_PER_PAGE;
 
     const databillingz = currentDatabillingz.slice(startIndexbillingz, endIndexbillingz);
-    useEffect(() => {
+    useEffectOnce(() => {
       setCountbillingz(databillingz.length);
     }, [databillingz]);
     /////////////////////////////////////////////////////////////////////
@@ -5025,25 +5028,7 @@ const SubmitSelectTypeBilling = (event) => {
                                     >
                                       <TableCell>{index + 1}</TableCell>
                                       <TableCell>
-                                      {summitEditBill === "true" ? 
-                                      <select  className="select select-bordered mt-2 x-3 py-2 border-2 bg-base-100 break-all w-full"    
-                                       onChange={(e) =>
-                                        handleChangeBill(index, e)
-                                      }          
-                                     >
-                           <option>{cause.LocalBillingCode} - {cause.LocalBillingName}</option>
-                      {listBilling
-                  ? listBilling.ItemBillingCheckBalance.map((type, index) => (
-                              <option
-                                key={index}
-                                value={JSON.stringify(type)}>
-                                      {type.LocalBillingCode} - {type.LocalBillingName}
-                              </option>
-                            )
-                          )
-                        : ""}
-                    </select>
-                :         <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                                      <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
                                         {cause.LocalBillingCode === "" ? (
                                           <>&nbsp;</>
                                         ) : (
@@ -5053,14 +5038,14 @@ const SubmitSelectTypeBilling = (event) => {
                                                         <p
                                                           key={index}
                                                           >
-                                                                {type.LocalBillingCode} - {type.LocalBillingName}
+                                                         {type.LocalBillingName}
                                                         </p>
                                                       ) : ""
                                                     )
                                                   : ""
                                           
                                         )}
-                                      </div> }
+                                      </div> 
                                       </TableCell>
                                       <TableCell>
                                       {summitEditBill === "true" ? 
@@ -5102,17 +5087,14 @@ const SubmitSelectTypeBilling = (event) => {
                                           </div> : ""}
                                         </TableCell>
                                     </TableRow>
-                                  
                               )
                             : ""}
 {summitEditBill === "true" ? (
                                           <>
-
                               <TableRow>
                                 <TableCell>
                                   <FaCirclePlus className="text-xl" />
                                 </TableCell>
-
                                 <TableCell>   
                                   
                     <select  className="select select-bordered w-full mt-2"                
