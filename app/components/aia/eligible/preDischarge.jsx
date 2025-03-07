@@ -204,6 +204,17 @@ export default function Page({ data }) {
     PreAuthDetail: "",
   });
 
+
+
+  const [optionsBill, setOptionsBill] = useState([]);
+  const [isLoadingBill, setIsLoadingBill] = useState(false);
+  const [selectedOptionBill, setSelectedOptionBill] = useState(null);
+
+
+
+
+
+
   const [newCauseOfInjuryDetail, setNewCauseOfInjuryDetail] = useState({
     CauseOfInjury: "",
     CommentOfInjury: "",
@@ -698,8 +709,10 @@ export default function Page({ data }) {
         setTexthandleTextChiefComplaint(response.data.Result.VisitInfo.ChiefComplaint);
         setTexthandleTextPhysicalExam(response.data.Result.VisitInfo.PhysicalExam);
         setTexthandleTextDxFreeText(response.data.Result.VisitInfo.DxFreeText);
-        if(response.data.Result.VisitInfo.ExpectedAdmitDate) { setExpectedAdmitDate(dayjs(response.data.Result.VisitInfo.ExpectedAdmitDate)); }
-        if(response.data.Result.VisitInfo.ExpectedAdmitDate) { setDscDateTime(dayjs(response.data.Result.VisitInfo.ExpectedAdmitDate)); }
+        if(PatientInfoData.PatientInfo.VisitDateTime) { 
+          setExpectedAdmitDate(dayjs(PatientInfoData.PatientInfo.VisitDateTime)); 
+          setProcedureDate(PatientInfoData.PatientInfo.VisitDateTime.substring(0, PatientInfoData.PatientInfo.VisitDateTime.indexOf(' ')));
+        }
         if(response.data.Result.VisitInfo.SignSymptomsDate) { setSignSymptomsDate(dayjs(response.data.Result.VisitInfo.SignSymptomsDate)); }
         if(response.data.Result.VisitInfo.AlcoholRelated === true){ setAlcoholRelated(true) }else{ setAlcoholRelated(false)}
         if(response.data.Result.VisitInfo.IsPackage === true){ setIsPackage(true) }else{ setIsPackage(false)}
@@ -900,9 +913,8 @@ export default function Page({ data }) {
       ProcedureDate: procedureDate,
     };
     // console.log(Data)
-    // setRowsPro([...rows, newRow]);
     setRowsPro([...rowsPro, Data]);
-    setProcedureDate("");
+    setProcedureDate(PatientInfoData.PatientInfo.VisitDateTime.substring(0, PatientInfoData.PatientInfo.VisitDateTime.indexOf(' ')));
   };
   const handleAddRow2 = () => {
     setRows2([...rows2, newRow2]);
@@ -1724,26 +1736,26 @@ const handleChangeListPackage = (event) => {
     };
   };
 
-  const handleChangeBill = (index2, event) => {
-    const selectedType = JSON.parse(event.target.value); 
-  //   setNewItemBillingCheckBalance({ ...newItemBillingCheckBalance, 
-  //     LocalBillingCode: selectedType.LocalBillingCode, 
-  //     LocalBillingName: selectedType.LocalBillingName, 
-  //   }); 
+//   const handleChangeBill = (index2, event) => {
+//     const selectedType = JSON.parse(event.target.value); 
+//   //   setNewItemBillingCheckBalance({ ...newItemBillingCheckBalance, 
+//   //     LocalBillingCode: selectedType.LocalBillingCode, 
+//   //     LocalBillingName: selectedType.LocalBillingName, 
+//   //   }); 
 
-  const newcauses = itemBillingDetails.map((cause, index) => {
-    if (index === index2) {
-      return {
-        ...cause,
-        LocalBillingCode: selectedType.LocalBillingCode,
-        LocalBillingName: selectedType.LocalBillingName,
-      };
-    }
-    return cause;
-  });
-  setItemBillingDetails(newcauses);
-};
-// console.log(itemBillingDetails)
+//   const newcauses = itemBillingDetails.map((cause, index) => {
+//     if (index === index2) {
+//       return {
+//         ...cause,
+//         LocalBillingCode: selectedType.LocalBillingCode,
+//         LocalBillingName: selectedType.LocalBillingName,
+//       };
+//     }
+//     return cause;
+//   });
+//   setItemBillingDetails(newcauses);
+// };
+
 
 
 
@@ -1760,7 +1772,21 @@ const handleChangeBillA2 = (index2, event) => {
     }
     return cause;
   });
-  setItemBillingDetails(newcauses);
+
+
+  const updatedData = newcauses.map((item) => ({
+    ...item,
+    BillingNetAmount: item.BillingInitial, // ตั้ง BillingNetAmount ให้เท่ากับ BillingInitial
+  }));
+
+  console.log(updatedData)
+
+  setItemBillingDetails(updatedData);
+
+
+
+
+
 };
 
 //////////////////////////////////
@@ -1777,7 +1803,7 @@ const handleDeleteBillingDetail = (index) => {
     "HN": PatientInfoData.PatientInfo.HN,
      "BillingID": index.BillingID,
     } 
-  // setItemBillingDetails(newItemBillingCheckBalances);
+
 
   axios
   .post(
@@ -1816,12 +1842,13 @@ setTotal(0);
     const formattedSum = sum.toFixed(2); // กำหนดให้มีจุดทศนิยม 2 ตำแหน่ง
 
     setTotal(formattedSum);
-    setNewItemBillingCheckBalance({ 
-      LocalBillingCode: "",
-      LocalBillingName: "",
-      SimbBillingCode: "",
-      BillingInitial: "",
-    });
+    setSelectedOptionBill(null);
+    // setNewItemBillingCheckBalance({ 
+    //   LocalBillingCode: "",
+    //   LocalBillingName: "",
+    //   SimbBillingCode: "",
+    //   BillingInitial: "",
+    // });
   })
   .catch((error) => {
     console.log(error);
@@ -1862,109 +1889,174 @@ setTotal(0);
 };
 
 /////////////////////////////////////////////////////
-const [newItemBillingCheckBalance, setNewItemBillingCheckBalance] = useState({
-  LocalBillingCode: "",
-  LocalBillingName: "",
-  SimbBillingCode: "",
-  BillingInitial: "",
-});
+// const [newItemBillingCheckBalance, setNewItemBillingCheckBalance] = useState({
+//   LocalBillingCode: "",
+//   LocalBillingName: "",
+//   SimbBillingCode: "",
+//   BillingInitial: "",
+// });
 
 ////////////////////////////////////////////////////////
 const handleAddItemBillingDetail = () => {
-  setItemBillingDetails("");
-  setTotal(0);
- // setItemBillingDetails([...itemBillingDetails, newItemBillingCheckBalance]);
+ // console.log(itemBillingDetails)
+
+    if(itemBillingDetails){
+      console.log("มี")
+
+      const DataBillnew = {
+        "BillingDiscount": "0",
+        "BillingID": "",
+        "BillingNetAmount": selectedOptionBill.BillingInitial,
+        "BillingInitial": selectedOptionBill.BillingInitial,
+        "LocalBillingCode": selectedOptionBill.LocalBillingCode,
+        "LocalBillingName": selectedOptionBill.LocalBillingName,
+        "PayorBillingCode": selectedOptionBill.PayorBillingCode,
+        "SimbBillingCode": selectedOptionBill.SimbBillingCode,
+      }
+
+
+    //   // setItemBillingDetails("");
+    //   // setTotal(0);
+    //   //console.log(DataBillnew)
+    //  const DataBillSum = ([
+    //   ...updatedData , DataBillnew
+    //  ])
+    
+    //   console.log(DataBillSum)
+
+
+
+ 
   const PatientInfo = {
     "RefId": PatientInfoData.PatientInfo.RefId,
     "TransactionNo": PatientInfoData.PatientInfo.TransactionNo,
     "InsurerCode": InsuranceCode, 
    "HN": PatientInfoData.PatientInfo.HN,
    "VN": PatientInfoData.PatientInfo.VN,
-    "PreBillingInfo": [ newItemBillingCheckBalance],
+    "PreBillingInfo": [ DataBillnew ],
   }
- // console.log(PatientInfo)
-  axios
-  .post(
-    process.env.NEXT_PUBLIC_URL_PD +
-      process.env.NEXT_PUBLIC_URL_InsertPreBilling,
-      {
-        PatientInfo
+    }else{
+      console.log("ไม่มี")
+
+      const DataBillnew = {
+        "BillingDiscount": "0",
+        "BillingID": "",
+        "BillingNetAmount": selectedOptionBill.BillingInitial,
+        "BillingInitial": selectedOptionBill.BillingInitial,
+        "LocalBillingCode": selectedOptionBill.LocalBillingCode,
+        "LocalBillingName": selectedOptionBill.LocalBillingName,
+        "PayorBillingCode": selectedOptionBill.PayorBillingCode,
+        "SimbBillingCode": selectedOptionBill.SimbBillingCode,
       }
-  )
-  .then((response) => {
-      //  console.log(response.data);
- setItemBillingDetails("");
- setTotal(0);
- const PatientInfox = {
-  "PatientInfo" : {
-  RefId: PatientInfoData.PatientInfo.RefId,
-  TransactionNo: PatientInfoData.PatientInfo.TransactionNo,
-  InsurerCode: InsuranceCode,
-  VN: PatientInfoData.PatientInfo.VN,
-  HN: PatientInfoData.PatientInfo.HN,
+
+ 
+  const PatientInfo = {
+    "RefId": PatientInfoData.PatientInfo.RefId,
+    "TransactionNo": PatientInfoData.PatientInfo.TransactionNo,
+    "InsurerCode": InsuranceCode, 
+   "HN": PatientInfoData.PatientInfo.HN,
+   "VN": PatientInfoData.PatientInfo.VN,
+    "PreBillingInfo": [ DataBillnew ],
   }
-}
 
-axios
-  .post(
-    process.env.NEXT_PUBLIC_URL_PD2 +
-    process.env.NEXT_PUBLIC_URL_previewPreBilling,
+
+
+    }
+
+      // const updatedData = itemBillingDetails.map((item) => ({
+      //   ...item,
+      //   BillingNetAmount: item.BillingInitial, // ตั้ง BillingNetAmount ให้เท่ากับ BillingInitial
+      // }));
+    
+    
+
+  //console.log(PatientInfo)
+
+//   axios
+//   .post(
+//     process.env.NEXT_PUBLIC_URL_PD +
+//       process.env.NEXT_PUBLIC_URL_InsertPreBilling,
+//       {
+//         PatientInfo
+//       }
+//   )
+//   .then((response) => {
+//       // console.log(response.data);
+
+      
+//  setItemBillingDetails("");
+//  setTotal(0);
+//  const PatientInfox = {
+//   "PatientInfo" : {
+//   RefId: PatientInfoData.PatientInfo.RefId,
+//   TransactionNo: PatientInfoData.PatientInfo.TransactionNo,
+//   InsurerCode: InsuranceCode,
+//   VN: PatientInfoData.PatientInfo.VN,
+//   HN: PatientInfoData.PatientInfo.HN,
+//   }
+// }
+
+// axios
+//   .post(
+//     process.env.NEXT_PUBLIC_URL_PD2 +
+//     process.env.NEXT_PUBLIC_URL_previewPreBilling,
   
-    PatientInfox
+//     PatientInfox
 
-)
-  .then((response) => {
-    setItemBillingDetails("");
-    setTotal(0);
-    // setPreviewPreBilling(response.data.Result);
-    // console.log(response.data.Result.BillingInfo)
-    let combinedArray;
+// )
+//   .then((response) => {
+//     setItemBillingDetails("");
+//     setTotal(0);
+//     // setPreviewPreBilling(response.data.Result);
+//     // console.log(response.data.Result.BillingInfo)
+//     let combinedArray;
 
-      combinedArray = [...response.data.Result.BillingInfo];
+//       combinedArray = [...response.data.Result.BillingInfo];
 
       
     
-  setItemBillingDetails(combinedArray);
-  let sum = 0; 
-  combinedArray.forEach((bill) => { 
-      sum += parseFloat(bill.BillingInitial); // ใช้ parseFloat แทน parseInt เพื่อรองรับค่าทศนิยม
-    });
-    const formattedSum = sum.toFixed(2); // กำหนดให้มีจุดทศนิยม 2 ตำแหน่ง
+//   setItemBillingDetails(combinedArray);
+//   let sum = 0; 
+//   combinedArray.forEach((bill) => { 
+//       sum += parseFloat(bill.BillingInitial); // ใช้ parseFloat แทน parseInt เพื่อรองรับค่าทศนิยม
+//     });
+//     const formattedSum = sum.toFixed(2); // กำหนดให้มีจุดทศนิยม 2 ตำแหน่ง
 
-    setTotal(formattedSum);
-    setNewItemBillingCheckBalance({ 
-      LocalBillingCode: "",
-      LocalBillingName: "",
-      SimbBillingCode: "",
-      BillingInitial: "",
-    });
-  })
-  .catch((error) => {
-    console.log(error);
-    try {
-      const ErrorMass = error.config.url;
-      const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
-      setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
-      setShowFormError("Error");
-    } catch (error) {
-      setMassError(error);
-      setShowFormError("Error");
-    }
-  });
+//     setTotal(formattedSum);
+//     setSelectedOptionBill(null);
+//   //   setNewItemBillingCheckBalance({ 
+//   //     LocalBillingCode: "",
+//   //     LocalBillingName: "",
+//   //     SimbBillingCode: "",
+//   //     BillingInitial: "",
+//   //   });
+//   })
+//   .catch((error) => {
+//     console.log(error);
+//     try {
+//       const ErrorMass = error.config.url;
+//       const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+//       setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
+//       setShowFormError("Error");
+//     } catch (error) {
+//       setMassError(error);
+//       setShowFormError("Error");
+//     }
+//   });
 
-  })
-  .catch((error) => {
-    console.log(error);
-    try {
-      const ErrorMass = error.config.url;
-      const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
-      setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
-      setShowFormError("Error");
-    } catch (error) {
-      setMassError(error.response.data.HTTPStatus.message);
-      setShowFormError("Error");
-    }
-  })
+//   })
+//   .catch((error) => {
+//     console.log(error);
+//     try {
+//       const ErrorMass = error.config.url;
+//       const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+//       setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
+//       setShowFormError("Error");
+//     } catch (error) {
+//       setMassError(error.response.data.HTTPStatus.message);
+//       setShowFormError("Error");
+//     }
+//   })
 };
 ////////////////////////////////////////////////////////
 const SubmitSumBilling = () => {
@@ -2847,12 +2939,60 @@ const SubmitSelectTypeBilling = (event) => {
 
 
 
+  const CodeValueBill = async  (event, value) => {
+    
+
+    if (value.length >= 3) {
+   
+      setIsLoadingBill(true);
+      try {
+         axios
+         .get(process.env.NEXT_PUBLIC_URL_SV +process.env.NEXT_PUBLIC_URL_getBillingSubgroup+value)
+  .then((response) => {
+    // console.log(response.data.Result.BillingSubInfo)
+
+
+       //แปลงผลลัพธ์เป็นรูปแบบที่สามารถใช้กับ react-select
+
+        const formattedOptions = response.data.Result.BillingSubInfo.map((item) => item.LocalBillingCode && ({
+          LocalBillingId: item.LocalBillingId,
+           LocalBillingCode: item.LocalBillingCode,
+           LocalBillingName: item.LocalBillingName,
+           SimbBillingCode: item.SimbBillingCode,
+           PayorBillingCode: item.PayorBillingCode,
+           label: item.LocalBillingName, // กำหนดค่า label ที่ต้องการ
+        }));
+        setOptionsBill(formattedOptions);
+
+        })
+      .catch((error) => {
+        console.log(error);
+        setMassSummitError("Error");
+        setShowSummitError("Error");
+      });
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setIsLoadingBill(false);
+      }
+    } else {
+      setOptionsBill([]);
+    }
+  };
+
+
+
+
   const handleChangeICD10 = (event, newValue) => {
     setSelectedOption(newValue);
    // console.log('Selected option:', newValue);
   };
   const handleChangeICD9 = (event, newValue) => {
     setSelectedOptionPro(newValue);
+  };
+  const handleChangeBillx = (event, newValue) => {
+    setSelectedOptionBill(newValue);
+    
   };
   const Cancel = () => {
     setShowFormError();
@@ -5019,6 +5159,7 @@ const SubmitSelectTypeBilling = (event) => {
                           </TableRow>
                         </TableHead>
                         <TableBody>
+                          {console.log(itemBillingDetails)}
                           {itemBillingDetails
                             ? itemBillingDetails.map(
                                 (cause, index) =>
@@ -5056,7 +5197,7 @@ const SubmitSelectTypeBilling = (event) => {
                                               onChange={(e) =>
                                                 handleChangeBillA2(index, e)
                                               }
-                                              inputProps={{ step: '0.01' }} // กำหนดจำนวนทศนิยมได้ที่นี่
+
                                             />
                                             :  <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
                                         {cause.BillingInitial === "" ? (
@@ -5095,9 +5236,9 @@ const SubmitSelectTypeBilling = (event) => {
                                 <TableCell>
                                   <FaCirclePlus className="text-xl" />
                                 </TableCell>
-                                <TableCell>   
+                                <TableCell className="w-4/6">   
                                   
-                    <select  className="select select-bordered w-full mt-2"                
+                    {/* <select  className="select select-bordered w-full mt-2"                
 onChange={(e) => { const selectedType = JSON.parse(e.target.value); 
   setNewItemBillingCheckBalance({ ...newItemBillingCheckBalance, 
     LocalBillingCode: selectedType.LocalBillingCode, 
@@ -5117,29 +5258,43 @@ onChange={(e) => { const selectedType = JSON.parse(e.target.value);
                             )
                           )
                         : ""}
-                    </select>
+                    </select> */}
+                                 <Autocomplete
+                options={optionsBill}
+                loading={isLoadingBill}
+                onInputChange={CodeValueBill}
+                onChange={handleChangeBillx}
+                getOptionLabel={(option) => option.label || ""}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="พิมพ์เพื่อค้นหา..."
+                    variant="outlined"
+                  />
+                )}
+                noOptionsText="ไม่มีผลลัพธ์ที่ค้นหา"
+               />
                                 </TableCell>
                                 <TableCell>
                                 <div className="m-2">
                                   <TextField
                                     type="number"
                                     className="bg-base-100 w-full"
-                                    value={
-                                      newItemBillingCheckBalance.BillingInitial
+                                    value={selectedOptionBill ?
+                                      selectedOptionBill.BillingInitial : ""
                                     }
                                     onChange={(e) =>
                                       
-                                      setNewItemBillingCheckBalance({
-                                        ...newItemBillingCheckBalance,
+                                      setSelectedOptionBill({
+                                        ...selectedOptionBill,
                                         BillingInitial: e.target.value,
                                       })
                                     }
                                     placeholder=""
-                                    inputProps={{ step: '0.01' }} // กำหนดจำนวนทศนิยมได้ที่นี่
                                   />
                                 </div>
                                 </TableCell>
-                                {newItemBillingCheckBalance.LocalBillingCode  && newItemBillingCheckBalance.BillingInitial ? (
+                                {selectedOptionBill ? (
                                   <>
                                     <TableCell>
                                       <div

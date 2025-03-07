@@ -1534,7 +1534,7 @@ axios
           <table className="table mt-2">
           <thead className="bg-info text-base-100 text-center text-sm">
               <tr>
-                <th >Visit Date</th>
+                <th>Visit Date</th>
                 <th>Full Name</th>
                 <th>HN</th>
                 <th>VN</th>

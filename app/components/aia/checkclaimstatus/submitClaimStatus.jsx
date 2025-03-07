@@ -35,7 +35,9 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { FaCloudUploadAlt } from "react-icons/fa";
-import DetailDischarge from "../eligible/detailDischarge";
+import DetailDischargeOPD from "../eligible/detailDischargeOPD";
+import DetailDischargeIPD from "../eligible/detailDischargeIPD";
+import DetailDischargePRE from "../eligible/detailDischargePRE";
 import { BiFirstPage, BiLastPage } from "react-icons/bi";
 import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
@@ -197,10 +199,10 @@ export default function checkData() {
       HN: "",
       // VisitDatefrom: today,
       // VisitDateto: today,
-      VisitDatefrom: "",
-      VisitDateto: "",
-      StatusChangedAtDatefrom : today,
-      StatusChangedAtDateto: today,
+      VisitDatefrom: today,
+      VisitDateto: today,
+      StatusChangedAtDatefrom : "",
+      StatusChangedAtDateto: "",
       
       StatusClaimCode: "",
       ServiceSettingCode: serviceValue,
@@ -1154,19 +1156,31 @@ export default function checkData() {
       router.push("/aia/eligible");
     }
   };
-  const Detail3 = (data) => {
-
-    
-
-  
-
+  const Detail3PRE = (data) => {
     setDetailData("")
-    // console.log(data);
+   //  console.log(data);
     setShowFormError();
     setDetailData(data);
    // console.log(showDetailData)
     setShowDetailData(true);
   };
+  const Detail3IPD = (data) => {
+    setDetailData("")
+  //  console.log(data);
+    setShowFormError();
+    setDetailData(data);
+   // console.log(showDetailData)
+    setShowDetailData(true);
+  };
+  const Detail3OPD = (data) => {
+    setDetailData("")
+   // console.log(data);
+    setShowFormError();
+    setDetailData(data);
+   // console.log(showDetailData)
+    setShowDetailData(true);
+  };
+
   const showDetailDataClose = () => {
     setShowDetailData(false);
   }
@@ -1995,9 +2009,9 @@ export default function checkData() {
                 .filter((bill) => (bill.VisitDate || bill.HN) !== "" && bill.IsAdmission === null) 
                 .map(
                   (bill, index) =>
-                      ((bill.VisitDate || bill.HN) !== "" && bill.IsAdmission === null) && (
+                      // ((bill.VisitDate || bill.HN) !== "" && bill.IsAdmission === null) && (
                       <tr className="hover text-center" key={index}>
-                        <td className="whitespace-nowrap">{bill.CreateDate.substring(0, bill.CreateDate.indexOf('T'))}</td>
+                        <td className="whitespace-nowrap">{bill.VisitDate}</td>
                         <td className="whitespace-nowrap">
                           {bill.TitleTH} {bill.GivenNameTH} {bill.SurnameTH}
                           <br /> ( {bill.ServiceSettingCode} -{" "}
@@ -2127,8 +2141,8 @@ export default function checkData() {
                         </th>
                         <td>
                           {bill.RefId ? (
-                                 // bill.ClaimStatusDesc !== "Cancelled to AIA" &&
-                  // bill.ClaimStatusDesc !== "Cancelled" &&
+                                 bill.ClaimStatusDesc !== "Cancelled to AIA" &&
+                  bill.ClaimStatusDesc !== "Cancelled" &&
                             bill.ClaimStatusDesc !== "Reversed" &&
                             bill.ClaimStatusDesc !== "waitting for discharge" ? (
                               <>
@@ -2152,7 +2166,7 @@ export default function checkData() {
                               <div className="tooltip" data-tip="ข้อมูลส่งเคลม">
                                 <h1
                                   className="text-error text-2xl"
-                                  onClick={() => Detail3(bill)}
+                                  onClick={() => Detail3PRE(bill)}
                                 >
                                   <IoDocumentText />
                                 </h1>
@@ -2190,7 +2204,7 @@ export default function checkData() {
                                       >
                                         <h1
                                           className="text-error text-2xl"
-                                          onClick={() => Detail3(bill)}
+                                          onClick={() => Detail3PRE(bill)}
                                         >
                                           <IoDocumentText />
                                         </h1>
@@ -2206,7 +2220,7 @@ export default function checkData() {
                                   >
                                     <h1
                                       className="text-error text-2xl"
-                                      onClick={() => Detail3(bill)}
+                                      onClick={() => Detail3PRE(bill)}
                                     >
                                       <IoDocumentText />
                                     </h1>
@@ -2221,7 +2235,7 @@ export default function checkData() {
                                   >
                                     <h1
                                       className="text-error text-2xl"
-                                      onClick={() => Detail3(bill)}
+                                      onClick={() => Detail3PRE(bill)}
                                     >
                                       <IoDocumentText />
                                     </h1>
@@ -2242,7 +2256,7 @@ export default function checkData() {
                           </div>
                         </td>
                         <td>
-                        {bill.RefId && bill.ClaimNo   ? (
+      {bill.RefId && bill.ClaimNo  && bill.ClaimStatusDesc !=="Cancelled to AIA" && bill.ClaimStatusDesc !== "Cancelled" && bill.ClaimStatusDesc !=="Reversed"  ? (
 bill.BatchNumber ? (
     ""
   ) : bill.ServiceSettingCode === "OPD" ? (
@@ -2288,7 +2302,7 @@ bill.BatchNumber ? (
                           )}
                         </td>
                       </tr>
-                    )
+                    // )
                 )
               ) : (
                 <tr>
@@ -2340,11 +2354,13 @@ bill.BatchNumber ? (
             </thead>
             <tbody>
               {postData ? (
-                datax.map(
+                datax
+                .filter((bill) => ((bill.VisitDate || bill.HN) !== "" && bill.IsAdmission === true) ) 
+                .map(
                   (bill, index) =>
-                    ((bill.VisitDate || bill.HN) !== "" && bill.IsAdmission === true) && (
+                    // ((bill.VisitDate || bill.HN) !== "" && bill.IsAdmission === true) && (
                       <tr className="hover text-center" key={index}>
-                        <td className="whitespace-nowrap">{bill.CreateDate.substring(0, bill.CreateDate.indexOf('T'))}</td>
+                        <td className="whitespace-nowrap">{bill.VisitDate}</td>
                         <td className="whitespace-nowrap">
                           {bill.TitleTH} {bill.GivenNameTH} {bill.SurnameTH}
                           <br /> ( {bill.ServiceSettingCode} -{" "}
@@ -2477,7 +2493,7 @@ bill.BatchNumber ? (
                             bill.ClaimStatusDesc !== "Cancelled to AIA" 
                             &&  bill.ClaimStatusDesc !== "Cancelled" 
                             && bill.ClaimStatusDesc !== "Reversed"
-                            //  && bill.ClaimStatusDesc !== "waitting for discharge" 
+                             && bill.ClaimStatusDesc !== "waitting for discharge" 
                             ? (
                               <>
                                 <div className="tooltip " data-tip="รีเฟรช">
@@ -2502,7 +2518,7 @@ bill.BatchNumber ? (
                               <div className="tooltip" data-tip="ข้อมูลส่งเคลม">
                                 <h1
                                   className="text-error text-2xl"
-                                  onClick={() => Detail3(bill)}
+                                  onClick={() => Detail3PRE(bill)}
                                 >
                                   <IoDocumentText />
                                 </h1>
@@ -2542,7 +2558,7 @@ bill.BatchNumber ? (
                                       >
                                         <h1
                                           className="text-error text-2xl"
-                                          onClick={() => Detail3(bill)}
+                                          onClick={() => Detail3PRE(bill)}
                                         >
                                           <IoDocumentText />
                                         </h1>
@@ -2558,7 +2574,7 @@ bill.BatchNumber ? (
                                   >
                                     <h1
                                       className="text-error text-2xl"
-                                      onClick={() => Detail3(bill)}
+                                      onClick={() => Detail3PRE(bill)}
                                     >
                                       <IoDocumentText />
                                     </h1>
@@ -2573,7 +2589,7 @@ bill.BatchNumber ? (
                                   >
                                     <h1
                                       className="text-error text-2xl"
-                                      onClick={() => Detail3(bill)}
+                                      onClick={() => Detail3PRE(bill)}
                                     >
                                       <IoDocumentText />
                                     </h1>
@@ -2594,7 +2610,7 @@ bill.BatchNumber ? (
                           </div>
                         </td>
                         <td>
-                        {bill.RefId && bill.ClaimNo   ? (
+        {bill.RefId && bill.ClaimNo  && bill.ClaimStatusDesc !=="Cancelled to AIA" && bill.ClaimStatusDesc !== "Cancelled" && bill.ClaimStatusDesc !=="Reversed"  ? (
 bill.BatchNumber ? (
     ""
   ) : bill.ServiceSettingCode === "OPD" ? (
@@ -2640,7 +2656,7 @@ bill.BatchNumber ? (
                           )}
                         </td>
                       </tr>
-                    )
+                    // )
                 )
               ) : (
                 <tr>
@@ -2692,11 +2708,13 @@ bill.BatchNumber ? (
             </thead>
             <tbody>
               {postData ? (
-                datax.map(
+                datax
+                .filter((bill) => ((bill.VisitDate || bill.HN) !== "" && bill.IsAdmission === false) ) 
+                .map(
                   (bill, index) =>
-                    ((bill.VisitDate || bill.HN) !== "" && bill.IsAdmission === false) && (
+                    // ((bill.VisitDate || bill.HN) !== "" && bill.IsAdmission === false) && (
                       <tr className="hover text-center" key={index}>
-                        <td className="whitespace-nowrap">{bill.CreateDate.substring(0, bill.CreateDate.indexOf('T'))}</td>
+                        <td className="whitespace-nowrap">{bill.VisitDate}</td>
                         <td className="whitespace-nowrap">
                           {bill.TitleTH} {bill.GivenNameTH} {bill.SurnameTH}
                           <br /> ( {bill.ServiceSettingCode} -{" "}
@@ -2825,8 +2843,8 @@ bill.BatchNumber ? (
                         </th>
                         <td>
                           {bill.RefId ? (
-                             // bill.ClaimStatusDesc !== "Cancelled to AIA" &&
-                  // bill.ClaimStatusDesc !== "Cancelled" &&
+                             bill.ClaimStatusDesc !== "Cancelled to AIA" &&
+                  bill.ClaimStatusDesc !== "Cancelled" &&
                             bill.ClaimStatusDesc !== "Reversed" &&
                             bill.ClaimStatusDesc !== "waitting for discharge" ? (
                               <>
@@ -2851,7 +2869,7 @@ bill.BatchNumber ? (
                               <div className="tooltip" data-tip="ข้อมูลส่งเคลม">
                                 <h1
                                   className="text-error text-2xl"
-                                  onClick={() => Detail3(bill)}
+                                  onClick={() => Detail3PRE(bill)}
                                 >
                                   <IoDocumentText />
                                 </h1>
@@ -2891,7 +2909,7 @@ bill.BatchNumber ? (
                                       >
                                         <h1
                                           className="text-error text-2xl"
-                                          onClick={() => Detail3(bill)}
+                                          onClick={() => Detail3PRE(bill)}
                                         >
                                           <IoDocumentText />
                                         </h1>
@@ -2908,7 +2926,7 @@ bill.BatchNumber ? (
                                   >
                                     <h1
                                       className="text-error text-2xl"
-                                      onClick={() => Detail3(bill)}
+                                      onClick={() => Detail3PRE(bill)}
                                     >
                                       <IoDocumentText />
                                     </h1>
@@ -2923,7 +2941,7 @@ bill.BatchNumber ? (
                               >
                                 <h1
                                   className="text-error text-2xl"
-                                  onClick={() => Detail3(bill)}
+                                  onClick={() => Detail3PRE(bill)}
                                 >
                                   <IoDocumentText />
                                 </h1>
@@ -2944,7 +2962,7 @@ bill.BatchNumber ? (
                           </div>
                         </td>
                         <td>
-                        {bill.RefId && bill.ClaimNo   ? (
+         {bill.RefId && bill.ClaimNo  && bill.ClaimStatusDesc !=="Cancelled to AIA" && bill.ClaimStatusDesc !== "Cancelled" && bill.ClaimStatusDesc !=="Reversed"  ? (
 bill.BatchNumber ? (
     ""
   ) : bill.ServiceSettingCode === "OPD" ? (
@@ -2990,7 +3008,7 @@ bill.BatchNumber ? (
                           )}
                         </td>
                       </tr>
-                    )
+                    // )
                 )
               ) : (
                 <tr>
@@ -3045,11 +3063,13 @@ bill.BatchNumber ? (
             </thead>
             <tbody>
               {postData ? (
-                datax.map(
+                datax
+                .filter((bill) => ((bill.VisitDate || bill.HN) !== "") ) 
+                .map(
                   (bill, index) =>
-                    (bill.VisitDate || bill.HN) !== "" && (
+                    // (bill.VisitDate || bill.HN) !== "" && (
                       <tr className="hover text-center" key={index}>
-                        <td className="whitespace-nowrap">{bill.CreateDate.substring(0, bill.CreateDate.indexOf('T'))}</td>
+                        <td className="whitespace-nowrap">{bill.VisitDate}</td>
                         <td className="whitespace-nowrap">
                           {bill.TitleTH} {bill.GivenNameTH} {bill.SurnameTH}
                           <br /> ( {bill.ServiceSettingCode} -{" "}
@@ -3178,8 +3198,8 @@ bill.BatchNumber ? (
                         </th>
                         <td>
                           {bill.RefId ? (
-                                 // bill.ClaimStatusDesc !== "Cancelled to AIA" &&
-                  // bill.ClaimStatusDesc !== "Cancelled" &&
+                                 bill.ClaimStatusDesc !== "Cancelled to AIA" &&
+                  bill.ClaimStatusDesc !== "Cancelled" &&
                             bill.ClaimStatusDesc !== "Reversed" &&
                             bill.ClaimStatusDesc !== "waitting for discharge" ? (
                               <>
@@ -3204,7 +3224,7 @@ bill.BatchNumber ? (
                               <div className="tooltip" data-tip="ข้อมูลส่งเคลม">
                                 <h1
                                   className="text-error text-2xl"
-                                  onClick={() => Detail3(bill)}
+                                  onClick={() => Detail3IPD(bill)}
                                 >
                                   <IoDocumentText />
                                 </h1>
@@ -3242,7 +3262,7 @@ bill.BatchNumber ? (
                                       >
                                         <h1
                                           className="text-error text-2xl"
-                                          onClick={() => Detail3(bill)}
+                                          onClick={() => Detail3IPD(bill)}
                                         >
                                           <IoDocumentText />
                                         </h1>
@@ -3258,7 +3278,7 @@ bill.BatchNumber ? (
                                   >
                                     <h1
                                       className="text-error text-2xl"
-                                      onClick={() => Detail3(bill)}
+                                      onClick={() => Detail3IPD(bill)}
                                     >
                                       <IoDocumentText />
                                     </h1>
@@ -3273,7 +3293,7 @@ bill.BatchNumber ? (
                               >
                                 <h1
                                   className="text-error text-2xl"
-                                  onClick={() => Detail3(bill)}
+                                  onClick={() => Detail3IPD(bill)}
                                 >
                                   <IoDocumentText />
                                 </h1>
@@ -3294,7 +3314,7 @@ bill.BatchNumber ? (
                           </div>
                         </td>
                         <td>
-                        {bill.RefId && bill.ClaimNo   ? (
+       {bill.RefId && bill.ClaimNo  && bill.ClaimStatusDesc !=="Cancelled to AIA" && bill.ClaimStatusDesc !== "Cancelled" && bill.ClaimStatusDesc !=="Reversed"  ? (
 bill.BatchNumber ? (
     ""
   ) : bill.ServiceSettingCode === "OPD" ? (
@@ -3340,7 +3360,7 @@ bill.BatchNumber ? (
                           )}
                         </td>
                       </tr>
-                    )
+                    // )
                 )
               ) : (
                 <tr>
@@ -3391,11 +3411,13 @@ bill.BatchNumber ? (
   </thead>
   <tbody>
     {postData ? (
-      datax.map(
+      datax
+      .filter((bill) => ((bill.VisitDate || bill.HN) !== "") ) 
+      .map(
         (bill, index) =>
-          (bill.VisitDate || bill.HN) !== "" && (
+          // (bill.VisitDate || bill.HN) !== "" && (
             <tr className="hover text-center" key={index}>
-              <td className="whitespace-nowrap">{bill.CreateDate.substring(0, bill.CreateDate.indexOf('T'))}</td>
+              <td className="whitespace-nowrap">{bill.VisitDate}</td>
               <td className="whitespace-nowrap">
                 {bill.TitleTH} {bill.GivenNameTH} {bill.SurnameTH}
                 <br /> ( {bill.ServiceSettingCode} -{" "}
@@ -3524,8 +3546,8 @@ bill.BatchNumber ? (
               </th>
               <td>
                 {bill.RefId ? (
-                  // bill.ClaimStatusDesc !== "Cancelled to AIA" &&
-                  // bill.ClaimStatusDesc !== "Cancelled" &&
+                  bill.ClaimStatusDesc !== "Cancelled to AIA" &&
+                  bill.ClaimStatusDesc !== "Cancelled" &&
                   bill.ClaimStatusDesc !== "Reversed" &&
                   bill.ClaimStatusDesc !== "waitting for discharge" ? (
                     <>
@@ -3550,7 +3572,7 @@ bill.BatchNumber ? (
                     <div className="tooltip" data-tip="ข้อมูลส่งเคลม">
                       <h1
                         className="text-error text-2xl"
-                        onClick={() => Detail3(bill)}
+                        onClick={() => Detail3OPD(bill)}
                       >
                         <IoDocumentText />
                       </h1>
@@ -3590,7 +3612,7 @@ bill.BatchNumber ? (
                             >
                               <h1
                                 className="text-error text-2xl"
-                                onClick={() => Detail3(bill)}
+                                onClick={() => Detail3OPD(bill)}
                               >
                                 <IoDocumentText />
                               </h1>
@@ -3606,7 +3628,7 @@ bill.BatchNumber ? (
                         >
                           <h1
                             className="text-error text-2xl"
-                            onClick={() => Detail3(bill)}
+                            onClick={() => Detail3OPD(bill)}
                           >
                             <IoDocumentText />
                           </h1>
@@ -3621,7 +3643,7 @@ bill.BatchNumber ? (
                     >
                       <h1
                         className="text-error text-2xl"
-                        onClick={() => Detail3(bill)}
+                        onClick={() => Detail3OPD(bill)}
                       >
                         <IoDocumentText />
                       </h1>
@@ -3642,7 +3664,7 @@ bill.BatchNumber ? (
                 </div>
               </td>
               <td>
-              {bill.RefId && bill.ClaimNo   ? (
+          {bill.RefId && bill.ClaimNo  && bill.ClaimStatusDesc !=="Cancelled to AIA" && bill.ClaimStatusDesc !== "Cancelled" && bill.ClaimStatusDesc !=="Reversed"  ? (
 bill.BatchNumber ? (
     ""
   ) : bill.ServiceSettingCode === "OPD" ? (
@@ -3688,7 +3710,7 @@ bill.BatchNumber ? (
                 )}
               </td>
             </tr>
-          )
+          // )
       )
     ) : (
       <tr>
@@ -3979,8 +4001,18 @@ bill.BatchNumber ? (
             </div>
           </dialog>
 
+
           <Dialog open={showDetailData} onClose={showDetailDataClose}>
-          <DetailDischarge data={detailData} /> 
+          {showDetailData && (
+  detailData.ServiceSettingCode === "OPD" ? (
+    <DetailDischargeOPD data={detailData} />
+  ) : detailData.ServiceSettingCode === "IPD" ? (
+    <DetailDischargeIPD data={detailData} />
+  ) : (
+    <DetailDischargePRE data={detailData} />
+  )
+)}
+
           </Dialog>
 
           <dialog id="DoMoney" className="modal text-xl	">

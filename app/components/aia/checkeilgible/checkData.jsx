@@ -1280,14 +1280,19 @@ if(idTypeValue === "NATIONAL_ID"){
 
          
           if (response.data) {
+     
             setMass();
             const hasTrueStatus = response.data.Result.InsuranceData.CoverageList.some(coverage => coverage.Status === true);
             const HS = response.data.Result.InsuranceData.CoverageList.some(coverage => coverage.Type === "ผลประโยชน์ค่ารักษาพยาบาล" && coverage.Status === true);
             const HB = response.data.Result.InsuranceData.CoverageList.some(coverage => coverage.Type === "ผลประโยชน์ค่าชดเชยนอนรพ" && coverage.Status === true);
             const AI = response.data.Result.InsuranceData.CoverageList.some(coverage => coverage.Type === "ผลประโยชน์ค่าชดเชย" && coverage.Status === true);
+          
 
+            // console.log(response.data.Result.InsuranceData.CoverageList.forEach((ArrayCoverageList) => {
 
-
+            // })          )
+      
+           
 
             
 
@@ -2214,6 +2219,7 @@ if(idTypeValue === "NATIONAL_ID"){
                     </tr>
                   </thead>
                   <tbody>
+         
                     {result ? (
                       result.Result.InsuranceData.CoverageList.map(
                         (coverage, index) =>

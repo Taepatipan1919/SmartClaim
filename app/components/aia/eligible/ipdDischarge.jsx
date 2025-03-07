@@ -2400,6 +2400,40 @@ if(rows2){
                       />
                     </Box>
                   </div>
+                  <div className="rounded-md">
+                    <Box
+                      sx={{
+                        backgroundColor: "#e5e7eb",
+                        padding: 0,
+                        borderRadius: 0,
+                      }}
+                    >
+                      <CustomTextField
+                        id="disabledInput"
+                        label="SurgeryType"
+                        defaultValue={PatientInfoData.PatientInfo.SurgeryTypeCode === "N" ? "ไม่มีผ่าตัด" : "มีผ่านตัด"}
+                        className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"
+                        InputProps={{ readOnly: true }}
+                      />
+                    </Box>
+                  </div>
+                  <div className="rounded-md">
+                    <Box
+                      sx={{
+                        backgroundColor: "#e5e7eb",
+                        padding: 0,
+                        borderRadius: 0,
+                      }}
+                    >
+                      <CustomTextField
+                        id="disabledInput"
+                        label="Accident"
+                        defaultValue={accidentDetail ? "มีอุบัติเหตุ" : "ไม่มีอุบัติเหตุ"}
+                        className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"
+                        InputProps={{ readOnly: true }}
+                      />
+                    </Box>
+                  </div>
                 </div>
               </div>
             ) : (
@@ -5288,7 +5322,7 @@ if(rows2){
           <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
             <div className="bg-white p-8 rounded shadow-lg">
               <h2 className="text-4xl font-bold mb-4 text-primary">
-              ลงทะเบียนช้สิทธิ์สำเร็จ
+              ลงทะเบียนใช้สิทธิ์สำเร็จ
               </h2>
 
             </div>

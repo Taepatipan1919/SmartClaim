@@ -47,7 +47,7 @@ export default function DetailDischarge({ data }) {
     IllnessTypeCode: data.IllnessTypeCode,
     SurgeryTypeCode:  data.SurgeryTypeCode
     }
-   
+  const [docType, setDocType] = useState("");
   const [massError, setMassError] = useState("");
   const [showFormError, setShowFormError] = useState("");
   const [patientInfo, setPatientInfo] = useState({});
@@ -63,7 +63,6 @@ export default function DetailDischarge({ data }) {
   const [dataaccidentPlace, setDataaccidentPlace] = useState("");
   const [accidentPlaceName, setAccidentPlaceName] = useState("");
   const [visitInfo, setVisitInfo] = useState("");
-  const [rows2, setRows2] = useState("");
   const [indicationForAdmissionCode, setIndicationForAdmissionCode] = useState("");
   useEffectOnce(() => {
     
@@ -87,7 +86,7 @@ export default function DetailDischarge({ data }) {
     )
     .then((response) => {
       setTransactionClaimInfo();
-      // console.log(response.data.Result.TransactionClaimInfo[0]);
+       console.log(response.data.Result.TransactionClaimInfo[0]);
     setPatientInfo(response.data.Result.TransactionClaimInfo[0]);
 
     })
@@ -99,15 +98,33 @@ export default function DetailDischarge({ data }) {
   });
   useEffectOnce(() => {
     axios
+      .get(
+        process.env.NEXT_PUBLIC_URL_PD2 +
+          process.env.NEXT_PUBLIC_URL_documentType +
+          InsuranceCode
+      )
+      .then((response) => {
+        setDocType(response.data);
+      })
+      .catch((err) => {
+        // console.error("Error", err)
+        console.log(err);
+        //  if (err.response.request.status === 500) {
+        setShowFormError("Error");
+        setMassError(err.message);
+      });
+
+
+    axios
     .post(
       process.env.NEXT_PUBLIC_URL_SV +
-        process.env.NEXT_PUBLIC_URL_getIPDDischargeVisit,
+        process.env.NEXT_PUBLIC_URL_getOPDDischargeVisit,
      {
       PatientInfo
     }
     )
     .then((response) => {
-    // console.log(response.data)
+     console.log(response.data)
     setVisitInfo(response.data.Result.VisitInfo);
     })
     .catch((error) => {
@@ -181,38 +198,7 @@ export default function DetailDischarge({ data }) {
         }
       });
   }, []);
-  useEffectOnce(() => {
 
-    axios
-      .post(
-        process.env.NEXT_PUBLIC_URL_PD +
-          process.env.NEXT_PUBLIC_URL_getIPDDischargeConcurNote,
-          {
-            "PatientInfo" : PatientInfo
-          }
-      )
-      .then((response) => {
-       //    console.log(response.data)
-       setRows2("");
-           if(response.data.Result.ConcurNoteList[0].ConcurrentDatetime){
-            setRows2(response.data.Result.ConcurNoteList);
-           }
-       
-      
-      })
-      .catch((error) => {
-        console.log(error);
-        try {
-          const ErrorMass = error.config.url;
-          const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
-          setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
-          setShowFormError("Error");
-        } catch (error) {
-          setMassError(error.response.data.HTTPStatus.message);
-          setShowFormError("Error");
-        }
-      });
-  });
   useEffectOnce(() => {
     setMassDocError();
     setShowDocError();
@@ -233,6 +219,7 @@ export default function DetailDischarge({ data }) {
     }
     )
     .then((response) => {
+      console.log(response.data);
       setFileList(response.data);
 
     })
@@ -271,7 +258,7 @@ const   PatientInfo = {
   }
   // console.log(PatientInfo)
     axios
-  .post(process.env.NEXT_PUBLIC_URL_SV + process.env.NEXT_PUBLIC_URL_ReviewIPDDischarge,
+  .post(process.env.NEXT_PUBLIC_URL_SV + process.env.NEXT_PUBLIC_URL_ReviewOPDDischarge,
     {
       PatientInfo
     }
@@ -279,7 +266,7 @@ const   PatientInfo = {
   )
   .then((response) => {
     setTransactionClaimInfo(response.data.Result.InsuranceData);
-   //  console.log(response.data.Result)
+     console.log(response.data.Result)
   })
   .catch((error) => {
    // console.error("Error", err)
@@ -504,9 +491,6 @@ useEffectOnce(() => {
                         />
                    </div>
               </div>
-
-              {patien ? (
-
                 <div className="rounded-md">
                               <div className="flex flex-col mb-4">
                               <label className="text-gray-700 mb-2">Gender</label>
@@ -518,9 +502,32 @@ useEffectOnce(() => {
                                   />
                              </div>
                 </div>
-              ) : (
-                ""
-              )}
+              <div className="rounded-md">
+                                     <div className="flex flex-col mb-4">
+                    <label className="text-gray-700 mb-2">การผ่าตัด</label>
+                      <input
+                          type="text"
+                          defaultValue={patientInfo.SurgeryTypeCode === "N" ? "ไม่มีผ่าตัด" : "มีผ่านตัด"}
+                          readOnly
+                          className="border-2 border-gray-300 rounded-md px-4 py-2 bg-gray-100"
+                        />
+                   </div>
+              </div>
+              <div className="rounded-md">
+                                     <div className="flex flex-col mb-4">
+                    <label className="text-gray-700 mb-2">อุบัติเหตุ</label>
+                      <input
+                          type="text"
+                          defaultValue={patientInfo.accidentDate ? "มีอุบัติเหตุ" : "ไม่มีอุบัติเหตุ"}
+                          readOnly
+                          className="border-2 border-gray-300 rounded-md px-4 py-2 bg-gray-100"
+                        />
+                   </div>
+              </div>
+
+
+
+
             </div>
           </div>
           <div className="justify-center border-solid m-auto border-2 border-warning rounded-lg p-4 mt-2">
@@ -579,7 +586,7 @@ useEffectOnce(() => {
                   )}
                   <div className="rounded-md">
                     <div className="flex flex-col mb-4">
-                     <label className="text-gray-700 mb-2">วันเวลาทีเข้ารับการรักษาเป็นผู้ป่วยใน</label>
+                     <label className="text-gray-700 mb-2">ExpectedAdmitDate</label>
                       <input
                           type="text"
                           defaultValue={visitInfo.AdmitDateTime}
@@ -590,7 +597,7 @@ useEffectOnce(() => {
                   </div>
                   <div className="rounded-md">
                     <div className="flex flex-col mb-4">
-                     <label className="text-gray-700 mb-2">วันเวลาที่ออกจากโรงพยาบาล</label>
+                     <label className="text-gray-700 mb-2">DscDateTime</label>
                       <input
                           type="text"
                           defaultValue={visitInfo.DscDateTime}
@@ -1277,17 +1284,7 @@ useEffectOnce(() => {
                             <TableCell className="w-2"></TableCell>
                             <TableCell>
                               <h1 className="text-base-100 bg-primary text-sm w-full text-center">
-                              รหัส
-                              </h1>
-                            </TableCell>
-                            <TableCell>
-                              <h1 className="text-base-100 bg-primary text-sm w-full text-center">
-                              ชื่อของการวินิจฉัยโรค
-                              </h1>
-                            </TableCell>
-                            <TableCell>
-                              <h1 className="text-base-100 bg-primary text-sm w-full text-center">
-                              ชนิดของการวินิจฉัยโรค
+                              ICD10 - ชื่อของการวินิจฉัยโรค
                               </h1>
                             </TableCell>
                           </TableRow>
@@ -1304,27 +1301,9 @@ useEffectOnce(() => {
                                       <TableCell>{index + 1}</TableCell>
                                       <TableCell>
                                             <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                                              {diagnosis.Icd10 ? (
-                                                diagnosis.Icd10
-                                              ) : (
-                                                <>&nbsp;</>
-                                              )}
-                                            </div>
-                                      </TableCell>
-                                      <TableCell>
-                                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                                              {diagnosis.DxName ? (
-                                                diagnosis.DxName
-                                              ) : (
-                                                <>&nbsp;</>
-                                              )}
-                                            </div>
-                                      </TableCell>
-                                      <TableCell>
-                                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                                              {diagnosis.DxType ? (
-                                                diagnosis.DxType
-                                              ) : (
+                                              {diagnosis.Icd10 && diagnosis.DxName ? <>
+                                                {diagnosis.Icd10} - {diagnosis.DxName}
+                                              </> : (
                                                 <>&nbsp;</>
                                               )}
                                             </div>
@@ -1349,12 +1328,7 @@ useEffectOnce(() => {
                             <TableCell className="w-2"></TableCell>
                             <TableCell>
                               <h1 className="text-base-100 bg-primary text-sm w-full text-center">
-                              Icd 9 Code ของหัตถการหรือการผ่าตัด
-                              </h1>
-                            </TableCell>
-                            <TableCell>
-                              <h1 className="text-base-100 bg-primary text-sm w-full text-center">
-                              ชื่อของหัตถการหรือการผ่าตัด
+                              Icd9 - ชื่อของหัตถการหรือการผ่าตัด
                               </h1>
                             </TableCell>
                             <TableCell>
@@ -1376,18 +1350,9 @@ useEffectOnce(() => {
                                       <TableCell>{index + 1}</TableCell>
                                       <TableCell>
                                             <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                                              {proce.Icd9 ? (
-                                                proce.Icd9
-                                              ) : (
-                                                <>&nbsp;</>
-                                              )}
-                                            </div>
-                                      </TableCell>
-                                      <TableCell>
-                                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                                              {proce.ProcedureName ? (
-                                                proce.ProcedureName
-                                              ) : (
+                                              {proce.Icd9 && proce.ProcedureName ? <>
+                                                {proce.Icd9} - {proce.ProcedureName}
+                                              </> : (
                                                 <>&nbsp;</>
                                               )}
                                             </div>
@@ -1763,63 +1728,6 @@ useEffectOnce(() => {
             </div>
           </div>
            {/* //////////////////////////////////////////////////////////////////////////// */}
- <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
-              <h1 className="font-black text-accent text-3xl ">Note</h1>
-              <div className="overflow-x-auto">
- <TableContainer component={Paper} className="mt-2">
-                      <Table className="table">
-                        <TableHead>
-                          <TableRow className="bg-primary">
-                            <TableCell className="w-2"></TableCell>
-                            <TableCell>
-                              <h1 className="text-base-100 bg-primary text-sm w-full text-center">
-                              วันเวลา
-                              </h1>
-                            </TableCell>
-                            <TableCell>
-                              <h1 className="text-base-100 bg-primary text-sm w-full text-center">
-                              รายละเอียด
-                              </h1>
-                            </TableCell>
-                          </TableRow>
-                        </TableHead>
-                        <TableBody>
-                          {rows2
-                            ? rows2.map(
-                                (con, index) =>
-   
-                                    <TableRow
-                                      key={index}
-                                      className=" bg-neutral text-sm"
-                                    >
-                                      <TableCell>{index + 1}</TableCell>
-                                      <TableCell>
-                                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                                              {con.ConcurrentDatetime ? (
-                                                con.ConcurrentDatetime
-                                              ) : (
-                                                <>&nbsp;</>
-                                              )}
-                                            </div>
-                                      </TableCell>
-                                      <TableCell>
-                                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
-                                              {con.ConcurrentDetail ? (
-                                                con.ConcurrentDetail
-                                              ) : (
-                                                <>&nbsp;</>
-                                              )}
-                                            </div>
-                                      </TableCell>
-                                      </TableRow>
-                              
-                            )
-                          : ""}
-                        </TableBody>
-                    </Table>
-            </TableContainer>
-            </div>
-          </div>
  {/* //////////////////////////////////////////////////////////////////////////// */}
   <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
               <h1 className="font-black text-accent text-3xl ">Upload File</h1>
@@ -1853,6 +1761,7 @@ useEffectOnce(() => {
                   <thead>
                     <tr className="text-base-100 bg-primary py-8 text-sm w-full text-center">
                       <th className="w-2/5">ชื่อไฟล์</th>
+                      <th className="w-1/5">ประเภทเอกสาร</th>
                       <th className="w-1/5"></th>
                     </tr>
                   </thead>
@@ -1864,16 +1773,26 @@ useEffectOnce(() => {
                           {list.filename}
                           <br/>{list.originalname}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap break-all">
+                          <td className="px-6 py-4 text-wrap break-all">
+                            {docType.Result.map((type, index) =>
+                              list.documenttypecode ===
+                              type.documenttypecode ? (
+                                <h1 key={index}>{type.documenttypename} </h1>
+                              ) : (
+                                ""
+                              )
+                            )}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap break-all">
                           
-                              <div
-                                className="btn btn-primary  mr-2 text-base-100 hover:text-primary hover:bg-base-100"
-                                type="submit"
-                                onClick={() => DocumentBase64(list.filename)}
-                              >
-                                Document
-                              </div>
-                          </td>
+                          <div
+                            className="btn btn-primary  mr-2 text-base-100 hover:text-primary hover:bg-base-100"
+                            type="submit"
+                            onClick={() => DocumentBase64(list.filename)}
+                          >
+                            Document
+                          </div>
+                      </td>
                         </tr>
                       ))
                     ) : (
