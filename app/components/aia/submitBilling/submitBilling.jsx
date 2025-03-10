@@ -82,7 +82,7 @@ export default function checkData() {
     setCurrentData("");
     axios
     .get(
-      process.env.NEXT_PUBLIC_URL_PD2 +
+      process.env.NEXT_PUBLIC_URL_SV +
         process.env.NEXT_PUBLIC_URL_documentType +
         InsuranceCode
     )
@@ -230,7 +230,7 @@ setBilltype(Billtype)
     });
     try {
       const response = await axios.post(
-        process.env.NEXT_PUBLIC_URL_PD2 +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_uploadDocuments,
         formData,
         {
@@ -278,7 +278,7 @@ setBilltype(Billtype)
       }
       axios
         .post(
-          process.env.NEXT_PUBLIC_URL_PD2 +
+          process.env.NEXT_PUBLIC_URL_SV +
             process.env.NEXT_PUBLIC_URL_getlistDocumentClaim,
           {
             PatientInfo
@@ -360,7 +360,7 @@ setBilltype(Billtype)
     console.log(PatientInfo);
     axios
       .post(
-        process.env.NEXT_PUBLIC_URL_PD2 +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_getlistDocumentClaim,
         { PatientInfo }
       )
@@ -380,9 +380,8 @@ setBilltype(Billtype)
  
   };
   const DelectSearch = () => {
-    setPost("");
-    setCurrentData("");
-    setNumberValue();
+    setStatusValue(null);
+    setNumberValue(null);
     setFromValue(null);
     setToValue(null);
   const today = dayjs().format('YYYY-MM-DD');
@@ -445,7 +444,7 @@ axios
    // console.log(PatientInfo);
     axios
       .post(
-        process.env.NEXT_PUBLIC_URL_PD +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_getcheckclaimstatus,
         { PatientInfo }
       )
@@ -576,7 +575,7 @@ axios
 
       axios
         .post(
-          process.env.NEXT_PUBLIC_URL_PD +
+          process.env.NEXT_PUBLIC_URL_SV +
             process.env.NEXT_PUBLIC_URL_getclaimcancel,
           { PatientInfo }
         )
@@ -643,7 +642,7 @@ axios
          IdType: selectedIdType,
         InvoiceNumber: "",
         ClaimNo : "",
-        VN: numberValue,
+        VN: numberValue.trim(),
         PID: "",
         PassportNumber: "",
         HN: "",
@@ -660,7 +659,7 @@ axios
         ClaimNo : "",
         VN: "",
         PID: "",
-        PassportNumber: numberValue,
+        PassportNumber: numberValue.trim(),
         HN: "",
         VisitDatefrom: dateFromValue,
         VisitDateto: dateToValue,
@@ -676,7 +675,7 @@ axios
         VN: "",
         PID: "",
         PassportNumber: "",
-        HN: numberValue,
+        HN: numberValue.trim(),
         VisitDatefrom: dateFromValue,
         VisitDateto: dateToValue,
         StatusClaimCode: statusValue,
@@ -689,7 +688,7 @@ axios
         InvoiceNumber: "",
         ClaimNo : "",
         VN: "",
-        PID: numberValue,
+        PID: numberValue.trim(),
         PassportNumber: "",
         HN: "",
         VisitDatefrom: dateFromValue,
@@ -702,7 +701,7 @@ axios
         InsurerCode: InsuranceCode,
          IdType: selectedIdType,
         InvoiceNumber: "",
-        ClaimNo : numberValue,
+        ClaimNo : numberValue.trim(),
         VN: "",
         PID: "",
         PassportNumber: "",
@@ -841,7 +840,7 @@ axios
   
     axios
       .post(
-        process.env.NEXT_PUBLIC_URL_PD2 +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_getbillingsubmission,
       {
           PatientInfo : {
@@ -916,7 +915,7 @@ console.log(PatientInfo)
     setProgress({ started: false, pc: 0 });
     axios
       .post(
-        process.env.NEXT_PUBLIC_URL_PD2 +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_getDocumentByDocname,
         {
           RefId: refIdL,
@@ -974,7 +973,7 @@ const PatientInfo = {
 };
 axios
 .post(
-  process.env.NEXT_PUBLIC_URL_PD2 +
+  process.env.NEXT_PUBLIC_URL_SV +
     process.env.NEXT_PUBLIC_URL_UpdateDocumentTypeCode,
   {
     PatientInfo
@@ -997,7 +996,7 @@ axios
   // console.log(PatientInfo)
   axios
     .post(
-      process.env.NEXT_PUBLIC_URL_PD2 +
+      process.env.NEXT_PUBLIC_URL_SV +
         process.env.NEXT_PUBLIC_URL_getlistDocumentClaim,
       { PatientInfo }
     )
@@ -1034,7 +1033,7 @@ axios
 /////////////////////////////////////////////////////
     axios
       .post(
-        process.env.NEXT_PUBLIC_URL_PD2 +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_getDocumentByDocname,
         {
           VN: vNL,
@@ -1081,7 +1080,7 @@ axios
     setProgress({ started: false, pc: 0 });
     axios
       .post(
-        process.env.NEXT_PUBLIC_URL_PD2 +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_isClaimExcludedByDocName,
         {
           "PatientInfo": {
@@ -1129,7 +1128,7 @@ axios
       setBillList();
       axios
         .post(
-          process.env.NEXT_PUBLIC_URL_PD2 +
+          process.env.NEXT_PUBLIC_URL_SV +
             process.env.NEXT_PUBLIC_URL_getlistDocumentClaim,
           {
             PatientInfo
@@ -1220,7 +1219,7 @@ axios
     //console.log(PatientInfo)
     axios
       .post(
-        process.env.NEXT_PUBLIC_URL_PD2 +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_getlistDocumentClaim,
         { PatientInfo }
       )
@@ -1285,7 +1284,7 @@ axios
     //console.log(PatientInfo)
      axios
        .post(
-         process.env.NEXT_PUBLIC_URL_PD +
+         process.env.NEXT_PUBLIC_URL_SV +
            process.env.NEXT_PUBLIC_URL_getcheckclaimstatusListAll,
          { "PatientInfo" :   PatientInfo  }
        )

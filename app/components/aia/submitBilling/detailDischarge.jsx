@@ -78,7 +78,7 @@ export default function DetailDischarge({ data }) {
   useEffectOnce(() => {
     axios
     .get(
-      process.env.NEXT_PUBLIC_URL_PD2 +
+      process.env.NEXT_PUBLIC_URL_SV +
         process.env.NEXT_PUBLIC_URL_accidentCauseOver45Day +
         InsuranceCode
     )
@@ -102,7 +102,7 @@ export default function DetailDischarge({ data }) {
   useEffectOnce(() => {
     axios
       .get(
-        process.env.NEXT_PUBLIC_URL_PD +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_accidentPlace +
           InsuranceCode,
         data
@@ -207,7 +207,7 @@ const   PatientInfo = {
     setShowDocError();
     axios
       .post(
-        process.env.NEXT_PUBLIC_URL_PD2 +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_getDocumentByDocname,
         {
           DocumentName: docname,

@@ -114,7 +114,7 @@ export default function checkData() {
 
   axios
     .post(
-      process.env.NEXT_PUBLIC_URL_PD +
+      process.env.NEXT_PUBLIC_URL_SV +
         process.env.NEXT_PUBLIC_URL_PatientSearch,
       {
         PatientInfo,
@@ -239,7 +239,7 @@ if(idTypeValue === "NATIONAL_ID"){
     SurgeryTypeCode:  surgeryTypeValue,
 
     IdType: idTypeValue,
-    PID: numberValue,
+    PID: numberValue.trim(),
     PassportNumber: "",
     MembershipId:"",  
     CustomerId : "",
@@ -269,7 +269,7 @@ if(idTypeValue === "NATIONAL_ID"){
 
     IdType: idTypeValue,
     PID: "",
-    PassportNumber: numberValue,
+    PassportNumber: numberValue.trim(),
     MembershipId:"",  
     CustomerId : "",
     PolicyNumber:"",
@@ -299,7 +299,7 @@ if(idTypeValue === "NATIONAL_ID"){
     IdType: idTypeValue,
     PID: "",
     PassportNumber: "",
-    MembershipId: numberValue,  
+    MembershipId: numberValue.trim(),  
     CustomerId : "",
     PolicyNumber:"",
     FurtherClaimVN: furtherVN,
@@ -330,7 +330,7 @@ if(idTypeValue === "NATIONAL_ID"){
     PassportNumber: "",
     MembershipId: "",  
     CustomerId : "",
-    PolicyNumber: numberValue,
+    PolicyNumber: numberValue.trim(),
     FurtherClaimVN: furtherVN,
     FurtherClaimNo: furtherClaimNo,
     FurtherClaimId: furtherClaimId,
@@ -358,7 +358,7 @@ if(idTypeValue === "NATIONAL_ID"){
     PID: "",
     PassportNumber: "",
     MembershipId: "",  
-    CustomerId : numberValue,
+    CustomerId : numberValue.trim(),
     PolicyNumber: "",
     FurtherClaimVN: furtherVN,
     FurtherClaimNo: furtherClaimNo,
@@ -392,7 +392,7 @@ if(idTypeValue === "NATIONAL_ID"){
           SurgeryTypeCode:  surgeryTypeValue,
       
           IdType: idTypeValue,
-          PID: numberValue,
+          PID: numberValue.trim(),
           PassportNumber: "",
           MembershipId:"",  
           CustomerId : "",
@@ -422,7 +422,7 @@ if(idTypeValue === "NATIONAL_ID"){
       
           IdType: idTypeValue,
           PID: "",
-          PassportNumber: numberValue,
+          PassportNumber: numberValue.trim(),
           MembershipId:"",  
           CustomerId : "",
           PolicyNumber:"",
@@ -452,7 +452,7 @@ if(idTypeValue === "NATIONAL_ID"){
           IdType: idTypeValue,
           PID: "",
           PassportNumber: "",
-          MembershipId: numberValue,  
+          MembershipId: numberValue.trim(),  
           CustomerId : "",
           PolicyNumber:"",
           FurtherClaimVN: furtherVN,
@@ -483,7 +483,7 @@ if(idTypeValue === "NATIONAL_ID"){
           PassportNumber: "",
           MembershipId: "",  
           CustomerId : "",
-          PolicyNumber: numberValue,
+          PolicyNumber: numberValue.trim(),
           FurtherClaimVN: furtherVN,
           FurtherClaimNo: furtherClaimNo,
           FurtherClaimId: furtherClaimId,
@@ -511,7 +511,7 @@ if(idTypeValue === "NATIONAL_ID"){
           PID: "",
           PassportNumber: "",
           MembershipId: "",  
-          CustomerId : numberValue,
+          CustomerId : numberValue.trim(),
           PolicyNumber: "",
           FurtherClaimVN: furtherVN,
           FurtherClaimNo: furtherClaimNo,
@@ -525,7 +525,7 @@ if(idTypeValue === "NATIONAL_ID"){
     console.log(PatientInfo)
     axios
     .post(
-      process.env.NEXT_PUBLIC_URL_PD +
+      process.env.NEXT_PUBLIC_URL_SV +
         process.env.NEXT_PUBLIC_URL_crateTransaction,
       {
           PatientInfo
@@ -585,7 +585,7 @@ if(idTypeValue === "NATIONAL_ID"){
       SurnameTH: patientDB.SurnameTH,
       DateOfBirth: patientDB.DateOfBirth,
       PassportNumber: patientDB.PassportNumber,
-      IdType: numberValue,
+      IdType: numberValue.trim(),
       VN: detailVN,
       VisitDateTime: patientInfo.VisitDateTime,
       AccidentDate: accidentDate,
@@ -610,7 +610,7 @@ if(idTypeValue === "NATIONAL_ID"){
       SurnameTH: patientDB.SurnameTH,
       DateOfBirth: patientDB.DateOfBirth,
       PassportNumber: patientDB.PassportNumber,
-      IdType: numberValue,
+      IdType: numberValue.trim(),
       VN: detailVN,
       VisitDateTime: patientInfo.VisitDateTime,
       AccidentDate: accidentDate,
@@ -633,7 +633,7 @@ if(idTypeValue === "NATIONAL_ID"){
      if(serviceValue === "OPD"){
     axios
     .post(
-      process.env.NEXT_PUBLIC_URL_PD +
+      process.env.NEXT_PUBLIC_URL_SV +
         process.env.NEXT_PUBLIC_URL_getRetrieveFurtherclaim,
       {
           PatientInfo
@@ -663,7 +663,7 @@ if(idTypeValue === "NATIONAL_ID"){
     // axios
     // .post(
     //   '/api/v1/aia-checkeligible/preauthSubmission',{PatientInfo} 
-    //   // process.env.NEXT_PUBLIC_URL_PD +
+    //   // process.env.NEXT_PUBLIC_URL_SV +
     //   //   process.env.NEXT_PUBLIC_URL_getRetrieveFurtherclaim,
     //   // {
     //   //     PatientInfo
@@ -772,7 +772,7 @@ if(idTypeValue === "NATIONAL_ID"){
   useEffectOnce(() => {
     axios
       .get(
-        process.env.NEXT_PUBLIC_URL_PD +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_IllnessSurgery +
           InsurerCode
       )
@@ -796,7 +796,7 @@ if(idTypeValue === "NATIONAL_ID"){
   useEffectOnce(() => {
     axios
       .get(
-        process.env.NEXT_PUBLIC_URL_PD +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_IllnessType +
           InsurerCode
       )
@@ -819,7 +819,7 @@ if(idTypeValue === "NATIONAL_ID"){
   useEffectOnce(() => {
     axios
       .get(
-        process.env.NEXT_PUBLIC_URL_PD +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_PolicyType +
           InsurerCode
       )
@@ -842,7 +842,7 @@ if(idTypeValue === "NATIONAL_ID"){
   useEffectOnce(() => {
     axios
       .get(
-        process.env.NEXT_PUBLIC_URL_PD +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_idtype +
          InsurerCode
       )
@@ -889,7 +889,7 @@ if(idTypeValue === "NATIONAL_ID"){
         Insurerid: InsurerCode,
         PID: patientDB.PID,
         PassportNumber: patientDB.PassportNumber,
-        IdType: numberValue,
+        IdType: numberValue.trim(),
         ServiceSettingCode: serviceValue,
         HN: patientDB.HN,
         VisitDatefrom: DatefromValue,
@@ -898,7 +898,7 @@ if(idTypeValue === "NATIONAL_ID"){
        console.log(PatientInfo)
       axios
         .post(
-          process.env.NEXT_PUBLIC_URL_PD +
+          process.env.NEXT_PUBLIC_URL_SV +
             process.env.NEXT_PUBLIC_URL_getEpisodeByHN,
           {
             PatientInfo,
@@ -984,7 +984,7 @@ if(idTypeValue === "NATIONAL_ID"){
           SurgeryTypeCode: surgeryTypeValue,
     
           IdType: idTypeValue,
-           PID: numberValue,
+           PID: numberValue.trim(),
           PassportNumber: "",
           MembershipId:"",  
           CustomerId : "",
@@ -1012,7 +1012,7 @@ if(idTypeValue === "NATIONAL_ID"){
     
           IdType: idTypeValue,
           PID: "",
-          PassportNumber: numberValue,
+          PassportNumber: numberValue.trim(),
           MembershipId:"",  
           CustomerId : "",
           PolicyNumber:"",
@@ -1040,7 +1040,7 @@ if(idTypeValue === "NATIONAL_ID"){
           IdType: idTypeValue,
           PID: "",
           PassportNumber: "",
-          MembershipId: numberValue,  
+          MembershipId: numberValue.trim(),  
           CustomerId : "",
           PolicyNumber:"",
           FurtherClaimVN:"",
@@ -1069,7 +1069,7 @@ if(idTypeValue === "NATIONAL_ID"){
           PassportNumber: "",
           MembershipId: "",  
           CustomerId : "",
-          PolicyNumber: numberValue,
+          PolicyNumber: numberValue.trim(),
           FurtherClaimVN: "",
           FurtherClaimNo: "",
           FurtherClaimId: ""
@@ -1095,7 +1095,7 @@ if(idTypeValue === "NATIONAL_ID"){
           PID: "",
           PassportNumber: "",
           MembershipId: "",  
-          CustomerId : numberValue,
+          CustomerId : numberValue.trim(),
           PolicyNumber: "",
           FurtherClaimVN: "",
           FurtherClaimNo: "",
@@ -1130,7 +1130,7 @@ if(idTypeValue === "NATIONAL_ID"){
           SurgeryTypeCode: surgeryTypeValue,
     
           IdType: idTypeValue,
-           PID: numberValue,
+           PID: numberValue.trim(),
           PassportNumber: "",
           MembershipId:"",  
           CustomerId : "",
@@ -1158,7 +1158,7 @@ if(idTypeValue === "NATIONAL_ID"){
     
           IdType: idTypeValue,
           PID: patientDB.PID,
-          PassportNumber: numberValue,
+          PassportNumber: numberValue.trim(),
           MembershipId:"",  
           CustomerId : "",
           PolicyNumber:"",
@@ -1186,7 +1186,7 @@ if(idTypeValue === "NATIONAL_ID"){
           IdType: idTypeValue,
           PID: patientDB.PID,
           PassportNumber: "",
-          MembershipId: numberValue,  
+          MembershipId: numberValue.trim(),  
           CustomerId : "",
           PolicyNumber:"",
           FurtherClaimVN:"",
@@ -1215,7 +1215,7 @@ if(idTypeValue === "NATIONAL_ID"){
           PassportNumber: "",
           MembershipId: "",  
           CustomerId : "",
-          PolicyNumber: numberValue,
+          PolicyNumber: numberValue.trim(),
           FurtherClaimVN: "",
           FurtherClaimNo: "",
           FurtherClaimId: ""
@@ -1241,7 +1241,7 @@ if(idTypeValue === "NATIONAL_ID"){
           PID: patientDB.PID,
           PassportNumber: "",
           MembershipId: "",  
-          CustomerId : numberValue,
+          CustomerId : numberValue.trim(),
           PolicyNumber: "",
           FurtherClaimVN: "",
           FurtherClaimNo: "",
@@ -1266,7 +1266,7 @@ if(idTypeValue === "NATIONAL_ID"){
  
 
       const response = await axios.post(
-            process.env.NEXT_PUBLIC_URL_PD +
+            process.env.NEXT_PUBLIC_URL_SV +
               process.env.NEXT_PUBLIC_URL_checkeligible,
         {
           PatientInfo,
@@ -1275,7 +1275,7 @@ if(idTypeValue === "NATIONAL_ID"){
 
       if (response.data.HTTPStatus.statusCode < 400) {
         setResult(response.data);
-        //  console.log(response.data);
+       //   console.log(response.data.Result.InsuranceData.CoverageList);
 
 
          
@@ -1287,10 +1287,22 @@ if(idTypeValue === "NATIONAL_ID"){
             const HB = response.data.Result.InsuranceData.CoverageList.some(coverage => coverage.Type === "ผลประโยชน์ค่าชดเชยนอนรพ" && coverage.Status === true);
             const AI = response.data.Result.InsuranceData.CoverageList.some(coverage => coverage.Type === "ผลประโยชน์ค่าชดเชย" && coverage.Status === true);
           
-
-            // console.log(response.data.Result.InsuranceData.CoverageList.forEach((ArrayCoverageList) => {
-
-            // })          )
+         //   console.log(response.data.Result.InsuranceData.CoverageList);
+          //  response.data.Result.InsuranceData.CoverageList.forEach((ArrayCoverageList) => {
+          //   // console.log(ArrayCoverageList)
+          //     ArrayCoverageList.MessageList.forEach((ArrayMessageList) => {
+          //        console.log(ArrayMessageList)
+          //     //   ArrayMessageList.forEach((item) => {
+          //       if (ArrayMessageList.RuleNo === "PASS" && ArrayMessageList.PolicyNo !== ""){
+          //           console.log("มี")
+          //       }
+              
+              
+              
+          //     // });
+          //     })
+          //   })         
+          
       
            
 

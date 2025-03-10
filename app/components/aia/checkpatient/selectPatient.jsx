@@ -106,7 +106,7 @@ export default function SelectPatient() {
       };
       axios
         .post(
-          process.env.NEXT_PUBLIC_URL_PD +
+          process.env.NEXT_PUBLIC_URL_SV +
             process.env.NEXT_PUBLIC_URL_FindPatientTrakcare,
           {
             PatientInfo,
@@ -130,7 +130,7 @@ export default function SelectPatient() {
       };
       axios
         .post(
-          process.env.NEXT_PUBLIC_URL_PD +
+          process.env.NEXT_PUBLIC_URL_SV +
             process.env.NEXT_PUBLIC_URL_FindPatientTrakcare,
           {
             PatientInfo,
@@ -156,7 +156,7 @@ export default function SelectPatient() {
       };
       axios
         .post(
-          process.env.NEXT_PUBLIC_URL_PD +
+          process.env.NEXT_PUBLIC_URL_SV +
             process.env.NEXT_PUBLIC_URL_FindPatientTrakcare,
           {
             PatientInfo,
@@ -178,7 +178,7 @@ export default function SelectPatient() {
     setShowMassCreate();
     axios
       .post(
-        process.env.NEXT_PUBLIC_URL_PD2 +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_CreatePatient,
         {
           PatientInfo: {
@@ -243,7 +243,7 @@ export default function SelectPatient() {
     //console.log(patient)
     axios
       .post(
-        process.env.NEXT_PUBLIC_URL_PD +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_PatientFindforUpdate,
         {
           PatientInfo: {
@@ -276,7 +276,7 @@ export default function SelectPatient() {
     setPatientFindforUpdate();
     axios
       .patch(
-        process.env.NEXT_PUBLIC_URL_PD +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_PatientUpdate,
         {
           PatientInfo: {
@@ -319,7 +319,7 @@ export default function SelectPatient() {
 
         axios
           .post(
-            process.env.NEXT_PUBLIC_URL_PD +
+            process.env.NEXT_PUBLIC_URL_SV +
               process.env.NEXT_PUBLIC_URL_PatientFindforUpdate,
             {
               PatientInfo: {
@@ -377,7 +377,7 @@ export default function SelectPatient() {
 
       axios
         .post(
-          process.env.NEXT_PUBLIC_URL_PD +
+          process.env.NEXT_PUBLIC_URL_SV +
             process.env.NEXT_PUBLIC_URL_PatientSearch,
           {
             PatientInfo,
@@ -421,7 +421,7 @@ export default function SelectPatient() {
       };
       axios
         .post(
-          process.env.NEXT_PUBLIC_URL_PD +
+          process.env.NEXT_PUBLIC_URL_SV +
             process.env.NEXT_PUBLIC_URL_PatientSearch,
           {
             PatientInfo,
@@ -465,7 +465,7 @@ export default function SelectPatient() {
       };
       axios
         .post(
-          process.env.NEXT_PUBLIC_URL_PD +
+          process.env.NEXT_PUBLIC_URL_SV +
             process.env.NEXT_PUBLIC_URL_PatientSearch,
           {
             PatientInfo,

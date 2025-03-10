@@ -313,7 +313,7 @@ export default function Page({ data }) {
 
     axios
       .post(
-        process.env.NEXT_PUBLIC_URL_PD +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_getPreAuthNote,
       //  Data
       PatientInfoData
@@ -365,7 +365,7 @@ export default function Page({ data }) {
 
     axios
       .post(
-        process.env.NEXT_PUBLIC_URL_PD +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_getPreAuthProcedure,
       //  Data
       PatientInfoData
@@ -403,7 +403,7 @@ export default function Page({ data }) {
 
     axios
       .post(
-        process.env.NEXT_PUBLIC_URL_PD +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_getPreAuthDiagnosis,
       //  Data
       PatientInfoData
@@ -437,7 +437,7 @@ export default function Page({ data }) {
 
     axios
       .post(
-        process.env.NEXT_PUBLIC_URL_PD +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_getPreAuthDoctor,
       //  Data
       PatientInfoData
@@ -466,7 +466,7 @@ export default function Page({ data }) {
   axios
   .get(
      '/api/v1/utils/typebilling/'+PatientInfoData.PatientInfo.InsurerCode
-    // process.env.NEXT_PUBLIC_URL_PD +
+    // process.env.NEXT_PUBLIC_URL_SV +
     //   process.env.NEXT_PUBLIC_URL_getretrievepreauthlist,
     //   {
     //     PatientInfo
@@ -509,7 +509,7 @@ export default function Page({ data }) {
      console.log(PatientInfox)
     axios
       .post(
-        process.env.NEXT_PUBLIC_URL_PD2 +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_getlistDocumentName,
         
           PatientInfox
@@ -568,7 +568,7 @@ export default function Page({ data }) {
   useEffectOnce(() => {
     axios
       .get(
-        process.env.NEXT_PUBLIC_URL_PD +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_IllnessType +
           InsuranceCode
       )
@@ -599,7 +599,7 @@ export default function Page({ data }) {
     console.log(PatientInfo)
     axios
       .post(
-        process.env.NEXT_PUBLIC_URL_PD2 +
+        process.env.NEXT_PUBLIC_URL_SV +
         process.env.NEXT_PUBLIC_URL_PatientSearch,
       {
         PatientInfo
@@ -642,7 +642,7 @@ export default function Page({ data }) {
    // console.log(PatientInfox)
     axios
       .post(
-        process.env.NEXT_PUBLIC_URL_PD2 +
+        process.env.NEXT_PUBLIC_URL_SV +
         process.env.NEXT_PUBLIC_URL_previewPreBilling,
       
         PatientInfox
@@ -756,7 +756,7 @@ export default function Page({ data }) {
         //console.log(Data)
     axios
       .post(
-        process.env.NEXT_PUBLIC_URL_PD + process.env.NEXT_PUBLIC_URL_getPreAuthAccident,
+        process.env.NEXT_PUBLIC_URL_SV + process.env.NEXT_PUBLIC_URL_getPreAuthAccident,
        // Data
        PatientInfoData
       )
@@ -799,7 +799,7 @@ export default function Page({ data }) {
   useEffectOnce(() => {
     axios
       .get(
-        process.env.NEXT_PUBLIC_URL_PD +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_accidentPlace +
           InsuranceCode,
         PatientInfoData
@@ -824,7 +824,7 @@ export default function Page({ data }) {
   useEffectOnce(() => {
     axios
       .get(
-        process.env.NEXT_PUBLIC_URL_PD +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_InjurySide +
           InsuranceCode,
         PatientInfoData
@@ -850,7 +850,7 @@ export default function Page({ data }) {
   useEffectOnce(() => {
     axios
       .get(
-        process.env.NEXT_PUBLIC_URL_PD +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_InjuryWoundtype +
           InsuranceCode,
         PatientInfoData
@@ -1017,7 +1017,7 @@ const handleDeleteRowDia = (index) => {
   useEffectOnce(() => {
     axios
       .get(
-        process.env.NEXT_PUBLIC_URL_PD +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_InjurySide +
           PatientInfoData.PatientInfo.InsurerCode
       )
@@ -1039,7 +1039,7 @@ const handleDeleteRowDia = (index) => {
       });
     axios
       .get(
-        process.env.NEXT_PUBLIC_URL_PD +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_InjuryWoundtype +
           PatientInfoData.PatientInfo.InsurerCode
       )
@@ -1171,7 +1171,7 @@ document.getElementById("TypeBilling").showModal();
 
       axios
       .get(
-        process.env.NEXT_PUBLIC_URL_PD +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_ListPackageBundle
       )
       .then((response) => {
@@ -1239,7 +1239,7 @@ combinedArray.forEach((bill) => {
   console.log(PatientInfo)
   axios
   .post(
-    process.env.NEXT_PUBLIC_URL_PD +
+    process.env.NEXT_PUBLIC_URL_SV +
       process.env.NEXT_PUBLIC_URL_InsertPreBilling,
       {
         PatientInfo
@@ -1261,7 +1261,7 @@ combinedArray.forEach((bill) => {
     console.log(PatientInfox)
     axios
       .post(
-        process.env.NEXT_PUBLIC_URL_PD2 +
+        process.env.NEXT_PUBLIC_URL_SV +
         process.env.NEXT_PUBLIC_URL_previewPreBilling,
       
         PatientInfox
@@ -1356,7 +1356,7 @@ const handleChangeListPackage = (event) => {
 
           axios
           .post(
-            process.env.NEXT_PUBLIC_URL_PD +
+            process.env.NEXT_PUBLIC_URL_SV +
               process.env.NEXT_PUBLIC_URL_getPackageBundle,
               {
                 PackageInfo
@@ -1441,7 +1441,7 @@ const handleChangeListPackage = (event) => {
         }
        //  console.log(PatientInfox)
           axios
-          .post(process.env.NEXT_PUBLIC_URL_PD + process.env.NEXT_PUBLIC_URL_getPreBilling,PatientInfox)
+          .post(process.env.NEXT_PUBLIC_URL_SV + process.env.NEXT_PUBLIC_URL_getPreBilling,PatientInfox)
           .then((response) => {
            //   console.log(response.data)
               if(response.data.Result.BillingInfo[0].LocalBillingCode  !== ""){
@@ -1475,7 +1475,7 @@ const handleChangeListPackage = (event) => {
 
     axios
 .get(
-  process.env.NEXT_PUBLIC_URL_PD +
+  process.env.NEXT_PUBLIC_URL_SV +
     process.env.NEXT_PUBLIC_URL_getListBilling +
      PatientInfoData.PatientInfo.HN
 )
@@ -1590,7 +1590,7 @@ const handleChangeListPackage = (event) => {
     setProgress({ started: false, pc: 0 });
     axios
       .post(
-        process.env.NEXT_PUBLIC_URL_PD2 +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_getDocumentByDocname,
         {
           RefId: PatientInfoData.PatientInfo.RefId,
@@ -1649,7 +1649,7 @@ const handleChangeListPackage = (event) => {
     setProgress({ started: false, pc: 0 });
     axios
       .post(
-        process.env.NEXT_PUBLIC_URL_PD2 +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_DeleteDocumentByDocName,
         {
           "PatientInfo": {
@@ -1684,7 +1684,7 @@ const handleChangeListPackage = (event) => {
       );
       axios
       .post(
-        process.env.NEXT_PUBLIC_URL_PD2 +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_getlistDocumentName,
         {
           "PatientInfo":{
@@ -1736,28 +1736,6 @@ const handleChangeListPackage = (event) => {
     };
   };
 
-//   const handleChangeBill = (index2, event) => {
-//     const selectedType = JSON.parse(event.target.value); 
-//   //   setNewItemBillingCheckBalance({ ...newItemBillingCheckBalance, 
-//   //     LocalBillingCode: selectedType.LocalBillingCode, 
-//   //     LocalBillingName: selectedType.LocalBillingName, 
-//   //   }); 
-
-//   const newcauses = itemBillingDetails.map((cause, index) => {
-//     if (index === index2) {
-//       return {
-//         ...cause,
-//         LocalBillingCode: selectedType.LocalBillingCode,
-//         LocalBillingName: selectedType.LocalBillingName,
-//       };
-//     }
-//     return cause;
-//   });
-//   setItemBillingDetails(newcauses);
-// };
-
-
-
 
 const handleChangeBillA2 = (index2, event) => {
   // console.log(itemBillingDetails)
@@ -1807,7 +1785,7 @@ const handleDeleteBillingDetail = (index) => {
 
   axios
   .post(
-    process.env.NEXT_PUBLIC_URL_PD +
+    process.env.NEXT_PUBLIC_URL_SV +
       process.env.NEXT_PUBLIC_URL_deletePreBillingById,
       {
         PatientInfo
@@ -1817,7 +1795,7 @@ const handleDeleteBillingDetail = (index) => {
       //  console.log(response.data);
   axios
   .post(
-    process.env.NEXT_PUBLIC_URL_PD2 +
+    process.env.NEXT_PUBLIC_URL_SV +
     process.env.NEXT_PUBLIC_URL_previewPreBilling,
   {
     PatientInfo
@@ -1843,12 +1821,6 @@ setTotal(0);
 
     setTotal(formattedSum);
     setSelectedOptionBill(null);
-    // setNewItemBillingCheckBalance({ 
-    //   LocalBillingCode: "",
-    //   LocalBillingName: "",
-    //   SimbBillingCode: "",
-    //   BillingInitial: "",
-    // });
   })
   .catch((error) => {
     console.log(error);
@@ -1889,175 +1861,119 @@ setTotal(0);
 };
 
 /////////////////////////////////////////////////////
-// const [newItemBillingCheckBalance, setNewItemBillingCheckBalance] = useState({
-//   LocalBillingCode: "",
-//   LocalBillingName: "",
-//   SimbBillingCode: "",
-//   BillingInitial: "",
-// });
-
 ////////////////////////////////////////////////////////
-const handleAddItemBillingDetail = () => {
- // console.log(itemBillingDetails)
+const handleAddItemBillingDetail = async (e) => {
+  e.preventDefault();
 
-    if(itemBillingDetails){
-      console.log("มี")
+  try {
+    // อัปเดตข้อมูลใน itemBillingDetails
+    const updatedData = itemBillingDetails.map((item) => ({
+      ...item,
+      BillingNetAmount: item.BillingInitial, // ตั้ง BillingNetAmount ให้เท่ากับ BillingInitial
+      BillingID: "",
+    }));
 
-      const DataBillnew = {
-        "BillingDiscount": "0",
-        "BillingID": "",
-        "BillingNetAmount": selectedOptionBill.BillingInitial,
-        "BillingInitial": selectedOptionBill.BillingInitial,
-        "LocalBillingCode": selectedOptionBill.LocalBillingCode,
-        "LocalBillingName": selectedOptionBill.LocalBillingName,
-        "PayorBillingCode": selectedOptionBill.PayorBillingCode,
-        "SimbBillingCode": selectedOptionBill.SimbBillingCode,
-      }
+    // สร้างข้อมูลใหม่
+    const DataBillnew = {
+      BillingDiscount: "0",
+      BillingID: "",
+      BillingNetAmount: selectedOptionBill.BillingInitial,
+      BillingInitial: selectedOptionBill.BillingInitial,
+      LocalBillingCode: selectedOptionBill.LocalBillingCode,
+      LocalBillingName: selectedOptionBill.LocalBillingName,
+      PayorBillingCode: selectedOptionBill.PayorBillingCode,
+      SimbBillingCode: selectedOptionBill.SimbBillingCode,
+    };
 
+    // รวมข้อมูลทั้งหมด
+    const DataBillSum = [...updatedData, DataBillnew];
+    console.log(DataBillSum);
 
-    //   // setItemBillingDetails("");
-    //   // setTotal(0);
-    //   //console.log(DataBillnew)
-    //  const DataBillSum = ([
-    //   ...updatedData , DataBillnew
-    //  ])
-    
-    //   console.log(DataBillSum)
+    // ส่งคำขอ POST เพื่อลบข้อมูล
+    await axios.post(
+      `${process.env.NEXT_PUBLIC_URL_SV}${process.env.NEXT_PUBLIC_URL_deletePreBillingByRefId}`,
+      PatientInfoData
+    );
 
+    // ส่งคำขอ POST เพื่อเพิ่มข้อมูลใหม่
+    const PatientInfo = {
+      RefId: PatientInfoData.PatientInfo.RefId,
+      TransactionNo: PatientInfoData.PatientInfo.TransactionNo,
+      InsurerCode: InsuranceCode,
+      HN: PatientInfoData.PatientInfo.HN,
+      VN: PatientInfoData.PatientInfo.VN,
+      PreBillingInfo: DataBillSum,
+    };
 
+    await axios.post(
+      `${process.env.NEXT_PUBLIC_URL_SV}${process.env.NEXT_PUBLIC_URL_InsertPreBilling}`,
+      { PatientInfo }
+    );
 
- 
-  const PatientInfo = {
-    "RefId": PatientInfoData.PatientInfo.RefId,
-    "TransactionNo": PatientInfoData.PatientInfo.TransactionNo,
-    "InsurerCode": InsuranceCode, 
-   "HN": PatientInfoData.PatientInfo.HN,
-   "VN": PatientInfoData.PatientInfo.VN,
-    "PreBillingInfo": [ DataBillnew ],
-  }
-    }else{
-      console.log("ไม่มี")
+    // รีเซ็ต state
+    setItemBillingDetails("");
+    setTotal(0);
 
-      const DataBillnew = {
-        "BillingDiscount": "0",
-        "BillingID": "",
-        "BillingNetAmount": selectedOptionBill.BillingInitial,
-        "BillingInitial": selectedOptionBill.BillingInitial,
-        "LocalBillingCode": selectedOptionBill.LocalBillingCode,
-        "LocalBillingName": selectedOptionBill.LocalBillingName,
-        "PayorBillingCode": selectedOptionBill.PayorBillingCode,
-        "SimbBillingCode": selectedOptionBill.SimbBillingCode,
-      }
+    // เรียกข้อมูลเพื่อ preview
+    const PatientInfox = {
+      PatientInfo: {
+        RefId: PatientInfoData.PatientInfo.RefId,
+        TransactionNo: PatientInfoData.PatientInfo.TransactionNo,
+        InsurerCode: InsuranceCode,
+        VN: PatientInfoData.PatientInfo.VN,
+        HN: PatientInfoData.PatientInfo.HN,
+      },
+    };
 
- 
-  const PatientInfo = {
-    "RefId": PatientInfoData.PatientInfo.RefId,
-    "TransactionNo": PatientInfoData.PatientInfo.TransactionNo,
-    "InsurerCode": InsuranceCode, 
-   "HN": PatientInfoData.PatientInfo.HN,
-   "VN": PatientInfoData.PatientInfo.VN,
-    "PreBillingInfo": [ DataBillnew ],
-  }
+    const previewResponse = await axios.post(
+      `${process.env.NEXT_PUBLIC_URL_SV}${process.env.NEXT_PUBLIC_URL_previewPreBilling}`,
+      PatientInfox
+    );
 
+    const combinedArray = [...previewResponse.data.Result.BillingInfo];
+    setItemBillingDetails(combinedArray);
 
+    // คำนวณผลรวม
+    let sum = 0;
+    combinedArray.forEach((bill) => {
+      sum += parseFloat(bill.BillingInitial);
+    });
+    const formattedSum = sum.toFixed(2);
+    setTotal(formattedSum);
 
+    // รีเซ็ตตัวเลือกที่เลือก
+    setSelectedOptionBill(null);
+
+    // ขั้นตอนเพิ่มเติม
+    await stepOneBill();
+    await stepTwoBill();
+  } catch (error) {
+    console.error("เกิดข้อผิดพลาด:", error);
+
+    // จัดการ error
+    try {
+      const ErrorMass = error.config?.url || "";
+      const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+      setMassError(`${error.code} - ${error.message} - ${ErrorMass2}`);
+      setShowFormError("Error");
+    } catch (innerError) {
+      setMassError(innerError.message || "เกิดข้อผิดพลาดที่ไม่คาดคิด");
+      setShowFormError("Error");
     }
-
-      // const updatedData = itemBillingDetails.map((item) => ({
-      //   ...item,
-      //   BillingNetAmount: item.BillingInitial, // ตั้ง BillingNetAmount ให้เท่ากับ BillingInitial
-      // }));
-    
-    
-
-  //console.log(PatientInfo)
-
-//   axios
-//   .post(
-//     process.env.NEXT_PUBLIC_URL_PD +
-//       process.env.NEXT_PUBLIC_URL_InsertPreBilling,
-//       {
-//         PatientInfo
-//       }
-//   )
-//   .then((response) => {
-//       // console.log(response.data);
-
-      
-//  setItemBillingDetails("");
-//  setTotal(0);
-//  const PatientInfox = {
-//   "PatientInfo" : {
-//   RefId: PatientInfoData.PatientInfo.RefId,
-//   TransactionNo: PatientInfoData.PatientInfo.TransactionNo,
-//   InsurerCode: InsuranceCode,
-//   VN: PatientInfoData.PatientInfo.VN,
-//   HN: PatientInfoData.PatientInfo.HN,
-//   }
-// }
-
-// axios
-//   .post(
-//     process.env.NEXT_PUBLIC_URL_PD2 +
-//     process.env.NEXT_PUBLIC_URL_previewPreBilling,
-  
-//     PatientInfox
-
-// )
-//   .then((response) => {
-//     setItemBillingDetails("");
-//     setTotal(0);
-//     // setPreviewPreBilling(response.data.Result);
-//     // console.log(response.data.Result.BillingInfo)
-//     let combinedArray;
-
-//       combinedArray = [...response.data.Result.BillingInfo];
-
-      
-    
-//   setItemBillingDetails(combinedArray);
-//   let sum = 0; 
-//   combinedArray.forEach((bill) => { 
-//       sum += parseFloat(bill.BillingInitial); // ใช้ parseFloat แทน parseInt เพื่อรองรับค่าทศนิยม
-//     });
-//     const formattedSum = sum.toFixed(2); // กำหนดให้มีจุดทศนิยม 2 ตำแหน่ง
-
-//     setTotal(formattedSum);
-//     setSelectedOptionBill(null);
-//   //   setNewItemBillingCheckBalance({ 
-//   //     LocalBillingCode: "",
-//   //     LocalBillingName: "",
-//   //     SimbBillingCode: "",
-//   //     BillingInitial: "",
-//   //   });
-//   })
-//   .catch((error) => {
-//     console.log(error);
-//     try {
-//       const ErrorMass = error.config.url;
-//       const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
-//       setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
-//       setShowFormError("Error");
-//     } catch (error) {
-//       setMassError(error);
-//       setShowFormError("Error");
-//     }
-//   });
-
-//   })
-//   .catch((error) => {
-//     console.log(error);
-//     try {
-//       const ErrorMass = error.config.url;
-//       const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
-//       setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
-//       setShowFormError("Error");
-//     } catch (error) {
-//       setMassError(error.response.data.HTTPStatus.message);
-//       setShowFormError("Error");
-//     }
-//   })
+  }
 };
+
+// ฟังก์ชันขั้นตอนเพิ่มเติม
+const stepOneBill = async () => {
+  setSummitEditBill("false");
+};
+
+const stepTwoBill = async () => {
+  setTimeout(() => {
+    setSummitEditBill("true");
+}, 100);
+};
+
 ////////////////////////////////////////////////////////
 const SubmitSumBilling = () => {
   //console.log(itemBillingDetails)
@@ -2684,7 +2600,7 @@ console.log("Start Step 1 Accident")
       console.log("SubmitPreSubmissionToAIA Succ")
       axios
       .post(
-        process.env.NEXT_PUBLIC_URL_PD +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_getcheckclaimstatus,
          PatientInfoData 
       )
@@ -3013,7 +2929,7 @@ const SubmitSelectTypeBilling = (event) => {
       };
       axios
         .post(
-          process.env.NEXT_PUBLIC_URL_PD +
+          process.env.NEXT_PUBLIC_URL_SV +
             process.env.NEXT_PUBLIC_URL_getclaimcancel,
           { PatientInfo }
         )
@@ -3090,7 +3006,7 @@ const SubmitSelectTypeBilling = (event) => {
     });
     try {
       const response = await axios.post(
-        process.env.NEXT_PUBLIC_URL_PD2 +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_uploadDocuments,
         formData,
         {
@@ -3125,7 +3041,7 @@ const SubmitSelectTypeBilling = (event) => {
       );
       axios
         .post(
-          process.env.NEXT_PUBLIC_URL_PD2 +
+          process.env.NEXT_PUBLIC_URL_SV +
             process.env.NEXT_PUBLIC_URL_getlistDocumentName,
           {
             "PatientInfo":{
@@ -5159,7 +5075,6 @@ const SubmitSelectTypeBilling = (event) => {
                           </TableRow>
                         </TableHead>
                         <TableBody>
-                          {console.log(itemBillingDetails)}
                           {itemBillingDetails
                             ? itemBillingDetails.map(
                                 (cause, index) =>
@@ -5237,28 +5152,6 @@ const SubmitSelectTypeBilling = (event) => {
                                   <FaCirclePlus className="text-xl" />
                                 </TableCell>
                                 <TableCell className="w-4/6">   
-                                  
-                    {/* <select  className="select select-bordered w-full mt-2"                
-onChange={(e) => { const selectedType = JSON.parse(e.target.value); 
-  setNewItemBillingCheckBalance({ ...newItemBillingCheckBalance, 
-    LocalBillingCode: selectedType.LocalBillingCode, 
-    LocalBillingName: selectedType.LocalBillingName, 
-    SimbBillingCode: selectedType.SimbBillingCode,
-  }); }}
-
-                                     required>
-                      <option key="" value="">- กรุณาเลือก -</option>
-                      {listBilling
-                  ? listBilling.ItemBillingCheckBalance.map((type, index) => (
-                              <option
-                                key={index}
-                                value={JSON.stringify(type)}>
-                                      {type.LocalBillingCode} - {type.LocalBillingName}
-                              </option>
-                            )
-                          )
-                        : ""}
-                    </select> */}
                                  <Autocomplete
                 options={optionsBill}
                 loading={isLoadingBill}

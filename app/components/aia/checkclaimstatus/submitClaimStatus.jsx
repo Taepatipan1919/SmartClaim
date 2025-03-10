@@ -122,7 +122,7 @@ export default function checkData() {
   useEffectOnce(() => {
     axios
       .get(
-        process.env.NEXT_PUBLIC_URL_PD2 +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_accidentCauseOver45Day +
           InsuranceCode
       )
@@ -146,7 +146,7 @@ export default function checkData() {
   useEffectOnce(() => {
     axios
       .get(
-        process.env.NEXT_PUBLIC_URL_PD2 +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_documentType +
           InsuranceCode
       )
@@ -231,7 +231,7 @@ export default function checkData() {
   useEffectOnce(() => {
     axios
       .get(
-        process.env.NEXT_PUBLIC_URL_PD +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_IllnessType +
           InsuranceCode
       )
@@ -261,7 +261,8 @@ export default function checkData() {
     setBillValue(event.target.value);
   };
   const DelectSearch = () => {
-    setNumberValue();
+    setStatusValue(null);
+    setNumberValue(null);
     setFromValue(null);
     setToValue(null);
     const today = dayjs().format("YYYY-MM-DD");
@@ -348,7 +349,7 @@ export default function checkData() {
     //   console.log(PatientInfo);
     axios
       .post(
-        process.env.NEXT_PUBLIC_URL_PD2 +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_getlistDocumentName,
         { PatientInfo }
       )
@@ -391,7 +392,7 @@ export default function checkData() {
 
     axios
       .get(
-        process.env.NEXT_PUBLIC_URL_PD +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_listBillingCheckBalance +
           data.VN
       )
@@ -573,7 +574,7 @@ export default function checkData() {
     console.log(PatientInfo);
     axios
       .post(
-        process.env.NEXT_PUBLIC_URL_PD2 +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_SubmitBillingCheckBalance,
         {
           PatientInfo,
@@ -639,7 +640,7 @@ export default function checkData() {
     // console.log(PatientInfo);
     axios
       .post(
-        process.env.NEXT_PUBLIC_URL_PD2 +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_getlistDocumentName,
         { PatientInfo }
       )
@@ -657,7 +658,7 @@ export default function checkData() {
 
     axios
       .get(
-        process.env.NEXT_PUBLIC_URL_PD2 +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_documentType +
           PatientInfo.InsurerCode
       )
@@ -701,7 +702,7 @@ export default function checkData() {
     });
     try {
       const response = await axios.post(
-        process.env.NEXT_PUBLIC_URL_PD2 +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_uploadDocuments,
         formData,
         {
@@ -738,7 +739,7 @@ export default function checkData() {
 
       axios
         .post(
-          process.env.NEXT_PUBLIC_URL_PD +
+          process.env.NEXT_PUBLIC_URL_SV +
             process.env.NEXT_PUBLIC_URL_getlistDocumentName,
           {
             PatientInfo: {
@@ -811,7 +812,7 @@ export default function checkData() {
 
     axios
       .post(
-        process.env.NEXT_PUBLIC_URL_PD +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_PatientSearch,
         {
           PatientInfo,
@@ -896,7 +897,7 @@ export default function checkData() {
     // console.log(PatientInfox);
     axios
       .post(
-        process.env.NEXT_PUBLIC_URL_PD +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_getcheckclaimstatus,
         { 
           "PatientInfo" :
@@ -958,7 +959,7 @@ export default function checkData() {
 
     axios
       .post(
-        process.env.NEXT_PUBLIC_URL_PD +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_PatientSearch,
         {
           PatientInfo,
@@ -1047,7 +1048,7 @@ export default function checkData() {
 
     axios
       .post(
-        process.env.NEXT_PUBLIC_URL_PD +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_PatientSearch,
         {
           PatientInfo,
@@ -1122,7 +1123,7 @@ export default function checkData() {
       };
        axios
          .post(
-           process.env.NEXT_PUBLIC_URL_PD +
+           process.env.NEXT_PUBLIC_URL_SV +
              process.env.NEXT_PUBLIC_URL_getretrievepreauthlist,
            {
              PatientInfo,
@@ -1190,7 +1191,7 @@ export default function checkData() {
     setProgress({ started: false, pc: 0 });
     axios
       .post(
-        process.env.NEXT_PUBLIC_URL_PD2 +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_getDocumentByDocname,
         {
           RefId: refIdL,
@@ -1239,7 +1240,7 @@ export default function checkData() {
     //console.log(filenames)
     axios
       .post(
-        process.env.NEXT_PUBLIC_URL_PD2 +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_attachDocList,
         {
           PatientInfo: {
@@ -1299,7 +1300,7 @@ export default function checkData() {
       setProgress({ started: false, pc: 0 });
       axios
         .post(
-          process.env.NEXT_PUBLIC_URL_PD2 +
+          process.env.NEXT_PUBLIC_URL_SV +
             process.env.NEXT_PUBLIC_URL_DeleteDocumentByDocName,
           {
             PatientInfo: {
@@ -1331,7 +1332,7 @@ export default function checkData() {
 
           axios
             .post(
-              process.env.NEXT_PUBLIC_URL_PD +
+              process.env.NEXT_PUBLIC_URL_SV +
                 process.env.NEXT_PUBLIC_URL_getcheckclaimstatus,
               {
                 PatientInfo: {
@@ -1377,7 +1378,7 @@ export default function checkData() {
 
           axios
             .post(
-              process.env.NEXT_PUBLIC_URL_PD2 +
+              process.env.NEXT_PUBLIC_URL_SV +
                 process.env.NEXT_PUBLIC_URL_getlistDocumentName,
               {
                 PatientInfo: {
@@ -1469,7 +1470,7 @@ export default function checkData() {
         IdType: selectedIdType,
         InvoiceNumber: "",
         ClaimNo: "",
-        VN: numberValue,
+        VN: numberValue.trim(),
         PID: "",
         PassportNumber: "",
         HN: "",
@@ -1489,7 +1490,7 @@ export default function checkData() {
         ClaimNo: "",
         VN: "",
         PID: "",
-        PassportNumber: numberValue,
+        PassportNumber: numberValue.trim(),
         HN: "",
         VisitDatefrom: dateFromValue,
         VisitDateto: dateToValue,
@@ -1508,7 +1509,7 @@ export default function checkData() {
         VN: "",
         PID: "",
         PassportNumber: "",
-        HN: numberValue,
+        HN: numberValue.trim(),
         VisitDatefrom: dateFromValue,
         VisitDateto: dateToValue,
         StatusChangedAtDatefrom : "",
@@ -1524,7 +1525,7 @@ export default function checkData() {
         InvoiceNumber: "",
         ClaimNo: "",
         VN: "",
-        PID: numberValue,
+        PID: numberValue.trim(),
         PassportNumber: "",
         HN: "",
         VisitDatefrom: dateFromValue,
@@ -1539,7 +1540,7 @@ export default function checkData() {
       PatientInfo = {
         InsurerCode: InsuranceCode,
         IdType: selectedIdType,
-        InvoiceNumber: numberValue,
+        InvoiceNumber: numberValue.trim(),
         ClaimNo: "",
         VN: "",
         PID: "",
@@ -1558,7 +1559,7 @@ export default function checkData() {
         InsurerCode: InsuranceCode,
         IdType: selectedIdType,
         InvoiceNumber: "",
-        ClaimNo: numberValue,
+        ClaimNo: numberValue.trim(),
         VN: "",
         PID: "",
         PassportNumber: "",
@@ -1723,7 +1724,7 @@ export default function checkData() {
     //console.log(PatientInfo)
     axios
       .post(
-        process.env.NEXT_PUBLIC_URL_PD +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_getcheckclaimstatusListAll,
         { PatientInfo: PatientInfo }
       )
@@ -1855,7 +1856,7 @@ export default function checkData() {
               className="w-96"
               name="number"
               type="text"
-              value={numberValue}
+              value={numberValue ? numberValue : ""}
               onChange={(e) => setNumberValue(e.target.value)}
               focused
             />
@@ -1909,7 +1910,7 @@ export default function checkData() {
               <Select
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
-                value={statusValue}
+                value={statusValue ? statusValue : ""}
                 label="Claim Status"
                 onChange={status}
               >

@@ -243,7 +243,7 @@ export default function Page({ data }) {
     setFileList("");
     axios
       .post(
-        process.env.NEXT_PUBLIC_URL_PD2 +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_getlistDocumentName,
         {
           "PatientInfo":{
@@ -314,7 +314,7 @@ export default function Page({ data }) {
     //console.log(PatientInfo)
     axios
       .post(
-        process.env.NEXT_PUBLIC_URL_PD2 +
+        process.env.NEXT_PUBLIC_URL_SV +
         process.env.NEXT_PUBLIC_URL_PatientSearch,
       {
         PatientInfo
@@ -413,7 +413,7 @@ export default function Page({ data }) {
   useEffectOnce(() => {
     axios
       .post(
-        process.env.NEXT_PUBLIC_URL_PD +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_getIPDDischargeAccident,
 
        PatientInfoData
@@ -455,7 +455,7 @@ export default function Page({ data }) {
   useEffectOnce(() => {
     axios
       .get(
-        process.env.NEXT_PUBLIC_URL_PD +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_accidentPlace +
           InsuranceCode,
         PatientInfoData
@@ -480,7 +480,7 @@ export default function Page({ data }) {
   useEffectOnce(() => {
     axios
       .get(
-        process.env.NEXT_PUBLIC_URL_PD +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_InjurySide +
           InsuranceCode,
         PatientInfoData
@@ -506,7 +506,7 @@ export default function Page({ data }) {
   useEffectOnce(() => {
     axios
       .get(
-        process.env.NEXT_PUBLIC_URL_PD +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_InjuryWoundtype +
           InsuranceCode,
         PatientInfoData
@@ -533,7 +533,7 @@ export default function Page({ data }) {
     
     axios
       .post(
-        process.env.NEXT_PUBLIC_URL_PD +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_getIPDVitalSign,
         PatientInfoData
       )
@@ -560,7 +560,7 @@ export default function Page({ data }) {
     
     axios
       .post(
-        process.env.NEXT_PUBLIC_URL_PD +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_getIPDDischargeConcurNote,
         PatientInfoData
       )
@@ -635,7 +635,7 @@ export default function Page({ data }) {
 
     axios
       .post(
-        process.env.NEXT_PUBLIC_URL_PD +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_getIPDDischargeDoctor,
       //  Data
       PatientInfoData
@@ -670,7 +670,7 @@ export default function Page({ data }) {
 
     axios
       .post(
-        process.env.NEXT_PUBLIC_URL_PD + process.env.NEXT_PUBLIC_URL_getIPDDischargeDiagnosis,
+        process.env.NEXT_PUBLIC_URL_SV + process.env.NEXT_PUBLIC_URL_getIPDDischargeDiagnosis,
        // Data
         PatientInfoData
       )
@@ -857,7 +857,7 @@ export default function Page({ data }) {
   useEffectOnce(() => {
     axios
       .get(
-        process.env.NEXT_PUBLIC_URL_PD +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_InjurySide +
           PatientInfoData.PatientInfo.InsurerCode
       )
@@ -879,7 +879,7 @@ export default function Page({ data }) {
       });
     axios
       .get(
-        process.env.NEXT_PUBLIC_URL_PD +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_InjuryWoundtype +
           PatientInfoData.PatientInfo.InsurerCode
       )
@@ -1036,7 +1036,7 @@ export default function Page({ data }) {
   useEffectOnce(() => {
     axios
       .post(
-        process.env.NEXT_PUBLIC_URL_PD +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_getIPDDischargeInvestigation,
         PatientInfoData
       )
@@ -1063,7 +1063,7 @@ export default function Page({ data }) {
 
     axios
       .post(
-        process.env.NEXT_PUBLIC_URL_PD +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_getPreAuthProcedure,
       //  Data
       PatientInfoData
@@ -1167,7 +1167,7 @@ export default function Page({ data }) {
     setProgress({ started: false, pc: 0 });
     axios
       .post(
-        process.env.NEXT_PUBLIC_URL_PD2 +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_getDocumentByDocname,
         {
           RefId: PatientInfoData.PatientInfo.RefId,
@@ -1217,7 +1217,7 @@ export default function Page({ data }) {
     setProgress({ started: false, pc: 0 });
     axios
       .post(
-        process.env.NEXT_PUBLIC_URL_PD2 +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_DeleteDocumentByDocName,
         {
           "PatientInfo": {
@@ -1253,7 +1253,7 @@ export default function Page({ data }) {
 
       axios
       .post(
-        process.env.NEXT_PUBLIC_URL_PD2 +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_getlistDocumentName,
         {
           "PatientInfo":{
@@ -1661,7 +1661,7 @@ if(rows2){
                   if (response.data.HTTPStatus.statusCode === 200) {
                     axios
                     .post(
-                      process.env.NEXT_PUBLIC_URL_PD +
+                      process.env.NEXT_PUBLIC_URL_SV +
                         process.env.NEXT_PUBLIC_URL_getcheckclaimstatus,
                       { PatientInfo }
                     )
@@ -1761,7 +1761,7 @@ if(rows2){
                   if (response.data.HTTPStatus.statusCode === 200) {
                     axios
                     .post(
-                      process.env.NEXT_PUBLIC_URL_PD +
+                      process.env.NEXT_PUBLIC_URL_SV +
                         process.env.NEXT_PUBLIC_URL_getcheckclaimstatus,
                       { PatientInfo }
                     )
@@ -1832,7 +1832,7 @@ if(rows2){
       };
       axios
         .post(
-          process.env.NEXT_PUBLIC_URL_PD +
+          process.env.NEXT_PUBLIC_URL_SV +
             process.env.NEXT_PUBLIC_URL_getclaimcancel,
           { PatientInfo }
         )
@@ -1909,7 +1909,7 @@ if(rows2){
     });
     try {
       const response = await axios.post(
-        process.env.NEXT_PUBLIC_URL_PD2 +
+        process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_uploadDocuments,
         formData,
         {
@@ -1944,7 +1944,7 @@ if(rows2){
       );
       axios
         .post(
-          process.env.NEXT_PUBLIC_URL_PD2 +
+          process.env.NEXT_PUBLIC_URL_SV +
             process.env.NEXT_PUBLIC_URL_getlistDocumentName,
           {
             "PatientInfo":{
