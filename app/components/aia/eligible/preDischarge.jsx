@@ -748,12 +748,7 @@ export default function Page({ data }) {
 
   useEffectOnce(() => {
 
-      if(PatientInfoData.PatientInfo.AccidentDate){
-        const dateValue = dayjs(PatientInfoData.PatientInfo.AccidentDate);
-        setAccidentDate(dateValue);
-      }else{
-
-        //console.log(Data)
+        if(PatientInfoData.PatientInfo.AccidentDate){
     axios
       .post(
         process.env.NEXT_PUBLIC_URL_SV + process.env.NEXT_PUBLIC_URL_getPreAuthAccident,
@@ -762,8 +757,8 @@ export default function Page({ data }) {
       )
       .then((response) => {
          setAccidentDetail(response.data);
-        //  console.log(response.data)
-         const dateValue = dayjs(response.data.Result.AccidentDetailInfo.AccidentDate);
+          console.log(response.data)
+         const dateValue = dayjs(PatientInfoData.PatientInfo.AccidentDate);
          setAccidentDate(dateValue);
          if(response.data.Result.AccidentDetailInfo.CauseOfInjuryDetail[0].CauseOfInjury  !== ""){
           setCauseOfInjuryDetails(response.data.Result.AccidentDetailInfo.CauseOfInjuryDetail);
@@ -772,13 +767,6 @@ export default function Page({ data }) {
 
          }
 
-
-        // if (response.data.Result.AccidentDetailInfo.CauseOfInjuryDetail.CauseOfInjury){
-        //   setCauseOfInjuryDetails(response.data.Result.AccidentDetailInfo.CauseOfInjuryDetail[0]);
-        // }
-        // if (response.data.Result.AccidentDetailInfo.InjuryDetail.InjuryArea){
-        //   setInjuryDetails(response.data.Result.AccidentDetailInfo.InjuryDetail[0]);
-        // }
       })
       .catch((error) => {
         console.log(error);
@@ -793,7 +781,7 @@ export default function Page({ data }) {
         }
       
       });
-    }
+     }
   });
 
   useEffectOnce(() => {
@@ -3701,7 +3689,7 @@ const SubmitSelectTypeBilling = (event) => {
                         input: {
                           startAdornment: (
                             <InputAdornment position="start">
-                              $
+                              ฿
                             </InputAdornment>
                           ),
                         },
@@ -3896,25 +3884,12 @@ const SubmitSelectTypeBilling = (event) => {
                     </p>
                   </div>
                   <div className="flex items-center mt-2 ml-2">
-                      <input
-                        type="checkbox"
-                        id="IsPackage"
-                        name="IsPackage"
-                        checked={isPackage}
-                        className="checkbox"
-                        onChange={handleIsPackage}
-                      />
-                      <p className="text-left">
-                        &nbsp;Package
-                      </p>
-                    </div>
-                  <div className="flex items-center mt-2 ml-2">
                     <input
                       type="checkbox"
                       id="pregnant"
                       name="pregnant"
                       checked={pregnant}
-                      className="checkbox "
+                      className="checkbox"
                       onChange={handlePregnant}
                     />
                     <p className="text-left ml-2">ตั้งครรภ์</p>
@@ -3925,7 +3900,7 @@ const SubmitSelectTypeBilling = (event) => {
                       id="privateCase"
                       name="privateCase"
                       checked={privateCase}
-                      className="checkbox "
+                      className="checkbox"
                       onChange={handlePrivateCase}
                     />
                     <p className="text-left ml-2">เป็นเคสพิเศษ</p>
@@ -4336,10 +4311,11 @@ const SubmitSelectTypeBilling = (event) => {
                 </div>
             {/* //////////////////////////////////////////////////////////////////////////// */}
             {/* //////////////////////////////////////////////////////////////////////////// */}
-            {/* {accidentDetail ? (
-                <> */}
-                    <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-4 border-warning rounded-lg p-4 mt-2">
-                    <h1 className="font-black text-accent text-3xl ">
+              {PatientInfoData.PatientInfo.IllnessTypeCode === "ACC" ||
+            PatientInfoData.PatientInfo.IllnessTypeCode === "ER" ? (
+
+                    <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-error rounded-lg p-4 mt-2">
+                    <h1 className="font-black text-error text-3xl ">
                       AccidentDetail
                       <div
                         className="btn btn-secondary text-base-100 text-xl ml-2"
@@ -4353,11 +4329,11 @@ const SubmitSelectTypeBilling = (event) => {
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                           <DemoItem>
                             <DesktopDatePicker
-                            className="bg-base-100 w-full" 
-                              value={accidentDate}
-                              onChange={(newAccidentDate) =>
-                                setAccidentDate(newAccidentDate)
-                              }
+                            value={accidentDate}
+                            onChange={(newAccidentDate) =>
+                              setAccidentDate(newAccidentDate)
+                            }
+                              required
                               format="YYYY-MM-DD"
                             />
                           </DemoItem>
@@ -4365,8 +4341,11 @@ const SubmitSelectTypeBilling = (event) => {
                       </div>
                       <div className="w-2/5">
                         <FormControl fullWidth>
-                          <InputLabel id="demo-error-select-label">สถานที่เกิดอุบัติเหตุ</InputLabel>
+                          <InputLabel id="demo-error-select-label">
+                            สถานที่เกิดอุบัติเหตุ
+                          </InputLabel>
                           <Select
+                            error
                             className="mx-2"
                             labelId="demo-error-select-label"
                             id="demo-error-select"
@@ -4374,8 +4353,13 @@ const SubmitSelectTypeBilling = (event) => {
                             value={accidentPlaceValue}
                             label="สถานที่เกิดอุบัติเหตุ"
                             onChange={AccidentPlace}
+                            required
                           >
-                            <MenuItem key="" value="" ></MenuItem>
+                            <MenuItem
+                                    key=""
+                                    value=""
+                                  >
+                                  </MenuItem>
                             {dataaccidentPlace
                               ? dataaccidentPlace.Result.map((acc, index) => (
                                   <MenuItem
@@ -4389,16 +4373,12 @@ const SubmitSelectTypeBilling = (event) => {
                           </Select>
                         </FormControl>
                       </div>
-
-
-
-
                     </div>
 
                     <TableContainer component={Paper} className="mt-2">
                       <Table className="table">
                         <TableHead>
-                         <TableRow className="bg-primary">
+                          <TableRow className="bg-primary">
                             <TableCell className="w-2"></TableCell>
                             <TableCell>
                               <h1 className="text-base-100  text-sm w-2/5 text-center">
@@ -4415,14 +4395,14 @@ const SubmitSelectTypeBilling = (event) => {
                             ) : (
                               ""
                             )}
-                          </TableRow> 
+                          </TableRow>
                         </TableHead>
                         <TableBody>
                  
                           {causeOfInjuryDetails
                             ? causeOfInjuryDetails.map(
                                 (cause, index) =>
-                                  cause.CauseOfInjury  && (
+  
                                     <TableRow
                                       key={index}
                                       className=" bg-neutral text-sm"
@@ -4435,6 +4415,7 @@ const SubmitSelectTypeBilling = (event) => {
                                               type="text"
                                               className="rounded-full px-3 py-2 border-2 bg-base-100 break-all w-full"
                                               value={cause.CauseOfInjury}
+                                              required
                                               onChange={(e) =>
                                                 handleChangeA1(index, e)
                                               }
@@ -4462,6 +4443,7 @@ const SubmitSelectTypeBilling = (event) => {
                                               onChange={(e) =>
                                                 handleChangeA2(index, e)
                                               }
+                                              required
                                               inputProps={{ maxLength: 200 }}
                                               placeholder="CommentOfInjury"
                                               multiline
@@ -4497,7 +4479,7 @@ const SubmitSelectTypeBilling = (event) => {
                                         ""
                                       )}
                                     </TableRow>
-                                  )
+             
                               )
                             : ""}
                           {summitEditAcc === "true" ? (
@@ -4518,7 +4500,7 @@ const SubmitSelectTypeBilling = (event) => {
                                       })
                                     }
                                     placeholder="CauseOfInjury"
-                                    //  required
+                                   //   required
                                   />
                                 </TableCell>
                                 {/* <TableCell> */}
@@ -4539,7 +4521,7 @@ const SubmitSelectTypeBilling = (event) => {
                                     placeholder="CommentOfInjury"
                                     multiline
                                     rows={4}
-                                    //   required
+                                  //     required
                                   />
                                 </div>
                                 {/* </TableCell> */}
@@ -4580,7 +4562,8 @@ const SubmitSelectTypeBilling = (event) => {
                             <TableCell className="w-2"></TableCell>
                             <TableCell>
                               <h1 className="text-base-100  text-sm w-1/7 text-center">
-                                อวัยวะที่ได้บาดเจ็บจากการเกิดอุบัติเหตุ (ICD10code)
+                                อวัยวะที่ได้บาดเจ็บจากการเกิดอุบัติเหตุ (ICD10
+                                code)
                               </h1>
                             </TableCell>
                             <TableCell>
@@ -4864,11 +4847,542 @@ const SubmitSelectTypeBilling = (event) => {
                       </div>
                     </TableContainer>
                   </div>
-                {/* </>
-              ) : (
-                ""
-              )
-           } */}
+              //   </>
+
+              // ) : (
+              //   ""
+              // )
+            ) : (
+              <>
+                  <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
+                    <h1 className="font-black text-accent text-3xl ">
+                      AccidentDetail
+                      <div
+                        className="btn btn-secondary text-base-100 text-xl ml-2"
+                        onClick={SummitEditAcc}
+                      >
+                        <FaEdit />
+                      </div>
+                    </h1>
+
+                    <div className="flex  w-full mt-2">
+                      <div className="w-1/5 ">
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                          <DemoItem>
+                            <DesktopDatePicker
+                              defaultValue={accidentDate}
+                              onChange={(newAccidentDate) =>
+                                setAccidentDate(newAccidentDate)
+                              }
+                            //  required
+                              format="YYYY-MM-DD"
+                            />
+                          </DemoItem>
+                        </LocalizationProvider>
+                      </div>
+                      <div className="w-2/5">
+                        <FormControl fullWidth>
+                          <InputLabel id="demo-error-select-label">
+                            สถานที่เกิดอุบัติเหตุ
+                          </InputLabel>
+                          <Select
+                            className="mx-2"
+                            labelId="demo-error-select-label"
+                            id="demo-error-select"
+                            //name="accidentPlaceText"
+                            value={accidentPlaceValue}
+                            label="สถานที่เกิดอุบัติเหตุ"
+                            onChange={AccidentPlace}
+                           // required
+                          >
+                            {dataaccidentPlace
+                              ? dataaccidentPlace.Result.map((acc, index) => (
+                                  <MenuItem
+                                    key={index}
+                                    value={acc.accidentplacecode}
+                                  >
+                                    {acc.accidentplacename}
+                                  </MenuItem>
+                                ))
+                              : ""}
+                          </Select>
+                        </FormControl>
+                      </div>
+                    </div>
+
+                    <TableContainer component={Paper} className="mt-2">
+                      <Table className="table">
+                        <TableHead>
+                          <TableRow className="bg-primary">
+                            <TableCell className="w-2"></TableCell>
+                            <TableCell>
+                              <h1 className="text-base-100  text-sm w-2/5 text-center">
+                                สาเหตุของการเกิดอุบัติเหตุ (ICD10 code)
+                              </h1>
+                            </TableCell>
+                            <TableCell>
+                              <h1 className="text-base-100  text-sm w-2/5 text-center">
+                                คำอธิบายอวัยวะที่ได้รับจากการเกิดอุบัติเหตุว่ามีลักษณะบาดแผลอย่างไร
+                              </h1>
+                            </TableCell>
+                            {summitEditAcc === "true" ? (
+                              <TableCell></TableCell>
+                            ) : (
+                              ""
+                            )}
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                 
+                          {causeOfInjuryDetails
+                            ? causeOfInjuryDetails.map(
+                                (cause, index) =>
+                                  cause.CauseOfInjury  && (
+                                    <TableRow
+                                      key={index}
+                                      className=" bg-neutral text-sm"
+                                    >
+                                      <TableCell>{index + 1}</TableCell>
+                                      <TableCell>
+                                        {summitEditAcc === "true" ? (
+                                          <>
+                                            <input
+                                              type="text"
+                                              className="rounded-full px-3 py-2 border-2 bg-base-100 break-all w-full"
+                                              value={cause.CauseOfInjury}
+                                              onChange={(e) =>
+                                                handleChangeA1(index, e)
+                                              }
+                                            />
+                                          </>
+                                        ) : (
+                                          <>
+                                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                                              {cause.CauseOfInjury ? (
+                                                cause.CauseOfInjury
+                                              ) : (
+                                                <>&nbsp;</>
+                                              )}
+                                            </div>
+                                          </>
+                                        )}
+                                      </TableCell>
+                                      <TableCell>
+                                        {summitEditAcc === "true" ? (
+                                          <>
+                                            <TextField
+                                              type="text"
+                                              className="bg-base-100 w-full m-2"
+                                              value={cause.CommentOfInjury}
+                                              onChange={(e) =>
+                                                handleChangeA2(index, e)
+                                              }
+                                              inputProps={{ maxLength: 200 }}
+                                              placeholder="CommentOfInjury"
+                                              multiline
+                                              rows={4}
+                                            />
+                                          </>
+                                        ) : (
+                                          <>
+                                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                                              {cause.CommentOfInjury ? (
+                                                cause.CommentOfInjury
+                                              ) : (
+                                                <>&nbsp;</>
+                                              )}
+                                            </div>
+                                          </>
+                                        )}
+                                      </TableCell>
+                                      {summitEditAcc === "true" ? (
+                                        <TableCell>
+                                          <div
+                                            onClick={() =>
+                                              handleDeleteCauseOfInjuryDetail(
+                                                index
+                                              )
+                                            }
+                                            className="btn btn-error text-base-100 text-xl"
+                                          >
+                                            <FaCircleMinus />
+                                          </div>
+                                        </TableCell>
+                                      ) : (
+                                        ""
+                                      )}
+                                    </TableRow>
+                                  )
+                              )
+                            : ""}
+                          {summitEditAcc === "true" ? (
+                            <>
+                              <TableRow>
+                                <TableCell>
+                                  <FaCirclePlus className="text-xl" />
+                                </TableCell>
+
+                                <TableCell>
+                                  <TextField
+                                    className="bg-base-100 w-full"
+                                    value={newCauseOfInjuryDetail.CauseOfInjury}
+                                    onChange={(e) =>
+                                      setNewCauseOfInjuryDetail({
+                                        ...newCauseOfInjuryDetail,
+                                        CauseOfInjury: e.target.value,
+                                      })
+                                    }
+                                    placeholder="CauseOfInjury"
+                                 //     required
+                                  />
+                                </TableCell>
+                                {/* <TableCell> */}
+                                <div className="m-2">
+                                  <TextField
+                                    type="text"
+                                    className="bg-base-100 w-full "
+                                    value={
+                                      newCauseOfInjuryDetail.CommentOfInjury
+                                    }
+                                    onChange={(e) =>
+                                      setNewCauseOfInjuryDetail({
+                                        ...newCauseOfInjuryDetail,
+                                        CommentOfInjury: e.target.value,
+                                      })
+                                    }
+                                    inputProps={{ maxLength: 200 }}
+                                    placeholder="CommentOfInjury"
+                                    multiline
+                                    rows={4}
+                                  //     required
+                                  />
+                                </div>
+                                {/* </TableCell> */}
+                                {newCauseOfInjuryDetail.CauseOfInjury &&
+                                newCauseOfInjuryDetail.CommentOfInjury ? (
+                                  <>
+                                    <TableCell>
+                                      <div
+                                        onClick={handleAddCauseOfInjuryDetail}
+                                        className="btn btn-success text-base-100 text-xl"
+                                      >
+                                        <FaCirclePlus />
+                                      </div>
+                                    </TableCell>
+                                  </>
+                                ) : (
+                                  ""
+                                )}
+                              </TableRow>
+                            </>
+                          ) : (
+                            ""
+                          )}
+                        </TableBody>
+                      </Table>
+                      <div className="grid gap-2 sm:grid-cols-4 text-base-100 bg-primary w-full whitespace-normal text-center">
+                        <div className="rounded-md"></div>
+                        <div className="rounded-md"></div>
+                        <div className="rounded-md "></div>
+                        <div className="rounded-md ">&nbsp;</div>
+                      </div>
+                    </TableContainer>
+
+                    <TableContainer component={Paper} className="mt-2">
+                      <Table className="table">
+                        <TableHead>
+                          <TableRow className="bg-primary">
+                            <TableCell className="w-2"></TableCell>
+                            <TableCell>
+                              <h1 className="text-base-100  text-sm w-1/7 text-center">
+                                อวัยวะที่ได้บาดเจ็บจากการเกิดอุบัติเหตุ (ICD10
+                                code)
+                              </h1>
+                            </TableCell>
+                            <TableCell>
+                              <h1 className="text-base-100  text-sm w-3/7 text-center">
+                                ข้างของอวัยวะที่ได้รับบาดเจ็บจากการเกิดอุบัติเหตุ
+                              </h1>
+                            </TableCell>
+                            <TableCell>
+                              <h1 className="text-base-100  text-sm w-3/7 text-center">
+                                ลักษณะบาดแผลที่ได้รับจากการเกิดอุบัติเหตุ
+                              </h1>
+                            </TableCell>
+                            {summitEditAcc === "true" ? (
+                              <TableCell></TableCell>
+                            ) : (
+                              ""
+                            )}
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {injuryDetails
+                            ? injuryDetails.map(
+                                (injury, index) =>
+                                  injury.InjuryArea  && (
+                                    <TableRow
+                                      key={index}
+                                      className=" bg-neutral text-sm"
+                                    >
+                                      <TableCell>{index + 1}</TableCell>
+
+                                      <TableCell>
+                                        {summitEditAcc === "true" ? (
+                                          <>
+                                            <input
+                                              type="text"
+                                              className="rounded-full px-3 py-2 border-2 bg-base-100 break-all w-full"
+                                              value={injury.InjuryArea}
+                                              onChange={(e) =>
+                                                handleChangeB1(index, e)
+                                              }
+                                            />
+                                          </>
+                                        ) : (
+                                          <>
+                                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                                              {injury.InjuryArea ? (
+                                                injury.InjuryArea
+                                              ) : (
+                                                <>&nbsp;</>
+                                              )}
+                                            </div>
+                                          </>
+                                        )}
+                                      </TableCell>
+                                      <TableCell>
+                                        {summitEditAcc === "true" ? (
+                                          <>
+                                            <FormControl fullWidth>
+                                              <Select
+                                                className="bg-base-100 w-full m-2"
+                                                labelId="policyTypeValue"
+                                                id="demo-simple-select"
+                                                value={injury.InjurySide}
+                                                label=""
+                                                onChange={(e) =>
+                                                  handleChangeB2(index, e)
+                                                }
+                                                required
+                                              >
+                                                {injurySideType
+                                                  ? injurySideType.Result.map(
+                                                      (injury, index) => (
+                                                        <MenuItem
+                                                          key={index}
+                                                          value={
+                                                            injury.injurysidecode
+                                                          }
+                                                        >
+                                                          {
+                                                            injury.injurysidecode
+                                                          }{" "}
+                                                          -{" "}
+                                                          {
+                                                            injury.injurysidename
+                                                          }
+                                                        </MenuItem>
+                                                      )
+                                                    )
+                                                  : ""}
+                                              </Select>
+                                            </FormControl>
+                                          </>
+                                        ) : (
+                                          <>
+                                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                                              {injury.InjurySide ? (
+                                                injury.InjurySide
+                                              ) : (
+                                                <>&nbsp;</>
+                                              )}
+                                            </div>
+                                          </>
+                                        )}
+                                      </TableCell>
+                                      <TableCell>
+                                        {summitEditAcc === "true" ? (
+                                          <>
+                                            <FormControl fullWidth>
+                                              <Select
+                                                className="bg-base-100 w-full m-2"
+                                                labelId="policyTypeValue"
+                                                id="demo-simple-select"
+                                                value={injury.WoundType}
+                                                label=""
+                                                onChange={(e) =>
+                                                  handleChangeB3(index, e)
+                                                }
+                                              //  required
+                                              >
+                                                {injuryWoundType
+                                                  ? injuryWoundType.Result.map(
+                                                      (Wound, index) => (
+                                                        <MenuItem
+                                                          key={index}
+                                                          value={
+                                                            Wound.woundtypecode
+                                                          }
+                                                        >
+                                                          {Wound.woundtypecode}{" "}
+                                                          -{" "}
+                                                          {Wound.woundtypename}
+                                                        </MenuItem>
+                                                      )
+                                                    )
+                                                  : ""}
+                                              </Select>
+                                            </FormControl>
+                                          </>
+                                        ) : (
+                                          <>
+                                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all">
+                                              {injury.WoundType ? (
+                                                injury.WoundType
+                                              ) : (
+                                                <>&nbsp;</>
+                                              )}
+                                            </div>
+                                          </>
+                                        )}
+                                      </TableCell>
+                                      {summitEditAcc === "true" ? (
+                                        
+                                        <TableCell>
+                                          <div
+                                            onClick={() =>
+                                              handleDeleteInjuryDetail(index)
+                                            }
+                                            className="btn btn-error text-base-100 text-xl"
+                                          >
+                                            <FaCircleMinus />
+                                          </div>
+                                        </TableCell>
+                                        
+                                      ) : (
+                                        ""
+                                      )}
+                                    </TableRow>
+                                  )
+                              )
+                            : ""}
+                          {summitEditAcc === "true" ? (
+                            <>
+                              <TableRow>
+                                <TableCell>
+                                  <FaCirclePlus className="text-xl" />
+                                </TableCell>
+
+                                <TableCell>
+                                  <TextField
+                                    className="bg-base-100 w-full"
+                                    value={newInjuryDetail.InjuryArea}
+                                    onChange={(e) =>
+                                      setNewInjuryDetail({
+                                        ...newInjuryDetail,
+                                        InjuryArea: e.target.value,
+                                      })
+                                    }
+                                    placeholder="InjuryArea"
+                                  />
+                                </TableCell>
+                                <TableCell>
+                                  <FormControl fullWidth>
+                                    <Select
+                                      className="bg-base-100 w-full m-2"
+                                      labelId="policyTypeValue"
+                                      id="demo-simple-select"
+                                      value={newInjuryDetail.InjurySide}
+                                      label=""
+                                      onChange={(e) =>
+                                        setNewInjuryDetail({
+                                          ...newInjuryDetail,
+                                          InjurySide: e.target.value,
+                                        })
+                                      }
+                                    >
+                                      {injurySideType
+                                        ? injurySideType.Result.map(
+                                            (injury, index) => (
+                                              <MenuItem
+                                                key={index}
+                                                value={injury.injurysidecode}
+                                              >
+                                                {injury.injurysidecode} -{" "}
+                                                {injury.injurysidename}
+                                              </MenuItem>
+                                            )
+                                          )
+                                        : ""}
+                                    </Select>
+                                  </FormControl>
+                                </TableCell>
+                                <TableCell>
+                                  <FormControl fullWidth>
+                                    <Select
+                                      className="bg-base-100 w-full m-2"
+                                      labelId="policyTypeValue"
+                                      id="demo-simple-select"
+                                      value={newInjuryDetail.WoundType}
+                                      label=""
+                                      onChange={(e) =>
+                                        setNewInjuryDetail({
+                                          ...newInjuryDetail,
+                                          WoundType: e.target.value,
+                                        })
+                                      }
+                                    >
+                                      {injuryWoundType
+                                        ? injuryWoundType.Result.map(
+                                            (Wound, index) => (
+                                              <MenuItem
+                                                key={index}
+                                                value={Wound.woundtypecode}
+                                              >
+                                                {Wound.woundtypecode} -{" "}
+                                                {Wound.woundtypename}
+                                              </MenuItem>
+                                            )
+                                          )
+                                        : ""}
+                                    </Select>
+                                  </FormControl>
+                                </TableCell>
+                                {newInjuryDetail.InjuryArea &&
+                                newInjuryDetail.InjurySide &&
+                                newInjuryDetail.WoundType ? (
+                                  <>
+                                    <TableCell>
+                                      <div
+                                        onClick={handleAddInjuryDetail}
+                                        className="btn btn-success text-base-100 text-xl"
+                                      >
+                                        <FaCirclePlus />
+                                      </div>
+                                    </TableCell>
+                                  </>
+                                ) : (
+                                  ""
+                                )}
+                              </TableRow>
+                            </>
+                          ) : (
+                            ""
+                          )}
+                        </TableBody>
+                      </Table>
+                      <div className="grid gap-2 sm:grid-cols-4 text-base-100 bg-primary w-full whitespace-normal text-center">
+                        <div className="rounded-md"></div>
+                        <div className="rounded-md"></div>
+                        <div className="rounded-md "></div>
+                        <div className="rounded-md ">&nbsp;</div>
+                      </div>
+                    </TableContainer>
+                  </div>
+                </>
+
+            )}
             {/* //////////////////////////////////////////////////////////////////////////// */}
             <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-4 border-warning rounded-lg p-4 mt-2">
               <h1 className="font-black text-accent text-3xl ">OrderItem</h1>
@@ -5013,8 +5527,21 @@ const SubmitSelectTypeBilling = (event) => {
                       >
                         <FaEdit />
               </div>
+
               </h1>
-              
+              <div className="flex items-center mt-2 ml-2">
+                      <input
+                        type="checkbox"
+                        id="IsPackage"
+                        name="IsPackage"
+                        checked={isPackage}
+                        className="checkbox"
+                        onChange={handleIsPackage}
+                      />
+                      <p className="text-left">
+                        &nbsp;Package
+                      </p>
+              </div>
                   <FormControl className="mt-2">
               <InputLabel id="demo-simple-select-label">
                 TypeBilling
@@ -6024,7 +6551,7 @@ const SubmitSelectTypeBilling = (event) => {
           <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
             <div className="bg-white p-8 rounded shadow-lg">
               <h2 className="text-4xl font-bold mb-4 text-primary">
-                ลงทะเบียนใช้สิทธิ์สำเร็จ
+              ส่งประกันเรียบร้อยแล้ว
               </h2>
 
             </div>

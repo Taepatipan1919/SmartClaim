@@ -482,18 +482,12 @@ export default function Page({ data }) {
        PatientInfoData
       )
       .then((response) => {
-      //  console.log(response.data)
+        // console.log(response.data)
          setAccidentDetail(response.data);
           setCauseOfInjuryDetails(response.data.Result.AccidentDetailInfo.CauseOfInjuryDetail);
           setInjuryDetails(response.data.Result.AccidentDetailInfo.InjuryDetail);
           setAccidentPlaceValue(response.data.Result.AccidentDetailInfo.AccidentPlace)
 
-        // if (response.data.Result.AccidentDetailInfo.CauseOfInjuryDetail.CauseOfInjury){
-        //   setCauseOfInjuryDetails(response.data.Result.AccidentDetailInfo.CauseOfInjuryDetail[0]);
-        // }
-        // if (response.data.Result.AccidentDetailInfo.InjuryDetail.InjuryArea){
-        //   setInjuryDetails(response.data.Result.AccidentDetailInfo.InjuryDetail[0]);
-        // }
       })
       .catch((error) => {
     //    console.log(error);
@@ -1620,8 +1614,8 @@ if(rows){
               );
               setShowSummitError("Error");
             } catch (error) {
-              // setMassSummitError(error.response.data.HTTPStatus.message);
-              // setShowSummitError("Error");
+               setMassSummitError(error.response.data.HTTPStatus.message);
+               setShowSummitError("Error");
             }
           });
 
@@ -2193,7 +2187,7 @@ if(rows){
                       <CustomTextField
                         id="disabledInput"
                         label="อุบัติเหตุ"
-                        defaultValue={accidentDetail ? "มีอุบัติเหตุ" : "ไม่มีอุบัติเหตุ"}
+                        defaultValue={accidentDetail ? accidentDetail.Result.AccidentDetailInfo.AccidentDate ? "มีอุบัติเหตุ" : "ไม่มีอุบัติเหตุ" : ""}
                         className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"
                         InputProps={{ readOnly: true }}
                       />
@@ -4336,7 +4330,7 @@ if(rows){
           <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
             <div className="bg-white p-8 rounded shadow-lg">
               <h2 className="text-4xl font-bold mb-4 text-primary">
-                ลงทะเบียนใช้สิทธิ์สำเร็จ
+                ส่งประกันเรียบร้อยแล้ว
               </h2>
 
             </div>

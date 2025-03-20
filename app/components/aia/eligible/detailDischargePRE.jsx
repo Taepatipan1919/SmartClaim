@@ -57,8 +57,8 @@ export default function DetailDischarge({ data }) {
   const [fileList, setFileList] = useState("")
   const [massDocError, setMassDocError] = useState("");
   const [showDocError, setShowDocError] = useState("");
-  const [over45Days, setOver45Days] = useState("");
   const [otherInsurer, setOtherInsurer] = useState(false);
+  const [over45Days, setOver45Days] = useState("");
   const [over45, setOver45] = useState("");
   const [accidentOver45DaysName, setAccidentOver45DaysName] = useState("");
   const [dataaccidentPlace, setDataaccidentPlace] = useState("");

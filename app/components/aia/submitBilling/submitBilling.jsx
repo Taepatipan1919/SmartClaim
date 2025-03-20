@@ -53,14 +53,19 @@ export default function checkData() {
   const [patientInfoDetail, setPatientInfoDetail] = useState();
   const [statusNew, setStatusNew] = useState({});
   const [file, setFile] = useState(null);
+
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const [refreshSucc, setRefreshSucc] = useState("");
   const [progress, setProgress] = useState({ started: false, pc: 0 });
   const [msg, setMsg] = useState(null);
   const [refIdL, setRefIdL] = useState("");
+  const [showModalRefresh, setShowModalRefresh] = useState(false);
   const [pIDL, setPIDL] = useState("");
   const [statusValue, setStatusValue] = useState("");
   const [billValue, setBillValue] = useState("ทั้งหมด")
   const [passportNumberL, setPassportNumberL] = useState("");
   const [randomNumber, setRandomNumber] = useState('');
+  const [illnessType, setIllnessType] = useState();
   const [transactionNoL, setTransactionNoL] = useState("");
   const [hNL, setHNL] = useState("");
   const [vNL, setVNL] = useState("");
@@ -325,6 +330,29 @@ setBilltype(Billtype)
       );
     }
   };
+  useEffectOnce(() => {
+    axios
+      .get(
+        process.env.NEXT_PUBLIC_URL_SV +
+          process.env.NEXT_PUBLIC_URL_IllnessType +
+          InsuranceCode
+      )
+      .then((response) => {
+        setIllnessType(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+        try {
+          const ErrorMass = error.config.url;
+          const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+          setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
+          setShowFormError("Error");
+        } catch (error) {
+          setMassError(error.response.data.HTTPStatus.message);
+          setShowFormError("Error");
+        }
+      });
+  });
   const DocumentList = (data) => {
     setShowDocError();
     const [
@@ -423,13 +451,10 @@ axios
   });
 };
   const Refresh = (data) => {
-    // setStatusNew()
-    //setStatusAllNew();
+    setShowModalRefresh(true);
     setPost("");
     setCurrentData("");
     setShowFormError();
-   // console.log("-Refresh-");
-    // console.log(data)
     const [RefId, TransactionNo, PID, PassportNumber, HN, VN, 
       InvoiceNumber,PolicyTypeCode, IdType, IllnessTypeCode, ServiceSettingCode, SurgeryTypeCode, FurtherClaimNo, FurtherClaimId, AccidentDate, VisitDateTime] = data.split(" | ");
     const PatientInfo = {
@@ -441,7 +466,7 @@ axios
       HN: HN,
       VN: VN,
     };
-   // console.log(PatientInfo);
+    console.log(PatientInfo);
     axios
       .post(
         process.env.NEXT_PUBLIC_URL_SV +
@@ -449,74 +474,171 @@ axios
         { PatientInfo }
       )
       .then((response) => {
-        console.log(response);
+        console.log(response.data);
 
+        document.getElementById('my_modal_showModalRefreshSucc').showModal()
+        setCurrentTime(new Date());
+        setRefreshSucc(response.data);
 
-
-       // console.log(patientUpdate)
+        console.log(patientUpdate);
+        if(patientUpdate){
         axios
-        .post(
-          process.env.NEXT_PUBLIC_URL_SV +
-            process.env.NEXT_PUBLIC_URL_SearchTransection,
-            patientUpdate 
-        )
-        .then((response) => {
-        
-          if(serviceValue === "IPD"){
-            const filteredClaims = response.data.Result.TransactionClaimInfo.filter(claim => claim.IsIPDDischarge === true);
-            setCurrentData(response.data.Result.TransactionClaimInfo)
-            setPost(filteredClaims);
-
-          }else{
-            setPost(response.data.Result.TransactionClaimInfo);
-          }
-           
-          // setShowFormError();
-        })
-        .catch((error) => {
-          console.log(error);
+          .post(
+            process.env.NEXT_PUBLIC_URL_SV +
+              process.env.NEXT_PUBLIC_URL_SearchTransection,
+            patientUpdate
+          )
+          .then((response) => {
+            console.log(response.data)
+            setShowModalRefresh(false);
+            if(serviceValue === "IPD"){
+              const filteredClaims = response.data.Result.TransactionClaimInfo.filter(claim => claim.IsIPDDischarge === true);
+              setCurrentData(response.data.Result.TransactionClaimInfo)
+              setPost(filteredClaims);
   
-          setShowFormError("Error");
-          setMassError(error.message);
-        });
+            }else{
+              setPost(response.data.Result.TransactionClaimInfo);
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+
+            setShowFormError("Error");
+            setMassError(error.message);
+          });
+        }else{
+
+          const today = dayjs().format("YYYY-MM-DD");
+          const PatientInfo = {
+            InsurerCode: InsuranceCode,
+            IdType: "",
+            InvoiceNumber: "",
+            VN: "",
+            PID: "",
+            PassportNumber: "",
+            HN: "",
+            VisitDatefrom: today,
+            VisitDateto: today,
+            StatusChangedAtDatefrom: "",
+            StatusChangedAtDateto: "",
+      
+            StatusClaimCode: "",
+            ServiceSettingCode: serviceValue,
+          };
 
 
-        // if (response.data.HTTPStatus.statusCode === 200) {
-        //   setStatusNew((prevData) => ({
-        //     ...prevData,
-        //     InsurerCode: response.data.Result.InsuranceData.InsurerCode,
-        //     BatchNumber: response.data.Result.InsuranceData.BatchNumber,
-        //     ClaimStatus: response.data.Result.InsuranceData.ClaimStatus,
-        //     ClaimStatusDesc: response.data.Result.InsuranceData.ClaimStatusDesc,
-        //     TotalApproveAmount: response.data.Result.InsuranceData.TotalApproveAmount,
-        //     PaymentDate: response.data.Result.InsuranceData.PaymentDate,
-        //     InvoiceNumber: response.data.Result.InsuranceData.InvoiceNumber,
-        //     // HN : response.data.Result.InsuranceData.HN,
-        //     // VN : response.data.Result.InsuranceData.VN,
-        //   }));
-        // } else {
-        //   setShowFormError("Error");
-        //   setMassError(response.data.HTTPStatus.error);
-        // }
+          axios
+          .post(
+            process.env.NEXT_PUBLIC_URL_SV +
+              process.env.NEXT_PUBLIC_URL_SearchTransection,
+              { PatientInfo } 
+          )
+          .then((response) => {
+            console.log(response.data)
+            setShowModalRefresh(false);
+            if(serviceValue === "IPD"){
+              const filteredClaims = response.data.Result.TransactionClaimInfo.filter(claim => claim.IsIPDDischarge === true);
+              setCurrentData(response.data.Result.TransactionClaimInfo)
+              setPost(filteredClaims);
+  
+            }else{
+              setPost(response.data.Result.TransactionClaimInfo);
+            }
+          })
+          .catch((error) => {
+            console.log(error);
 
-
-
-
+            setShowFormError("Error");
+            setMassError(error.message);
+          });
+        }
 
 
       })
-      // setShowModal(true)
-      // setTimeout(() => {
-      //   setShowModal(false)
-      //   //router.push('/aia/submitBilling');
-      // }, 5000);
-      // })
+
       .catch((error) => {
         // console.error("Error", error)
         console.log(error);
         //  if (err.response.request.status === 500) {
         setShowFormError("Error");
          setMassError(error.response.data.HTTPStatus.message);
+
+
+
+
+         
+
+        console.log(patientUpdate);
+        if(patientUpdate){
+        axios
+          .post(
+            process.env.NEXT_PUBLIC_URL_SV +
+              process.env.NEXT_PUBLIC_URL_SearchTransection,
+            patientUpdate
+          )
+          .then((response) => {
+            console.log(response.data)
+            if(serviceValue === "IPD"){
+              const filteredClaims = response.data.Result.TransactionClaimInfo.filter(claim => claim.IsIPDDischarge === true);
+              setCurrentData(response.data.Result.TransactionClaimInfo)
+              setPost(filteredClaims);
+  
+            }else{
+              setPost(response.data.Result.TransactionClaimInfo);
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+
+            setShowFormError("Error");
+            setMassError(error.message);
+          });
+        }else{
+
+          const today = dayjs().format("YYYY-MM-DD");
+          const PatientInfo = {
+            InsurerCode: InsuranceCode,
+            IdType: "",
+            InvoiceNumber: "",
+            VN: "",
+            PID: "",
+            PassportNumber: "",
+            HN: "",
+            VisitDatefrom: today,
+            VisitDateto: today,
+            StatusChangedAtDatefrom: "",
+            StatusChangedAtDateto: "",
+      
+            StatusClaimCode: "",
+            ServiceSettingCode: serviceValue,
+          };
+
+
+          axios
+          .post(
+            process.env.NEXT_PUBLIC_URL_SV +
+              process.env.NEXT_PUBLIC_URL_SearchTransection,
+              { PatientInfo } 
+          )
+          .then((response) => {
+            console.log(response.data)
+
+            if(serviceValue === "IPD"){
+              const filteredClaims = response.data.Result.TransactionClaimInfo.filter(claim => claim.IsIPDDischarge === true);
+              setCurrentData(response.data.Result.TransactionClaimInfo)
+              setPost(filteredClaims);
+  
+            }else{
+              setPost(response.data.Result.TransactionClaimInfo);
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+
+            setShowFormError("Error");
+            setMassError(error.message);
+          });
+        }
       });
 
 
@@ -1266,80 +1388,80 @@ axios
 
    //////////////////// Chack Status All///////////////////////////
 
-   const RefreshAll = () => {
-    setPost("");
-    setCurrentData("");
-    //setStatusAllNew();
-  // const extractedRefId = data.map(item => item.RefId);
-  // const extractedTransactionNo = data.map(item => item.TransactionNo);
+  //  const RefreshAll = () => {
+  //   setPost("");
+  //   setCurrentData("");
+  //   //setStatusAllNew();
+  // // const extractedRefId = data.map(item => item.RefId);
+  // // const extractedTransactionNo = data.map(item => item.TransactionNo);
 
-  const PatientInfo = data.map(item => ({
-    RefId: item.RefId,
-    TransactionNo: item.TransactionNo
-  }));
+  // const PatientInfo = data.map(item => ({
+  //   RefId: item.RefId,
+  //   TransactionNo: item.TransactionNo
+  // }));
   
   
       
     
-    //console.log(PatientInfo)
-     axios
-       .post(
-         process.env.NEXT_PUBLIC_URL_SV +
-           process.env.NEXT_PUBLIC_URL_getcheckclaimstatusListAll,
-         { "PatientInfo" :   PatientInfo  }
-       )
-       .then((response) => {
-         console.log(response.data);
+  //   //console.log(PatientInfo)
+  //    axios
+  //      .post(
+  //        process.env.NEXT_PUBLIC_URL_SV +
+  //          process.env.NEXT_PUBLIC_URL_getcheckclaimstatusListAll,
+  //        { "PatientInfo" :   PatientInfo  }
+  //      )
+  //      .then((response) => {
+  //        console.log(response.data);
 
-        //  const All = data.map(item => item.TransactionNo);
-         const AllPatient = response.data.Result.InsuranceData.map(item => ({
-          RefId: item.RefId,
-          TransactionNo: item.TransactionNo,
-            InsurerCode: item.StatusInfo.InsurerCode,
-            BatchNumber:  item.StatusInfo.BatchNumber,
-             ClaimStatus:  item.StatusInfo.ClaimStatus,
-             ClaimStatusDesc:  item.StatusInfo.ClaimStatusDesc,
-             TotalApproveAmount:  item.StatusInfo.TotalApproveAmount,
-             PaymentDate:  item.StatusInfo.PaymentDate,
-             InvoiceNumber:  item.StatusInfo.InvoiceNumber,
-        }));
-         console.log(AllPatient)
-         //setStatusAllNew(AllPatient)
+  //       //  const All = data.map(item => item.TransactionNo);
+  //        const AllPatient = response.data.Result.InsuranceData.map(item => ({
+  //         RefId: item.RefId,
+  //         TransactionNo: item.TransactionNo,
+  //           InsurerCode: item.StatusInfo.InsurerCode,
+  //           BatchNumber:  item.StatusInfo.BatchNumber,
+  //            ClaimStatus:  item.StatusInfo.ClaimStatus,
+  //            ClaimStatusDesc:  item.StatusInfo.ClaimStatusDesc,
+  //            TotalApproveAmount:  item.StatusInfo.TotalApproveAmount,
+  //            PaymentDate:  item.StatusInfo.PaymentDate,
+  //            InvoiceNumber:  item.StatusInfo.InvoiceNumber,
+  //       }));
+  //        console.log(AllPatient)
+  //        //setStatusAllNew(AllPatient)
 
-         axios
-         .post(
-           process.env.NEXT_PUBLIC_URL_SV +
-             process.env.NEXT_PUBLIC_URL_SearchTransection,
-           { PatientInfo }
-         )
-         .then((response) => {
+  //        axios
+  //        .post(
+  //          process.env.NEXT_PUBLIC_URL_SV +
+  //            process.env.NEXT_PUBLIC_URL_SearchTransection,
+  //          { PatientInfo }
+  //        )
+  //        .then((response) => {
 
-         //  console.log(response.data);
-           setShowFormError();
-           if(serviceValue === "IPD"){
-            const filteredClaims = response.data.Result.TransactionClaimInfo.filter(claim => claim.IsIPDDischarge === true);
-            setCurrentData(response.data.Result.TransactionClaimInfo)
-            setPost(filteredClaims);
+  //        //  console.log(response.data);
+  //          setShowFormError();
+  //          if(serviceValue === "IPD"){
+  //           const filteredClaims = response.data.Result.TransactionClaimInfo.filter(claim => claim.IsIPDDischarge === true);
+  //           setCurrentData(response.data.Result.TransactionClaimInfo)
+  //           setPost(filteredClaims);
 
-          }else{
-            setPost(response.data.Result.TransactionClaimInfo);
-          }
-         })
-         .catch((error) => {
-           // console.error("Error", error)
-           console.log(error);
+  //         }else{
+  //           setPost(response.data.Result.TransactionClaimInfo);
+  //         }
+  //        })
+  //        .catch((error) => {
+  //          // console.error("Error", error)
+  //          console.log(error);
   
-           setShowFormError("Error");
-           setMassError(error.message);
-         });
+  //          setShowFormError("Error");
+  //          setMassError(error.message);
+  //        });
  
-        })
-       .catch((error) => {
-         console.log(error);
-         setShowFormError("Error");
-         setMassError(error.message);
-       });
-   };
+  //       })
+  //      .catch((error) => {
+  //        console.log(error);
+  //        setShowFormError("Error");
+  //        setMassError(error.message);
+  //      });
+  //  };
 
     ///////////////////////////////////////////////
   
@@ -1530,25 +1652,38 @@ axios
             ""
           )}
 
-          <table className="table mt-2">
+          <table className="table mt-2 text-xs">
           <thead className="bg-info text-base-100 text-center text-sm">
               <tr>
-                <th>Visit Date</th>
+                       <th>Visit Date</th>
                 <th>Full Name</th>
-                <th>HN</th>
-                <th>VN</th>
+                <th>
+                  HN <br /> VN
+                </th>
                 {notShowLoc === true ? "" : <th>Location</th>}
+                <th>Policy Number</th>
                 <th>ClaimNo</th>
-                <th>Invoicenumber</th>
-                <td>BatchNumber</td>
-                <th className="w-40">Status</th>
-                <th >Total<br/>Billamount</th>
-                <th >Approved<br/>Amount</th>
-                <th >Excess<br/>Amount</th>
-                <th >
-                  <h1 className="text-base-100 text-2xl flex justify-center" onClick={RefreshAll}>
-                    <LuRefreshCw />
-                  </h1>
+                <th>
+                  Invoicenumber <br />
+                  BatchNumber
+                </th>
+                <th className="w-40 ">Status</th>
+                <th>
+                  Total
+                  <br />
+                  Billamount
+                </th>
+                <th>
+                  Approved
+                  <br />
+                  Amount
+                </th>
+                <th>
+                  Excess
+                  <br />
+                  Amount
+                </th>
+                <th>
                 </th>
                 <th></th>
               </tr>
@@ -1562,17 +1697,28 @@ axios
                       <td>{bill.VisitDate}</td>
                       <td>
                         {bill.TitleTH} {bill.GivenNameTH} {bill.SurnameTH}
+                          <br /> ( {bill.ServiceSettingCode} -{" "}
+                          {illnessType 
+                            ? illnessType.Result.map((ill) =>
+                                ill.illnesstypecode === bill.IllnessTypeCode ? (
+                                  <> {ill.illnesstypedesc} </>
+                                ) : (
+                                  ""
+                                )
+                              )
+                            : ""}{" "}
+                          )
+                          <br />{bill.PolicyTypeCode === "CS" ? "( ประกันกลุ่ม )" : "( ประกันบุคคล )"}
                       </td>
-                      <td>{bill.HN}</td>
-                      <td>{bill.VN}</td>
+                      <td> {bill.HN ? bill.HN : "-"} <br />{" "}
+                      {bill.VN ? bill.VN : "-"}</td>
                       {notShowLoc === true ? "" :  <td>{bill.VisitLocation}</td>}
                       <td>{bill.ClaimNo}</td>
-                      <td>{bill.InvoiceNumber}</td>
-                      <td>
-  {(billValue === "ทั้งหมด") ? 
+                      <td>{bill.ClaimNo}</td>
+                      <td>   {bill.InvoiceNumber ? bill.InvoiceNumber : "-"} <br />
+                      {(billValue === "ทั้งหมด") ? 
   //(statusAllNew ? (statusAllNew.map(ALLnew => ((ALLnew.TransactionNo === ((bill.TransactionNo)||(statusNew.TransactionNo))) ?  (ALLnew.BatchNumber) : ((bill.BatchNumber)||(statusNew.BatchNumber))))):
-  (statusNew ? (bill.TransactionNo === statusNew.TransactionNo ? statusNew.BatchNumber : bill.BatchNumber): "Loading..."): ""}
-                      </td>
+  (statusNew ? (bill.TransactionNo === statusNew.TransactionNo ? statusNew.BatchNumber : bill.BatchNumber): "Loading..."): ""}</td>
                       <td>
                       <div className="grid gap-1 sm:grid-cols-1 w-full">
                               {
@@ -1678,7 +1824,7 @@ axios
                       {bill.RefId ? (
                             (((bill.ClaimStatusDesc !== "Cancelled to AIA")&&(bill.ClaimStatusDesc !== "Cancelled")&&(bill.ClaimStatusDesc !== "Reversed"))&&(bill.ClaimNo)) ? (
                               <>
-                        <div className="tooltip ml-4" data-tip="รีเฟรช">
+                        <div className="tooltip" data-tip="รีเฟรช">
                           <h1
                             className="text-success text-2xl"
                             onClick={() =>
@@ -1696,7 +1842,7 @@ axios
                               ((bill.ClaimNo)||(bill.InvoiceNumber)
                              ? (
                               <>
-                        <div className="tooltip ml-4" data-tip="ข้อมูลส่งเคลม">
+                        <div className="tooltip" data-tip="ข้อมูลส่งเคลม">
                           <h1
                             className="text-error text-2xl"
                             onClick={() =>
@@ -1714,7 +1860,7 @@ axios
         
 
                         <div
-                                  className="tooltip ml-4"
+                                  className="tooltip"
                                   data-tip="ดู เอกสารทั้งหมด"
                                 >
                                   <h1
@@ -1841,25 +1987,38 @@ axios
             ""
           )}
 
-          <table className="table mt-2">
+          <table className="table mt-2 text-xs">
           <thead className="bg-info text-base-100 text-center text-sm">
               <tr>
-                <th >Visit Date</th>
+              <th>Visit Date</th>
                 <th>Full Name</th>
-                <th>HN</th>
-                <th>VN</th>
-                {notShowLoc === true ? "" :  <th>Location</th>}
+                <th>
+                  HN <br /> VN
+                </th>
+                {notShowLoc === true ? "" : <th>Location</th>}
+                <th>Policy Number</th>
                 <th>ClaimNo</th>
-                <th>Invoicenumber</th>
-                <td>BatchNumber</td>
-                <th className="w-40">Status</th>
-                <th >Total<br/>Billamount</th>
-                <th >Approved<br/>Amount</th>
-                <th >Excess<br/>Amount</th>
-                <th >
-                  <h1 className="text-base-100 text-2xl flex justify-center" onClick={RefreshAll}>
-                    <LuRefreshCw />
-                  </h1>
+                <th>
+                  Invoicenumber <br />
+                  BatchNumber
+                </th>
+                <th className="w-40 ">Status</th>
+                <th>
+                  Total
+                  <br />
+                  Billamount
+                </th>
+                <th>
+                  Approved
+                  <br />
+                  Amount
+                </th>
+                <th>
+                  Excess
+                  <br />
+                  Amount
+                </th>
+                <th>
                 </th>
                 <th></th>
               </tr>
@@ -1875,17 +2034,31 @@ post.map((bill, index) =>
   <tr className="hover text-center" key={index}>
     <td>{bill.VisitDate}</td>
     <td>
-      {bill.TitleTH} {bill.GivenNameTH} {bill.SurnameTH}
+    {bill.TitleTH} {bill.GivenNameTH} {bill.SurnameTH}
+                          <br /> ( {bill.ServiceSettingCode} -{" "}
+                          {illnessType
+                            ? illnessType.Result.map((ill) =>
+                                ill.illnesstypecode === bill.IllnessTypeCode ? (
+                                  <> {ill.illnesstypedesc} </>
+                                ) : (
+                                  ""
+                                )
+                              )
+                            : ""}{" "}
+                          )
+                          <br />{bill.PolicyTypeCode === "CS" ? "( ประกันกลุ่ม )" : "( ประกันบุคคล )"}
     </td>
-    <td>{bill.HN}</td>
-    <td>{bill.VN}</td>
+    <td>{bill.HN ? bill.HN : "-"} <br />{" "}
+    {bill.VN ? bill.VN : "-"}
+    </td>
     {notShowLoc === true ? "" :  <td>{bill.VisitLocation}</td> }
     <td>{bill.ClaimNo}</td>
-    <td>{bill.InvoiceNumber}</td>
-    <td>
-  {
-  (statusNew ? (bill.TransactionNo === statusNew.TransactionNo ? statusNew.BatchNumber : bill.BatchNumber): "Loading...")}
-    </td>
+    <td>{bill.ClaimNo}</td>
+    <td>   {bill.InvoiceNumber ? bill.InvoiceNumber : "-"} <br />
+                      {(billValue === "ทั้งหมด") ? 
+  //(statusAllNew ? (statusAllNew.map(ALLnew => ((ALLnew.TransactionNo === ((bill.TransactionNo)||(statusNew.TransactionNo))) ?  (ALLnew.BatchNumber) : ((bill.BatchNumber)||(statusNew.BatchNumber))))):
+  (statusNew ? (bill.TransactionNo === statusNew.TransactionNo ? statusNew.BatchNumber : bill.BatchNumber): "Loading..."): ""}
+  </td>
     <td>
     <div className="grid gap-1 sm:grid-cols-1 w-full">
                               {
@@ -1989,7 +2162,7 @@ post.map((bill, index) =>
     {bill.RefId ? (
           (((bill.ClaimStatusDesc !== "Cancelled to AIA")&&(bill.ClaimStatusDesc !== "Cancelled")&&(bill.ClaimStatusDesc !== "Reversed"))&&(bill.ClaimNo)) ? (
             <>
-      <div className="tooltip ml-4" data-tip="รีเฟรช">
+      <div className="tooltip" data-tip="รีเฟรช">
         <h1
           className="text-success text-2xl"
           onClick={() =>
@@ -2009,7 +2182,7 @@ post.map((bill, index) =>
             &&(bill.ClaimStatusDesc !== "Cancelled to AIA")) || (((bill.ClaimStatusDesc === "waitting discharge")||(bill.ClaimStatusDesc === "waitting for discharge"))
             &&(bill.ClaimStatusDesc !== "Cancelled to AIA"))) ? (
             <>
-      <div className="tooltip ml-4" data-tip="ข้อมูลส่งเคลม">
+      <div className="tooltip" data-tip="ข้อมูลส่งเคลม">
         <h1
           className="text-error text-2xl"
           onClick={() =>
@@ -2026,7 +2199,7 @@ post.map((bill, index) =>
 
 
       <div
-                className="tooltip ml-4"
+                className="tooltip"
                 data-tip="ดู เอกสารทั้งหมด"
               >
                 <h1
@@ -2150,25 +2323,38 @@ post.map((bill, index) =>
             ""
           )}
 
-          <table className="table mt-2">
+          <table className="table mt-2 text-xs">
           <thead className="bg-info text-base-100 text-center text-sm">
               <tr>
-                <th >Visit Date</th>
+              <th>Visit Date</th>
                 <th>Full Name</th>
-                <th>HN</th>
-                <th>VN</th>
+                <th>
+                  HN <br /> VN
+                </th>
                 {notShowLoc === true ? "" : <th>Location</th>}
+                <th>Policy Number</th>
                 <th>ClaimNo</th>
-                <th>Invoicenumber</th>
-                <td>BatchNumber</td>
-                <th className="w-40">Status</th>
-                <th >Total<br/>Billamount</th>
-                <th >Approved<br/>Amount</th>
-                <th >Excess<br/>Amount</th>
-                <th >
-                  <h1 className="text-base-100 text-2xl flex justify-center" onClick={RefreshAll}>
-                    <LuRefreshCw />
-                  </h1>
+                <th>
+                  Invoicenumber <br />
+                  BatchNumber
+                </th>
+                <th className="w-40 ">Status</th>
+                <th>
+                  Total
+                  <br />
+                  Billamount
+                </th>
+                <th>
+                  Approved
+                  <br />
+                  Amount
+                </th>
+                <th>
+                  Excess
+                  <br />
+                  Amount
+                </th>
+                <th>
                 </th>
                 <th></th>
               </tr>
@@ -2183,18 +2369,31 @@ post.map((bill, index) =>
   <tr className="hover text-center" key={index}>
     <td>{bill.VisitDate}</td>
     <td>
-      {bill.TitleTH} {bill.GivenNameTH} {bill.SurnameTH}
+    {bill.TitleTH} {bill.GivenNameTH} {bill.SurnameTH}
+                          <br /> ( {bill.ServiceSettingCode} -{" "}
+                          {illnessType
+                            ? illnessType.Result.map((ill) =>
+                                ill.illnesstypecode === bill.IllnessTypeCode ? (
+                                  <> {ill.illnesstypedesc} </>
+                                ) : (
+                                  ""
+                                )
+                              )
+                            : ""}{" "}
+                          )
+                          <br />{bill.PolicyTypeCode === "CS" ? "( ประกันกลุ่ม )" : "( ประกันบุคคล )"}
     </td>
-    <td>{bill.HN}</td>
-    <td>{bill.VN}</td>
+    <td>   {bill.HN ? bill.HN : "-"} <br />{" "}
+    {bill.VN ? bill.VN : "-"}
+    </td>
     {notShowLoc === true ? "" :  <td>{bill.VisitLocation}</td>}
     <td>{bill.ClaimNo}</td>
-    <td>{bill.InvoiceNumber}</td>
-    <td>
-  {
-  //statusAllNew ? (statusAllNew.map(ALLnew => ((ALLnew.TransactionNo === ((bill.TransactionNo)||(statusNew.TransactionNo))) ?  (ALLnew.BatchNumber) : ((bill.BatchNumber)||(statusNew.BatchNumber))))):
-  (statusNew ? (bill.TransactionNo === statusNew.TransactionNo ? statusNew.BatchNumber : bill.BatchNumber): "Loading...")}
-    </td>
+    <td>{bill.ClaimNo}</td>
+    <td>  
+       {bill.InvoiceNumber ? bill.InvoiceNumber : "-"} <br />
+                      {(billValue === "ทั้งหมด") ? 
+  //(statusAllNew ? (statusAllNew.map(ALLnew => ((ALLnew.TransactionNo === ((bill.TransactionNo)||(statusNew.TransactionNo))) ?  (ALLnew.BatchNumber) : ((bill.BatchNumber)||(statusNew.BatchNumber))))):
+  (statusNew ? (bill.TransactionNo === statusNew.TransactionNo ? statusNew.BatchNumber : bill.BatchNumber): "Loading..."): ""}</td>
     <td>
     <div className="grid gap-1 sm:grid-cols-1 w-full">
                               {
@@ -2299,7 +2498,7 @@ post.map((bill, index) =>
     {bill.RefId ? (
           (((bill.ClaimStatusDesc !== "Cancelled to AIA")&&(bill.ClaimStatusDesc !== "Cancelled")&&(bill.ClaimStatusDesc !== "Reversed"))&&(bill.ClaimNo)) ? (
             <>
-      <div className="tooltip ml-4" data-tip="รีเฟรช">
+      <div className="tooltip" data-tip="รีเฟรช">
         <h1
           className="text-success text-2xl"
           onClick={() =>
@@ -2319,7 +2518,7 @@ post.map((bill, index) =>
             &&(bill.ClaimStatusDesc !== "Cancelled to AIA")) || (((bill.ClaimStatusDesc === "waitting discharge")||(bill.ClaimStatusDesc === "waitting for discharge"))
             &&(bill.ClaimStatusDesc !== "Cancelled to AIA"))) ? (
             <>
-      <div className="tooltip ml-4" data-tip="ข้อมูลส่งเคลม">
+      <div className="tooltip" data-tip="ข้อมูลส่งเคลม">
         <h1
           className="text-error text-2xl"
           onClick={() =>
@@ -2336,7 +2535,7 @@ post.map((bill, index) =>
 
 
       <div
-                className="tooltip ml-4"
+                className="tooltip"
                 data-tip="ดู เอกสารทั้งหมด"
               >
                 <h1
@@ -2744,6 +2943,65 @@ post.map((bill, index) =>
       ) : (
         ""
       )}
+      {showModalRefresh ? (
+            <>
+              <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
+           {showFormError === "Error" ? (
+
+
+              // <div className="bg-white p-8 rounded shadow-lg">
+                      <div className="modal-box max-w-3xl">
+                                      <form method="dialog">
+                  <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onClick={() => setShowModalRefresh(false)} >✕</button>
+               <h2 className="text-xl font-bold mb-4 text-error"> 
+               <div
+                  role="alert"
+                  className="alert alert-error mt-2 text-base-100"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-6 w-6 shrink-0 stroke-current"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                  <span>{massError}</span>
+                </div>
+               </h2>  
+               </form>
+               </div>
+           ): (
+                  <CircularProgress disableShrink className="text-error"/>         
+           )}
+              </div>
+            </>
+          ) : (
+            ""
+          )}
+
+
+
+<dialog id="my_modal_showModalRefreshSucc" className="modal">
+  <div className="modal-box">
+  <h3 className="font-bold text-2xl ">Update Status</h3>
+  <hr/>
+  <h3 className="font-bold text-2xl text-center text-error">
+  DateTime : {currentTime.toLocaleDateString()} {currentTime.toLocaleTimeString()}
+  </h3>
+    <h3 className="font-bold text-2xl text-accent text-center">
+    Status : {refreshSucc ? refreshSucc.Result.InsuranceData.ClaimStatusDesc_TH : ""}
+    </h3>
+  </div>
+  <form method="dialog" className="modal-backdrop">
+    <button>close</button>
+  </form>
+</dialog>
     </>
   );
 }

@@ -260,7 +260,7 @@ export default function Page({ data }) {
         // console.log(response.data)
       })
       .catch((error) => {
-  //      console.log(error);
+        console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -325,7 +325,7 @@ export default function Page({ data }) {
         //console.log(response.data.Result.PatientInfo[0])
       })
       .catch((error) => {
-    //    console.log(error);
+        console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -419,21 +419,23 @@ export default function Page({ data }) {
        PatientInfoData
       )
       .then((response) => {
-       //  console.log(response.data)
+         console.log(response.data)
          setAccidentDetail(response.data);
 
          if(response.data.Result.AccidentDetailInfo.AccidentDate){
           console.log("มีAccDate")
         const  AccidentDatex = dayjs(response.data.Result.AccidentDetailInfo.AccidentDate)
+        setCauseOfInjuryDetails(response.data.Result.AccidentDetailInfo.CauseOfInjuryDetail);
+        setInjuryDetails(response.data.Result.AccidentDetailInfo.InjuryDetail);
+        setAccidentPlaceValue(response.data.Result.AccidentDetailInfo.AccidentPlace)
+
           setAccidentDate(AccidentDatex);
         }else{
           console.log("ไม่มีAccDate")
         }
 
 
-          setCauseOfInjuryDetails(response.data.Result.AccidentDetailInfo.CauseOfInjuryDetail);
-          setInjuryDetails(response.data.Result.AccidentDetailInfo.InjuryDetail);
-          setAccidentPlaceValue(response.data.Result.AccidentDetailInfo.AccidentPlace)
+
 
 
       })
@@ -465,7 +467,7 @@ export default function Page({ data }) {
         setDataaccidentPlace(response.data);
       })
       .catch((error) => {
-    //    console.log(error);
+        console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -490,7 +492,7 @@ export default function Page({ data }) {
         setDatainjurySide(response.data);
       })
       .catch((error) => {
-    //    console.log(error);
+        console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -516,7 +518,7 @@ export default function Page({ data }) {
         setDataWoundType(response.data);
       })
       .catch((error) => {
-    //    console.log(error);
+        console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -679,7 +681,7 @@ export default function Page({ data }) {
         setDiagnosis(response.data);
       })
       .catch((error) => {
-    //    console.log(error);
+        console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -713,7 +715,7 @@ export default function Page({ data }) {
       } 
       })
       .catch((error) => {
-      //  console.log(error);
+        console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -887,7 +889,7 @@ export default function Page({ data }) {
         setInjuryWoundType(response.data);
       })
       .catch((error) => {
-     //   console.log(error);
+        console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -1047,7 +1049,7 @@ export default function Page({ data }) {
 
       })
       .catch((error) => {
-     //   console.log(error);
+        console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -1110,7 +1112,7 @@ export default function Page({ data }) {
         setCurrentDataorderItemz(response.data.Result.OrderItemInfo);
       })
       .catch((error) => {
-     //   console.log(error);
+        console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -1149,7 +1151,7 @@ export default function Page({ data }) {
        
       })
       .catch((error) => {
-     //   console.log(error);
+        console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -1270,7 +1272,7 @@ export default function Page({ data }) {
         console.log(response.data)
       })
       .catch((error) => {
-       // console.log(error);
+       console.log(error);
         try {
           const ErrorMass = error.config.url;
           const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -1397,14 +1399,14 @@ export default function Page({ data }) {
 
 if(injuryDetails.length > 0){
   const obj = injuryDetails[0];
-  if (obj.InjuryArea !== "" || obj.InjurySide !== "" || obj.WoundType !== "") {
+  if (obj.InjuryArea !== "" && obj.InjurySide !== "" && obj.WoundType !== "") {
     injuryDetailsCount = injuryDetails.length;
     console.log('Array has values:', injuryDetails);
   }
 }
 if(causeOfInjuryDetails.length > 0){
   const obj = causeOfInjuryDetails[0];
-  if (obj.CauseOfInjury !== "" || obj.CommentOfInjury !== "") {
+  if (obj.CauseOfInjury !== "" && obj.CommentOfInjury !== "") {
     causeOfInjuryDetailsCount = causeOfInjuryDetails.length;
     console.log('Array has values:', causeOfInjuryDetailsCount);
   }
@@ -1491,6 +1493,7 @@ if(rows2){
                   resolve("Step 1 completed");
                 })
                 .catch((error) => {
+                  console.log(error);
                   console.log("1 Error");
                   try {
                     const ErrorMass = error.config.url;
@@ -1537,6 +1540,7 @@ if(rows2){
                   resolve("Step 2 completed");
                 })
                 .catch((error) => {
+                  console.log(error);
                   console.log("2 Error");
                   try {
                     const ErrorMass = error.config.url;
@@ -1618,6 +1622,7 @@ if(rows2){
                   resolve("Step 3 completed");
                 })
                 .catch((error) => {
+                  console.log(error);
                   console.log("3 Error");
                   try {
                     const ErrorMass = error.config.url;
@@ -1627,8 +1632,8 @@ if(rows2){
                     );
                     setShowSummitError("Error");
                   } catch (error) {
-                    // setMassSummitError(error.response.data.HTTPStatus.message);
-                    // setShowSummitError("Error");
+                     setMassSummitError(error.response.data.HTTPStatus.message);
+                     setShowSummitError("Error");
                   }
                 });
       
@@ -1682,7 +1687,7 @@ if(rows2){
                   }
                 })
                 .catch((error) => {
-                //  console.log(error);
+                  console.log(error);
                   try {
                     const ErrorMass = error.config.url;
                     const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -1787,12 +1792,12 @@ if(rows2){
                   }
                 })
                 .catch((error) => {
-                //  console.log(error);
+                  console.log(error);
                   try {
                     const ErrorMass = error.config.url;
                     const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
                     setMassSummitError(
-                      error.code + " - " + error.message + " - " + ErrorMass2
+                      error.code + " - " + error.messageth + " - " + ErrorMass2
                     );
                     setShowSummitError("Error");
                   } catch (error) {
@@ -1852,8 +1857,8 @@ if(rows2){
        
         })
         .catch((error) => {
-          // console.error("Error", err)
-         // console.log(error);
+        
+            console.log(error);
           try {
             const ErrorMass = error.config.url;
             const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -1961,7 +1966,7 @@ if(rows2){
           //console.log(response.data)
         })
         .catch((error) => {
-         // console.log(error);
+          console.log(error);
           try {
             const ErrorMass = error.config.url;
             const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
@@ -2057,8 +2062,9 @@ if(rows2){
 
 
      const IsIPDDischargeBox = (even) => {
-    //  console.log(even.target.checked)
+      console.log(even.target.checked)
       setCheckedFinalDischarge(even.target.checked)
+      setShowSummitError("")
       document.getElementById("ConfrimFinal").showModal();
     }
 
@@ -2116,8 +2122,7 @@ if(rows2){
       const ConfrimFinalDischarge = async () => {
 
     if(checkedFinalDischarge === true){
-      // const isConfirmed = window.confirm("แน่ใจแล้วที่จะ FinalDischarge");
-      // if (isConfirmed) {
+
       setIsIPDDischargeValue(true)
       
 
@@ -2162,7 +2167,7 @@ if(rows2){
     
     
     
-    //   }
+
      }
    
   }
@@ -3078,9 +3083,7 @@ if(rows2){
             {/* //////////////////////////////////////////////////////////////////////////// */}
             {PatientInfoData.PatientInfo.IllnessTypeCode === "ACC" ||
             PatientInfoData.PatientInfo.IllnessTypeCode === "ER" ? (
-              // accidentDetail ? (
-              //   <>
-                  // <div className="justify-center border-solid w-5/5 m-auto border-2 border-error rounded-lg p-4 mt-2">
+
                     <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-error rounded-lg p-4 mt-2">
                     <h1 className="font-black text-error text-3xl ">
                       AccidentDetail
@@ -3169,7 +3172,7 @@ if(rows2){
                           {causeOfInjuryDetails
                             ? causeOfInjuryDetails.map(
                                 (cause, index) =>
-                                  cause.CauseOfInjury  && (
+  
                                     <TableRow
                                       key={index}
                                       className=" bg-neutral text-sm"
@@ -3246,7 +3249,7 @@ if(rows2){
                                         ""
                                       )}
                                     </TableRow>
-                                  )
+             
                               )
                             : ""}
                           {summitEditAcc === "true" ? (
@@ -5280,6 +5283,9 @@ if(rows2){
               ✕
             </button>
             {showSummitError === "Error" ? (
+              <>
+                            {checkedFinalDischarge ? checkedFinalDischarge === true ? "FinalDischarge" : "Not FinalDischarge" : "Not FinalDischarge"}
+                            <hr />
               <div
                 role="alert"
                 className="alert alert-error mt-2 text-base-100"
@@ -5299,6 +5305,7 @@ if(rows2){
                 </svg>
                 <span>{massSummitError}</span>
               </div>
+              </>
             ) : (
               <>
                 {massSummit ? (
@@ -5322,7 +5329,7 @@ if(rows2){
           <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
             <div className="bg-white p-8 rounded shadow-lg">
               <h2 className="text-4xl font-bold mb-4 text-primary">
-              ลงทะเบียนใช้สิทธิ์สำเร็จ
+              ส่งประกันเรียบร้อยแล้ว
               </h2>
 
             </div>
