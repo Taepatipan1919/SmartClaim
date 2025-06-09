@@ -20,6 +20,9 @@ import CircularProgress from "@mui/material/CircularProgress";
 import { styled } from "@mui/material/styles";
 import Switch from '@mui/material/Switch';
 import Input from "@mui/material/Input";
+import Tippy from "@tippyjs/react";
+import "tippy.js/dist/tippy.css";
+
 import {
   Table,
   TableBody,
@@ -44,6 +47,7 @@ import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import { HiDocumentSearch } from "react-icons/hi";
+
 export default function checkData() {
   const InsuranceCode = 13;
   const [transactionClaimInfo, setTransactionClaimInfo] = useState("");
@@ -121,8 +125,13 @@ export default function checkData() {
   // const handleSelectChange = (event) => {
   //   setSelectedValue(event.target.value);
   // };
-  const [currentTime, setCurrentTime] = useState(new Date());
+  const [currentDate, setCurrentDate] = useState("");
+  const [currentTime, setCurrentTime] = useState("");
 
+  const ITEMS_PER_PAGE = 40;
+  const [currentData, setCurrentData] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [count, setCount] = useState(0);
 
   const Over45 = (event) => {
     setOver45(event.target.value);
@@ -231,6 +240,40 @@ export default function checkData() {
         // console.log(response.data);
         // setShowFormError();
         setCurrentData(response.data.Result.TransactionClaimInfo);
+        
+        async function fetchData() {
+          const promises = response.data.Result.TransactionClaimInfo.map(async (item) => {
+            const response2 = await axios.post(
+              process.env.NEXT_PUBLIC_URL_SV + process.env.NEXT_PUBLIC_URL_getListPolicyNo,
+              { "PatientInfo": { "RefId": item.RefId } }
+            );
+            return { ...item, PolicyNo: response2.data.Result.PolicyNumberInfo };
+          });
+        
+          const results = await Promise.all(promises); // รอให้ทุก Promise เสร็จ
+
+
+
+
+          const promises2 = results.map(async (item) => {
+            const response3 = await axios.post(
+              process.env.NEXT_PUBLIC_URL_SV + process.env.NEXT_PUBLIC_URL_getListPolicyNodetail,
+              { "PatientInfo": { "RefId": item.RefId } }
+            );
+            return { ...item, PolicyNodetail: response3.data.Result.PolicyNumberInfo };
+          });
+        
+          const results2 = await Promise.all(promises2); // รอให้ทุก Promise เสร็จ
+         // console.log(results)
+          console.log(results2); // results จะเป็น array ที่มีข้อมูลทั้งหมดรวมกับ PolicyNodetail
+
+          setCurrentData(results2);
+        }
+        fetchData();
+
+
+
+
       })
       .catch((error) => {
         console.log(error);
@@ -304,6 +347,37 @@ export default function checkData() {
         setPostData(response.data);
         //  console.log(response.data);
         setCurrentData(response.data.Result.TransactionClaimInfo);
+        async function fetchData() {
+          const promises = response.data.Result.TransactionClaimInfo.map(async (item) => {
+            const response2 = await axios.post(
+              process.env.NEXT_PUBLIC_URL_SV + process.env.NEXT_PUBLIC_URL_getListPolicyNo,
+              { "PatientInfo": { "RefId": item.RefId } }
+            );
+            return { ...item, PolicyNo: response2.data.Result.PolicyNumberInfo };
+          });
+        
+          const results = await Promise.all(promises); // รอให้ทุก Promise เสร็จ
+
+
+
+
+          const promises2 = results.map(async (item) => {
+            const response3 = await axios.post(
+              process.env.NEXT_PUBLIC_URL_SV + process.env.NEXT_PUBLIC_URL_getListPolicyNodetail,
+              { "PatientInfo": { "RefId": item.RefId } }
+            );
+            return { ...item, PolicyNodetail: response3.data.Result.PolicyNumberInfo };
+          });
+        
+          const results2 = await Promise.all(promises2); // รอให้ทุก Promise เสร็จ
+         // console.log(results)
+          console.log(results2); // results จะเป็น array ที่มีข้อมูลทั้งหมดรวมกับ PolicyNodetail
+
+          setCurrentData(results2);
+        }
+        fetchData();
+
+
         setShowFormError();
       })
       .catch((error) => {
@@ -626,11 +700,19 @@ export default function checkData() {
   const [messCopy, setMessCopy] = useState("");
 
   const copyTran = (data) => {
-    const result = navigator.clipboard.writeText(data);
+    if (!navigator.clipboard) {
+      console.error("Clipboard API ไม่รองรับในเบราว์เซอร์นี้");
+      alert("เบราว์เซอร์นี้ไม่รองรับ กับ ฟังชั่น Copy นี้ \nกรุณา Copy ในกรอบสีแดงทั้งหมดครับ");
+      return;
+    }else{
+    const jsonString = JSON.stringify(data, null, 2); // แปลงข้อมูลเป็น JSON String
+    const result = navigator.clipboard.writeText(jsonString);
 
     result.then(() => {
-      console.log(result);
+      console.log("copy เรียบร้อย");
+      alert("copy เรียบร้อยแล้ว");
     });
+    }
   };
   const handleButtonClick = (data) => {
     const generateRandomFiveDigitNumber = () => {
@@ -936,9 +1018,9 @@ export default function checkData() {
         
 
           document.getElementById('my_modal_showModalRefreshSucc').showModal()
-          setCurrentTime(new Date());
-
-
+          const now = new Date();
+          setCurrentTime(now.toLocaleTimeString());
+          setCurrentDate(now.toLocaleDateString());
 
         setRefreshSucc(response.data);
         setPostData("");
@@ -958,6 +1040,35 @@ export default function checkData() {
             console.log(response.data);
             // setShowFormError();
             setCurrentData(response.data.Result.TransactionClaimInfo);
+            async function fetchData() {
+              const promises = response.data.Result.TransactionClaimInfo.map(async (item) => {
+                const response2 = await axios.post(
+                  process.env.NEXT_PUBLIC_URL_SV + process.env.NEXT_PUBLIC_URL_getListPolicyNo,
+                  { "PatientInfo": { "RefId": item.RefId } }
+                );
+                return { ...item, PolicyNo: response2.data.Result.PolicyNumberInfo };
+              });
+            
+              const results = await Promise.all(promises); // รอให้ทุก Promise เสร็จ
+    
+    
+    
+    
+              const promises2 = results.map(async (item) => {
+                const response3 = await axios.post(
+                  process.env.NEXT_PUBLIC_URL_SV + process.env.NEXT_PUBLIC_URL_getListPolicyNodetail,
+                  { "PatientInfo": { "RefId": item.RefId } }
+                );
+                return { ...item, PolicyNodetail: response3.data.Result.PolicyNumberInfo };
+              });
+            
+              const results2 = await Promise.all(promises2); // รอให้ทุก Promise เสร็จ
+             // console.log(results)
+              console.log(results2); // results จะเป็น array ที่มีข้อมูลทั้งหมดรวมกับ PolicyNodetail
+    
+              setCurrentData(results2);
+            }
+            fetchData();
           })
           .catch((error) => {
             console.log(error);
@@ -997,6 +1108,35 @@ export default function checkData() {
             console.log(response.data);
             // setShowFormError();
             setCurrentData(response.data.Result.TransactionClaimInfo);
+            async function fetchData() {
+              const promises = response.data.Result.TransactionClaimInfo.map(async (item) => {
+                const response2 = await axios.post(
+                  process.env.NEXT_PUBLIC_URL_SV + process.env.NEXT_PUBLIC_URL_getListPolicyNo,
+                  { "PatientInfo": { "RefId": item.RefId } }
+                );
+                return { ...item, PolicyNo: response2.data.Result.PolicyNumberInfo };
+              });
+            
+              const results = await Promise.all(promises); // รอให้ทุก Promise เสร็จ
+    
+    
+    
+    
+              const promises2 = results.map(async (item) => {
+                const response3 = await axios.post(
+                  process.env.NEXT_PUBLIC_URL_SV + process.env.NEXT_PUBLIC_URL_getListPolicyNodetail,
+                  { "PatientInfo": { "RefId": item.RefId } }
+                );
+                return { ...item, PolicyNodetail: response3.data.Result.PolicyNumberInfo };
+              });
+            
+              const results2 = await Promise.all(promises2); // รอให้ทุก Promise เสร็จ
+             // console.log(results)
+              console.log(results2); // results จะเป็น array ที่มีข้อมูลทั้งหมดรวมกับ PolicyNodetail
+    
+              setCurrentData(results2);
+            }
+            fetchData();
           })
           .catch((error) => {
             console.log(error);
@@ -1094,6 +1234,8 @@ export default function checkData() {
           FurtherClaimNo: data.FurtherClaimNo,
           FurtherClaimId: data.FurtherClaimId,
           Visitlocation: data.Visitlocation,
+          FurtherClaimVN: dataSelect.FurtherClaimVN,
+          ReferenceVN: dataSelect.ReferenceVN,
         },
       })
     );
@@ -1184,6 +1326,8 @@ export default function checkData() {
           FurtherClaimVN: data.FurtherClaimVN,
           ReferenceVN: data.ReferenceVN,
           Visitlocation: data.Visitlocation,
+          FurtherClaimVN: dataSelect.FurtherClaimVN,
+          ReferenceVN: dataSelect.ReferenceVN,
         },
       })
     );
@@ -1445,6 +1589,35 @@ export default function checkData() {
                   console.log(response.data);
                   // setShowFormError();
                   setCurrentData(response.data.Result.TransactionClaimInfo);
+                  async function fetchData() {
+                    const promises = response.data.Result.TransactionClaimInfo.map(async (item) => {
+                      const response2 = await axios.post(
+                        process.env.NEXT_PUBLIC_URL_SV + process.env.NEXT_PUBLIC_URL_getListPolicyNo,
+                        { "PatientInfo": { "RefId": item.RefId } }
+                      );
+                      return { ...item, PolicyNo: response2.data.Result.PolicyNumberInfo };
+                    });
+                  
+                    const results = await Promise.all(promises); // รอให้ทุก Promise เสร็จ
+          
+          
+          
+          
+                    const promises2 = results.map(async (item) => {
+                      const response3 = await axios.post(
+                        process.env.NEXT_PUBLIC_URL_SV + process.env.NEXT_PUBLIC_URL_getListPolicyNodetail,
+                        { "PatientInfo": { "RefId": item.RefId } }
+                      );
+                      return { ...item, PolicyNodetail: response3.data.Result.PolicyNumberInfo };
+                    });
+                  
+                    const results2 = await Promise.all(promises2); // รอให้ทุก Promise เสร็จ
+                   // console.log(results)
+                    console.log(results2); // results จะเป็น array ที่มีข้อมูลทั้งหมดรวมกับ PolicyNodetail
+          
+                    setCurrentData(results2);
+                  }
+                  fetchData();
                 })
                 .catch((error) => {
                   console.log(error);
@@ -1754,7 +1927,7 @@ export default function checkData() {
       };
     }
 
-    console.log(PatientInfo);
+  //  console.log(PatientInfo);
     setPatientUpdate({ PatientInfo });
     if (PatientInfo) {
       setPatientInfoDetail(PatientInfo);
@@ -1766,8 +1939,41 @@ export default function checkData() {
         )
         .then((response) => {
           setPostData(response.data);
-          console.log(response.data);
-          setCurrentData(response.data.Result.TransactionClaimInfo);
+       //   console.log(response.data);
+         // setCurrentData(response.data.Result.TransactionClaimInfo)
+
+        async function fetchData() {
+          const promises = response.data.Result.TransactionClaimInfo.map(async (item) => {
+            const response2 = await axios.post(
+              process.env.NEXT_PUBLIC_URL_SV + process.env.NEXT_PUBLIC_URL_getListPolicyNo,
+              { "PatientInfo": { "RefId": item.RefId } }
+            );
+            return { ...item, PolicyNo: response2.data.Result.PolicyNumberInfo };
+          });
+        
+          const results = await Promise.all(promises); // รอให้ทุก Promise เสร็จ
+        
+
+
+
+          const promises2 = results.map(async (item) => {
+            const response3 = await axios.post(
+              process.env.NEXT_PUBLIC_URL_SV + process.env.NEXT_PUBLIC_URL_getListPolicyNodetail,
+              { "PatientInfo": { "RefId": item.RefId } }
+            );
+            return { ...item, PolicyNodetail: response3.data.Result.PolicyNumberInfo };
+          });
+        
+          const results2 = await Promise.all(promises2); // รอให้ทุก Promise เสร็จ
+         // console.log(results)
+          console.log(results2); // results จะเป็น array ที่มีข้อมูลทั้งหมดรวมกับ PolicyNodetail
+
+          setCurrentData(results2);
+        }
+        fetchData();
+
+
+
           setShowFormError();
         })
         .catch((error) => {
@@ -1789,10 +1995,7 @@ export default function checkData() {
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   ////////////////////////// ตัวเลื่อน ตารางซ้าย - ขวา ///////////////////////////////////////////
-  const ITEMS_PER_PAGE = 40;
-  const [currentData, setCurrentData] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [count, setCount] = useState(0);
+
   const handleNextPage = () => {
     setCurrentPage(currentPage + 1);
   };
@@ -1804,9 +2007,11 @@ export default function checkData() {
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
 
   const endIndex = startIndex + ITEMS_PER_PAGE;
-  //console.log(endIndex +"="+startIndex+"+"+ITEMS_PER_PAGE)
+ // console.log(endIndex +"="+startIndex+"+"+ITEMS_PER_PAGE)
   const datax = currentData.slice(startIndex, endIndex);
+  //console.log(currentData)
   useEffectOnce(() => {
+
     setCount(datax.length);
   }, [datax]);
   //////////////////// Chack Status All///////////////////////////
@@ -2080,14 +2285,15 @@ export default function checkData() {
                           HN <br /> VN
                         </th>
                         {notShowLoc === true ? "" : <th>Location</th>}
-                        <th>
+                        {/* <th>
                            Policy Number
-                        </th>
+                        </th> */}
                         <th>ClaimNo</th>
                         <th>
                           Invoicenumber <br />
                           BatchNumber
                         </th>
+                        <th>PolicyNo</th>
                         <th className="w-40 ">Status</th>
                         <th>
                           Total
@@ -2109,7 +2315,7 @@ export default function checkData() {
                       </tr>
                     </thead>
                     <tbody>
-                      {postData ? (
+                    {postData ? postData.Result.TransactionClaimInfo[0].HN ? (
                         datax
                           .filter(
                             (bill) =>
@@ -2149,9 +2355,6 @@ export default function checkData() {
                                 ) : (
                                   <td className="">{bill.VisitLocation}</td>
                                 )}
-                                 <td className="whitespace-nowrap">
-                                     {bill.ClaimNo ? bill.ClaimNo : "-"}
-                                   </td>
                                 <td className="whitespace-nowrap">
                                   {bill.ClaimNo ? bill.ClaimNo : "-"}
                                 </td>
@@ -2163,6 +2366,68 @@ export default function checkData() {
                                   {bill.BatchNumber}
                                 </td>
                                 <td>
+             
+             <Tippy
+content={
+<div className="absolute left-1/2 -translate-x-1/2 top-full w-auto min-w-max bg-base-300 text-white text-sm p-3 rounded-lg transition-opacity duration-200 group-hover:opacity-100">
+ <table className="">
+ <thead className="bg-info ">
+   <tr>
+     <th className="border border-black px-2 py-1 text-black">เลขที่กรมธรรม์</th>
+     <th className="border border-black px-2 py-1 text-black">สัญญาเพิ่มเติม</th>
+     <th className="border border-black px-2 py-1 text-black">ผลการตรวจสอบ</th>
+   </tr>
+ </thead>
+ <tbody>
+ {bill.PolicyNodetail ? bill.PolicyNodetail[0] ? (
+     bill.PolicyNodetail.map((policy, index) => (
+       <tr key={index}>
+         <td className="border border-black px-2 py-1 text-black">{policy.PolicyNo}</td>
+         <td className="border border-black px-2 py-1 text-black">{policy.PlanName}</td>
+         <td className="border border-black px-2 py-1 text-black">{policy.MessageTH}</td>
+       </tr>
+     ))
+   ) : (
+     <tr>
+       <td colSpan="3" className="text-center border border-black px-2 py-1">
+         ไม่มีข้อมูลกรมธรรม์
+       </td>
+     </tr>
+   ): ""}
+ </tbody>
+</table>
+</div>
+}>
+
+{bill.PolicyNo
+   ? 
+
+<div style={{ width: "170px",display: "flex", flexWrap: "wrap" }}>
+{
+   bill.PolicyNo.map((policy, index) => (
+     <div
+     key={index}
+     style={{
+       width: "50%",
+       textAlign: index % 2 === 0 ? "right" : "left", // จัดให้เลขคู่ขวา เลขคี่ซ้าย
+       padding: "2px",
+     }}
+   >
+       <p key={index} value={policy.PolicyNo}>
+         {policy.PolicyNo}
+       </p>
+       </div>
+
+     ))
+     }
+     </div>
+    
+    : ""}
+
+</Tippy>
+   
+</td>
+                                <td>
                                   <div className="grid gap-1 sm:grid-cols-1 w-40 break-all">
                                     {bill.ClaimStatusDesc ? (
                                       bill.ClaimStatusDesc_EN !== "Cancelled" &&
@@ -2173,12 +2438,12 @@ export default function checkData() {
                                         bill.ClaimStatusDesc_EN ===
                                           "Approved" ||
                                         bill.ClaimStatusDesc_EN === "Settle" ? (
-                                          <a
+                                          <button
                                             onClick={() => DoTransaction(bill)}
-                                            className="bg-info text-base-100 rounded-full px-3 py-2 w-full"
+                                            className="bg-info text-base-100 rounded-full px-3 py-1 w-full"
                                           >
                                             {bill.ClaimStatusDesc_TH}
-                                          </a>
+                                          </button>
                                         ) : bill.ClaimStatusDesc_EN ===
                                             "Approve" ||
                                           bill.ClaimStatusDesc_EN ===
@@ -2191,60 +2456,47 @@ export default function checkData() {
                                             "Processing" ? (
                                           bill.ClaimStatusDesc_EN ===
                                           "Pending" ? (
-                                            <a
+                                            <button
                                               onClick={() =>
                                                 DoTransaction(bill)
                                               }
-                                              className="bg-accent text-base-100 rounded-full px-3 py-2 w-full"
+                                              className="bg-accent text-base-100 rounded-full px-3 py-1 w-full"
                                             >
                                               {bill.ClaimStatusDesc_TH}
-                                            </a>
-                                          ) : (
-                                            <a
+                                            </button>
+                                           ) : bill.ClaimStatusDesc_EN === "Processing" ? (  <button onClick={() => DoTransaction(bill)} className="bg-accent text-base-100 rounded-full px-3 py-1 w-full">{bill.ClaimStatusDesc_TH}</button> ) :(
+                                            <button
                                               onClick={() =>
                                                 DoTransaction(bill)
                                               }
-                                              className="bg-success text-base-100 rounded-full px-3 py-2 w-full"
+                                              className="bg-success text-base-100 rounded-full px-3 py-1 w-full"
                                             >
                                               {bill.ClaimStatusDesc_TH}
-                                            </a>
+                                            </button>
                                           )
                                         ) : (
-                                          <a
+                                          <button
                                             onClick={() => DoTransaction(bill)}
-                                            className="bg-warning  rounded-full px-3 py-2 w-full"
+                                            className="bg-warning  rounded-full px-3 py-1 w-full"
                                           >
                                             {bill.ClaimStatusDesc_TH}
-                                          </a>
+                                          </button>
                                         )
                                       ) : (
-                                        <a
+                                        <button
                                           onClick={() => DoTransaction(bill)}
-                                          className="bg-error text-base-100 rounded-full px-3 py-2 w-full"
+                                          className="bg-error text-base-100 rounded-full px-3 py-1 w-full"
                                         >
                                           {bill.ClaimStatusDesc_TH}
-                                        </a>
+                                        </button>
                                       )
                                     ) : (
                                       ""
                                     )}
-                                    {bill.FurtherClaimNo ||
-                                    bill.FurtherClaimId ? (
-                                      <a className="rounded-full px-3 py-2 w-full">
-                                        ( แบบต่อเนื่อง )
-                                      </a>
-                                    ) : (
-                                      ""
-                                    )}
-                                    {bill.AccidentDate ||
-                                    bill.IllnessTypeCode === "ACC" ||
-                                    bill.IllnessTypeCode === "ER" ? (
-                                      <a className="rounded-full px-3 py-2 w-full">
-                                        ( อุบัติเหตุ )
-                                      </a>
-                                    ) : (
-                                      ""
-                                    )}
+                              <span style={{ display: "inline", whiteSpace: "nowrap" }} className="mt-2">
+  {bill.FurtherClaimNo || bill.FurtherClaimId ? <a className="bg-secondary text-base-100 rounded-full px-3 py-1  w-full">แบบต่อเนื่อง</a> : ""}
+  {bill.AccidentDate || bill.IllnessTypeCode === "ACC" || bill.IllnessTypeCode === "ER" ? <a className="bg-error text-base-100 rounded-full px-3 py-1  w-full ml-1">อุบัติเหตุ</a> : ""}
+</span>
                                   </div>
                                 </td>
                                 <th className="whitespace-nowrap">
@@ -2280,10 +2532,9 @@ export default function checkData() {
                                 </th>
                                 <td>
                                   {bill.RefId ? (
-                                    bill.ClaimStatusDesc !==
-                                      "Cancelled to AIA" &&
-                                    bill.ClaimStatusDesc !== "Cancelled" &&
-                                    bill.ClaimStatusDesc !== "Reversed" &&
+                                       (bill.ClaimStatusDesc !== "Cancelled to AIA" || bill.ClaimNo !="") &&
+                                       (bill.ClaimStatusDesc !== "Cancelled" || bill.ClaimNo !="") &&
+                                       (bill.ClaimStatusDesc !== "Reversed"|| bill.ClaimNo !="") &&
                                     bill.ClaimStatusDesc !==
                                       "waitting for discharge" ? (
                                       <>
@@ -2422,7 +2673,7 @@ export default function checkData() {
                                     ) : bill.ServiceSettingCode === "OPD" ? (
                                       <>
                                         <button
-                                          className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100 whitespace-nowrap"
+                                          className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100 whitespace-nowrap btn-sm text-xs px-2 py-1"
                                           onClick={() =>
                                             handleButtonClick(bill)
                                           }
@@ -2432,7 +2683,7 @@ export default function checkData() {
                                       </>
                                     ) : (
                                       <button
-                                        className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100 whitespace-nowrap"
+                                        className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100 whitespace-nowrap btn-sm text-xs px-2 py-1"
                                         onClick={() => handleButtonClick(bill)}
                                       >
                                         ส่งเอกสารเพิ่มเติม
@@ -2448,7 +2699,7 @@ export default function checkData() {
                                       doMoney === true ? (
                                         <>
                                           <button
-                                            className="btn btn-warning bg-warning text-base-100 hover:text-warning hover:bg-base-100"
+                                            className="btn btn-sm btn-warning bg-warning hover:bg-base-100 text-xs px-2 py-1"
                                             onClick={() =>
                                               Checkcreditlimit(bill)
                                             }
@@ -2470,13 +2721,23 @@ export default function checkData() {
                             )
                             // )
                           )
-                      ) : (
-                        <tr>
-                          <th></th>
-                          <th></th>
-                          <th></th>
-                        </tr>
-                      )}
+                        ) : (
+                          <tr>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th className="flex items-center">No data available in table</th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                          </tr>
+                        ): ""}
                     </tbody>
                   </table>
                 </div>
@@ -2500,14 +2761,15 @@ export default function checkData() {
                           HN <br /> VN
                         </th>
                         {notShowLoc === true ? "" : <th>Location</th>}
-                        <th>
+                        {/* <th>
                            Policy Number
-                        </th>
+                        </th> */}
                         <th>ClaimNo</th>
                         <th>
                           Invoicenumber <br />
                           BatchNumber
                         </th>
+                        <th>PolicyNo</th>
                         <th className="w-40 ">Status</th>
                         <th>
                           Total
@@ -2529,7 +2791,7 @@ export default function checkData() {
                       </tr>
                     </thead>
                     <tbody>
-                      {postData ? (
+                    {postData ? postData.Result.TransactionClaimInfo[0].HN ? (
                         datax
                           .filter(
                             (bill) =>
@@ -2569,9 +2831,9 @@ export default function checkData() {
                                 ) : (
                                   <td className="">{bill.VisitLocation}</td>
                                 )}
-                                 <td className="whitespace-nowrap">
+                                 {/* <td className="whitespace-nowrap">
                                      {bill.ClaimNo ? bill.ClaimNo : "-"}
-                                   </td>
+                                   </td> */}
                                 <td className="whitespace-nowrap">
                                   {bill.ClaimNo ? bill.ClaimNo : "-"}
                                 </td>
@@ -2582,6 +2844,68 @@ export default function checkData() {
                                   <br />
                                   {bill.BatchNumber}
                                 </td>
+                                <td>
+             
+             <Tippy
+content={
+<div className="absolute left-1/2 -translate-x-1/2 top-full w-auto min-w-max bg-base-300 text-white text-sm p-3 rounded-lg transition-opacity duration-200 group-hover:opacity-100">
+ <table className="">
+ <thead className="bg-info ">
+   <tr>
+     <th className="border border-black px-2 py-1 text-black">เลขที่กรมธรรม์</th>
+     <th className="border border-black px-2 py-1 text-black">สัญญาเพิ่มเติม</th>
+     <th className="border border-black px-2 py-1 text-black">ผลการตรวจสอบ</th>
+   </tr>
+ </thead>
+ <tbody>
+ {bill.PolicyNodetail ? bill.PolicyNodetail[0] ? (
+     bill.PolicyNodetail.map((policy, index) => (
+       <tr key={index}>
+         <td className="border border-black px-2 py-1 text-black">{policy.PolicyNo}</td>
+         <td className="border border-black px-2 py-1 text-black">{policy.PlanName}</td>
+         <td className="border border-black px-2 py-1 text-black">{policy.MessageTH}</td>
+       </tr>
+     ))
+   ) : (
+     <tr>
+       <td colSpan="3" className="text-center border border-black px-2 py-1">
+         ไม่มีข้อมูลกรมธรรม์
+       </td>
+     </tr>
+   ): ""}
+ </tbody>
+</table>
+</div>
+}>
+
+{bill.PolicyNo
+   ? 
+
+<div style={{ width: "170px",display: "flex", flexWrap: "wrap" }}>
+{
+   bill.PolicyNo.map((policy, index) => (
+     <div
+     key={index}
+     style={{
+       width: "50%",
+       textAlign: index % 2 === 0 ? "right" : "left", // จัดให้เลขคู่ขวา เลขคี่ซ้าย
+       padding: "2px",
+     }}
+   >
+       <p key={index} value={policy.PolicyNo}>
+         {policy.PolicyNo}
+       </p>
+       </div>
+
+     ))
+     }
+     </div>
+    
+    : ""}
+
+</Tippy>
+   
+</td>
                                 <td>
                                   <div className="grid gap-1 sm:grid-cols-1 w-40 break-all">
                                     {bill.ClaimStatusDesc ? (
@@ -2595,7 +2919,7 @@ export default function checkData() {
                                         bill.ClaimStatusDesc_EN === "Settle" ? (
                                           <a
                                             onClick={() => DoTransaction(bill)}
-                                            className="bg-info text-base-100 rounded-full px-3 py-2 w-full"
+                                            className="bg-info text-base-100 rounded-full px-3 py-1 w-full"
                                           >
                                             {bill.ClaimStatusDesc_TH}
                                           </a>
@@ -2611,61 +2935,48 @@ export default function checkData() {
                                             "Processing" ? (
                                           bill.ClaimStatusDesc_EN ===
                                           "Pending" ? (
-                                            <a
+                                            <button
                                               onClick={() =>
                                                 DoTransaction(bill)
                                               }
-                                              className="bg-accent text-base-100 rounded-full px-3 py-2 w-full"
+                                              className="bg-accent text-base-100 rounded-full px-3 py-1 w-full"
                                             >
                                               {bill.ClaimStatusDesc_TH}
-                                            </a>
-                                          ) : (
-                                            <a
+                                            </button>
+                            ) : bill.ClaimStatusDesc_EN === "Processing" ? (  <button onClick={() => DoTransaction(bill)} className="bg-accent text-base-100 rounded-full px-3 py-1 w-full">{bill.ClaimStatusDesc_TH}</button> ) :(
+                                            <button
                                               onClick={() =>
                                                 DoTransaction(bill)
                                               }
-                                              className="bg-success text-base-100 rounded-full px-3 py-2 w-full"
+                                              className="bg-success text-base-100 rounded-full px-3 py-1 w-full"
                                             >
                                               {bill.ClaimStatusDesc_TH}
-                                            </a>
+                                            </button>
                                           )
                                         ) : (
-                                          <a
+                                          <button
                                             onClick={() => DoTransaction(bill)}
-                                            className="bg-warning  rounded-full px-3 py-2 w-full"
+                                            className="bg-warning  rounded-full px-3 py-1 w-full"
                                           >
                                             {bill.ClaimStatusDesc_TH}
-                                          </a>
+                                          </button>
                                         )
                                       ) : (
-                                        <a
+                                        <button
                                           onClick={() => DoTransaction(bill)}
-                                          className="bg-error text-base-100 rounded-full px-3 py-2 w-full"
+                                          className="bg-error text-base-100 rounded-full px-3 py-1 w-full"
                                         >
                                           {bill.ClaimStatusDesc_TH}
-                                        </a>
+                                        </button>
                                       )
                                     ) : (
                                       ""
                                     )}
 
-                                    {bill.FurtherClaimNo ||
-                                    bill.FurtherClaimId ? (
-                                      <a className="rounded-full px-3 py-2 w-full">
-                                        ( แบบต่อเนื่อง )
-                                      </a>
-                                    ) : (
-                                      ""
-                                    )}
-                                    {bill.AccidentDate ||
-                                    bill.IllnessTypeCode === "ACC" ||
-                                    bill.IllnessTypeCode === "ER" ? (
-                                      <a className="rounded-full px-3 py-2 w-full">
-                                        ( อุบัติเหตุ )
-                                      </a>
-                                    ) : (
-                                      ""
-                                    )}
+<span style={{ display: "inline", whiteSpace: "nowrap" }} className="mt-2">
+  {bill.FurtherClaimNo || bill.FurtherClaimId ? <a className="bg-secondary text-base-100 rounded-full px-3 py-1  w-full">แบบต่อเนื่อง</a> : ""}
+  {bill.AccidentDate || bill.IllnessTypeCode === "ACC" || bill.IllnessTypeCode === "ER" ? <a className="bg-error text-base-100 rounded-full px-3 py-1  w-full ml-1">อุบัติเหตุ</a> : ""}
+</span>
                                   </div>
                                 </td>
                                 <th className="whitespace-nowrap">
@@ -2701,10 +3012,9 @@ export default function checkData() {
                                 </th>
                                 <td>
                                   {bill.RefId ? (
-                                    bill.ClaimStatusDesc !==
-                                      "Cancelled to AIA" &&
-                                    bill.ClaimStatusDesc !== "Cancelled" &&
-                                    bill.ClaimStatusDesc !== "Reversed" &&
+                                       (bill.ClaimStatusDesc !== "Cancelled to AIA" || bill.ClaimNo !="") &&
+                                       (bill.ClaimStatusDesc !== "Cancelled" || bill.ClaimNo !="") &&
+                                       (bill.ClaimStatusDesc !== "Reversed"|| bill.ClaimNo !="") &&
                                     bill.ClaimStatusDesc !==
                                       "waitting for discharge" ? (
                                       <>
@@ -2719,7 +3029,6 @@ export default function checkData() {
                                             <LuRefreshCw />
                                           </h1>
                                         </div>
-                                        {/* <br/> */}
                                       </>
                                     ) : (
                                       ""
@@ -2845,7 +3154,7 @@ export default function checkData() {
                                     ) : bill.ServiceSettingCode === "OPD" ? (
                                       <>
                                         <button
-                                          className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100 whitespace-nowrap"
+                                          className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100 whitespace-nowrap btn-sm text-xs px-2 py-1"
                                           onClick={() =>
                                             handleButtonClick(bill)
                                           }
@@ -2855,7 +3164,7 @@ export default function checkData() {
                                       </>
                                     ) : (
                                       <button
-                                        className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100 whitespace-nowrap"
+                                        className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100 whitespace-nowrap btn-sm text-xs px-2 py-1"
                                         onClick={() => handleButtonClick(bill)}
                                       >
                                         ส่งเอกสารเพิ่มเติม
@@ -2871,7 +3180,7 @@ export default function checkData() {
                                       doMoney === true ? (
                                         <>
                                           <button
-                                            className="btn btn-warning bg-warning hover:bg-base-100"
+                                            className="btn btn-sm btn-warning bg-warning hover:bg-base-100 text-xs px-2 py-1"
                                             onClick={() =>
                                               Checkcreditlimit(bill)
                                             }
@@ -2893,13 +3202,23 @@ export default function checkData() {
                             )
                             // )
                           )
-                      ) : (
-                        <tr>
-                          <th></th>
-                          <th></th>
-                          <th></th>
-                        </tr>
-                      )}
+                        ) : (
+                          <tr>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th className="flex items-center">No data available in table</th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                          </tr>
+                        ): ""}
                     </tbody>
                   </table>
                 </div>
@@ -2923,14 +3242,15 @@ export default function checkData() {
                           HN <br /> VN
                         </th>
                         {notShowLoc === true ? "" : <th>Location</th>}
-                        <th>
+                        {/* <th>
                            Policy Number
-                        </th>
+                        </th> */}
                         <th>ClaimNo</th>
                         <th>
                           Invoicenumber <br />
                           BatchNumber
                         </th>
+                        <th>PolicyNo</th>
                         <th className="w-40 ">Status</th>
                         <th>
                           Total
@@ -2952,7 +3272,7 @@ export default function checkData() {
                       </tr>
                     </thead>
                     <tbody>
-                      {postData ? (
+                    {postData ? postData.Result.TransactionClaimInfo[0].HN ? (
                         datax
                           .filter(
                             (bill) =>
@@ -2992,9 +3312,9 @@ export default function checkData() {
                                 ) : (
                                   <td className="">{bill.VisitLocation}</td>
                                 )}
-                                 <td className="whitespace-nowrap">
+                                 {/* <td className="whitespace-nowrap">
                                      {bill.ClaimNo ? bill.ClaimNo : "-"}
-                                   </td>
+                                   </td> */}
                                 <td className="whitespace-nowrap">
                                   {bill.ClaimNo ? bill.ClaimNo : "-"}
                                 </td>
@@ -3006,6 +3326,68 @@ export default function checkData() {
                                   {bill.BatchNumber}
                                 </td>
                                 <td>
+             
+                            <Tippy
+      content={
+        <div className="absolute left-1/2 -translate-x-1/2 top-full w-auto min-w-max bg-base-300 text-white text-sm p-3 rounded-lg transition-opacity duration-200 group-hover:opacity-100">
+                <table className="">
+                <thead className="bg-info ">
+                  <tr>
+                    <th className="border border-black px-2 py-1 text-black">เลขที่กรมธรรม์</th>
+                    <th className="border border-black px-2 py-1 text-black">สัญญาเพิ่มเติม</th>
+                    <th className="border border-black px-2 py-1 text-black">ผลการตรวจสอบ</th>
+                  </tr>
+                </thead>
+                <tbody>
+                {bill.PolicyNodetail ? bill.PolicyNodetail[0] ? (
+                    bill.PolicyNodetail.map((policy, index) => (
+                      <tr key={index}>
+                        <td className="border border-black px-2 py-1 text-black">{policy.PolicyNo}</td>
+                        <td className="border border-black px-2 py-1 text-black">{policy.PlanName}</td>
+                        <td className="border border-black px-2 py-1 text-black">{policy.MessageTH}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="3" className="text-center border border-black px-2 py-1">
+                        ไม่มีข้อมูลกรมธรรม์
+                      </td>
+                    </tr>
+                  ): ""}
+                </tbody>
+              </table>
+              </div>
+        }>
+
+{bill.PolicyNo
+                  ? 
+
+  <div style={{ width: "170px",display: "flex", flexWrap: "wrap" }}>
+    {
+                  bill.PolicyNo.map((policy, index) => (
+                    <div
+                    key={index}
+                    style={{
+                      width: "50%",
+                      textAlign: index % 2 === 0 ? "right" : "left", // จัดให้เลขคู่ขวา เลขคี่ซ้าย
+                      padding: "2px",
+                    }}
+                  >
+                      <p key={index} value={policy.PolicyNo}>
+                        {policy.PolicyNo}
+                      </p>
+                      </div>
+
+                    ))
+                    }
+                    </div>
+                   
+                   : ""}
+
+</Tippy>
+                  
+</td>
+                                <td>
                                   <div className="grid gap-1 sm:grid-cols-1 w-40 break-all">
                                     {bill.ClaimStatusDesc ? (
                                       bill.ClaimStatusDesc_EN !== "Cancelled" &&
@@ -3016,12 +3398,12 @@ export default function checkData() {
                                         bill.ClaimStatusDesc_EN ===
                                           "Approved" ||
                                         bill.ClaimStatusDesc_EN === "Settle" ? (
-                                          <a
+                                          <button
                                             onClick={() => DoTransaction(bill)}
-                                            className="bg-info text-base-100 rounded-full px-3 py-2 w-full"
+                                            className="bg-info text-base-100 rounded-full px-3 py-1 w-full"
                                           >
                                             {bill.ClaimStatusDesc_TH}
-                                          </a>
+                                          </button>
                                         ) : bill.ClaimStatusDesc_EN ===
                                             "Approve" ||
                                           bill.ClaimStatusDesc_EN ===
@@ -3034,61 +3416,48 @@ export default function checkData() {
                                             "Processing" ? (
                                           bill.ClaimStatusDesc_EN ===
                                           "Pending" ? (
-                                            <a
+                                            <button
                                               onClick={() =>
                                                 DoTransaction(bill)
                                               }
-                                              className="bg-accent text-base-100 rounded-full px-3 py-2 w-full"
+                                              className="bg-accent text-base-100 rounded-full px-3 py-1 w-full"
                                             >
                                               {bill.ClaimStatusDesc_TH}
-                                            </a>
-                                          ) : (
-                                            <a
+                                            </button>
+                              ) : bill.ClaimStatusDesc_EN === "Processing" ? (  <button onClick={() => DoTransaction(bill)} className="bg-accent text-base-100 rounded-full px-3 py-1 w-full">{bill.ClaimStatusDesc_TH}</button> ) :(
+                                            <button
                                               onClick={() =>
                                                 DoTransaction(bill)
                                               }
-                                              className="bg-success text-base-100 rounded-full px-3 py-2 w-full"
+                                              className="bg-success text-base-100 rounded-full px-3 py-1 w-full"
                                             >
                                               {bill.ClaimStatusDesc_TH}
-                                            </a>
+                                            </button>
                                           )
                                         ) : (
-                                          <a
+                                          <button
                                             onClick={() => DoTransaction(bill)}
-                                            className="bg-warning  rounded-full px-3 py-2 w-full"
+                                            className="bg-warning  rounded-full px-3 py-1 w-full"
                                           >
                                             {bill.ClaimStatusDesc_TH}
-                                          </a>
+                                          </button>
                                         )
                                       ) : (
-                                        <a
+                                        <button
                                           onClick={() => DoTransaction(bill)}
-                                          className="bg-error text-base-100 rounded-full px-3 py-2 w-full"
+                                          className="bg-error text-base-100 rounded-full px-3 py-1 w-full"
                                         >
                                           {bill.ClaimStatusDesc_TH}
-                                        </a>
+                                        </button>
                                       )
                                     ) : (
                                       ""
                                     )}
 
-                                    {bill.FurtherClaimNo ||
-                                    bill.FurtherClaimId ? (
-                                      <a className="rounded-full px-3 py-2 w-full">
-                                        ( แบบต่อเนื่อง )
-                                      </a>
-                                    ) : (
-                                      ""
-                                    )}
-                                    {bill.AccidentDate ||
-                                    bill.IllnessTypeCode === "ACC" ||
-                                    bill.IllnessTypeCode === "ER" ? (
-                                      <a className="rounded-full px-3 py-2 w-full">
-                                        ( อุบัติเหตุ )
-                                      </a>
-                                    ) : (
-                                      ""
-                                    )}
+<span style={{ display: "inline", whiteSpace: "nowrap" }} className="mt-2">
+  {bill.FurtherClaimNo || bill.FurtherClaimId ? <a className="bg-secondary text-base-100 rounded-full px-3 py-1  w-full">แบบต่อเนื่อง</a> : ""}
+  {bill.AccidentDate || bill.IllnessTypeCode === "ACC" || bill.IllnessTypeCode === "ER" ? <a className="bg-error text-base-100 rounded-full px-3 py-1  w-full ml-1">อุบัติเหตุ</a> : ""}
+</span>
                                   </div>
                                 </td>
                                 <th className="whitespace-nowrap">
@@ -3124,10 +3493,9 @@ export default function checkData() {
                                 </th>
                                 <td>
                                   {bill.RefId ? (
-                                    bill.ClaimStatusDesc !==
-                                      "Cancelled to AIA" &&
-                                    bill.ClaimStatusDesc !== "Cancelled" &&
-                                    bill.ClaimStatusDesc !== "Reversed" &&
+                                          (bill.ClaimStatusDesc !== "Cancelled to AIA" || bill.ClaimNo !="") &&
+                                          (bill.ClaimStatusDesc !== "Cancelled" || bill.ClaimNo !="") &&
+                                          (bill.ClaimStatusDesc !== "Reversed"|| bill.ClaimNo !="") &&
                                     bill.ClaimStatusDesc !==
                                       "waitting for discharge" ? (
                                       <>
@@ -3267,7 +3635,7 @@ export default function checkData() {
                                     ) : bill.ServiceSettingCode === "OPD" ? (
                                       <>
                                         <button
-                                          className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100 whitespace-nowrap"
+                                          className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100 whitespace-nowrap btn-sm text-xs px-2 py-1"
                                           onClick={() =>
                                             handleButtonClick(bill)
                                           }
@@ -3277,7 +3645,7 @@ export default function checkData() {
                                       </>
                                     ) : (
                                       <button
-                                        className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100 whitespace-nowrap"
+                                        className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100 whitespace-nowrap btn-sm text-xs px-2 py-1"
                                         onClick={() => handleButtonClick(bill)}
                                       >
                                         ส่งเอกสารเพิ่มเติม
@@ -3293,7 +3661,7 @@ export default function checkData() {
                                       doMoney === true ? (
                                         <>
                                           <button
-                                            className="btn btn-warning bg-warning hover:bg-base-100"
+                                            className="btn btn-sm btn-warning bg-warning hover:bg-base-100 text-xs px-2 py-1"
                                             onClick={() =>
                                               Checkcreditlimit(bill)
                                             }
@@ -3315,13 +3683,23 @@ export default function checkData() {
                             )
                             // )
                           )
-                      ) : (
-                        <tr>
-                          <th></th>
-                          <th></th>
-                          <th></th>
-                        </tr>
-                      )}
+                        ) : (
+                          <tr>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th className="flex items-center">No data available in table</th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                          </tr>
+                        ): ""}
                     </tbody>
                   </table>
                 </div>
@@ -3337,14 +3715,15 @@ export default function checkData() {
                       HN <br /> VN
                     </th>
                     {notShowLoc === true ? "" : <th>Location</th>}
-                    <th>
+                    {/* <th>
                            Policy Number
-                    </th>
+                    </th> */}
                     <th>ClaimNo</th>
                     <th>
                       Invoicenumber <br />
                       BatchNumber
                     </th>
+                    <th>PolicyNo</th>
                     <th className="w-40 ">Status</th>
                     <th>
                       Total
@@ -3366,7 +3745,7 @@ export default function checkData() {
                   </tr>
                 </thead>
                 <tbody>
-                  {postData ? (
+                {postData ? postData.Result.TransactionClaimInfo[0].HN ? (
                     datax
                       .filter((bill) => (bill.VisitDate || bill.HN) !== "")
                       .map(
@@ -3401,9 +3780,9 @@ export default function checkData() {
                             ) : (
                               <td className="">{bill.VisitLocation}</td>
                             )}
-                             <td className="whitespace-nowrap">
+                             {/* <td className="whitespace-nowrap">
                                      {bill.ClaimNo ? bill.ClaimNo : "-"}
-                                   </td>
+                                   </td> */}
                             <td className="whitespace-nowrap">
                               {bill.ClaimNo ? bill.ClaimNo : "-"}
                             </td>
@@ -3412,6 +3791,69 @@ export default function checkData() {
                               <br />
                               {bill.BatchNumber}
                             </td>
+
+                            <td>
+             
+                            <Tippy
+      content={
+        <div className="absolute left-1/2 -translate-x-1/2 top-full w-auto min-w-max bg-base-300 text-white text-sm p-3 rounded-lg transition-opacity duration-200 group-hover:opacity-100">
+                <table className="">
+                <thead className="bg-info ">
+                  <tr>
+                    <th className="border border-black px-2 py-1 text-black">เลขที่กรมธรรม์</th>
+                    <th className="border border-black px-2 py-1 text-black">สัญญาเพิ่มเติม</th>
+                    <th className="border border-black px-2 py-1 text-black">ผลการตรวจสอบ</th>
+                  </tr>
+                </thead>
+                <tbody>
+                {bill.PolicyNodetail ? bill.PolicyNodetail[0] ? (
+                    bill.PolicyNodetail.map((policy, index) => (
+                      <tr key={index}>
+                        <td className="border border-black px-2 py-1 text-black">{policy.PolicyNo}</td>
+                        <td className="border border-black px-2 py-1 text-black">{policy.PlanName}</td>
+                        <td className="border border-black px-2 py-1 text-black">{policy.MessageTH}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="3" className="text-center border border-black px-2 py-1">
+                        ไม่มีข้อมูลกรมธรรม์
+                      </td>
+                    </tr>
+                  ): ""}
+                </tbody>
+              </table>
+              </div>
+        }>
+
+{bill.PolicyNo
+                  ? 
+
+  <div style={{ width: "170px",display: "flex", flexWrap: "wrap" }}>
+    {
+                  bill.PolicyNo.map((policy, index) => (
+                    <div
+                    key={index}
+                    style={{
+                      width: "50%",
+                      textAlign: index % 2 === 0 ? "right" : "left", // จัดให้เลขคู่ขวา เลขคี่ซ้าย
+                      padding: "2px",
+                    }}
+                  >
+                      <p key={index} value={policy.PolicyNo}>
+                        {policy.PolicyNo}
+                      </p>
+                      </div>
+
+                    ))
+                    }
+                    </div>
+                   
+                   : ""}
+
+</Tippy>
+                  
+</td>
                             <td>
                               <div className="grid gap-1 sm:grid-cols-1 w-40 break-all">
                                 {bill.ClaimStatusDesc ? (
@@ -3422,9 +3864,11 @@ export default function checkData() {
                                   bill.ClaimStatusDesc_EN !== "Decline" ? (
                                     bill.ClaimStatusDesc_EN === "Approved" ||
                                     bill.ClaimStatusDesc_EN === "Settle" ? (
-                                      <a className="bg-info text-base-100 rounded-full px-3 py-2 w-full">
+                                      <button 
+                                      onClick={() => DoTransaction(bill)}
+                                      className="bg-info text-base-100 rounded-full px-3 py-1 w-full">
                                         {bill.ClaimStatusDesc_TH}
-                                      </a>
+                                      </button>
                                     ) : bill.ClaimStatusDesc_EN === "Approve" ||
                                       bill.ClaimStatusDesc_EN === "Received" ||
                                       bill.ClaimStatusDesc_EN === "Pending" ||
@@ -3432,56 +3876,44 @@ export default function checkData() {
                                       bill.ClaimStatusDesc_EN ===
                                         "Processing" ? (
                                       bill.ClaimStatusDesc_EN === "Pending" ? (
-                                        <a
+                                        <button
                                           onClick={() => DoTransaction(bill)}
-                                          className="bg-accent text-base-100 rounded-full px-3 py-2 w-full"
+                                          className="bg-accent text-base-100 rounded-full px-3 py-1 w-full"
                                         >
                                           {bill.ClaimStatusDesc_TH}
-                                        </a>
-                                      ) : (
-                                        <a
+                                        </button>
+                                        ) : bill.ClaimStatusDesc_EN === "Processing" ? (  <button onClick={() => DoTransaction(bill)} className="bg-accent text-base-100 rounded-full px-3 py-1 w-full">{bill.ClaimStatusDesc_TH}</button> ) :(
+                                        <button
                                           onClick={() => DoTransaction(bill)}
-                                          className="bg-success text-base-100 rounded-full px-3 py-2 w-full"
+                                          className="bg-success text-base-100 rounded-full px-3 py-1 w-full"
                                         >
                                           {bill.ClaimStatusDesc_TH}
-                                        </a>
+                                        </button>
                                       )
                                     ) : (
-                                      <a
+                                      <button
                                         onClick={() => DoTransaction(bill)}
-                                        className="bg-warning  rounded-full px-3 py-2 w-full"
+                                        className="bg-warning  rounded-full px-3 py-1 w-full"
                                       >
                                         {bill.ClaimStatusDesc_TH}
-                                      </a>
+                                      </button>
                                     )
                                   ) : (
-                                    <a
+                                    <button
                                       onClick={() => DoTransaction(bill)}
-                                      className="bg-error text-base-100 rounded-full px-3 py-2 w-full"
+                                      className="bg-error text-base-100 rounded-full px-3 py-1 w-full"
                                     >
                                       {bill.ClaimStatusDesc_TH}
-                                    </a>
+                                    </button>
                                   )
                                 ) : (
                                   ""
                                 )}
 
-                                {bill.FurtherClaimNo || bill.FurtherClaimId ? (
-                                  <a className="rounded-full px-3 py-2 w-full">
-                                    ( แบบต่อเนื่อง )
-                                  </a>
-                                ) : (
-                                  ""
-                                )}
-                                {bill.AccidentDate ||
-                                bill.IllnessTypeCode === "ACC" ||
-                                bill.IllnessTypeCode === "ER" ? (
-                                  <a className="rounded-full px-3 py-2 w-full">
-                                    ( อุบัติเหตุ )
-                                  </a>
-                                ) : (
-                                  ""
-                                )}
+<span style={{ display: "inline", whiteSpace: "nowrap" }} className="mt-2">
+  {bill.FurtherClaimNo || bill.FurtherClaimId ? <a className="bg-secondary text-base-100 rounded-full px-3 py-1  w-full">แบบต่อเนื่อง</a> : ""}
+  {bill.AccidentDate || bill.IllnessTypeCode === "ACC" || bill.IllnessTypeCode === "ER" ? <a className="bg-error text-base-100 rounded-full px-3 py-1  w-full ml-1">อุบัติเหตุ</a> : ""}
+</span>
                               </div>
                             </td>
                             <th className="whitespace-nowrap">
@@ -3517,9 +3949,9 @@ export default function checkData() {
                             </th>
                             <td>
                               {bill.RefId ? (
-                                bill.ClaimStatusDesc !== "Cancelled to AIA" &&
-                                bill.ClaimStatusDesc !== "Cancelled" &&
-                                bill.ClaimStatusDesc !== "Reversed" &&
+                                       (bill.ClaimStatusDesc !== "Cancelled to AIA" || bill.ClaimNo !="") &&
+                                       (bill.ClaimStatusDesc !== "Cancelled" || bill.ClaimNo !="") &&
+                                       (bill.ClaimStatusDesc !== "Reversed"|| bill.ClaimNo !="") &&
                                 bill.ClaimStatusDesc !==
                                   "waitting for discharge" ? (
                                   <>
@@ -3596,7 +4028,19 @@ export default function checkData() {
                                         )}
                                       </div>
                                     </>
-                                  ) : (
+                                  ) : bill.ClaimNo === "" ?(
+                                    <div
+                                    className="tooltip"
+                                    data-tip="ข้อมูลส่งเคลม"
+                                  >
+                                    <h1
+                                    className="text-primary text-2xl"
+                                    onClick={() => Detail2(bill)}
+                                  >
+                                    <IoDocumentText />
+                                  </h1>
+                                  </div>
+                                  ):(
                                     <>
                                       <div
                                         className="tooltip"
@@ -3653,7 +4097,7 @@ export default function checkData() {
                                 ) : bill.ServiceSettingCode === "OPD" ? (
                                   <>
                                     <button
-                                      className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100 whitespace-nowrap"
+                                      className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100 whitespace-nowrap btn-sm text-xs px-2 py-1"
                                       onClick={() => handleButtonClick(bill)}
                                     >
                                       ส่งเอกสารเพิ่มเติม
@@ -3661,7 +4105,7 @@ export default function checkData() {
                                   </>
                                 ) : (
                                   <button
-                                    className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100 whitespace-nowrap"
+                                    className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100 whitespace-nowrap btn-sm text-xs px-2 py-1"
                                     onClick={() => handleButtonClick(bill)}
                                   >
                                     ส่งเอกสารเพิ่มเติม
@@ -3677,7 +4121,7 @@ export default function checkData() {
                                   doMoney === true ? (
                                     <>
                                       <button
-                                        className="btn btn-warning bg-warning hover:bg-base-100"
+                                        className="btn btn-sm btn-warning bg-warning hover:bg-base-100 text-xs px-2 py-1 whitespace-nowrap"
                                         onClick={() => Checkcreditlimit(bill)}
                                       >
                                         ประมาณการค่าใช้จ่าย
@@ -3697,13 +4141,23 @@ export default function checkData() {
                         )
                         // )
                       )
-                  ) : (
-                    <tr>
-                      <th></th>
-                      <th></th>
-                      <th></th>
-                    </tr>
-                  )}
+                    ) : (
+                      <tr>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th className="flex items-center">No data available in table</th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                      </tr>
+                    ): ""}
                 </tbody>
               </table>
             )
@@ -3718,14 +4172,15 @@ export default function checkData() {
                              HN <br /> VN
                            </th>
                            {notShowLoc === true ? "" : <th>Location</th>}
-                           <th>
+                           {/* <th>
                            Policy Number
-                           </th>
+                           </th> */}
                            <th>ClaimNo</th>
                            <th>
                              Invoicenumber <br />
                              BatchNumber
                            </th>
+                           <th>PolicyNo</th>
                            <th className="w-40 ">Status</th>
                            <th>
                              Total
@@ -3747,7 +4202,7 @@ export default function checkData() {
                          </tr>
                        </thead>
                        <tbody>
-                         {postData ? (
+                         {postData ? postData.Result.TransactionClaimInfo[0].HN ? (
                            datax
                              .filter((bill) => (bill.VisitDate || bill.HN) !== "")
                              .map(
@@ -3782,9 +4237,9 @@ export default function checkData() {
                                    ) : (
                                      <td className="">{bill.VisitLocation}</td>
                                    )}
-                                    <td className="whitespace-nowrap">
+                                    {/* <td className="whitespace-nowrap">
                                      {bill.ClaimNo ? bill.ClaimNo : "-"}
-                                   </td>
+                                   </td> */}
                                    <td className="whitespace-nowrap">
                                      {bill.ClaimNo ? bill.ClaimNo : "-"}
                                    </td>
@@ -3793,6 +4248,68 @@ export default function checkData() {
                                      <br />
                                      {bill.BatchNumber}
                                    </td>
+                                   <td>
+             
+             <Tippy
+content={
+<div className="absolute left-1/2 -translate-x-1/2 top-full w-auto min-w-max bg-base-300 text-white text-sm p-3 rounded-lg transition-opacity duration-200 group-hover:opacity-100">
+ <table className="">
+ <thead className="bg-info ">
+   <tr>
+     <th className="border border-black px-2 py-1 text-black">เลขที่กรมธรรม์</th>
+     <th className="border border-black px-2 py-1 text-black">สัญญาเพิ่มเติม</th>
+     <th className="border border-black px-2 py-1 text-black">ผลการตรวจสอบ</th>
+   </tr>
+ </thead>
+ <tbody>
+ {bill.PolicyNodetail ? bill.PolicyNodetail[0] ? (
+     bill.PolicyNodetail.map((policy, index) => (
+       <tr key={index}>
+         <td className="border border-black px-2 py-1 text-black">{policy.PolicyNo}</td>
+         <td className="border border-black px-2 py-1 text-black">{policy.PlanName}</td>
+         <td className="border border-black px-2 py-1 text-black">{policy.MessageTH}</td>
+       </tr>
+     ))
+   ) : (
+     <tr>
+       <td colSpan="3" className="text-center border border-black px-2 py-1">
+         ไม่มีข้อมูลกรมธรรม์
+       </td>
+     </tr>
+   ): ""}
+ </tbody>
+</table>
+</div>
+}>
+
+{bill.PolicyNo
+   ? 
+
+<div style={{ width: "170px",display: "flex", flexWrap: "wrap" }}>
+{
+   bill.PolicyNo.map((policy, index) => (
+     <div
+     key={index}
+     style={{
+       width: "50%",
+       textAlign: index % 2 === 0 ? "right" : "left", // จัดให้เลขคู่ขวา เลขคี่ซ้าย
+       padding: "2px",
+     }}
+   >
+       <p key={index} value={policy.PolicyNo}>
+         {policy.PolicyNo}
+       </p>
+       </div>
+
+     ))
+     }
+     </div>
+    
+    : ""}
+
+</Tippy>
+   
+</td>
                                    <td>
                                      <div className="grid gap-1 sm:grid-cols-1 w-40 break-all">
                                        {bill.ClaimStatusDesc ? (
@@ -3803,68 +4320,56 @@ export default function checkData() {
                                          bill.ClaimStatusDesc_EN !== "Decline" ? (
                                            bill.ClaimStatusDesc_EN === "Approved" ||
                                            bill.ClaimStatusDesc_EN === "Settle" ? (
-                                             <a
+                                             <button
                                                onClick={() => DoTransaction(bill)}
-                                               className="bg-info text-base-100 rounded-full px-3 py-2 w-full"
+                                               className="bg-info text-base-100 rounded-full px-3 py-1 w-full"
                                              >
                                                {bill.ClaimStatusDesc_TH}
-                                             </a>
+                                             </button>
                                            ) : bill.ClaimStatusDesc_EN === "Approve" ||
                                              bill.ClaimStatusDesc_EN === "Received" ||
                                              bill.ClaimStatusDesc_EN === "Pending" ||
                                              bill.ClaimStatusDesc_EN === "AddDoc" ||
                                              bill.ClaimStatusDesc_EN === "Processing" ? (
                                              bill.ClaimStatusDesc_EN === "Pending" ? (
-                                               <a
+                                               <button
                                                  onClick={() => DoTransaction(bill)}
-                                                 className="bg-accent text-base-100 rounded-full px-3 py-2 w-full"
+                                                 className="bg-accent text-base-100 rounded-full px-3 py-1 w-full"
                                                >
                                                  {bill.ClaimStatusDesc_TH}
-                                               </a>
-                                             ) : (
-                                               <a
+                                               </button>
+                                           ) : bill.ClaimStatusDesc_EN === "Processing" ? (  <button onClick={() => DoTransaction(bill)} className="bg-accent text-base-100 rounded-full px-3 py-1 w-full">{bill.ClaimStatusDesc_TH}</button> ) :(
+                                               <button
                                                  onClick={() => DoTransaction(bill)}
-                                                 className="bg-success text-base-100 rounded-full px-3 py-2 w-full"
+                                                 className="bg-success text-base-100 rounded-full px-3 py-1 w-full"
                                                >
                                                  {bill.ClaimStatusDesc_TH}
-                                               </a>
+                                               </button>
                                              )
                                            ) : (
-                                             <a
+                                             <button
                                                onClick={() => DoTransaction(bill)}
-                                               className="bg-warning  rounded-full px-3 py-2 w-full"
+                                               className="bg-warning  rounded-full px-3 py-1 w-full"
                                              >
                                                {bill.ClaimStatusDesc_TH}
-                                             </a>
+                                             </button>
                                            )
                                          ) : (
-                                           <a
+                                           <button
                                              onClick={() => DoTransaction(bill)}
-                                             className="bg-error text-base-100 rounded-full px-3 py-2 w-full"
+                                             className="bg-error text-base-100 rounded-full px-3 py-1 w-full"
                                            >
                                              {bill.ClaimStatusDesc_TH}
-                                           </a>
+                                           </button>
                                          )
                                        ) : (
                                          ""
                                        )}
          
-                                       {bill.FurtherClaimNo || bill.FurtherClaimId ? (
-                                         <a className="rounded-full px-3 py-2 w-full">
-                                           ( แบบต่อเนื่อง )
-                                         </a>
-                                       ) : (
-                                         ""
-                                       )}
-                                       {bill.AccidentDate ||
-                                       bill.IllnessTypeCode === "ACC" ||
-                                       bill.IllnessTypeCode === "ER" ? (
-                                         <a className="rounded-full px-3 py-2 w-full">
-                                           ( อุบัติเหตุ )
-                                         </a>
-                                       ) : (
-                                         ""
-                                       )}
+         <span style={{ display: "inline", whiteSpace: "nowrap" }} className="mt-2">
+  {bill.FurtherClaimNo || bill.FurtherClaimId ? <a className="bg-secondary text-base-100 rounded-full px-3 py-1  w-full">แบบต่อเนื่อง</a> : ""}
+  {bill.AccidentDate || bill.IllnessTypeCode === "ACC" || bill.IllnessTypeCode === "ER" ? <a className="bg-error text-base-100 rounded-full px-3 py-1  w-full ml-1">อุบัติเหตุ</a> : ""}
+</span>
                                      </div>
                                    </td>
                                    <th className="whitespace-nowrap">
@@ -3901,9 +4406,9 @@ export default function checkData() {
                                    </th>
                                    <td>
                                      {bill.RefId ? (
-                                       bill.ClaimStatusDesc !== "Cancelled to AIA" &&
-                                       bill.ClaimStatusDesc !== "Cancelled" &&
-                                       bill.ClaimStatusDesc !== "Reversed" &&
+                                       (bill.ClaimStatusDesc !== "Cancelled to AIA" || bill.ClaimNo !="") &&
+                                       (bill.ClaimStatusDesc !== "Cancelled" || bill.ClaimNo !="") &&
+                                       (bill.ClaimStatusDesc !== "Reversed"|| bill.ClaimNo !="") &&
                                        bill.ClaimStatusDesc !==
                                          "waitting for discharge" ? (
                                          <>
@@ -4036,7 +4541,7 @@ export default function checkData() {
                                        ) : bill.ServiceSettingCode === "OPD" ? (
                                          <>
                                            <button
-                                             className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100 whitespace-nowrap"
+                                             className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100 whitespace-nowrap btn-sm text-xs px-2 py-1"
                                              onClick={() => handleButtonClick(bill)}
                                            >
                                              ส่งเอกสารเพิ่มเติม
@@ -4044,7 +4549,7 @@ export default function checkData() {
                                          </>
                                        ) : (
                                          <button
-                                           className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100 whitespace-nowrap"
+                                           className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100 whitespace-nowrap btn-sm text-xs px-2 py-1"
                                            onClick={() => handleButtonClick(bill)}
                                          >
                                            ส่งเอกสารเพิ่มเติม
@@ -4060,7 +4565,7 @@ export default function checkData() {
                                          doMoney === true ? (
                                            <>
                                              <button
-                                               className="btn btn-warning bg-warning  hover:bg-base-100"
+                                               className="btn btn-sm btn-warning bg-warning hover:bg-base-100 text-xs px-2 py-1 whitespace-nowrap"
                                                onClick={() => Checkcreditlimit(bill)}
                                              >
                                                ประมาณการค่าใช้จ่าย
@@ -4079,14 +4584,24 @@ export default function checkData() {
                                  </tr>
                                )
                                // )
-                             )
+                             ) 
                          ) : (
                            <tr>
-                             <th></th>
-                             <th></th>
-                             <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th className="flex items-center">No data available in table</th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
                            </tr>
-                         )}
+                         ): ""}
                        </tbody>
                      </table>
                 
@@ -4103,14 +4618,15 @@ export default function checkData() {
                     HN <br /> VN
                   </th>
                   {notShowLoc === true ? "" : <th>Location</th>}
-                  <th>
+                  {/* <th>
                            Policy Number
-                  </th>
+                  </th> */}
                   <th>ClaimNo</th>
                   <th>
                     Invoicenumber <br />
                     BatchNumber
                   </th>
+                  <th>PolicyNo</th>
                   <th className="w-40 ">Status</th>
                   <th>
                     Total
@@ -4132,7 +4648,7 @@ export default function checkData() {
                 </tr>
               </thead>
               <tbody>
-                {postData ? (
+              {postData ? postData.Result.TransactionClaimInfo[0].HN ? (
                   datax
                     .filter((bill) => (bill.VisitDate || bill.HN) !== "")
                     .map(
@@ -4167,9 +4683,9 @@ export default function checkData() {
                           ) : (
                             <td className="">{bill.VisitLocation}</td>
                           )}
-                           <td className="whitespace-nowrap">
-                                     {bill.ClaimNo ? bill.ClaimNo : "-"}
-                                   </td>
+                           {/* <td className="">
+                           {bill.ClaimNo ? bill.ClaimNo : "-"}
+                                   </td> */}
                           <td className="whitespace-nowrap">
                             {bill.ClaimNo ? bill.ClaimNo : "-"}
                           </td>
@@ -4178,6 +4694,68 @@ export default function checkData() {
                             <br />
                             {bill.BatchNumber}
                           </td>
+                          <td>
+             
+                            <Tippy
+      content={
+        <div className="absolute left-1/2 -translate-x-1/2 top-full w-auto min-w-max bg-base-300 text-white text-sm p-3 rounded-lg transition-opacity duration-200 group-hover:opacity-100">
+                <table className="">
+                <thead className="bg-info ">
+                  <tr>
+                    <th className="border border-black px-2 py-1 text-black">เลขที่กรมธรรม์</th>
+                    <th className="border border-black px-2 py-1 text-black">สัญญาเพิ่มเติม</th>
+                    <th className="border border-black px-2 py-1 text-black">ผลการตรวจสอบ</th>
+                  </tr>
+                </thead>
+                <tbody>
+                {bill.PolicyNodetail ? bill.PolicyNodetail[0] ? (
+                    bill.PolicyNodetail.map((policy, index) => (
+                      <tr key={index}>
+                        <td className="border border-black px-2 py-1 text-black">{policy.PolicyNo}</td>
+                        <td className="border border-black px-2 py-1 text-black">{policy.PlanName}</td>
+                        <td className="border border-black px-2 py-1 text-black">{policy.MessageTH}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="3" className="text-center border border-black px-2 py-1">
+                        ไม่มีข้อมูลกรมธรรม์
+                      </td>
+                    </tr>
+                  ): ""}
+                </tbody>
+              </table>
+              </div>
+        }>
+
+{bill.PolicyNo
+                  ? 
+
+  <div style={{ width: "170px",display: "flex", flexWrap: "wrap" }}>
+    {
+                  bill.PolicyNo.map((policy, index) => (
+                    <div
+                    key={index}
+                    style={{
+                      width: "50%",
+                      textAlign: index % 2 === 0 ? "right" : "left", // จัดให้เลขคู่ขวา เลขคี่ซ้าย
+                      padding: "2px",
+                    }}
+                  >
+                      <p key={index} value={policy.PolicyNo}>
+                        {policy.PolicyNo}
+                      </p>
+                      </div>
+
+                    ))
+                    }
+                    </div>
+                   
+                   : ""}
+
+</Tippy>
+                  
+</td>
                           <td>
                             <div className="grid gap-1 sm:grid-cols-1 w-40 break-all">
                               {bill.ClaimStatusDesc ? (
@@ -4188,68 +4766,56 @@ export default function checkData() {
                                 bill.ClaimStatusDesc_EN !== "Decline" ? (
                                   bill.ClaimStatusDesc_EN === "Approved" ||
                                   bill.ClaimStatusDesc_EN === "Settle" ? (
-                                    <a
+                                    <button
                                       onClick={() => DoTransaction(bill)}
-                                      className="bg-info text-base-100 rounded-full px-3 py-2 w-full"
+                                      className="bg-info text-base-100 rounded-full px-3 py-1"
                                     >
                                       {bill.ClaimStatusDesc_TH}
-                                    </a>
+                                    </button>
                                   ) : bill.ClaimStatusDesc_EN === "Approve" ||
                                     bill.ClaimStatusDesc_EN === "Received" ||
                                     bill.ClaimStatusDesc_EN === "Pending" ||
                                     bill.ClaimStatusDesc_EN === "AddDoc" ||
                                     bill.ClaimStatusDesc_EN === "Processing" ? (
                                     bill.ClaimStatusDesc_EN === "Pending" ? (
-                                      <a
+                                      <button
                                         onClick={() => DoTransaction(bill)}
-                                        className="bg-accent text-base-100 rounded-full px-3 py-2 w-full"
+                                        className="bg-accent text-base-100 rounded-full px-3 py-1"
                                       >
                                         {bill.ClaimStatusDesc_TH}
-                                      </a>
-                                    ) : (
-                                      <a
+                                      </button>
+                                   ) : bill.ClaimStatusDesc_EN === "Processing" ? (  <button onClick={() => DoTransaction(bill)} className="bg-accent text-base-100 rounded-full px-3 py-1 w-full">{bill.ClaimStatusDesc_TH}</button> ) :(
+                                      <button
                                         onClick={() => DoTransaction(bill)}
-                                        className="bg-success text-base-100 rounded-full px-3 py-2 w-full"
+                                        className="bg-success text-base-100 rounded-full px-3 py-1 "
                                       >
                                         {bill.ClaimStatusDesc_TH}
-                                      </a>
+                                      </button>
                                     )
                                   ) : (
-                                    <a
+                                    <button
                                       onClick={() => DoTransaction(bill)}
-                                      className="bg-warning  rounded-full px-3 py-2 w-full"
+                                      className="bg-warning  rounded-full px-3 py-1 "
                                     >
                                       {bill.ClaimStatusDesc_TH}
-                                    </a>
+                                    </button>
                                   )
                                 ) : (
-                                  <a
+                                  <button
                                     onClick={() => DoTransaction(bill)}
-                                    className="bg-error text-base-100 rounded-full px-3 py-2 w-full"
+                                    className="bg-error text-base-100 rounded-full px-3 py-1 "
                                   >
                                     {bill.ClaimStatusDesc_TH}
-                                  </a>
+                                  </button>
                                 )
                               ) : (
                                 ""
                               )}
 
-                              {bill.FurtherClaimNo || bill.FurtherClaimId ? (
-                                <a className="rounded-full px-3 py-2 w-full">
-                                  ( แบบต่อเนื่อง )
-                                </a>
-                              ) : (
-                                ""
-                              )}
-                              {bill.AccidentDate ||
-                              bill.IllnessTypeCode === "ACC" ||
-                              bill.IllnessTypeCode === "ER" ? (
-                                <a className="rounded-full px-3 py-2 w-full">
-                                  ( อุบัติเหตุ )
-                                </a>
-                              ) : (
-                                ""
-                              )}
+<span style={{ display: "inline", whiteSpace: "nowrap" }} className="mt-2">
+  {bill.FurtherClaimNo || bill.FurtherClaimId ? <a className="bg-secondary text-base-100 rounded-full px-3 py-1  w-full">แบบต่อเนื่อง</a> : ""}
+  {bill.AccidentDate || bill.IllnessTypeCode === "ACC" || bill.IllnessTypeCode === "ER" ? <a className="bg-error text-base-100 rounded-full px-3 py-1  w-full ml-1">อุบัติเหตุ</a> : ""}
+</span>
                             </div>
                           </td>
                           <th className="whitespace-nowrap">
@@ -4286,9 +4852,9 @@ export default function checkData() {
                           </th>
                           <td>
                             {bill.RefId ? (
-                              bill.ClaimStatusDesc !== "Cancelled to AIA" &&
-                              bill.ClaimStatusDesc !== "Cancelled" &&
-                              bill.ClaimStatusDesc !== "Reversed" &&
+                                       (bill.ClaimStatusDesc !== "Cancelled to AIA" || bill.ClaimNo !="") &&
+                                       (bill.ClaimStatusDesc !== "Cancelled" || bill.ClaimNo !="") &&
+                                       (bill.ClaimStatusDesc !== "Reversed"|| bill.ClaimNo !="") &&
                               bill.ClaimStatusDesc !==
                                 "waitting for discharge" ? (
                                 <>
@@ -4421,7 +4987,7 @@ export default function checkData() {
                               ) : bill.ServiceSettingCode === "OPD" ? (
                                 <>
                                   <button
-                                    className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100 whitespace-nowrap"
+                                    className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100 whitespace-nowrap btn-sm text-xs px-2 py-1"
                                     onClick={() => handleButtonClick(bill)}
                                   >
                                     ส่งเอกสารเพิ่มเติม
@@ -4429,7 +4995,7 @@ export default function checkData() {
                                 </>
                               ) : (
                                 <button
-                                  className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100 whitespace-nowrap"
+                                  className="btn btn-primary bg-primary text-base-100 hover:text-primary hover:bg-base-100 whitespace-nowrap btn-sm text-xs px-2 py-1"
                                   onClick={() => handleButtonClick(bill)}
                                 >
                                   ส่งเอกสารเพิ่มเติม
@@ -4445,7 +5011,7 @@ export default function checkData() {
                                 doMoney === true ? (
                                   <>
                                     <button
-                                      className="btn btn-warning bg-warning  hover:bg-base-100"
+                                      className="btn btn-sm btn-warning bg-warning hover:bg-base-100 text-xs px-2 py-1 whitespace-nowrap"
                                       onClick={() => Checkcreditlimit(bill)}
                                     >
                                       ประมาณการค่าใช้จ่าย
@@ -4465,17 +5031,28 @@ export default function checkData() {
                       )
                       // )
                     )
-                ) : (
-                  <tr>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                  </tr>
-                )}
+                  ) : (
+                    <tr>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th className="flex items-center">No data available in table</th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                    </tr>
+                  ): ""}
               </tbody>
             </table>
           )}
-          {postData ? (
+          {postData ? postData.Result.TransactionClaimInfo[0].HN &&
+(
             <div className="grid gap-1 sm:grid-cols-2 w-full mt-4">
               <div className="flex justify-between text-right">
                 <div className="text-right">
@@ -4779,7 +5356,11 @@ export default function checkData() {
               >
                 <span>
                   TransactionNo : {doTransactionData.TransactionNo} <br />
-                  RefID : {doTransactionData.RefId} <br />
+                  {/* RefID : {doTransactionData.RefId} <br /> */}
+                  HN : {doTransactionData.HN} <br />
+                  PID : {doTransactionData.PID} <br />
+                  {/* Passport : {doTransactionData.PassportNumber} <br /> */}
+                  VN : {doTransactionData.VN} <br />
                 </span>
               </div>
 
@@ -4787,10 +5368,16 @@ export default function checkData() {
                 <button
                   className="btn btn-success bg-success text-base-100 hover:text-success hover:bg-base-100 mt-2"
                   onClick={() => {
-                    copyTran("Text");
+                    copyTran({
+                       TransactionNo : doTransactionData.TransactionNo,
+                      //  RefID : doTransactionData.RefId,
+                       HN : doTransactionData.HN,
+                       PID : doTransactionData.PID,
+                      //  Passport : doTransactionData.PassportNumber,
+                       VN : doTransactionData.VN,
+
+                    });
                   }}
-                  //   const textToCopy = document.getElementById(`TransactionNo: ${doTransactionData.TransactionNo}\nRefID: ${doTransactionData.RefId}`);
-                  //    alert("เบราว์เซอร์ของคุณไม่รองรับ Copy API\nกรุณา Copy เฉพาะกรอบสีแดงทั้งหมดครับ");
                 >
                   Copy
                 </button>
@@ -4903,7 +5490,7 @@ export default function checkData() {
                             <TableCell>{index + 1}</TableCell>
                             <TableCell>
                               <select
-                                className="select select-bordered mt-2 x-3 py-2 border-2 bg-base-100 break-all w-full"
+                                className="select select-bordered mt-2 x-3 py-1 border-2 bg-base-100 break-all w-full"
                                 // value={`${cause.LocalBillingCode}`}
                                 onChange={(e) => handleChangeA1(index, e)}
                               >
@@ -5021,13 +5608,13 @@ export default function checkData() {
                   <div className="rounded-md"></div>
                   <div className="rounded-md"></div>
                   <div
-                    className="px-3 py-2 m-1 w-full btn btn-success text-base-100 hover:text-success hover:bg-base-100"
+                    className="px-3 py-1 m-1 w-full btn btn-success text-base-100 hover:text-success hover:bg-base-100"
                     type="submit"
                     onClick={SubmitSumBilling}
                   >
                     ประมาณการค่าใช้จ่าย
                   </div>
-                  <div className="rounded-md px-3 py-2 border-2 bg-base-100 break-all m-1">
+                  <div className="rounded-md px-3 py-1 border-2 bg-base-100 break-all m-1">
                     {parseFloat(total).toLocaleString("en-US", {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
@@ -5043,7 +5630,7 @@ export default function checkData() {
                     <div className="rounded-md text-base-100 mt-4">
                       จำนวนเงินที่คุ้มครอง
                     </div>
-                    <div className="rounded-md px-3 py-2 border-2 bg-base-100 break-all m-1">
+                    <div className="rounded-md px-3 py-1 border-2 bg-base-100 break-all m-1">
                       {totalApprovedAmount ? (
                         totalApprovedAmount
                       ) : (
@@ -5060,7 +5647,7 @@ export default function checkData() {
                     <div className="rounded-md text-base-100 mt-4">
                       ส่วนเกินความคุ้มครอง
                     </div>
-                    <div className="rounded-md px-3 py-2 border-2 bg-base-100 break-all m-1">
+                    <div className="rounded-md px-3 py-1 border-2 bg-base-100 break-all m-1">
                       {totalExcessAmount ? (
                         totalExcessAmount
                       ) : (
@@ -5408,7 +5995,7 @@ export default function checkData() {
   <h3 className="font-bold text-2xl ">Update Status</h3>
   <hr/>
   <h3 className="font-bold text-2xl text-center text-error">
-  DateTime : {currentTime.toLocaleDateString()} {currentTime.toLocaleTimeString()}
+  DateTime : {currentDate} {currentTime}
   </h3>
     <h3 className="font-bold text-2xl text-accent text-center">
     Status : {refreshSucc ? refreshSucc.Result.InsuranceData.ClaimStatusDesc_TH : ""}

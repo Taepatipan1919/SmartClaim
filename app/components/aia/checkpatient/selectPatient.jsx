@@ -384,7 +384,7 @@ export default function SelectPatient() {
           }
         )
         .then(function (response) {
-          //console.log(response.data);
+          console.log(response.data);
           if (response.data.HTTPStatus.statusCode === 200) {
             setShowFormError("");
             setPost(response.data);
@@ -609,7 +609,6 @@ export default function SelectPatient() {
       ) : (
         ""
       )}
-      {showFormError === "" ? (
         <div className="justify-center border-solid w-full m-auto border-2 border-warning rounded-lg p-4 mt-6">
           <div className="overflow-x-auto mt-2">
             <table className="table">
@@ -664,16 +663,10 @@ export default function SelectPatient() {
                   )
                   ) : (
                     <>
-                      <tr>
-                        <td></td>
-                      </tr>
                     </>
                   )
                 ) : (
                   <>
-                    <tr>
-                      <td></td>
-                    </tr>
                   </>
                 )}
               </tbody>
@@ -686,10 +679,6 @@ export default function SelectPatient() {
             </div>
           </div>
         </div>
-      ) : (
-        ""
-      )}
-
       {/* /////////////////////////////////////////////////////////////////////////////// */}
       <dialog id="my_modal_3" className="modal">
         <div className="modal-box max-w-2xl">
@@ -922,7 +911,7 @@ export default function SelectPatient() {
       </dialog>
       {/* /////////////////////////////////////////////////////////////////////////////// */}
       <dialog id="my_modal_1" className="modal">
-        <div className="modal-box max-w-2xl">
+        <div className="modal-box max-w-3xl">
           <form method="dialog">
             <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
               ✕
@@ -953,7 +942,7 @@ export default function SelectPatient() {
             )}
             <div className="grid gap-2 sm:grid-cols-3 w-full">
               <div className="rounded-md "></div>
-              <div className="rounded-md text-center"></div>
+              <div className="rounded-md text-center">SmartClaim</div>
               <div className="rounded-md text-center">Trakcere</div>
               <div className="rounded-md ">
                 <p className="text-left">Personal ID</p>

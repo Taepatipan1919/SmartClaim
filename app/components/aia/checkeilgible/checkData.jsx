@@ -596,6 +596,7 @@ if(idTypeValue === "NATIONAL_ID"){
     }
     
     console.log(PatientInfo)
+
     axios
     .post(
       process.env.NEXT_PUBLIC_URL_SV +
@@ -618,15 +619,7 @@ if(idTypeValue === "NATIONAL_ID"){
     })
     .catch((error) => {
       console.log(error);
-      // try {
-      //   const ErrorMass = error.config.url;
-      //   const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
-      //   setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
-      //   setShowFormFurtherError("Error");
-      // } catch (error) {
-      //   setMassError(error.response.data.HTTPStatus.message);
-      //   setShowFormFurtherError("Error");
-      // }
+
     });
 
 
@@ -1029,7 +1022,7 @@ if(idTypeValue === "NATIONAL_ID"){
 
   const check = async (event) => {
 
-
+    setLoad(false)
     setShowFormError();
     // console.log(numberValue)
     setSelectPRETypeValue("");
@@ -2096,7 +2089,7 @@ if(idTypeValue === "NATIONAL_ID"){
       `${result.Result.InsuranceData.RefId} | ${result.Result.InsuranceData.TransactionNo}`
     )}
   >
-    ลงทะเบียนใช้สิทธิ์
+    Print
   </div>
   : ""}
   </div> 
@@ -2184,17 +2177,15 @@ if(idTypeValue === "NATIONAL_ID"){
             (succFurtherClaim2 === false ? 
               (
                 <>
-                <div className="flex  w-full">
-
-              </div> 
-
+                <div className="rounded-md">
               <div
                 className="btn btn-primary text-base-100 hover:text-primary hover:bg-base-100 ml-2"
                 onClick={() =>handleButtonVNClick(
                   `${result.Result.InsuranceData.RefId} | ${result.Result.InsuranceData.TransactionNo}`
                 )}
               >
-                ยืนยันเลือกรักษาแบบต่อเนื่อง
+                ยืนยันเลือกรักษา
+              </div> 
               </div> 
             </>
               )
@@ -2215,7 +2206,7 @@ if(idTypeValue === "NATIONAL_ID"){
                    `${result.Result.InsuranceData.RefId} | ${result.Result.InsuranceData.TransactionNo}`
                  )}
                >
-                 ลงทะเบียนใช้สิทธิ์
+                 Print
                </div>
                </div> 
               )
@@ -2408,7 +2399,7 @@ if(idTypeValue === "NATIONAL_ID"){
            </b>
           </p>
           <div className="rounded-md">
-                    {showNumberValue} : {showIdType}
+                    {showIdType} : {showNumberValue}
                     </div>
                     <div className="rounded-md">
                     ประเภทกรมธรรม์ : {policyTypeValue === "IB" ? "ประกันรายบุคคล" : "ประกันกลุ่ม"}

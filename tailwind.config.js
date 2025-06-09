@@ -1,4 +1,3 @@
-/** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
@@ -29,6 +28,7 @@ module.exports = {
           accent: "#ff8900", // สีส้ม        //หัวข้อ ตัวหนังสือhoverเมนู
           neutral: "#F3F9FC", // ฟ้าขาว
           "base-100": "#FFFFFF", // พื้นหลังขาว
+          "base-300": "#CFD4D4", // พื้นหลังขาว
 
           success: "#72d572", // เขียวพาสเทล      //ปุ่ม create save
           warning: "#FCDE70", // เหลืองพาสเทล

@@ -65,7 +65,7 @@ export default function Page({ data }) {
   const [currentDataorderItemz, setCurrentDataorderItemz] = useState("");
   const [currentPageorderItemz, setCurrentPageorderItemz] = useState(1);
   const [countorderItemz, setCountorderItemz] = useState(0);
-  
+  const [illnessType, setIllnessType] = useState();
   const [checkedFinalDischarge, setCheckedFinalDischarge] = useState("");
   const [summitEditConcurrentNote, setSummitEditConcurrentNote] = useState("false");
   const dispatch = useDispatch("");
@@ -123,7 +123,7 @@ export default function Page({ data }) {
   const [dscDateTime, setDscDateTime] = useState(null);
   const [an, setAn] = useState("");
   const [expectedLos, setExpectedLos] = useState("");
-  const [otherInsurer, setOtherInsurer] = useState(false);
+  const [otherInsurer, setOtherInsurer] = useState("");
 
   const [procedure, setProcedure] = useState("");
   const [causeOfInjuryDetails, setCauseOfInjuryDetails] = useState("");
@@ -137,7 +137,7 @@ export default function Page({ data }) {
   const [optionsPro, setOptionsPro] = useState([]);
   const [isLoadingPro, setIsLoadingPro] = useState(false);
   const [selectedOptionPro, setSelectedOptionPro] = useState(null);
-  const [rowsPro, setRowsPro] = useState([]);
+  const [rowsPro, setRowsPro] = useState("");
   const [procedureDate, setProcedureDate] = useState("");
 
 
@@ -161,7 +161,7 @@ export default function Page({ data }) {
   });
 
 
-
+  const [listClaimForm, setListClaimForm] = useState();
   const [summitEditProcedure, setSummitEditProcedure] = useState("false");
   const [summitEditAcc, setSummitEditAcc] = useState("false");
   const [comaScore, setComaScore] = useState("");
@@ -175,7 +175,29 @@ export default function Page({ data }) {
   const [previousTreatmentDate, setPreviousTreatmentDate] = useState(null);
 
 
-
+  useEffectOnce(() => {
+    axios
+      .get(
+        process.env.NEXT_PUBLIC_URL_SV +
+          process.env.NEXT_PUBLIC_URL_IllnessType +
+          InsuranceCode
+      )
+      .then((response) => {
+        setIllnessType(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+        try {
+          const ErrorMass = error.config.url;
+          const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+          setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
+          setShowFormError("Error");
+        } catch (error) {
+          setMassError(error.response.data.HTTPStatus.message);
+          setShowFormError("Error");
+        }
+      });
+  });
   const AccidentPlace = (event) => {
     setAccidentPlaceValue(event.target.value);
   };
@@ -185,7 +207,7 @@ export default function Page({ data }) {
   const WoundType = (event) => {
     setWoundType(event.target.value);
   };
-
+  
   
   const PatientInfoData = {
     PatientInfo: {
@@ -215,10 +237,14 @@ export default function Page({ data }) {
         SurgeryTypeCode: data.DataTran.Data.SurgeryTypeCode,
         PreauthReferClaimNo: data.DataTran.Data.PreauthReferClaimNo,
         PreauthReferOcc: data.DataTran.Data.PreauthReferOcc,   
+        ReferenceVN : data.DataTran.Data.ReferenceVN,
         AdmitDateTime: "",
         An : "",
         DscDateTime : "",
         ExpectedLos : "",
+        FurtherClaimNo: data.DataTran.Data.FurtherClaimNo,
+        FurtherClaimId: data.DataTran.Data.FurtherClaimId,
+        FurtherClaimVN: data.DataTran.Data.FurtherClaimVN,
     },
   };
   // console.log(PatientInfoData.PatientInfo)
@@ -340,17 +366,93 @@ export default function Page({ data }) {
 
   useEffectOnce(() => {
 
+    let Data;
+    if(data.DataTran.Data.FurtherClaimVN){
+      Data = {
+        PatientInfo : {
+          InsurerCode: data.DataTran.Data.InsurerCode,
+          RefId: data.DataTran.Data.RefId,
+          TransactionNo: data.DataTran.Data.TransactionNo,
+          PID: data.Patient.Data.PID,
+          HN: data.Patient.Data.HN,
+          GivenNameTH: data.Patient.Data.GivenNameTH,
+          SurnameTH: data.Patient.Data.SurnameTH,
+          DateOfBirth: data.Patient.Data.DateOfBirth,
+          PassportNumber: data.Patient.Data.PassportNumber,
+            IdType: data.Patient.Data.IdType,
+          VN: data.DataTran.Data.FurtherClaimVN,
+            VisitDateTime: data.DataTran.Data.VisitDateTime,
+          ChiefComplaint: "",
+          PresentIllness: "",
+            AccidentDate: data.DataTran.Data.AccidentDate,
+          AccidentPlaceCode: "",
+          WoundDetails: "",
+          AccidentInjurySideCode: "",
+          AccidentInjuryWoundtypeCode: "",
+            PolicyTypeCode: data.DataTran.Data.PolicyTypeCode,
+            ServiceSettingCode: data.DataTran.Data.ServiceSettingCode,
+            IllnessTypeCode: data.DataTran.Data.IllnessTypeCode,
+            SurgeryTypeCode: data.DataTran.Data.SurgeryTypeCode,
+            FurtherClaimNo: data.DataTran.Data.FurtherClaimNo,
+            FurtherClaimId: data.DataTran.Data.FurtherClaimId,
+            FurtherClaimVN: data.DataTran.Data.FurtherClaimVN,
+ 
+        },
+      }
+    }else{
+      Data = {
+        PatientInfo : {
+          InsurerCode: data.DataTran.Data.InsurerCode,
+          RefId: data.DataTran.Data.RefId,
+          TransactionNo: data.DataTran.Data.TransactionNo,
+          PID: data.Patient.Data.PID,
+          HN: data.Patient.Data.HN,
+          GivenNameTH: data.Patient.Data.GivenNameTH,
+          SurnameTH: data.Patient.Data.SurnameTH,
+          DateOfBirth: data.Patient.Data.DateOfBirth,
+          PassportNumber: data.Patient.Data.PassportNumber,
+            IdType: data.Patient.Data.IdType,
+          VN: data.DataTran.Data.VN,
+            VisitDateTime: data.DataTran.Data.VisitDateTime,
+          ChiefComplaint: "",
+          PresentIllness: "",
+            AccidentDate: data.DataTran.Data.AccidentDate,
+          AccidentPlaceCode: "",
+          WoundDetails: "",
+          AccidentInjurySideCode: "",
+          AccidentInjuryWoundtypeCode: "",
+            PolicyTypeCode: data.DataTran.Data.PolicyTypeCode,
+            ServiceSettingCode: data.DataTran.Data.ServiceSettingCode,
+            IllnessTypeCode: data.DataTran.Data.IllnessTypeCode,
+            SurgeryTypeCode: data.DataTran.Data.SurgeryTypeCode,
+            FurtherClaimNo: data.DataTran.Data.FurtherClaimNo,
+            FurtherClaimId: data.DataTran.Data.FurtherClaimId,
+            FurtherClaimVN: data.DataTran.Data.FurtherClaimVN,
+
+        },
+      }
+    }
+    
+    console.log(Data)
+
+
+
+
     axios
       .post(
         process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_getIPDDischargeVisit,
-      PatientInfoData 
+      //PatientInfoData
+      Data 
       )
       .then((response) => {
-      //    console.log(response.data)
+          console.log(response.data)
        setCombinedString(response ? `${response.data.Result.VisitInfo.Weight} / ${response.data.Result.VisitInfo.Height}` : "");
 
         setVisit(response.data);
+        if(response.data.Result.VisitInfo.AnesthesiaList){
+          setAnesthesiaListValue(response.data.Result.VisitInfo.AnesthesiaList)
+        }
         if(PatientInfoData.PatientInfo.IsIPDDischarge === null || PatientInfoData.PatientInfo.IsIPDDischarge === false){
          setIsIPDDischargeValue(false)
         }else{
@@ -411,12 +513,79 @@ export default function Page({ data }) {
    });
 
   useEffectOnce(() => {
+    
+    let Data;
+    if(data.DataTran.Data.FurtherClaimVN){
+      Data = {
+        PatientInfo : {
+          InsurerCode: data.DataTran.Data.InsurerCode,
+          RefId: data.DataTran.Data.RefId,
+          TransactionNo: data.DataTran.Data.TransactionNo,
+          PID: data.Patient.Data.PID,
+          HN: data.Patient.Data.HN,
+          GivenNameTH: data.Patient.Data.GivenNameTH,
+          SurnameTH: data.Patient.Data.SurnameTH,
+          DateOfBirth: data.Patient.Data.DateOfBirth,
+          PassportNumber: data.Patient.Data.PassportNumber,
+            IdType: data.Patient.Data.IdType,
+          VN: data.DataTran.Data.FurtherClaimVN,
+            VisitDateTime: data.DataTran.Data.VisitDateTime,
+          ChiefComplaint: "",
+          PresentIllness: "",
+            AccidentDate: data.DataTran.Data.AccidentDate,
+          AccidentPlaceCode: "",
+          WoundDetails: "",
+          AccidentInjurySideCode: "",
+          AccidentInjuryWoundtypeCode: "",
+            PolicyTypeCode: data.DataTran.Data.PolicyTypeCode,
+            ServiceSettingCode: data.DataTran.Data.ServiceSettingCode,
+            IllnessTypeCode: data.DataTran.Data.IllnessTypeCode,
+            SurgeryTypeCode: data.DataTran.Data.SurgeryTypeCode,
+            FurtherClaimNo: data.DataTran.Data.FurtherClaimNo,
+            FurtherClaimId: data.DataTran.Data.FurtherClaimId,
+            FurtherClaimVN: data.DataTran.Data.FurtherClaimVN,
+    //visit doctor diagnosis acc
+        },
+      }
+    }else{
+      Data = {
+        PatientInfo : {
+          InsurerCode: data.DataTran.Data.InsurerCode,
+          RefId: data.DataTran.Data.RefId,
+          TransactionNo: data.DataTran.Data.TransactionNo,
+          PID: data.Patient.Data.PID,
+          HN: data.Patient.Data.HN,
+          GivenNameTH: data.Patient.Data.GivenNameTH,
+          SurnameTH: data.Patient.Data.SurnameTH,
+          DateOfBirth: data.Patient.Data.DateOfBirth,
+          PassportNumber: data.Patient.Data.PassportNumber,
+            IdType: data.Patient.Data.IdType,
+          VN: data.DataTran.Data.VN,
+            VisitDateTime: data.DataTran.Data.VisitDateTime,
+          ChiefComplaint: "",
+          PresentIllness: "",
+            AccidentDate: data.DataTran.Data.AccidentDate,
+          AccidentPlaceCode: "",
+          WoundDetails: "",
+          AccidentInjurySideCode: "",
+          AccidentInjuryWoundtypeCode: "",
+            PolicyTypeCode: data.DataTran.Data.PolicyTypeCode,
+            ServiceSettingCode: data.DataTran.Data.ServiceSettingCode,
+            IllnessTypeCode: data.DataTran.Data.IllnessTypeCode,
+            SurgeryTypeCode: data.DataTran.Data.SurgeryTypeCode,
+            FurtherClaimNo: data.DataTran.Data.FurtherClaimNo,
+            FurtherClaimId: data.DataTran.Data.FurtherClaimId,
+            FurtherClaimVN: data.DataTran.Data.FurtherClaimVN,
+
+        },
+      }
+    }
     axios
       .post(
         process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_getIPDDischargeAccident,
-
-       PatientInfoData
+          Data
+     //  PatientInfoData
       )
       .then((response) => {
          console.log(response.data)
@@ -667,14 +836,95 @@ export default function Page({ data }) {
         }
       });
   });
+  const copyTran = (data) => {
+    if (!navigator.clipboard) {
+      console.error("Clipboard API ไม่รองรับในเบราว์เซอร์นี้");
+      alert("เบราว์เซอร์นี้ไม่รองรับ กับ ฟังชั่น Copy นี้ \nกรุณา Copy ในกรอบสีแดงทั้งหมดครับ");
+      return;
+    }else{
+    const jsonString = JSON.stringify(data, null, 2); // แปลงข้อมูลเป็น JSON String
+    const result = navigator.clipboard.writeText(jsonString);
 
+    result.then(() => {
+      console.log("copy เรียบร้อย");
+      alert("copy เรียบร้อยแล้ว");
+    });
+    }
+  };
   useEffectOnce(() => {
+
+    let Data;
+    if(data.DataTran.Data.FurtherClaimVN){
+      Data = {
+        PatientInfo : {
+          InsurerCode: data.DataTran.Data.InsurerCode,
+          RefId: data.DataTran.Data.RefId,
+          TransactionNo: data.DataTran.Data.TransactionNo,
+          PID: data.Patient.Data.PID,
+          HN: data.Patient.Data.HN,
+          GivenNameTH: data.Patient.Data.GivenNameTH,
+          SurnameTH: data.Patient.Data.SurnameTH,
+          DateOfBirth: data.Patient.Data.DateOfBirth,
+          PassportNumber: data.Patient.Data.PassportNumber,
+            IdType: data.Patient.Data.IdType,
+          VN: data.DataTran.Data.FurtherClaimVN,
+            VisitDateTime: data.DataTran.Data.VisitDateTime,
+          ChiefComplaint: "",
+          PresentIllness: "",
+            AccidentDate: data.DataTran.Data.AccidentDate,
+          AccidentPlaceCode: "",
+          WoundDetails: "",
+          AccidentInjurySideCode: "",
+          AccidentInjuryWoundtypeCode: "",
+            PolicyTypeCode: data.DataTran.Data.PolicyTypeCode,
+            ServiceSettingCode: data.DataTran.Data.ServiceSettingCode,
+            IllnessTypeCode: data.DataTran.Data.IllnessTypeCode,
+            SurgeryTypeCode: data.DataTran.Data.SurgeryTypeCode,
+            FurtherClaimNo: data.DataTran.Data.FurtherClaimNo,
+            FurtherClaimId: data.DataTran.Data.FurtherClaimId,
+            FurtherClaimVN: data.DataTran.Data.FurtherClaimVN,
+    //visit doctor diagnosis acc
+        },
+      }
+    }else{
+      Data = {
+        PatientInfo : {
+          InsurerCode: data.DataTran.Data.InsurerCode,
+          RefId: data.DataTran.Data.RefId,
+          TransactionNo: data.DataTran.Data.TransactionNo,
+          PID: data.Patient.Data.PID,
+          HN: data.Patient.Data.HN,
+          GivenNameTH: data.Patient.Data.GivenNameTH,
+          SurnameTH: data.Patient.Data.SurnameTH,
+          DateOfBirth: data.Patient.Data.DateOfBirth,
+          PassportNumber: data.Patient.Data.PassportNumber,
+            IdType: data.Patient.Data.IdType,
+          VN: data.DataTran.Data.VN,
+            VisitDateTime: data.DataTran.Data.VisitDateTime,
+          ChiefComplaint: "",
+          PresentIllness: "",
+            AccidentDate: data.DataTran.Data.AccidentDate,
+          AccidentPlaceCode: "",
+          WoundDetails: "",
+          AccidentInjurySideCode: "",
+          AccidentInjuryWoundtypeCode: "",
+            PolicyTypeCode: data.DataTran.Data.PolicyTypeCode,
+            ServiceSettingCode: data.DataTran.Data.ServiceSettingCode,
+            IllnessTypeCode: data.DataTran.Data.IllnessTypeCode,
+            SurgeryTypeCode: data.DataTran.Data.SurgeryTypeCode,
+            FurtherClaimNo: data.DataTran.Data.FurtherClaimNo,
+            FurtherClaimId: data.DataTran.Data.FurtherClaimId,
+            FurtherClaimVN: data.DataTran.Data.FurtherClaimVN,
+
+        },
+      }
+    }
 
     axios
       .post(
         process.env.NEXT_PUBLIC_URL_SV + process.env.NEXT_PUBLIC_URL_getIPDDischargeDiagnosis,
-       // Data
-        PatientInfoData
+        Data
+       // PatientInfoData
       )
       .then((response) => {
       //   console.log(response.data)
@@ -921,16 +1171,17 @@ export default function Page({ data }) {
     setNewInjuryDetail({ InjuryArea: "", InjurySide: "", WoundType: "" });
   };
 
-  // const Editfurtherclaimvn = () => {
-  //   setShowSummitError();
-  //   setShowSummitSucc();
-  //   document.getElementById("Editfurtherclaimvn").showModal();
-  // };
+  const Editfurtherclaimvn = () => {
+    setShowSummitError();
+    setShowSummitSucc();
+    document.getElementById("Editfurtherclaimvn").showModal();
+  };
 
   
 
     async function Submitfurtherclaimvn(e) {
-  //    console.log(e)
+
+      console.log(e)
   setShowSummitError();
   setShowSummitSucc();
   try {
@@ -964,6 +1215,7 @@ export default function Page({ data }) {
           TransactionNo: PatientInfoData.PatientInfo.TransactionNo,
           VN: PatientInfoData.PatientInfo.VN,
           InsurerCode: InsuranceCode,
+          IsIPDDischarge: false,
           ServiceSettingCode: PatientInfoData.PatientInfo.ServiceSettingCode,
           IllnessTypeCode: PatientInfoData.PatientInfo.IllnessTypeCode,
           SurgeryTypeCode: PatientInfoData.PatientInfo.SurgeryTypeCode,
@@ -995,17 +1247,32 @@ export default function Page({ data }) {
 
     };
     }else{
+      const combinedMessage = (
+        <>
+        Message :  {response.data.HTTPStatus.message}
+          <br />
+        Error :  {response.data.HTTPStatus.error}
+        <hr />
+        ข้อมูล Transaction & RefID
+        TransactionNo : {PatientInfoData.PatientInfo.TransactionNo} <br />
+        {/* RefID : {PatientInfoData.PatientInfo.RefId} <br /> */}
+        HN : {PatientInfoData.PatientInfo.HN} <br />
+        PID : {PatientInfoData.PatientInfo.PID} <br />
+        {/* Passport : {PatientInfoData.PatientInfo.PassportNumber} <br /> */}
+        VN : {PatientInfoData.PatientInfo.VN} <br />
 
-            setMassSummitError(response.data.HTTPStatus.message);
+        </>
+      );
+      setMassSummitError(combinedMessage);
             setShowSummitError("Error");
           }
-        } catch (error){
+  } catch (error){
       setMassSummitError(error.message);
       setShowSummitError("Error");
     }
     
   
-      }
+}
 
 
   const SummitEditProce = () => {
@@ -1210,6 +1477,33 @@ export default function Page({ data }) {
         }
       });
   };
+  const SummitReloadData = () => {
+    console.log(PatientInfoData)
+    axios 
+    .post(
+      process.env.NEXT_PUBLIC_URL_SV + process.env.NEXT_PUBLIC_URL_ReloadDiagnosis,
+     PatientInfoData
+    )
+    .then((response) => {
+        console.log(response.data)
+
+
+    })
+    .catch((error) => {
+      console.log(error);
+      try {
+        const ErrorMass = error.config.url;
+        const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+        setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
+        setShowFormError("Error");
+      } catch (error) {
+        setMassError(error);
+        setShowFormError("Error");
+      }
+    
+    });
+  
+  }
   const CancleDoc = (data) => {
     const isConfirmed = window.confirm("แน่ใจแล้วที่จะลบเอกสารใช่ไหม");
     if (isConfirmed) {
@@ -1316,11 +1610,13 @@ export default function Page({ data }) {
 
 
 
-
+    
     if (admitDateTime === null){
       alert("กรุณากรอก ExpectedAdmitDate");
     }else if(dscDateTime === null){
       alert("กรุณากรอก DscDateTime");
+    }else if(diagnosis.Result.DiagnosisInfo[0].DxCode === ""){
+      alert("กรุณากรอก Diagnosis");
     }else if(dscDateTime){
       const dscDateTimevalue = dayjs(dscDateTime.$d).format("YYYY-MM-DD");
 
@@ -1682,7 +1978,22 @@ if(rows2){
                     resolve("Step 4 completed");
                  
                   } else {
-                    setMassSummitError(response.data.HTTPStatus.message);
+                    const combinedMessage = (
+                      <>
+                      Message :  {response.data.HTTPStatus.message}
+                        <br />
+                      Error :  {response.data.HTTPStatus.error}
+                      <hr />
+        ข้อมูล Transaction & RefID
+        {/* TransactionNo : {PatientInfoData.PatientInfo.TransactionNo} <br /> */}
+        RefID : {PatientInfoData.PatientInfo.RefId} <br />
+        HN : {PatientInfoData.PatientInfo.HN} <br />
+        PID : {PatientInfoData.PatientInfo.PID} <br />
+        {/* Passport : {PatientInfoData.PatientInfo.PassportNumber} <br /> */}
+        VN : {PatientInfoData.PatientInfo.VN} <br />
+                      </>
+                    );
+                    setMassSummitError(combinedMessage);
                     setShowSummitError("Error");
                   }
                 })
@@ -1715,6 +2026,7 @@ if(rows2){
             }
             return new Promise((resolve, reject) => {
               const PatientInfo = {
+                OtherInsurer : otherInsurer,
                 IsIPDDischarge : isIPDDischargeValue,
                 RefId: PatientInfoData.PatientInfo.RefId,
                 TransactionNo: PatientInfoData.PatientInfo.TransactionNo,
@@ -1787,7 +2099,25 @@ if(rows2){
                       router.push("/aia/checkClaimStatus");
                     }, 5000);
                   } else {
-                    setMassSummitError(response.data.HTTPStatus.message);
+                    const combinedMessage = (
+                      <>
+        ข้อมูลที่ติดปัญหา
+        <br />
+       -  Message :  {response.data.HTTPStatus.message}
+        <br />
+       -  Error :  {response.data.HTTPStatus.error}
+        <hr />
+        ข้อมูล Transaction ที่ต้องส่งให้บริษัทประกัน
+        <br />
+       - TransactionNo : {PatientInfoData.PatientInfo.TransactionNo} <br />
+       {/* - RefID : {PatientInfoData.PatientInfo.RefId} <br /> */}
+       - HN : {PatientInfoData.PatientInfo.HN} <br />
+       - PID : {PatientInfoData.PatientInfo.PID} <br />
+       {/* - Passport : {PatientInfoData.PatientInfo.PassportNumber} <br /> */}
+       - VN : {PatientInfoData.PatientInfo.VN} <br />
+                      </>
+                    );
+                    setMassSummitError(combinedMessage);
                     setShowSummitError("Error");
                   }
                 })
@@ -1817,7 +2147,33 @@ if(rows2){
   const AnesthesiaList = (event) => {
     setAnesthesiaListValue(event.target.value);
   };
+  useEffectOnce(() => {
+    
+    axios
+      .post(
+        process.env.NEXT_PUBLIC_URL_SV +
+          process.env.NEXT_PUBLIC_URL_getListVisitClaimAIA,
+        PatientInfoData
+        // '/api/v1/aia-opddischarge/getListClaimFormOPDByVN', PatientInfoData
+      )
+      .then((response) => {
+      //  console.log(response.data)
+      setListClaimForm(response.data);
+      })
+      .catch((error) => {
+     //   console.log(error);
+        try {
+          const ErrorMass = error.config.url;
+          const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+          setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
+          setShowFormError("Error");
+        } catch (error) {
+          setMassError(error.response.data.HTTPStatus.message);
+          setShowFormError("Error");
+        }
+      });
 
+  });
   const Cancel = () => {
     setShowFormError();
     // console.log("-Cancel-")
@@ -2062,9 +2418,9 @@ if(rows2){
 
 
      const IsIPDDischargeBox = (even) => {
-      console.log(even.target.checked)
-      setCheckedFinalDischarge(even.target.checked)
-      setShowSummitError("")
+      console.log(even.target.checked);
+      setCheckedFinalDischarge(even.target.checked);
+      setShowSummitError("");
       document.getElementById("ConfrimFinal").showModal();
     }
 
@@ -2173,7 +2529,11 @@ if(rows2){
   }
 
   const  handleOtherInsurer = (e) => {
-    setOtherInsurer(e.target.value);
+    if(otherInsurer === false){
+      setOtherInsurer(true);
+    }else{
+      setOtherInsurer(false);
+    }
   };
   const handleAlcoholRelated = () => {
     if(alcoholRelated === false){
@@ -2416,7 +2776,7 @@ if(rows2){
                       <CustomTextField
                         id="disabledInput"
                         label="SurgeryType"
-                        defaultValue={PatientInfoData.PatientInfo.SurgeryTypeCode === "N" ? "ไม่มีผ่าตัด" : "มีผ่านตัด"}
+                        defaultValue={PatientInfoData.PatientInfo.SurgeryTypeCode === "N" ? "ไม่มีผ่าตัด" : "มีผ่าตัด"}
                         className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"
                         InputProps={{ readOnly: true }}
                       />
@@ -2433,10 +2793,35 @@ if(rows2){
                       <CustomTextField
                         id="disabledInput"
                         label="Accident"
-                        defaultValue={accidentDetail ? "มีอุบัติเหตุ" : "ไม่มีอุบัติเหตุ"}
+                        defaultValue={accidentDetail ? accidentDetail.Result.AccidentDetailInfo.AccidentDate ? "มีอุบัติเหตุ" : "ไม่มีอุบัติเหตุ" : ""}
                         className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"
                         InputProps={{ readOnly: true }}
                       />
+                    </Box>
+                  </div>
+                  <div className="rounded-md">
+                    <Box
+                      sx={{
+                        backgroundColor: "#e5e7eb",
+                        padding: 0,
+                        borderRadius: 0,
+                      }}
+                    >
+                      <CustomTextField
+  id="disabledInput"
+  label="ประเภทการรักษา"
+  value={
+    illnessType
+      ? illnessType.Result.find(
+          (ill) =>
+            ill.illnesstypecode === PatientInfoData.PatientInfo.IllnessTypeCode
+        )?.illnesstypedesc || "No description available"
+      : "No illness data available"
+  }
+  className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"
+  InputProps={{ readOnly: true }}
+/>
+
                     </Box>
                   </div>
                 </div>
@@ -2458,16 +2843,16 @@ if(rows2){
                         <>
                           <input
                             type="radio"
-                            id="OtherInsurer"
-                            name="OtherInsurer"
+                            id="1"
+                            name="1"
                             className="checkbox "
                             disabled
                           />
                           <p className="text-left ml-2">จองสิทธิ์ครั้งแรก</p>
                           <input
                             type="radio"
-                            id="OtherInsurer"
-                            name="OtherInsurer"
+                            id="1"
+                            name="1"
                             className="checkbox ml-2"
                             defaultChecked
                             disabled
@@ -2478,8 +2863,8 @@ if(rows2){
                         <>
                           <input
                             type="radio"
-                            id="OtherInsurer"
-                            name="OtherInsurer"
+                            id="2"
+                            name="2"
                             className="checkbox"
                             defaultChecked
                             disabled
@@ -2487,8 +2872,8 @@ if(rows2){
                           <p className="text-left ml-2">จองสิทธิ์ครั้งแรก</p>
                           <input
                             type="radio"
-                            id="OtherInsurer"
-                            name="OtherInsurer"
+                            id="2"
+                            name="2"
                             className="checkbox  ml-2"
                             disabled
                           />
@@ -2499,7 +2884,7 @@ if(rows2){
 
                 </div>
                 <div className="rounded-md">
-                     <div className="flex items-center ">
+                    <div className="flex items-center ">
                       <input
                         type="checkbox"
                         id="OtherInsurer"
@@ -2512,17 +2897,23 @@ if(rows2){
                         &nbsp;ค่าส่วนเกินจากประกันอื่นๆ 
                       </p>
                     </div> 
-                  </div>
+                </div>
+
+
+
+
+
+
                   <div className="rounded-md">
 
                     <div className="flex items-center ">
-                     
+                     {/* {"||"+isIPDDischargeValue+"||"} */}
                       {(PatientInfoData.PatientInfo.IsIPDDischarge === false || PatientInfoData.PatientInfo.IsIPDDischarge === null) ?
-                                         <>
+                     <>
                       <input
                         type="checkbox"
-                        id="OtherInsurer"
-                        name="OtherInsurer"
+                        id=""
+                        name=""
                         value={isIPDDischargeValue}
                         className="checkbox checkbox-error"
                         onChange={(e) => IsIPDDischargeBox(e)}
@@ -2660,7 +3051,7 @@ if(rows2){
                                 setAdmitDateTime(newAdmitDateTime)
                               }
                               required
-                              format="YYYY-MM-DD HH:MM"
+                              format="YYYY-MM-DD HH:mm"
                             />
                           </DemoItem>
                         </LocalizationProvider>
@@ -2675,11 +3066,10 @@ if(rows2){
                               textField: { focused: true, color: "error" },
                             }}
                             defaultValue={dscDateTime}
-                              onChange={(newDscDateTime) =>
-                                setDscDateTime(newDscDateTime)
+                              onChange={setDscDateTime
                               }
                               required
-                              format="YYYY-MM-DD HH:MM"
+                              format="YYYY-MM-DD HH:mm"
                             />
                           </DemoItem>
                         </LocalizationProvider>
@@ -2738,7 +3128,7 @@ if(rows2){
                   </div>
 
                   </div>
-                {/* <div className="rounded-md mt-2 text-3xl text-error  flex "> 
+                <div className="rounded-md mt-2 text-3xl text-error  flex "> 
             <div
                         className="btn btn-secondary text-base-100 text-xl"
                         onClick={Editfurtherclaimvn}
@@ -2747,7 +3137,7 @@ if(rows2){
                       </div>
                   <div className="mt-2 ml-2">Claim form จาก VN : {PatientInfoData.PatientInfo.FurtherClaimVN ? (PatientInfoData.PatientInfo.FurtherClaimVN === PatientInfoData.PatientInfo.VN ? PatientInfoData.PatientInfo.VN+" ( ปัจจุบัน )" : PatientInfoData.PatientInfo.FurtherClaimVN+" ( เก่า )") : PatientInfoData.PatientInfo.VN+" ( ปัจจุบัน )" }</div>                    
 
-                </div> */}
+                </div> 
                 <div className="grid gap-2 sm:grid-cols-2 w-full mt-4">
                   <div className="rounded-md mt-2">
                     <TextField
@@ -4354,14 +4744,14 @@ if(rows2){
             {/* //////////////////////////////////////////////////////////////////////////// */}
             <div className="container mx-auto justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4 mt-2">
               <h1 className="font-black text-accent text-3xl ">Diagnosis
-                    </h1>
+                     </h1>
               <div className="overflow-x-auto">
                 <table className="table  mt-2">
                   <thead>
                     <tr className="text-base-100 bg-primary py-8 text-sm w-full text-center">
                       <th></th>
                       <th>รหัส</th>
-                      <th className="">ชื่อของการวินิจฉัยโรค</th>
+                      <th>ชื่อของการวินิจฉัยโรค</th>
                       <th>ชนิดของการวินิจฉัยโรค</th>
                     </tr>
                   </thead>
@@ -4412,18 +4802,30 @@ if(rows2){
                     >
                       <FaEdit />
                     </div>
+                      {/* {rowsPro ?
+                  <div
+                      className="btn btn-secondary text-base-100 text-xl ml-2"
+                      onClick={SummitReloadData}
+                    >
+                        Reload Data
+                        </div>
+                    : ""} */}
                   </h1>
                   <div className="grid gap-4 sm:grid-cols-4 w-full mt-4">
+                    {/* {console.log(rowsPro)} */}
+                    {rowsPro[0] ?  (
                   <FormControl className="w-full">
                 <InputLabel id="demo-simple-select-label">
                 Anesthesia
                 </InputLabel>
                 <Select
+                error
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
                 value={anesthesiaListValue}
                 label="Anesthesia"
                 onChange={AnesthesiaList}
+                required
                 >
                   <MenuItem key="" value=""></MenuItem>
                 {anesthesiaListCode
@@ -4438,6 +4840,34 @@ if(rows2){
                 }
                 </Select>
                 </FormControl>
+                ) : 
+                <FormControl className="w-full">
+                <InputLabel id="demo-simple-select-label">
+                Anesthesia
+                </InputLabel>
+                <Select
+                
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={anesthesiaListValue}
+                label="Anesthesia"
+                onChange={AnesthesiaList}
+                
+                >
+                  <MenuItem key="" value=""></MenuItem>
+                {anesthesiaListCode
+                ? anesthesiaListCode.Result.map((code, index) => (
+                    <MenuItem key={index} value={code.aneslistcode}>
+                      {code.aneslistname}
+                    </MenuItem>
+                  ))
+                :    <MenuItem>
+                Loading...
+                </MenuItem>
+                }
+                </Select>
+                </FormControl>
+                }
                   </div>
                   <TableContainer component={Paper} className="mt-2">
                     <Table className="table">
@@ -4458,7 +4888,8 @@ if(rows2){
                         </TableRow>
                       </TableHead>
                       <TableBody>
-                        {/* {console.log(rowsPro)} */}
+
+                        
                         {rowsPro
                           ? rowsPro.map(
                               (proce, index) =>
@@ -4960,7 +5391,7 @@ if(rows2){
                        {summitEditConcurrentNote === "true" ? 
                         <DateTimePicker
                         className="bg-base-100 w-full" 
-                        format="YYYY-MM-DD HH:MM"
+                        format="YYYY-MM-DD HH:mm"
                         value={con.ConcurrentDatetime ? dayjs(con.ConcurrentDatetime) : ""}
                         // value=""
                         onChange={(e) => 
@@ -5041,7 +5472,7 @@ if(rows2){
                                  value={newRow2.ConcurrentDatetime ? dayjs(newRow2.ConcurrentDatetime) : ""}
                                  onChange ={handleDateChange}
                                   placeholder="ConcurrentDatetime"
-                                  format="YYYY-MM-DD HH:MM"
+                                  format="YYYY-MM-DD HH:mm"
                                   //  required
                                 />
                                 </DemoItem>
@@ -5119,7 +5550,7 @@ if(rows2){
                 <div className="label">
                   <span className="label-text-alt text-error text-sm">
                     ** Upload เฉพาะไฟล์ .PDF เท่านั้น สามารถส่งได้มากกว่า 1
-                    ไฟล์( แต่ละไฟล์ไม่เกิน 20 MB )**
+                    ไฟล์( แต่ละไฟล์ไม่เกิน 6 MB )**
                   </span>
                 </div>
                 {progress.started && (
@@ -5158,6 +5589,7 @@ if(rows2){
                   <thead>
                     <tr className="text-base-100 bg-primary py-8 text-sm w-full text-center">
                       <th className="w-2/5">ชื่อไฟล์</th>
+                      {/* <th className="w-1/5">ขนาดไฟล์</th> */}
                       <th className="w-1/5"></th>
                     </tr>
                   </thead>
@@ -5169,6 +5601,9 @@ if(rows2){
                           {list.filename}
                           <br/>{list.originalname}
                           </td>
+                          {/* <td className="px-6 py-4 whitespace-nowrap">
+                          {list.filename}
+                          </td> */}
                           <td className="px-6 py-4 whitespace-nowrap">
                           
                               <div
@@ -5227,7 +5662,148 @@ if(rows2){
           </div>
         </div>
       )}
+<dialog id="Editfurtherclaimvn" className="modal text-xl	">
+        <div className="modal-box w-11/12 max-w-full">
+          <form method="dialog">
+            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
+              ✕
+            </button>
+            <h3 className="font-bold text-lg">ตาราง Claim form</h3>
+            <hr />
+            {showSummitError === "Error" ? (
+              <div
+                role="alert"
+                className="alert alert-error mt-2 text-base-100"
+              >
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    className="h-6 w-6 shrink-0 stroke-current"
+    fill="none"
+    viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="2"
+      d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
 
+                </svg>
+                <span>{massSummitError}</span>
+              </div>
+            ) : ("")}
+           {showSummitSucc === "Succ" ? (
+      <div role="alert" className="alert alert-success text-base-100 mt-2">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="h-6 w-6 shrink-0 stroke-current"
+        fill="none"
+        viewBox="0 0 24 24">
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="2"
+          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+                <span>{massSummitSucc}</span>
+              </div>
+            ) : ("")}
+
+                {massSummit ? (
+                  massSummit
+                ) : (
+                <table className="table  mt-2">
+                  <thead>
+                    <tr className="text-base-100 bg-primary py-8 text-sm w-full text-center break-all">
+                      <th className="">VisiDate <br/> Episode Number</th>
+                      <th className="">Doctor <br/> Location</th>
+                      <th className="">PresentIllness</th>
+                      <th className="">Diagnosis</th>
+                      <th className="">InsuranceNote</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  {/* {console.log(listClaimForm)}  */}
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {listClaimForm ? (
+                      listClaimForm.Result.ClaimFormListInfo.map((FormList, index) => (
+                  
+                        <tr key={index} className=" bg-neutral text-sm">
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all text-center ">
+                              {FormList.VisiDate ? (
+                                FormList.VisiDate
+                              ) : (
+                                ""
+                              )}
+                              <br/>
+                              {FormList.VN ? FormList.VN : ""}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all text-center">
+                            {FormList.DoctorFirstName ? (
+                                FormList.DoctorFirstName
+                              ) : (
+                               ""
+                              )} 
+                               <br/>
+                               {FormList.LocationDesc ? FormList.LocationDesc : ""}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                          {FormList.PresentIllness ? 
+                          <div className="rounded-full px-3 py-2 border-2 bg-base-100 break-all text-center text-balance">
+                         {FormList.PresentIllness}
+                            </div>  : ""}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="">
+                        
+                          {FormList.DiagnosisInfo ? (
+  <table className="table border-2 bg-base-100 break-all text-center">
+    <tbody>
+      {FormList.DiagnosisInfo.map((Diag, index) => (
+        <tr key={index}>
+          <th>{Diag.DxCode}</th>
+          <th>{Diag.DxName}</th>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+) : (
+  ""
+)}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap ">
+                          {FormList.InsuranceNote ?
+                          <h1 className="rounded-full px-3 py-2 border-2 bg-base-100 break-all text-center text-balance">
+                           {FormList.InsuranceNote}
+                            </h1>
+                            : ""}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                          <div
+                    className="btn btn-success text-base-100 hover:text-success hover:bg-base-100 ml-2"
+                    onClick={() => Submitfurtherclaimvn(FormList)}
+                  >
+                               <IoIosSave  className="size-6" />
+                             </div>
+                          </td>
+                </tr>
+                      ) )
+                    ) : (
+                      <tr>
+                        <td></td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+
+                )}
+            
+          </form>
+        </div>
+      </dialog>
 
 <dialog id="ConfrimFinal" className="modal text-xl	">
         <div className="modal-box w-11/12 max-w-5xl">
@@ -5259,13 +5835,13 @@ if(rows2){
                 ) : (
                   <center>
                     <h1 className="text-4xl text-error">
-                      ยืนยันที่จะกด FinalDischarge ใช่หรือไม่...
+                      ยืนยันที่จะเลือก FinalDischarge ใช่หรือไม่...
                     </h1>
                     <div className="btn btn-success text-base-100 text-xl ml-2 w-64 mt-2"onClick={ConfrimFinalDischarge}>
-                        ยืนยันการกด
+                        ยืนยันการเลือก
                       </div>
                       <div className="btn btn-error text-base-100 text-xl ml-2 w-64 mt-2" onClick={CancleFinalDischarge}>
-                        ยกเลิกการกด
+                        ยกเลิกการเลือก
                       </div>
                   </center>
                 )}
@@ -5304,6 +5880,22 @@ if(rows2){
                   />
                 </svg>
                 <span>{massSummitError}</span>
+                <center>
+                <div
+                  className="btn btn-success bg-success text-base-100 hover:text-success hover:bg-base-100 mt-2"
+                  onClick={() => {
+                    copyTran({
+                       TransactionNo : PatientInfoData.PatientInfo.TransactionNo,
+                      //  RefID : PatientInfoData.PatientInfo.RefId,
+                       HN : PatientInfoData.PatientInfo.HN,
+                       PID : PatientInfoData.PatientInfo.PID,
+                       VN : PatientInfoData.PatientInfo.VN,
+                    });
+                  }}
+                >
+                  Copy
+                </div>
+              </center>
               </div>
               </>
             ) : (

@@ -507,7 +507,7 @@ useEffectOnce(() => {
                     <label className="text-gray-700 mb-2">การผ่าตัด</label>
                       <input
                           type="text"
-                          defaultValue={patientInfo.SurgeryTypeCode === "N" ? "ไม่มีผ่าตัด" : "มีผ่านตัด"}
+                          defaultValue={patientInfo.SurgeryTypeCode === "N" ? "ไม่มีผ่าตัด" : "มีผ่าตัด"}
                           readOnly
                           className="border-2 border-gray-300 rounded-md px-4 py-2 bg-gray-100"
                         />

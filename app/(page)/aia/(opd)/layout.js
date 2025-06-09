@@ -14,21 +14,6 @@ export default function layout({ children }) {
 
   return (
     <div>
-      {/* <div className=""> */}
-      {/* <Providers> */}
-      {/* <div className="bg-green-500">
-            <Drawer />
-          </div>
-          <div className="p-4 bg-red-500"> */}
-      {/* <div className="sticky top-0 shadow-md "> */}
-      {/* <Navbar /> */}
-      {/* </div> */}
-      {/* <MenuTabopd /> */}
-      {/* <div className="p-2">{children}</div> */}
-      {/* </div> */}
-      {/* </Providers> */}
-
-
       <Providers>
         <div className="flex flex-col h-screen">
             <Navbar />  

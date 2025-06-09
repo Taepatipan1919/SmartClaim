@@ -65,7 +65,7 @@ export default function Page({ data }) {
   const [currentDataorderItemz, setCurrentDataorderItemz] = useState("");
   const [currentPageorderItemz, setCurrentPageorderItemz] = useState(1);
   const [countorderItemz, setCountorderItemz] = useState(0);
-
+  const [illnessType, setIllnessType] = useState();
   const [textPresentIllness, setTextPresentIllness] = useState(''); 
   const [charCountPresentIllness, setCharCountPresentIllness] = useState(0);
   const handleTextChangePresentIllness = (event) => { 
@@ -143,7 +143,7 @@ export default function Page({ data }) {
     InjurySide: "",
     WoundType: "",
   });
-  const [numberValue, setNumberValue] = useState("");
+  // const [numberValue, setNumberValue] = useState("");
   const [summitEditProcedure, setSummitEditProcedure] = useState("false");
   const [summitEditAcc, setSummitEditAcc] = useState("false");
   const [comaScore, setComaScore] = useState("");
@@ -159,7 +159,29 @@ export default function Page({ data }) {
   // console.log(previousTreatmentDetail.target.value)
   // const [editProcedure, setEditProcedure] = useState("false");
 
-
+  useEffectOnce(() => {
+    axios
+      .get(
+        process.env.NEXT_PUBLIC_URL_SV +
+          process.env.NEXT_PUBLIC_URL_IllnessType +
+          InsuranceCode
+      )
+      .then((response) => {
+        setIllnessType(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+        try {
+          const ErrorMass = error.config.url;
+          const [ErrorMass1, ErrorMass2] = ErrorMass.split("v1/");
+          setMassError(error.code + " - " + error.message + " - " + ErrorMass2);
+          setShowFormError("Error");
+        } catch (error) {
+          setMassError(error.response.data.HTTPStatus.message);
+          setShowFormError("Error");
+        }
+      });
+  });
   const AccidentPlace = (event) => {
     setAccidentPlaceValue(event.target.value);
   };
@@ -208,7 +230,7 @@ export default function Page({ data }) {
   };
   //console.log(PatientInfoData.PatientInfo)
   useEffectOnce(() => {
-    PatientInfoData.PatientInfo.FurtherClaimVN ? setNumberValue(PatientInfoData.PatientInfo.FurtherClaimVN) : setNumberValue(PatientInfoData.PatientInfo.VN);  
+    // PatientInfoData.PatientInfo.FurtherClaimVN ? setNumberValue(PatientInfoData.PatientInfo.FurtherClaimVN) : setNumberValue(PatientInfoData.PatientInfo.VN);  
     setRandomNumber();
 
     const generateRandomFiveDigitNumber = () => {
@@ -370,7 +392,6 @@ export default function Page({ data }) {
         process.env.NEXT_PUBLIC_URL_SV +
           process.env.NEXT_PUBLIC_URL_getOPDDischargeVisit,
         Data 
-     // PatientInfoData 
       )
       .then((response) => {
          console.log(response.data)
@@ -405,6 +426,7 @@ export default function Page({ data }) {
   });
 
   useEffectOnce(() => {
+    
     let Data;
     if(data.DataTran.Data.FurtherClaimVN){
       Data = {
@@ -1063,7 +1085,14 @@ export default function Page({ data }) {
 
     }else{
 
-            setMassSummitError(response.data.HTTPStatus.message);
+      const combinedMessage = (
+        <>
+        Message :  {response.data.HTTPStatus.message}
+          <br />
+        Error :  {response.data.HTTPStatus.error}
+        </>
+      );
+      setMassSummitError(combinedMessage);
             setShowSummitError("Error");
           }
         } catch (error){
@@ -1203,7 +1232,21 @@ export default function Page({ data }) {
         }
       });
   }, []);
+  const copyTran = (data) => {
+    if (!navigator.clipboard) {
+      console.error("Clipboard API ไม่รองรับในเบราว์เซอร์นี้");
+      alert("เบราว์เซอร์นี้ไม่รองรับ กับ ฟังชั่น Copy นี้ \nกรุณา Copy ในกรอบสีแดงทั้งหมดครับ");
+      return;
+    }else{
+    const jsonString = JSON.stringify(data, null, 2); // แปลงข้อมูลเป็น JSON String
+    const result = navigator.clipboard.writeText(jsonString);
 
+    result.then(() => {
+      console.log("copy เรียบร้อย");
+      alert("copy เรียบร้อยแล้ว");
+    });
+    }
+  };
   const DocumentBase64 = (data) => {
     setMsg();
     setProgress({ started: false, pc: 0 });
@@ -1666,6 +1709,26 @@ if(rows){
               //  console.log(response.data);
               })
               .catch((error) => {
+                const combinedMessage = (
+                  <>
+                  ข้อมูลที่ติดปัญหา
+                  <br />
+                 -  Message :  {error.response.data.HTTPStatus.message}
+                  <br />
+                 -  Error :  {error.response.data.HTTPStatus.error}
+                  <hr />
+                  ข้อมูล Transaction ที่ต้องส่งให้บริษัทประกัน
+                  <br />
+                 - TransactionNo : {PatientInfoData.PatientInfo.TransactionNo} <br />
+                 {/* - RefID : {PatientInfoData.PatientInfo.RefId} <br /> */}
+                 - HN : {PatientInfoData.PatientInfo.HN} <br />
+                 - PID : {PatientInfoData.PatientInfo.PID} <br />
+                 {/* - Passport : {PatientInfoData.PatientInfo.PassportNumber} <br /> */}
+                 - VN : {PatientInfoData.PatientInfo.VN} <br />
+                  </>
+                );
+                setMassSummitError(combinedMessage);
+                setShowSummitError("Error");
                 console.log(error);
               });
               document.getElementById("my_modal_3").close();
@@ -1679,7 +1742,25 @@ if(rows){
                 router.push("/aia/checkClaimStatus");
               }, 5000);
             } else {
-              setMassSummitError(response.data.HTTPStatus.message);
+              const combinedMessage = (
+                <>
+                ข้อมูลที่ติดปัญหา
+                <br />
+               -  Message :  {response.data.HTTPStatus.message}
+                <br />
+               -  Error :  {response.data.HTTPStatus.error}
+                <hr />
+                ข้อมูล Transaction ที่ต้องส่งให้บริษัทประกัน
+                <br />
+               - TransactionNo : {PatientInfoData.PatientInfo.TransactionNo} <br />
+               {/* - RefID : {PatientInfoData.PatientInfo.RefId} <br /> */}
+               - HN : {PatientInfoData.PatientInfo.HN} <br />
+               - PID : {PatientInfoData.PatientInfo.PID} <br />
+               {/* - Passport : {PatientInfoData.PatientInfo.PassportNumber} <br /> */}
+               - VN : {PatientInfoData.PatientInfo.VN} <br />
+                </>
+              );
+              setMassSummitError(combinedMessage);
               setShowSummitError("Error");
             }
           })
@@ -1693,7 +1774,25 @@ if(rows){
               );
               setShowSummitError("Error");
             } catch (error) {
-              setMassSummitError(error.response.data.HTTPStatus.message);
+              const combinedMessage = (
+                <>
+                ข้อมูลที่ติดปัญหา
+                <br />
+               -  Message :  {error.response.data.HTTPStatus.message}
+                <br />
+               -  Error :  {error.response.data.HTTPStatus.error}
+                <hr />
+                ข้อมูล Transaction ที่ต้องส่งให้บริษัทประกัน
+                <br />
+               - TransactionNo : {PatientInfoData.PatientInfo.TransactionNo} <br />
+               {/* - RefID : {PatientInfoData.PatientInfo.RefId} <br /> */}
+               - HN : {PatientInfoData.PatientInfo.HN} <br />
+               - PID : {PatientInfoData.PatientInfo.PID} <br />
+               {/* - Passport : {PatientInfoData.PatientInfo.PassportNumber} <br /> */}
+               - VN : {PatientInfoData.PatientInfo.VN} <br />
+                </>
+              );
+              setMassSummitError(combinedMessage);
               setShowSummitError("Error");
             }
           });
@@ -2005,7 +2104,7 @@ if(rows){
                   Patient Info
                 </h1>
                 </div>
-                <div className="rounded-md text-right">
+                                <div className="rounded-md text-right">
                                     <h1
                                       className="btn btn-error text-base-100 text-xl "
                                       onClick={Cancel}
@@ -2170,7 +2269,7 @@ if(rows){
                       <CustomTextField
                         id="disabledInput"
                         label="การผ่าตัด"
-                        defaultValue={PatientInfoData.PatientInfo.SurgeryTypeCode === "N" ? "ไม่มีผ่าตัด" : "มีผ่านตัด"}
+                        defaultValue={PatientInfoData.PatientInfo.SurgeryTypeCode === "N" ? "ไม่มีผ่าตัด" : "มีผ่าตัด"}
                         className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"
                         InputProps={{ readOnly: true }}
                       />
@@ -2191,6 +2290,31 @@ if(rows){
                         className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"
                         InputProps={{ readOnly: true }}
                       />
+                    </Box>
+                  </div>
+                  <div className="rounded-md">
+                    <Box
+                      sx={{
+                        backgroundColor: "#e5e7eb",
+                        padding: 0,
+                        borderRadius: 0,
+                      }}
+                    >
+                      <CustomTextField
+  id="disabledInput"
+  label="ประเภทการรักษา"
+  value={
+    illnessType
+      ? illnessType.Result.find(
+          (ill) =>
+            ill.illnesstypecode === PatientInfoData.PatientInfo.IllnessTypeCode
+        )?.illnesstypedesc || "No description available"
+      : "No illness data available"
+  }
+  className="w-full text-black rounded disabled:text-black disabled:bg-gray-300"
+  InputProps={{ readOnly: true }}
+/>
+
                     </Box>
                   </div>
                 </div>
@@ -4017,7 +4141,7 @@ if(rows){
                 <div className="label">
                   <span className="label-text-alt text-error text-sm">
                     ** Upload เฉพาะไฟล์ .PDF เท่านั้น สามารถส่งได้มากกว่า 1
-                    ไฟล์( แต่ละไฟล์ไม่เกิน 20 MB )**
+                    ไฟล์( แต่ละไฟล์ไม่เกิน 6 MB )**
                   </span>
                 </div>
                 {progress.started && (
@@ -4056,6 +4180,7 @@ if(rows){
                   <thead>
                     <tr className="text-base-100 bg-primary py-8 text-sm w-full text-center">
                       <th className="w-2/5">ชื่อไฟล์</th>
+                      {/* <th className="w-1/5">ขนาดไฟล์</th> */}
                       <th className="w-1/5"></th>
                     </tr>
                   </thead>
@@ -4067,6 +4192,9 @@ if(rows){
                           {list.filename}
                           <br/>{list.originalname}
                           </td>
+                          {/* <td className="px-6 py-4 whitespace-nowrap">
+                          {list.filename}
+                          </td> */}
                           <td className="px-6 py-4 whitespace-nowrap">
                           
                               <div
@@ -4222,33 +4350,23 @@ if(rows){
                             </div>  : ""}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="border-2 bg-base-100 break-all text-center">
-                            <table className="table">
-                          <thead>
-                             <tr>
-                                 <th>Code</th>
-                                <th>Name</th>
-                        </tr>
-                       </thead>
-                        <tbody>
-                             {FormList.DiagnosisInfo ? (
-                            
-                            FormList.DiagnosisInfo.map((Diag, index) => (
-                              <tr  key={index}>
-                            <th>{Diag.DxCode}</th>
-                            <th>{Diag.DxName}</th>
-                            </tr>
-                            )
-                          )
-                              ) : (
-                              <tr>
-                                <th></th>
-                                <td></td>
-                              </tr>
-                              )} 
-                          </tbody>
-                      </table>
-                            </div>
+                          <div className="">
+                        
+                        {FormList.DiagnosisInfo ? (
+<table className="table border-2 bg-base-100 break-all text-center">
+  <tbody>
+    {FormList.DiagnosisInfo.map((Diag, index) => (
+      <tr key={index}>
+        <th>{Diag.DxCode}</th>
+        <th>{Diag.DxName}</th>
+      </tr>
+    ))}
+  </tbody>
+</table>
+) : (
+""
+)}
+                          </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap ">
                           {FormList.InsuranceNote ?
@@ -4284,6 +4402,8 @@ if(rows){
       <dialog id="my_modal_3" className="modal text-xl	">
         <div className="modal-box w-11/12 max-w-5xl">
           <form method="dialog">
+          OPD
+          <hr />
             <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
               ✕
             </button>
@@ -4306,6 +4426,22 @@ if(rows){
                   />
                 </svg>
                 <span>{massSummitError}</span>
+                <center>
+                <div
+                  className="btn btn-success bg-success text-base-100 hover:text-success hover:bg-base-100 mt-2"
+                  onClick={() => {
+                    copyTran({
+                       TransactionNo : PatientInfoData.PatientInfo.TransactionNo,
+                      //  RefID : PatientInfoData.PatientInfo.RefId,
+                       HN : PatientInfoData.PatientInfo.HN,
+                       PID : PatientInfoData.PatientInfo.PID,
+                       VN : PatientInfoData.PatientInfo.VN,
+                    });
+                  }}
+                >
+                  Copy
+                </div>
+              </center>
               </div>
             ) : (
               <>
