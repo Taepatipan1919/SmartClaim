@@ -1544,7 +1544,8 @@ if(idTypeValue === "NATIONAL_ID"){
   return (
     <>
       {/* <form> */}
-      <div className="justify-center border-solid w-5/5 m-auto border-2 border-warning rounded-lg p-4">
+      <div className="flex flex-1 py-4 h-screen sm:h-fit flex-col space-y-2 px-4">
+      {/* <div className="flex flex-1 py-4 h-screen sm:h-fit flex-col space-y-2 px-4"> */}
         <h1 className="font-black text-accent text-3xl ">Patient Details</h1>
         <div className="grid grid-cols-4 gap-2 ">
           <div>FullName (TH)</div>

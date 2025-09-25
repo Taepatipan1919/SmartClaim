@@ -229,6 +229,7 @@ export default function checkData() {
       ServiceSettingCode: serviceValue,
     };
     // console.log(PatientInfo);
+    
     axios
       .post(
         process.env.NEXT_PUBLIC_URL_SV +
@@ -237,7 +238,7 @@ export default function checkData() {
       )
       .then((response) => {
         setPostData(response.data);
-        // console.log(response.data);
+         console.log(response.data);
         // setShowFormError();
         setCurrentData(response.data.Result.TransactionClaimInfo);
         
@@ -1939,8 +1940,8 @@ export default function checkData() {
         )
         .then((response) => {
           setPostData(response.data);
-       //   console.log(response.data);
-         // setCurrentData(response.data.Result.TransactionClaimInfo)
+          console.log(response.data);
+          setCurrentData(response.data.Result.TransactionClaimInfo)
 
         async function fetchData() {
           const promises = response.data.Result.TransactionClaimInfo.map(async (item) => {
@@ -1966,7 +1967,7 @@ export default function checkData() {
         
           const results2 = await Promise.all(promises2); // รอให้ทุก Promise เสร็จ
          // console.log(results)
-          console.log(results2); // results จะเป็น array ที่มีข้อมูลทั้งหมดรวมกับ PolicyNodetail
+          console.log(results); // results จะเป็น array ที่มีข้อมูลทั้งหมดรวมกับ PolicyNodetail
 
           setCurrentData(results2);
         }
@@ -2014,69 +2015,7 @@ export default function checkData() {
 
     setCount(datax.length);
   }, [datax]);
-  //////////////////// Chack Status All///////////////////////////
 
-  const RefreshAll = () => {
-    // console.log(data)
-    setPostData();
-    const extractedRefId = datax.map((item) => item.RefId);
-    const extractedTransactionNo = datax.map((item) => item.TransactionNo);
-
-    const PatientInfo = datax.map((item) => ({
-      RefId: item.RefId,
-      TransactionNo: item.TransactionNo,
-    }));
-
-    //console.log(PatientInfo)
-    axios
-      .post(
-        process.env.NEXT_PUBLIC_URL_SV +
-          process.env.NEXT_PUBLIC_URL_getcheckclaimstatusListAll,
-        { PatientInfo: PatientInfo }
-      )
-      .then((response) => {
-        //   console.log(response.data);
-
-        const AllPatient = response.data.Result.InsuranceData.map((item) => ({
-          RefId: item.RefId,
-          TransactionNo: item.TransactionNo,
-          InsurerCode: item.StatusInfo.InsurerCode,
-          BatchNumber: item.StatusInfo.BatchNumber,
-          ClaimStatus: item.StatusInfo.ClaimStatus,
-          ClaimStatusDesc: item.StatusInfo.ClaimStatusDesc,
-          TotalApproveAmount: item.StatusInfo.TotalApproveAmount,
-          PaymentDate: item.StatusInfo.PaymentDate,
-          InvoiceNumber: item.StatusInfo.InvoiceNumber,
-        }));
-        //  console.log(AllPatient);
-        // setStatusAllNew(AllPatient);
-        axios
-          .post(
-            process.env.NEXT_PUBLIC_URL_SV +
-              process.env.NEXT_PUBLIC_URL_SearchTransection,
-            { PatientInfo: patientUpdate }
-          )
-          .then((response) => {
-            setPostData(response.data);
-            // console.log(response.data)
-            //  setCurrentData(response.data.Result.TransactionClaimInfo)
-            setShowFormError();
-          })
-          .catch((error) => {
-            console.log(error);
-
-            setShowFormError("Error");
-            setMassError(error.message);
-          });
-      })
-      .catch((error) => {
-        console.log(error);
-        setShowFormError("Error");
-        setMassError(error.message);
-      });
-  };
-
-  ///////////////////////////////////////////////
   const CustomTextField = styled(TextField)({
     "& .MuiInputBase-input.Mui-disabled": {
       color: "black", // เปลี่ยนสีข้อความเป็นสีดำ
@@ -3793,7 +3732,6 @@ content={
                             </td>
 
                             <td>
-             
                             <Tippy
       content={
         <div className="absolute left-1/2 -translate-x-1/2 top-full w-auto min-w-max bg-base-300 text-white text-sm p-3 rounded-lg transition-opacity duration-200 group-hover:opacity-100">
@@ -5125,7 +5063,7 @@ content={
                       value={typeDoc}
                       required
                     >
-                      <option value="">-กรุณาเลือก-</option>
+                      <option  ption value="">-กรุณาเลือก-</option>
                         {docType
     ? docType.Result.filter(type => {
         if (selectedIdTypeIsRequestDispute === true) {

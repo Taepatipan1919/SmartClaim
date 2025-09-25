@@ -448,7 +448,7 @@ export default function Page({ data }) {
       .then((response) => {
           console.log(response.data)
        setCombinedString(response ? `${response.data.Result.VisitInfo.Weight} / ${response.data.Result.VisitInfo.Height}` : "");
-
+     
         setVisit(response.data);
         if(response.data.Result.VisitInfo.AnesthesiaList){
           setAnesthesiaListValue(response.data.Result.VisitInfo.AnesthesiaList)
@@ -1873,6 +1873,8 @@ if(rows2){
                 InsurerCode: PatientInfoData.PatientInfo.InsurerCode,
                 HN: PatientInfoData.PatientInfo.HN,
                 VN: PatientInfoData.PatientInfo.VN,
+                Weight: visit.Result.VisitInfo.Weight,
+                Height: visit.Result.VisitInfo.Height,
                 IsIPDDischarge : isIPDDischargeValue,
                 VisitDateTime: PatientInfoData.PatientInfo.VisitDateTime,
                 DxFreeText: event.target.DxFreeTextText.value,
